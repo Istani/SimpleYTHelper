@@ -1,5 +1,11 @@
 <?php
 	// Getting SUB count & last name
+	
+	// incs
+	include("extern/inc_extern.php");
+	include("intern/int_settings.php");
+	
+	// default
 	$subcount=0;
 	$subname="Nobody";
 	

@@ -1,7 +1,8 @@
 <?php
 	// Benötigte Daten
-	include_once("extern/inc_extern.php");
-	include_once("intern/int_settings.php");
+	include("extern/inc_extern.php");
+	include("intern/int_settings.php");
+	include("intern/func_command.php");
 	
 	if (!isset($_GET["command"])) {
 		die("No Command given!");
@@ -16,21 +17,15 @@
 	// AREA: Includes zum Test
 	
 	if ($_GET["command"]=="debug"){
-	
-		$command="lastsub";
-		echo "<hr>".$command.":<br>";
-	 include("scripts/". $command.".php");
-	echo "<br>";
-	
-	
-	
-	} else {
-		$normalCommand="scripts/".$_GET["command"].".php";
-		if (file_exists($normalCommand)){
-			include($normalCommand);
-		} else {
-			die("Unkown Command!");
+		$commands = array("noob", "lastsub");
+		foreach ($commands as $command) {
+			echo "<hr>";
+			echo $command.":<br>";
+			execute_command($command);
+			echo "<br>";
 		}
+	} else {
+		execute_command($_GET["command"]);
 	 }
 
 ?>
