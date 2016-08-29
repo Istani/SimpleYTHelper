@@ -5,7 +5,12 @@
 	include("intern/func_command.php");
 	
 	if (!isset($_GET["command"])) {
-		die("No Command given!");
+		echo "No Command given!";
+		echo "<br>";
+		echo "Display DEBUG Information!<br>";
+		$_GET["command"]="debug";
+		echo "index.php?command=debug";
+		echo "<br><br>";
 	}
 	
 	if ($_GET["command"]=="debug") {
@@ -18,9 +23,10 @@
 	
 	if ($_GET["command"]=="debug"){
 		$commands = array("noob", "lastsub");
+		
 		foreach ($commands as $command) {
-			echo "<hr>";
-			echo $command.":<br>";
+			echo "<hr> Command: ";
+			echo "<b>".$command."</b><br>";
 			execute_command($command);
 			echo "<br>";
 		}
