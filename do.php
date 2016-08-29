@@ -9,7 +9,7 @@
 		echo "<br>";
 		echo "Display DEBUG Information!<br>";
 		$_GET["command"]="debug";
-		echo "index.php?command=debug";
+		echo "do.php?command=debug";
 		echo "<br><br>";
 	}
 	
