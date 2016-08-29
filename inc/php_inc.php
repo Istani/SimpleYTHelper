@@ -14,6 +14,8 @@
 	$OAUTH2_CLIENT_ID = '';
 	$OAUTH2_CLIENT_SECRET = '';
 	$KANALID="UC5DOhI70dI3PnLPMkUsosgw";
+	$KANALID="UCoL8PZGa__nCk_OgZeenRtw";
+	
 	require_once 'google_api/src/Google/autoload.php';
 	
 	/* eigene scripte */

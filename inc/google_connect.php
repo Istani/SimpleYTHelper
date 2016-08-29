@@ -1,6 +1,7 @@
 <?php
 	/* google connect */
 	$client = new Google_Client();
+	
 	$client->setClientId($OAUTH2_CLIENT_ID);
 	$client->setClientSecret($OAUTH2_CLIENT_SECRET);
 	$client->setScopes('https://www.googleapis.com/auth/youtube');
