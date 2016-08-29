@@ -15,7 +15,7 @@
 	
 	if ($_GET["command"]=="debug") {
 		echo "<h1>Defender Tests</h1><br>";
-		echo "DEV-Key: ". $settings["google"]["devkey"]."<br>";
+		//echo "DEV-Key: ". $settings["google"]["devkey"]."<br>";
 		echo "Kanal-ID: ". $settings["youtube"]["channleid"]."<br>" ;
 		echo "<br>";
 	}
