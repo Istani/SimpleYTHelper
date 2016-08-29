@@ -5,7 +5,9 @@
 	
 	 $client = new Google_Client();
 	 //$client->setDeveloperKey( $settings["google"]["devkey"]);
-	 
+	 $youtube = new Google_Service_YouTube($client);
+	$listResponse = $youtube->channels->listChannels('statistics', array('id' => $settings["youtube"]["channleid"],));
+	print($listResponse);
 	 
 	 echo "#".$subcount." - ".$subname;
 ?>
