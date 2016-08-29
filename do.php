@@ -1,8 +1,7 @@
 <?php
 	// Benötigte Daten
-	include("extern/inc_extern.php");
-	include("intern/int_settings.php");
-	include("intern/func_command.php");
+	 require_once 'inc/php_inc.php';
+	include("functions/func_command.php");
 	
 	if (!isset($_GET["command"]) OR $_GET["command"]=="") {
 		echo "No Command given!";
@@ -16,7 +15,7 @@
 	if ($_GET["command"]=="debug") {
 		echo "<h1>Defender Tests</h1><br>";
 		//echo "DEV-Key: ". $settings["google"]["devkey"]."<br>";
-		echo "Kanal-ID: ". $settings["youtube"]["channleid"]."<br>" ;
+		echo "Kanal-ID: ".$KANALID."<br>" ;
 		echo "<br>";
 	}
 	// AREA: Includes zum Test
