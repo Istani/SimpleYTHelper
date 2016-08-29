@@ -4,7 +4,7 @@
 	include("intern/int_settings.php");
 	include("intern/func_command.php");
 	
-	if (!isset($_GET["command"])) {
+	if (!isset($_GET["command"]) OR $_GET["command"]=="") {
 		echo "No Command given!";
 		echo "<br>";
 		echo "Display DEBUG Information!<br>";
