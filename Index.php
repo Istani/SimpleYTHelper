@@ -22,7 +22,7 @@
 	// AREA: Includes zum Test
 	
 	if ($_GET["command"]=="debug"){
-		$commands = array("noob", "lastsub");
+		$commands = return_commands_array();
 		
 		foreach ($commands as $command) {
 			echo "<hr> Command: ";
