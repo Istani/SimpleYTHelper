@@ -13,8 +13,13 @@
 	$DEV_KEY="";
 	$OAUTH2_CLIENT_ID = '';
 	$OAUTH2_CLIENT_SECRET = '';
-	$KANALID="UC5DOhI70dI3PnLPMkUsosgw";
+	
+	// Istani
 	$KANALID="UCoL8PZGa__nCk_OgZeenRtw";
+	
+	// Defender833
+	//	$KANALID="UC5DOhI70dI3PnLPMkUsosgw";
+	
 	
 	require_once 'google_api/src/Google/autoload.php';
 	
