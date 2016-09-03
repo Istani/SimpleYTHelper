@@ -7,7 +7,7 @@
 		if (file_exists($filepath)){
 			include($filepath);
 		} else {
-			echo "No Command: ".$command;
+			echo "No Command: <b>".$command."</b>! " . execute_command("commands") ;
 		}
 		$result = ob_get_contents();
 ob_end_clean();

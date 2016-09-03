@@ -3,13 +3,9 @@
 	 require_once 'inc/php_inc.php';
 	include("functions/func_command.php");
 	
-	if (!isset($_GET["command"]) OR $_GET["command"]=="") {
+	if (!isset($_GET["command"]) OR $_GET["command"]=="" OR $_GET["command"]=="null") {
 		echo "No Command given!";
-		echo "<br>";
-		echo "Display DEBUG Information!<br>";
-		$_GET["command"]="debug";
-		echo "do.php?command=debug";
-		echo "<br><br>";
+		$_GET["command"]="commands";
 	}
 	
 	if ($_GET["command"]=="debug") {
