@@ -17,13 +17,13 @@
 	$listResponse = $youtube->channels->listChannels('statistics', array('id' => $KANALID));
 	$subcount=$listResponse[0]["modelData"]["statistics"]["subscriberCount"];
 	
-	
-	$subresult=$youtube->subscriptions->listSubscriptions("subscriberSnippet", array(/*'channelId' => $KANALID,/*/"mySubscribers" => "true" ));
+	/*
+	$subresult=$youtube->subscriptions->listSubscriptions("subscriberSnippet", array('channelId' => $KANALID,/"mySubscribers" => "true" ));
 	 
 	 echo "<pre>";
 	 echo var_dump($subresult);
 	 echo "</pre>";
-	 
+	 */
 	 
 	 echo "#".$subcount." - ".$subname;
 ?>
