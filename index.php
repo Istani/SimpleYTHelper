@@ -25,7 +25,7 @@
 						require_once 'site/nav_main.php';
 						require_once 'site/nav_helper.php';
 				?></td>
-				<td><?php include("do.php"); ?></td>
+				<td><?php include("site/GetSubs.php"); ?></td>
 			</tr>
 		</table>
 	</body>

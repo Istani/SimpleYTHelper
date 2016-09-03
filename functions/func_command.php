@@ -1,12 +1,18 @@
 <?php
 
 	function execute_command($command) {
+		$result="";
+		ob_start();
 		$filepath="commands/".$command.".php";
 		if (file_exists($filepath)){
 			include($filepath);
 		} else {
 			echo "No Command: ".$command;
 		}
+		$result = ob_get_contents();
+ob_end_clean();
+		$result = replace_html2markdown($result);
+		return $result;
 	}
 	
 	function return_commands_array() {
@@ -17,5 +23,14 @@
 			}
 		}
 		return $return;
+	}
+	
+	function replace_html2markdown($string) {
+		
+		$string = str_replace("<b>","**", $string);
+		$string = str_replace("</b>","**",$string);
+		
+		
+		return $string;
 	}
 ?>

