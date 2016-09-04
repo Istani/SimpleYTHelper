@@ -28,9 +28,7 @@
 	
 	$subresult=$youtube->subscriptions->listSubscriptions("subscriberSnippet", array(/*'channelId' => $KANALID,*/"mySubscribers" => "true" ));
 	 
-	 echo "<pre>";
-	 echo var_dump($subresult["items"]);
-	 echo "</pre>";
+	 $subname = $subresult["items"][0]["subscriberSnippet"]["title"];
 	 
 	 
 	 echo "#".$subcount." - ".$subname;
