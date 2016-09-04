@@ -9,21 +9,29 @@
 	$subname="Nobody";
 	
 	 $client = new Google_Client();
+	 $client->setClientId($OAUTH2_CLIENT_ID);
+	$client->setClientSecret($OAUTH2_CLIENT_SECRET);
 	 $client->setDeveloperKey($DEV_KEY);
 	 $client->setScopes('https: //www.googleapis.com/auth/youtube.readonly');
+	 
+	 $accessToken = load_accesstoken($KANALID);
+	 $client->setAccessToken($accessToken);
+	 if ($client->isAccessTokenExpired()) {
+	 	$client->refreshToken(load_refreshtoken($KANALID));
+	 	save_accesstoken($KANALID, $client->getAccessToken()); }
 	 $youtube = new Google_Service_YouTube($client);
 	
 	
 	$listResponse = $youtube->channels->listChannels('statistics', array('id' => $KANALID));
 	$subcount=$listResponse[0]["modelData"]["statistics"]["subscriberCount"];
 	
-	/*
-	$subresult=$youtube->subscriptions->listSubscriptions("subscriberSnippet", array('channelId' => $KANALID,/"mySubscribers" => "true" ));
+	
+	$subresult=$youtube->subscriptions->listSubscriptions("subscriberSnippet", array(/*'channelId' => $KANALID,*/"mySubscribers" => "true" ));
 	 
 	 echo "<pre>";
-	 echo var_dump($subresult);
+	 echo var_dump($subresult["items"]);
 	 echo "</pre>";
-	 */
+	 
 	 
 	 echo "#".$subcount." - ".$subname;
 ?>

@@ -11,6 +11,21 @@
 					echo sprintf('<p>An client error occurred: <code>%s</code></p>',htmlspecialchars($e->getMessage()));
 				}
 				$_SESSION['token'] = $client->getAccessToken();
+				
+				// tokens speichern
+			$listResponse = $youtube->channels->listChannels('id', array('mine' => 'true',));
+echo "<pre>";
+//echo var_dump($listResponse["items"][0]["id"]);
+foreach ($listResponse["items"] as $listItem) {
+	 save_accesstoken($listItem["id"],$_SESSION["token"]);
+}
+$temp= json_decode($_SESSION["token"]);
+if (isset($temp->refresh_token)) {
+	save_refreshtoken($listItem["id"],$temp->refresh_token);
+}
+
+echo "</pre>";
+				
 			} else {
 		 		$state = mt_rand();
 				$client->setState($state);
@@ -20,6 +35,7 @@
 				echo "<p>Authorization Required<br>";
 				echo "You need to <a href='".$authUrl."'>authorize access</a> before proceeding.</p>";
 			}
+			
 		?>
 	</div>
 </div>

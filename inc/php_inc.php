@@ -18,13 +18,14 @@
 	$KANALID="UCoL8PZGa__nCk_OgZeenRtw";
 	
 	// Defender833
-	//	$KANALID="UC5DOhI70dI3PnLPMkUsosgw";
+		$KANALID="UC5DOhI70dI3PnLPMkUsosgw";
 	
 	
 	require_once 'google_api/src/Google/autoload.php';
 	
 	/* eigene scripte */
 	require_once 'functions/db.php';
+	require_once 'functions/func_token.php';
 	//$database = new db("mysql", $mysql['host'], $mysql['user'], $mysql['pass']); 
 	//$database->connect_db($mysql['base']);
 
