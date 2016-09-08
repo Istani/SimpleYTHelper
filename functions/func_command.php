@@ -33,4 +33,10 @@ ob_end_clean();
 		
 		return $string;
 	}
+	
+	function debug_log($var) {
+		echo "<pre>";
+		echo var_dump($var);
+		echo "</pre>";
+	}
 ?>
