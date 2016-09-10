@@ -5,9 +5,9 @@
 	require 'inc/php_inc.php';
 	
 	$time=time();
-	$time_min=(int)$time/60;
-	$time_std=(int)$time_min/60;
-	$time_day=(int)$time_std/24;
+	$time_min=(int)($time/60);
+	$time_std=(int)($time_min/60);
+	$time_day=(int)($time_std/24);
 	
 	$output[0]=0;
 	$output[1]="";
