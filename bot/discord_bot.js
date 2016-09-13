@@ -194,7 +194,7 @@ bot.on("ready", function () {
     for (var i = 0; i < bot.channels.length; i++) {
         if (bot.channels[i].name.indexOf("development") >= 0) {
             console.log("Greetings *DEVELOPMENT* Channels");
-            bot.sendMessage(bot.channels[i], "Bot Successfully Connects!");
+            bot.sendMessage(bot.channels[i], "Bot Successfully Connected!");
         }
     }
     /*
