@@ -109,6 +109,7 @@ var commands = {
                 console.log("callback: " + arguments);
                 if (error) {
                     bot.sendMessage(msg.channel, "failed to join: " + error);
+                    bot.sendMessage(msg.author, "https://discordapp.com/oauth2/authorize?client_id=225365144497029125&scope=bot&permissions=0 for activate!");
                 } else {
                     console.log("Joined server " + server);
                     bot.sendMessage(msg.channel, "Successfully joined " + server);
@@ -229,7 +230,7 @@ function updateMessagebox() {
 var bot = new Discord.Client();
 
 bot.on("ready", function () {
-    //loadFeeds();
+//loadFeeds();
     console.log("Ready to begin! Serving in " + bot.channels.length + " channels");
     require("./plugins.js").init();
     for (var i = 0; i < bot.channels.length; i++) {
@@ -241,19 +242,17 @@ bot.on("ready", function () {
     /*
      * HIER KOMMEN DANN SACHEN HIN DIE BEIM STARTEN PASSIEREN SOLLEN! (Bot Start)
      */
+    bot.setStatus('online', "SimpleYTH");
 });
-
 bot.on("disconnected", function () {
     console.log("Disconnected!");
     process.exit(1);
-
 });
-
 bot.on("message", function (msg) {
     if (msg.author.id != bot.user.id && (msg.content[0] === '!' || msg.content.indexOf(bot.user.mention()) == 0)) {
         console.log("treating " + msg.content + " from " + msg.author + " as command");
         var cmdTxt = msg.content.split(" ")[0].substring(1);
-        var suffix = msg.content.substring(cmdTxt.length + 2);//add one for the ! and one for the space
+        var suffix = msg.content.substring(cmdTxt.length + 2); //add one for the ! and one for the space
         if (msg.content.indexOf(bot.user.mention()) == 0) {
             try {
                 cmdTxt = msg.content.split(" ")[1];
@@ -307,7 +306,6 @@ bot.on("message", function (msg) {
         }
     }
 });
-
 bot.on("presence", function (user, status, gameId) {
     console.log(user + " went " + status);
     try {
@@ -324,8 +322,6 @@ bot.on("presence", function (user, status, gameId) {
     } catch (e) {
     }
 });
-
-
 exports.addCommand = function (commandName, commandObject) {
     try {
         commands[commandName] = commandObject;
