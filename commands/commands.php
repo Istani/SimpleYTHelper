@@ -1,9 +1,9 @@
 <?php
 
-echo "!defender commands: 
+echo "!defender commands:
 ";
-	$commands=return_commands_array();
-	foreach($commands as $command) {
-		echo $command.", ";
-	}
+$commands = return_commands_array();
+foreach ($commands as $command) {
+    echo $command . ", ";
+}
 ?>
