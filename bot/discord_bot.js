@@ -233,16 +233,20 @@ bot.on("ready", function () {
 //loadFeeds();
     console.log("Ready to begin! Serving in " + bot.channels.length + " channels");
     require("./plugins.js").init();
+
+    console.log("Greeting the Development Channels!");
     for (var i = 0; i < bot.channels.length; i++) {
         if (bot.channels[i].name.indexOf("development") >= 0) {
-            console.log("Greetings *DEVELOPMENT* Channels");
-            bot.sendMessage(bot.channels[i], "Bot Successfully Connected!");
+            //bot.sendMessage(bot.channels[i], "Bot Successfully Connected!");
         }
     }
+    bot.setStatus('online', "SimpleYTH");
     /*
      * HIER KOMMEN DANN SACHEN HIN DIE BEIM STARTEN PASSIEREN SOLLEN! (Bot Start)
      */
-    bot.setStatus('online', "SimpleYTH");
+    // Befhel die automatisch gestartet werden sollen
+    // Achtung die Commands dürfen nicht auf msg oder suffix reagieren...
+    commands["deftime"].process(bot, null, null);
 });
 bot.on("disconnected", function () {
     console.log("Disconnected!");
