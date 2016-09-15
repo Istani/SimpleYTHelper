@@ -30,5 +30,5 @@ require_once 'functions/func_token.php';
 //$database = new db("mysql", $mysql['host'], $mysql['user'], $mysql['pass']);
 //$database->connect_db($mysql['base']);
 // load private settings
-include("../private_settings.php");
+include("private_settings.php");
 ?>

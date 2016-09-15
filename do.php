@@ -5,7 +5,8 @@ require_once 'inc/php_inc.php';
 include("functions/func_command.php");
 
 if (!isset($_GET["command"]) OR $_GET["command"] == "" OR $_GET["command"] == "null") {
-    echo "No Command given!";
+    echo "No Command given!
+    ";
     $_GET["command"] = "commands";
 }
 
