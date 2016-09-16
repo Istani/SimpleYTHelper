@@ -9,7 +9,7 @@ discord_bot.login(private_settings.discord_token);
 var command_prefix = "!";
 
 // Import Commands?
-var cmd=require("./command_scripts/reload_commands.js");
+var cmd=require("./command_scripts/commands.js");
 cmd.reload_commands();
 
 discord_bot.on('ready', function () {
@@ -18,9 +18,6 @@ discord_bot.on('ready', function () {
 });
 
 discord_bot.on("message", function (msg) {
-  // Log Messages!
-  console.log("Msg: " + msg.guild.name + " - " + msg.author.username + " : " + msg.content);
-
   // Starting Commands!
   var message=msg.content;
   if (message.startsWith(command_prefix)) {

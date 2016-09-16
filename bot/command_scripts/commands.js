@@ -2,8 +2,8 @@ var self = module.exports = {
   execute: function (msg) {
     self.reload_commands();
     var returnmsg="";
-    returnmsg+="\`\`\`";
-    returnmsg+="Reloaded Commands:\r\n";
+    returnmsg+="**Commands:**\r\n";
+    returnmsg+="\`\`\`\r\n";
     for (cmd in commands) {
       returnmsg+=cmd.toString()+"\r\n";
     }
@@ -25,6 +25,7 @@ var self = module.exports = {
   use_commands: function(command, msg) {
     if ((command in commands)) {
       if (typeof commands[command].execute == 'function') {
+        console.log(msg.author.username + ": " + msg.content);
         commands[command].execute(msg);
       }
     }
