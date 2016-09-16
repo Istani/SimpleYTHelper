@@ -8,7 +8,7 @@ $client->setClientSecret($OAUTH2_CLIENT_SECRET);
 $client->setScopes('https://www.googleapis.com/auth/youtube');
 $redirect = filter_var('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'], FILTER_SANITIZE_URL);
 
-$redirect = filter_var('http://defender833.tk' . $_SERVER["PHP_SELF"], FILTER_SANITIZE_URL);
+$redirect = filter_var('http://defender833.adultdns.net/' . $_SERVER["PHP_SELF"], FILTER_SANITIZE_URL);
 $client->setRedirectUri($redirect);
 
 $client->setAccessType('offline');
