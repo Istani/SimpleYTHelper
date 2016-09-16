@@ -9,10 +9,8 @@ discord_bot.login(private_settings.discord_token);
 var command_prefix = "!";
 
 // Import Commands?
-var commands = {};
-commands["ping"] = require("./command_scripts/ping.js").ping;
-commands["defender"] = require("./command_scripts/SimpleYTH.js").SimpleYTH;
-
+var cmd=require("./command_scripts/reload_commands.js");
+cmd.reload_commands();
 
 discord_bot.on('ready', function () {
   console.log("Up and running!");
@@ -28,10 +26,6 @@ discord_bot.on("message", function (msg) {
   if (message.startsWith(command_prefix)) {
     message=message.replace("!","");
     message=message.split(" ")[0];
-    if ((message in commands)) {
-      if (typeof commands[message] == 'function') {
-        commands[message](msg);
-      }
-    }
+    cmd.use_commands(message,msg);
   }
 });

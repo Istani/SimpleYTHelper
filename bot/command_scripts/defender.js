@@ -1,8 +1,8 @@
 var fetch = require('node-fetch');
-var url = "https://zod-cod.safe-ws.de/do.php?command=";
+var url = "http://defender833.adultdns.net/do.php?command=";
 
 var self = module.exports = {
-  SimpleYTH: function (msg) {
+  execute: function (msg) {
     var parameter = msg.content.split(" ")[1];
     if (typeof parameter == 'undefined') {
       parameter=null;
