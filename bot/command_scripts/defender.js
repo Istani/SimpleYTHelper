@@ -1,5 +1,5 @@
 var fetch = require('node-fetch');
-var url = "http://defender833.adultdns.net/do.php?command=";
+var url = "http://defender833.adultdns.net/SimpleYTH/do.php?command=";
 
 var self = module.exports = {
   execute: function (msg) {
