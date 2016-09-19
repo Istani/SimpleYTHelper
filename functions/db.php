@@ -178,14 +178,8 @@ class db {
             }
         }
         if ($this->system == "sqlite") {
-            $sql_string = "INSERT OR IGNORE INTO " . $tabelle . " SET " . $sql_felder . ";";
-            $sql_string = $sql_string . "UPDATE " . $tablle . " SET " . $sql_felder . " WHERE " . $sql_felder . "";
-            if ($query = sqlite_query($this->database, $sql_string)) {
-                $return = true;
-            } else {
-                $this->error("<b>Abfrage:</b> <i>" . $sql_string . "</i><br>Konnte nicht ausgefuehrt werden!<br>");
+        	$this->error("<b>Abfrage:</b> <i>" . $sql_string . "</i><br>Konnte nicht ausgefuehrt werden!<br>SQLite wird noch nicht unterstützt!<br>");
             }
-        }
         return $return;
     }
 
