@@ -22,7 +22,7 @@ var self = module.exports = {
       returnmsg+="\r\n";
       returnmsg+="\`\`\`\r\n";
       msg.channel.sendMessage(returnmsg).catch(console.error);
-
+      
     } else {
       msg.channel.sendMessage("No Permissions! Ask <@"+IstaniUserID+">").catch(console.error);
     }
@@ -34,6 +34,6 @@ function clean(text) {
     return text.replace(/`/g, "`" + String.fromCharCode(8203)).replace(/@/g, "@" + String.fromCharCode(8203));
   }
   else {
-      return text;
+    return text;
   }
 }
