@@ -187,6 +187,7 @@ class db {
             	if ($query->numColumns()>0) {
                     while ($row = $query->fetchArray()) {
                     $return_array[0][$row['name']] = "";
+                    
                     }
                     }
                 }
@@ -214,6 +215,9 @@ class db {
 
     function sql_insert_update($tabelle, $felder_werte_array) {
         $sql_felder = "";
+        $felder_list="";
+        $value_list="";
+        
         $return = false;
         if (!is_array($felder_werte_array)) {
             $this->error("<b>Programmfehler:</b><i>ID:10-T Fehler</i><br>Falsche Werte für INSERT Befehl!<br><pre>" . var_dump($felder_werte_array) . "</pre>");
@@ -226,8 +230,12 @@ class db {
             $value = utf8_encode($value);
             if ($sql_felder == "") {
                 $sql_felder = $key . "='" . $value . "'";
+                $felder_list=$key;
+                $value_list="'".$value."'";
             } else {
                 $sql_felder.=", " . $key . "='" . $value . "'";
+                $felder_list.=", ".$key;
+                $value_list.=", '".$value."'";
             }
         }
         if ($this->system == "mysql") {
@@ -239,8 +247,35 @@ class db {
             }
         }
         if ($this->system == "sqlite") {
-        	$sql_string="not ready";
-        	$this->error("<b>Abfrage:</b> <i>" . $sql_string . "</i><br>Konnte nicht ausgefuehrt werden!<br>SQLite wird noch nicht unterstützt!<br>");
+        	
+        	//get primary key
+        	$pk="";
+        	$sql_string = "PRAGMA table_info('".$tabelle."')";
+        	$query=$this->database->query($sql_string);
+        	while ($row=$query->fetchArray()) {
+        		if ($row["pk"]=="1"){
+        			$pk=$row["name"];
+        		}
+        	}
+        	if ($pk==""){$this->error("no pk");}
+        	
+        	// pk check
+        	if (!isset($felder_werte_array[$pk])) {$this->error("pk not in array");}
+        	
+        	// check exists
+        	$pkcheck=$this->sql_select($tabelle, $pk, $pk."='".$felder_werte_array[$pk]."' LIMIT 1",true);
+        	
+        	if ($pkcheck[0][$pk]==""){
+        		//insert
+        		$sql_string="INSERT INTO ".$tabelle." (".$felder_list.") VALUES (".$value_list.")";
+        	} else {
+        		//update
+        		$sql_string="UPDATE ".$tabelle." SET ".$sql_felder." WHERE ".$pk."='".$felder_werte_array[$pk]."'";
+        	}
+        	
+        	 if (!$return=$this->database->exec($sql_string)) {
+        	 $this->error("<b>Abfrage:</b> <i>" . $sql_string . "</i><br>Konnte nicht ausgefuehrt werden!<br>SQLite wird noch nicht unterstützt!<br>");
+        	 }
             }
         return $return;
     }

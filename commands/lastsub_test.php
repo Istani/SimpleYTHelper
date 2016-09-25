@@ -22,17 +22,18 @@ if ($client->isAccessTokenExpired()) {
 }
 $youtube = new Google_Service_YouTube($client);
 
+$_tmp_tabellename="channels_statistics";
 $database=new db("sqlite","");
 $database->connect_db("data/".$KANALID.".sqlite3");
 
 $check_table=$database->show_tables();
 
-if(!in_array("channel_statistic", $check_table)) {
+if(!in_array($_tmp_tabellename, $check_table)) {
 $felder=null;
 $felder["id"]="TEXT";
 $felder["last_seen"]="TEXT";
 
-$database->create_table("channel_statistic", $felder, "id");
+$database->create_table($_tmp_tabellename, $felder, "id");
 unset($felder);
 }
 
@@ -40,7 +41,7 @@ unset($felder);
 //$database->add_columns("channel_statistic", $new_feld);
 //unset($new_feld);
 
-$cstats = $database->sql_select("channel_statistic", "*", "id='".$KANALID."' LIMIT 1", true);
+$cstats = $database->sql_select($_tmp_tabellename, "*", "id='".$KANALID."' LIMIT 1", true);
 
 $listResponse = $youtube->channels->listChannels('statistics', array('id' => $KANALID));
 $subcount = $listResponse[0]["modelData"]["statistics"]["subscriberCount"];
@@ -48,15 +49,13 @@ $subcount = $listResponse[0]["modelData"]["statistics"]["subscriberCount"];
 $data4sql= $listResponse[0]["modelData"]["statistics"];
 foreach ($data4sql as $key=>$value){
 	$new_feld[$key]="TEXT";
-	 $database->add_columns("channel_statistic", $new_feld);
+	 $database->add_columns($_tmp_tabellename, $new_feld);
 	 unset($new_feld);
 	 $newData[$key]=$value;
 }
-
 $newData["id"]=$KANALID;
 $newData["last_seen"]=time();
-//$database->sql_insert_update("channle_statistics", $newData);
-debug_log ($newData);
+$database->sql_insert_update($_tmp_tabellename, $newData);
 unset($newData);
 
 if (!file_exists("token/" . $KANALID . ".BotSubscriber.refresh")) {
