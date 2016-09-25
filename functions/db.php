@@ -30,7 +30,7 @@ class db {
                 $this->error("Keine Verbindung zur Datenbank moeglich!");
             }
         } elseif ($this->system == "sqlite") {
-            if (!$this->database = sqlite_open($database_name)) {
+            if (!$this->database = new SQLite3($database_name)) {
                 $this->error("Keine Verbindung zur Datenbank-File!");
             }
         }
@@ -51,8 +51,8 @@ class db {
             }
         } else if ($this->system == "sqlite") {
             $sql_string = "SELECT * FROM sqlite_master";
-            if ($query = sqlite_query($this->database, $sql_string)) {
-                while ($row = sqlite_fetch_array($result)) {
+            if ($query = $this->database->query($sql_string)) {
+                while ($row =$query->fetchArray()) {
                     if ($row['type'] != "table") {
                         $return_array[] = $row['name'];
                     }
@@ -109,7 +109,7 @@ class db {
             } else {
                 $sql_string = "SELECT " . $sql_felder . " FROM " . $tabelle;
             }
-            if ($query = sqlite_query($this->database, $sql_string)) {
+            if ($query =$this->database->query($sql_string)) {
                 if (mysql_num_rows($query) > 0) {
                     while ($row = sqlite_fetch_array($query)) {
                         $return_array[] = $row;

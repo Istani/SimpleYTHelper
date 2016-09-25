@@ -25,11 +25,19 @@ $youtube = new Google_Service_YouTube($client);
 $database=new db("sqlite","");
 $database->connect_db("data/".$KANALID.".sqlite3");
 
-$cstats = $database->sql_select("channel_statistic", "*", "true=true LIMIT 1", true);
-var_dump($cstats);
+$check_table=$database->show_tables();
+
+var_dump($check_table);
+
+//$cstats = $database->sql_select("channel_statistic", "*", "true=true LIMIT 1", true);
+//var_dump($cstats);
 
 $listResponse = $youtube->channels->listChannels('statistics', array('id' => $KANALID));
 $subcount = $listResponse[0]["modelData"]["statistics"]["subscriberCount"];
+
+echo "<pre>";
+var_dump($listResponse[0]["id"]);
+echo "</pre>";
 
 if (!file_exists("token/" . $KANALID . ".BotSubscriber.refresh")) {
     save_refreshtoken($KANALID . ".BotSubscriber", "null");
