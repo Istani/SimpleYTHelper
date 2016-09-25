@@ -226,7 +226,6 @@ class db {
             if (get_magic_quotes_gpc()) {
                 $value = stripslashes($value);
             }
-            $value = mysql_real_escape_string($value);
             $value = utf8_encode($value);
             if ($sql_felder == "") {
                 $sql_felder = $key . "='" . $value . "'";
