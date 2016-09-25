@@ -27,17 +27,37 @@ $database->connect_db("data/".$KANALID.".sqlite3");
 
 $check_table=$database->show_tables();
 
-var_dump($check_table);
+if(!in_array("channel_statistic", $check_table)) {
+$felder=null;
+$felder["id"]="TEXT";
+$felder["last_seen"]="TEXT";
 
-//$cstats = $database->sql_select("channel_statistic", "*", "true=true LIMIT 1", true);
-//var_dump($cstats);
+$database->create_table("channel_statistic", $felder, "id");
+unset($felder);
+}
+
+//$new_feld["ignore"]="TEXT";
+//$database->add_columns("channel_statistic", $new_feld);
+//unset($new_feld);
+
+$cstats = $database->sql_select("channel_statistic", "*", "id='".$KANALID."' LIMIT 1", true);
 
 $listResponse = $youtube->channels->listChannels('statistics', array('id' => $KANALID));
 $subcount = $listResponse[0]["modelData"]["statistics"]["subscriberCount"];
 
-echo "<pre>";
-var_dump($listResponse[0]["id"]);
-echo "</pre>";
+$data4sql= $listResponse[0]["modelData"]["statistics"];
+foreach ($data4sql as $key=>$value){
+	$new_feld[$key]="TEXT";
+	 $database->add_columns("channel_statistic", $new_feld);
+	 unset($new_feld);
+	 $newData[$key]=$value;
+}
+
+$newData["id"]=$KANALID;
+$newData["last_seen"]=time();
+//$database->sql_insert_update("channle_statistics", $newData);
+debug_log ($newData);
+unset($newData);
 
 if (!file_exists("token/" . $KANALID . ".BotSubscriber.refresh")) {
     save_refreshtoken($KANALID . ".BotSubscriber", "null");

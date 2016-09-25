@@ -53,13 +53,75 @@ class db {
             $sql_string = "SELECT * FROM sqlite_master";
             if ($query = $this->database->query($sql_string)) {
                 while ($row =$query->fetchArray()) {
-                    if ($row['type'] != "table") {
+                    if ($row['type'] == "table") {
                         $return_array[] = $row['name'];
                     }
                 }
             }
         }
         return $return_array;
+    }
+    
+    function create_table($table, $felder, $pkfeld) {
+    	$return_status=false;
+    	$sql_felder = "";
+    	
+    	if (!is_array($felder)){
+    		 $this->error("<b>Format:</b> <i></i><br>Benötigt Array als Input!<br>");
+    		 return $return_status;
+    	}
+    	 if ($pkfeld==""){
+    		 $this->error("<b>Format:</b> <i></i><br>Benötigt Feldnamen als Key!<br>");
+    		 return $return_status;
+    	}
+    	
+    	foreach ($felder as $key => $value) {
+    		if ($sql_felder == "") {
+    			$sql_felder = $key." ".$value;
+    			
+    			} else {
+    				$sql_felder.=', ' . $key." ".$value;
+    				
+    				}
+    				if ($key==$pkfeld){
+    					$sql_felder.=" PRIMARY KEY";
+    				}
+    				
+    }
+    
+    $sql_string=" CREATE TABLE ".$table." (".$sql_felder.")";
+    
+    if ($this->system=="sqlite"){
+    		$return_status=$this->database->exec($sql_string);
+    }
+    
+    	
+    	return $return_status;
+    }
+    
+    function add_columns($tabelle, $felder){
+    	$return_status=true;
+    	
+    	 if (!is_array($felder)){
+    		 $this->error("<b>Format:</b> <i></i><br>Benötigt Array als Input!<br>");
+    		 return false;
+    	}
+    	
+    	$isFelder=$this->sql_select($tabelle, "*", "", true);
+    
+    	foreach ($felder as $key=>$value){
+    		if (!isset($isFelder[0][trim($key)])){
+    			if ($this->system=="sqlite") {
+    				$sql_string="ALTER TABLE ".$tabelle." ADD COLUMN ".$key." ".$value.";";
+    				$return_status=$this->database->exec($sql_string);
+    				$isFelder[0][$key]=$value;
+    				if (!$return_status){
+    					 $this->error("<b>Abfrage:</b> <i>" . $sql_string . "</i><br>Konnte nicht ausgeführt werden!<br>" . mysql_error());
+    				}
+    			}
+    		}
+    	}
+    	return $return_status;
     }
 
     function sql_select($tabelle, $felder = "*", $where_string = "", $show_empty = false) {
@@ -110,25 +172,24 @@ class db {
                 $sql_string = "SELECT " . $sql_felder . " FROM " . $tabelle;
             }
             if ($query =$this->database->query($sql_string)) {
-                if (mysql_num_rows($query) > 0) {
-                    while ($row = sqlite_fetch_array($query)) {
+            	
+            	if ($query->numColumns()>0) {
+                    while ($row = $query->fetchArray()) {
+                    
                         $return_array[] = $row;
                     }
-                } else {
-                    if ($show_empty) {
-                        // Pseudo SQL String
-                        $sql_string = "sqlite_fetch_column_types";
-                        if ($query = sqlite_fetch_column_types($tabelle, $this->database, SQLITE_ASSOC)) {
-                            foreach ($cols as $column => $type) {
-                                $return_array[0][$column] = "";
-                            }
-                        } else {
-                            $this->error("<b>Abfrage:</b> <i>" . $sql_string . "</i><br>Konnte nicht ausgefuehrt werden!<br>");
-                        }
+                }
+                }
+                    if ((count($return_array)==0) && ($show_empty)) {
+                        $sql_string = "PRAGMA table_info('".$tabelle."')";
+                        //
+                        if ($query =$this->database->query($sql_string)) {
+            	if ($query->numColumns()>0) {
+                    while ($row = $query->fetchArray()) {
+                    $return_array[0][$row['name']] = "";
+                    }
                     }
                 }
-            } else {
-                $this->error("<b>Abfrage:</b> <i>" . $sql_string . "</i><br>Konnte nicht ausgefuehrt werden!<br>");
             }
         }
         return $return_array;
@@ -178,6 +239,7 @@ class db {
             }
         }
         if ($this->system == "sqlite") {
+        	$sql_string="not ready";
         	$this->error("<b>Abfrage:</b> <i>" . $sql_string . "</i><br>Konnte nicht ausgefuehrt werden!<br>SQLite wird noch nicht unterstützt!<br>");
             }
         return $return;
