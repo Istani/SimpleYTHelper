@@ -16,17 +16,17 @@ $client->setAccessType('offline');
 $youtube = new Google_Service_YouTube($client);
 
 if (isset($_GET['code'])) {
-    if (strval($_SESSION['state']) !== strval($_GET['state'])) {
-        die('The session state did not match.');
-    }
-    $temp = $client->authenticate($_GET['code']);
-
-    //save_accesstoken($temp);
-    $_SESSION['token'] = $client->getAccessToken();
-
-    header('Location: ' . $redirect);
+  if (strval($_SESSION['state']) !== strval($_GET['state'])) {
+    die('The session state did not match.');
+  }
+  $temp = $client->authenticate($_GET['code']);
+  
+  //save_accesstoken($temp);
+  $_SESSION['token'] = $client->getAccessToken();
+  
+  header('Location: ' . $redirect);
 }
 if (isset($_SESSION['token'])) {
-    $client->setAccessToken($_SESSION['token']);
+  $client->setAccessToken($_SESSION['token']);
 }
 ?>

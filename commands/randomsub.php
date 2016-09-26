@@ -5,8 +5,8 @@
 require 'inc/php_inc.php';
 
 if (!file_exists("data/" . $KANALID . ".subs")) {
-    $tmp = fopen("data/" . $KANALID . ".subs", "w+");
-    fclose($tmp);
+  $tmp = fopen("data/" . $KANALID . ".subs", "w+");
+  fclose($tmp);
 }
 $file = "data/" . $KANALID . ".subs";
 $myfile = fopen($file, "r+") or die("Unable to load SubData!");
