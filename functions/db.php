@@ -175,8 +175,15 @@ class db {
             	
             	if ($query->numColumns()>0) {
                     while ($row = $query->fetchArray()) {
-                    
-                        $return_array[] = $row;
+                    $tmp_array[]=$row;
+                       }
+                       for ($i=0;$i<count($tmp_array);$i++) {
+                       foreach ($tmp_array[$i] as $tkey=>$tvalue) {
+                       	if ($tkey!==(int)$tkey) {
+                       		if ($tvalue==null) {$tvalue="null";}
+                       		 $return_array[$i][$tkey] = $tvalue;
+                       	}
+                       }
                     }
                 }
                 }
