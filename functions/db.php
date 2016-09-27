@@ -234,6 +234,7 @@ class db {
             if (get_magic_quotes_gpc()) {
                 $value = stripslashes($value);
             }
+            $value = str_replace("'", "", $value);
             $value = utf8_encode($value);
             if ($sql_felder == "") {
                 $sql_felder = $key . "='" . $value . "'";

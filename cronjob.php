@@ -39,10 +39,8 @@ if(!in_array($_tmp_tabellename, $check_table)) {
 }
 $tmp_tokens=$database->sql_select($_tmp_tabellename,"*","",true);
 foreach ($tmp_tokens as $tmp_key => $tmp_value)  {
-	foreach($tmp_value as $t2key => $t2vakue) {
-		if ($t2key!=(int)$t2key) {
-			 $token[$tmp_value["id"]][$t2key] = $t2value;
-		}
+	foreach($tmp_value as $t2key => $t2value) {
+ $token[$tmp_value["id"]][$t2key] = $t2value;
 	}
 }
 function init_token($name) {
@@ -65,7 +63,7 @@ if ($tt["last_used"]+$tt["interval"]<time()) {
 if ($tt["token"] == "null") { 
 $listResponse = $youtube->channels->listChannels('statistics', array('id' => $KANALID));
 } else {
-	 $listResponse = $youtube->channels->listChannels('statistics', array('id' => $KANALID, "pageToken" => $refToken ));
+	 $listResponse = $youtube->channels->listChannels('statistics', array('id' => $KANALID, "pageToken" => $tt["token"] ));
 }
 $data4sql= $listResponse[0]["modelData"]["statistics"];
 $tt["token"]=$listResponse["nextPageToken"];
@@ -109,15 +107,12 @@ if (!isset($token[$_tmp_tabellename])) {
 $tt=$token[$_tmp_tabellename];
 if ($tt["last_used"]+$tt["interval"]<time()) {
 	
-	echo "<pre>";
-	echo var_dump($tt);
-	echo "</pre>";
 // Youtube
 $req_count=50;
 if ($tt["token"] == "null") { 
 $listResponse = $youtube->subscriptions->listSubscriptions("subscriberSnippet", array(/* 'channelId' => $KANALID, */"mySubscribers" => "true", "maxResults" => $req_count, "order" => "relevance"));
 } else {
-	 $listResponse = $youtube->subscriptions->listSubscriptions("subscriberSnippet", array(/* 'channelId' => $KANALID, */"mySubscribers" => "true", "maxResults" => $req_count, "order" => "relevance", "pageToken" => $refToken));
+	 $listResponse = $youtube->subscriptions->listSubscriptions("subscriberSnippet", array(/* 'channelId' => $KANALID, */"mySubscribers" => "true", "maxResults" => $req_count, "order" => "relevance", "pageToken" => $tt["token"]));
 	 }
 $data4sql= $listResponse["items"];
 $tt["token"]=$listResponse["nextPageToken"];
@@ -145,18 +140,16 @@ foreach ($data4sql[$i]["subscriberSnippet"] as $key=>$value){
 	unset($new_feld);
 	$newData[$key]=$value;
 }
-}
 $newData["last_seen"]=time();
 $database->sql_insert_update($_tmp_tabellename, $newData);
 unset($newData);
+}
 echo $_tmp_tabellename." updated!<br>";
 $tt["last_used"]=time();
 }
 // Save Token
 if($tt["token"]==""){$tt["token"]="null";}
 $database->sql_insert_update("bot_token",$tt);
-echo "<pre>";
-echo var_dump($tt);
-echo "</pre>";
+
 
 ?>
