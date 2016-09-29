@@ -10,11 +10,18 @@ $database->connect_db("data/".$KANALID.".sqlite3");
 $subcount = 0;
 $subname = "Nobody";
 
-$db_stats = $database->sql_select("channels_statistics", "*", "id='".$KANALID."'", true);
-$subcount=$db_stats[0]["subscriberCount"];
+$check_table=$database->show_tables();
 
-$db_subs = $database->sql_select("subscriptions_subscriberSnippet", "*", "ignore=0 ORDER BY first_seen DESC LIMIT 1",true);
-$subname=$db_subs[0]["title"];
+$_tmp_tabellename="channels_statistics";
+if(in_array($_tmp_tabellename, $check_table)) {
+  $db_stats = $database->sql_select($_tmp_tabellename, "*", "id='".$KANALID."'", true);
+  $subcount=$db_stats[0]["subscriberCount"];
+}
 
+$_tmp_tabellename="subscriptions_subscriberSnippet";
+if(in_array($_tmp_tabellename, $check_table)) {
+  $db_subs = $database->sql_select($_tmp_tabellename, "*", "ignore=0 ORDER BY first_seen DESC LIMIT 1",true);
+  $subname=$db_subs[0]["title"];
+}
 echo "#" . $subcount . " - " . $subname;
 ?>

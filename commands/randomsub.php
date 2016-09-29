@@ -1,19 +1,20 @@
 <?php
 
 // Getting Random SUB Name
-// incs
 require 'inc/php_inc.php';
 
-if (!file_exists("data/" . $KANALID . ".subs")) {
-  $tmp = fopen("data/" . $KANALID . ".subs", "w+");
-  fclose($tmp);
-}
-$file = "data/" . $KANALID . ".subs";
-$myfile = fopen($file, "r+") or die("Unable to load SubData!");
-$file_subs = fread($myfile, filesize($file));
-fclose($myfile);
-$arr_subs = explode("|#*#|", $file_subs);
+$database=new db("sqlite","");
+$database->connect_db("data/".$KANALID.".sqlite3");
 
-shuffle($arr_subs);
-echo $arr_subs[0];
+// default
+$subname = "Nobody";
+
+$check_table=$database->show_tables();
+
+$_tmp_tabellename="subscriptions_subscriberSnippet";
+if(in_array($_tmp_tabellename, $check_table)) {
+  $db_subs = $database->sql_select($_tmp_tabellename, "*", "ignore=0 ORDER BY RANDOM() LIMIT 1",true);
+  $subname=$db_subs[0]["title"];
+}
+echo $subname;
 ?>

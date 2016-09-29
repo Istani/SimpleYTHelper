@@ -1,63 +1,63 @@
 <?php
 
-// Getting Random SUB Name
-// incs
+// Getting 5 (a day) Random SUB Name
 require 'inc/php_inc.php';
+
+
+$database=new db("sqlite","");
+$database->connect_db("data/".$KANALID.".sqlite3");
 
 $time = time();
 $time_min = (int) ($time / 60);
 $time_std = (int) ($time_min / 60);
 $time_day = (int) ($time_std / 24);
 
-$output[0] = 0;
-$output[1] = "";
-$output[2] = "";
-$output[3] = "";
-$output[4] = "";
-$output[5] = "";
+// default
+$output[0] = $time_day;
+$output[1] = "Nobody";
+$output[2] = "Nobody";
+$output[3] = "Nobody";
+$output[4] = "Nobody";
+$output[5] = "Nobody";
 
-$FiveSubs = "data/" . $KANALID . ".5subs";
+$check_table=$database->show_tables();
 
-if (!file_exists($FiveSubs)) {
-  $tmp = fopen($FiveSubs, "w+");
-  $text_sub = implode("|#*#|", $output);
-  fwrite($tmp, $text_sub);
-  fclose($tmp);
-}
-
-$tmp = fopen($FiveSubs, "r+") or die("Unable to load SubData!");
-$file_subs = fread($tmp, filesize($FiveSubs));
-fclose($tmp);
-$fsinput = explode("|#*#|", $file_subs);
-
-if ($fsinput[0] < $time_day) {
-  
-  if (!file_exists("data/" . $KANALID . ".subs")) {
-    $tmp = fopen("data/" . $KANALID . ".subs", "w+");
-    fclose($tmp);
+$_tmp_tabellename="subscriptions_subscriberSnippet";
+if(in_array($_tmp_tabellename, $check_table)) {
+  // Neu Benötigtes Feld hinzufügen
+  $new_feld["BOT_five_subs"]="TEXT";
+  $database->add_columns($_tmp_tabellename, $new_feld);
+  unset($new_feld);
+  // Feld für Datensätze updaten
+  $empty_data=$database->sql_select($_tmp_tabellename, "channelId","not BOT_five_subs = '".$output[0]."'", false);
+  foreach ($empty_data as $k=>$v){
+    $newData=$v;
+    $newData["BOT_five_subs"]="";
+    $database->sql_insert_update($_tmp_tabellename, $newData);
   }
-  $file = "data/" . $KANALID . ".subs";
-  $myfile = fopen($file, "r+") or die("Unable to load SubData!");
-  $file_subs = fread($myfile, filesize($file));
-  fclose($myfile);
-  $arr_subs = explode("|#*#|", $file_subs);
+  unset($newData);
   
-  shuffle($arr_subs);
-  $output[0] = $time_day;
-  $output[1] = $arr_subs[0];
-  $output[2] = $arr_subs[1];
-  $output[3] = $arr_subs[2];
-  $output[4] = $arr_subs[3];
-  $output[5] = $arr_subs[4];
+  // Abfrage
+  $db_subs = $database->sql_select($_tmp_tabellename, "*", "ignore=0 AND BOT_five_subs='".$output[0]."' ORDER BY RANDOM() LIMIT 5",true);
+  if (count($db_subs)<3) {
+    $db_subs = $database->sql_select($_tmp_tabellename, "*", "ignore=0 ORDER BY RANDOM() LIMIT 5",true);
+  }
+  for ($i=0;$i<5;$i++) {
+    $newData=$db_subs[$i];
+    $newData["BOT_five_subs"]=$output[0];
+    $database->sql_insert_update($_tmp_tabellename, $newData);
+  }
+  unset($newData);
   
-  $tmp = fopen($FiveSubs, "w+");
-  $text_sub = implode("|#*#|", $output);
-  fwrite($tmp, $text_sub);
-  fclose($tmp);
-  $fsinput = $output;
+  $db_subs = $database->sql_select($_tmp_tabellename, "*", "ignore=0 AND BOT_five_subs='".$output[0]."' ORDER BY title LIMIT 5",true);
+  $output[1]=$db_subs[0]["title"];
+  $output[2]=$db_subs[1]["title"];
+  $output[3]=$db_subs[2]["title"];
+  $output[4]=$db_subs[3]["title"];
+  $output[5]=$db_subs[4]["title"];
 }
 
 for ($i = 1; $i <= 5; $i++) {
-  echo $fsinput[$i] . ", ";
+  echo $output[$i] . ", ";
 }
 ?>
