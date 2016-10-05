@@ -15,9 +15,7 @@ if ($tt["last_used"]+$tt["interval"]<time()) {
 		} else {
 			$listResponse = $youtube->subscriptions->listSubscriptions("subscriberSnippet", array(/* 'channelId' => $KANALID, */"mySubscribers" => "true", "maxResults" => $req_count, "order" => "relevance", "pageToken" => $tt["token"]));
 			}
-			$data4sql= $listResponse["items"];
-			$tt["token"]=$listResponse["nextPageToken"];
-			
+			$data4sql= $listResponse["items"];	$tt["token"]=$listResponse["nextPageToken"];
 			// SQL
 			$check_table=$database->show_tables();
 			if(!in_array($_tmp_tabellename, $check_table)) {
@@ -33,7 +31,16 @@ if ($tt["last_used"]+$tt["interval"]<time()) {
 			unset($new_feld);
 			$database->sql_select($_tmp_tabellename, "*", "channelId='".$KANALID."' LIMIT 1", true);
 			for($i=0;$i<count($data4sql);$i++) {
-				foreach ($data4sql[$i]["subscriberSnippet"] as $key=>$value){
+				$row4sql= $data4sql[$i]["subscriberSnippet"];
+				
+				 $json=json_encode((array)$row4sql);
+				 $row4sql = json_decode($json, true);
+				$row4sql["thumb"]=$row4sql["*modelData"]["thumbnails"]["default"]["url"];
+				 echo "<pre>";
+		echo	var_dump($row4sql);
+		echo "</pre>";
+				die();
+				foreach ($row4sql as $key=>$value){
 					$new_feld[$key]="TEXT";
 					$database->add_columns($_tmp_tabellename, $new_feld);
 					unset($new_feld);

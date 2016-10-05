@@ -10,6 +10,10 @@ if (!isset($_GET["command"]) OR $_GET["command"] == "" OR $_GET["command"] == "n
   $_GET["command"] = "commands";
 }
 
+if (!isset($_GET["param"])) {
+	$_GET["param"]="";
+}
+
 if ($_GET["command"] == "debug") {
   echo "<h1>Defender Tests</h1><br>";
   //echo "DEV-Key: ". $settings["google"]["devkey"]."<br>";
