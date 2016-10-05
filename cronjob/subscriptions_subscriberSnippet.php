@@ -33,13 +33,9 @@ if ($tt["last_used"]+$tt["interval"]<time()) {
 			for($i=0;$i<count($data4sql);$i++) {
 				$row4sql= $data4sql[$i]["subscriberSnippet"];
 				
-				 $json=json_encode((array)$row4sql);
-				 $row4sql = json_decode($json, true);
-				$row4sql["thumb"]=$row4sql["*modelData"]["thumbnails"]["default"]["url"];
-				 echo "<pre>";
-		echo	var_dump($row4sql);
-		echo "</pre>";
-				die();
+				 //$json=json_encode($row4sql);
+				 //$row4sql = json_decode($json, true);
+			$row4sql["thumb"]=$row4sql["modelData"]["thumbnails"]["default"]["url"];
 				foreach ($row4sql as $key=>$value){
 					$new_feld[$key]="TEXT";
 					$database->add_columns($_tmp_tabellename, $new_feld);
