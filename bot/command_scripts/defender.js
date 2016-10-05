@@ -6,7 +6,7 @@ var self = module.exports = {
     var parameter = msg.content.split(" ")[1];
     var parameter2="";
     var tmp_para=msg.content.split(" ");
-    for (var i = 2; i<tmp_para.length();i++) {
+    for (var i = 2; i<tmp_para.length;i++) {
     	parameter2=parameter2+tmp_para[i];
     }
     if (typeof parameter == 'undefined') {
