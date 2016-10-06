@@ -40,4 +40,12 @@ function debug_log($var) {
   echo "</pre>";
 }
 
+function protected_settings($thing){
+	ob_start();
+	echo $thing;
+	$result = ob_get_contents();
+ ob_end_clean();
+ return $result;
+}
+
 ?>

@@ -1,5 +1,7 @@
 <?php
 
+include("functions/func_command.php");
+
 // Cronjob Subscriptions subscriberSnippet
 $_tmp_tabellename="subscriptions_subscriberSnippet";
 if (!isset($token[$_tmp_tabellename])) {
@@ -32,10 +34,12 @@ if ($tt["last_used"]+$tt["interval"]<time()) {
 			$database->sql_select($_tmp_tabellename, "*", "channelId='".$KANALID."' LIMIT 1", true);
 			for($i=0;$i<count($data4sql);$i++) {
 				$row4sql= $data4sql[$i]["subscriberSnippet"];
-				
-				 //$json=json_encode($row4sql);
-				 //$row4sql = json_decode($json, true);
-			$row4sql["thumb"]=$row4sql["modelData"]["thumbnails"]["default"]["url"];
+				$json=json_encode($row4sql);
+				$tmp_row4sql = json_decode($json, true);
+				$tmp_row4sql["thumbnail"]= protected_settings( $row4sql["modelData"]["thumbnails"]["default"]["url"]);
+			
+			 $row4sql=null;
+		  	$row4sql=$tmp_row4sql;
 				foreach ($row4sql as $key=>$value){
 					$new_feld[$key]="TEXT";
 					$database->add_columns($_tmp_tabellename, $new_feld);
