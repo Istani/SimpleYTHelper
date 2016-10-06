@@ -1,5 +1,6 @@
 <?php
 require 'inc/php_inc.php';
+include("functions/func_command.php");
 
 $accessToken = load_accesstoken($KANALID);
 
@@ -15,8 +16,8 @@ $client->setScopes('https: //www.googleapis.com/auth/youtube.readonly');
 
 $client->setAccessToken($accessToken);
 if ($client->isAccessTokenExpired()) {
-    $client->refreshToken(load_refreshtoken($KANALID));
-    save_accesstoken($KANALID, $client->getAccessToken());
+  $client->refreshToken(load_refreshtoken($KANALID));
+  save_accesstoken($KANALID, $client->getAccessToken());
 }
 
 $youtube = new Google_Service_YouTube($client);
@@ -25,28 +26,29 @@ $youtube = new Google_Service_YouTube($client);
 $_tmp_tabellename="bot_token";
 $check_table=$database->show_tables();
 if(!in_array($_tmp_tabellename, $check_table)) {
-	$felder=null;
-	$felder["id"]="TEXT";
-	$felder["token"]="TEXT";
-	$felder["last_used"]="TEXT";
-	$felder["interval"]="TEXT";
-	$database->create_table($_tmp_tabellename, $felder, "id");
-	unset($felder);
+  $felder=null;
+  $felder["id"]="TEXT";
+  $felder["token"]="TEXT";
+  $felder["last_used"]="TEXT";
+  $felder["interval"]="TEXT";
+  $database->create_table($_tmp_tabellename, $felder, "id");
+  unset($felder);
 }
 $tmp_tokens=$database->sql_select($_tmp_tabellename,"*","",true);
 foreach ($tmp_tokens as $tmp_key => $tmp_value)  {
-	foreach($tmp_value as $t2key => $t2value) {
- $token[$tmp_value["id"]][$t2key] = $t2value;
-	}
+  foreach($tmp_value as $t2key => $t2value) {
+    $token[$tmp_value["id"]][$t2key] = $t2value;
+  }
 }
 function init_token($name) {
-	$_tmp_token["id"]=$name;
-	$_tmp_token["token"]="null";
-	$_tmp_token["last_used"]=0;
-	$_tmp_token["interval"]=0;
-	return $_tmp_token;
+  $_tmp_token["id"]=$name;
+  $_tmp_token["token"]="null";
+  $_tmp_token["last_used"]=0;
+  $_tmp_token["interval"]=0;
+  return $_tmp_token;
 }
 
+include("cronjob/channels_contentDetails.php");
 include("cronjob/channels_statistics.php");
 
 include("cronjob/subscriptions_subscriberSnippet.php");

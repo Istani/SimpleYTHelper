@@ -1,6 +1,6 @@
 <?php
 // Cronjob Channel Statistics
-$_tmp_tabellename="channels_statistics";
+$_tmp_tabellename="channels_contentDetails";
 if (!isset($token[$_tmp_tabellename])) {
 	$token[$_tmp_tabellename] = init_token($_tmp_tabellename);
 }
@@ -9,11 +9,12 @@ if ($tt["last_used"]+$tt["interval"]<time()) {
 	
 	// Youtube Channel Statistics
 	if ($tt["token"] == "null") {
-		$listResponse = $youtube->channels->listChannels('statistics', array('id' => $KANALID));
+		$listResponse = $youtube->channels->listChannels('contentDetails', array('id' => $KANALID));
 	} else {
-		$listResponse = $youtube->channels->listChannels('statistics', array('id' => $KANALID, "pageToken" => $tt["token"] ));
+		$listResponse = $youtube->channels->listChannels('contentDetails', array('id' => $KANALID, "pageToken" => $tt["token"] ));
 	}
-	$data4sql= $listResponse[0]["modelData"]["statistics"];
+	
+	$data4sql= $listResponse[0]["modelData"]["contentDetails"]["relatedPlaylists"];
 	$tt["token"]=$listResponse["nextPageToken"];
 	
 	// SQL Channel Statistics
