@@ -14,7 +14,8 @@ if ($tt["last_used"]+$tt["interval"]<time()) {
 	} else {
 		$listResponse = $youtube->subscriptions->listSubscriptions("subscriberSnippet", array("mySubscribers" => "true", "maxResults" => $req_count, "order" => "relevance", "pageToken" => $tt["token"]));
 	}
-	$data4sql= $listResponse["items"];	$tt["token"]=$listResponse["nextPageToken"];
+	$data4sql= $listResponse["items"];
+	$tt["token"]=$listResponse["nextPageToken"];
 	// SQL
 	$check_table=$database->show_tables();
 	if(!in_array($_tmp_tabellename, $check_table)) {

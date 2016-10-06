@@ -39,6 +39,7 @@ if ($tt["last_used"]+$tt["interval"]<time()) {
 	unset($newData);
 	echo $_tmp_tabellename." updated!<br>";
 	$tt["last_used"]=time();
+	$tt["interval"]=86400; // Einmal am Tag aktualisieren, eigentlich sollte auch einmalig reichen, aber für den Fall das was flasch läuft oder YT was ändert....
 }
 // Save Token
 if($tt["token"]==""){$tt["token"]="null";}
