@@ -19,6 +19,7 @@ discord_bot.on('ready', function () {
   log_new_reconnect=true;
   console.log(time + " BOT: --- :Ready!");
   discord_bot.user.setStatus('online', 'SimpleYTH');
+  Discord_NotifyDevChannels();
 });
 
 discord_bot.on("message", function (msg) {
@@ -30,6 +31,20 @@ discord_bot.on("message", function (msg) {
     cmd.use_commands(message,msg);
   }
 });
+
+// Functions
+function Discord_NotifyDevChannels() {
+  var guilds = discord_bot.guilds;
+  guilds.forEach(function (guild) {
+    var channels =guild.channels;
+    channels.forEach (function (channel) {
+      if (channel.name.includes("development")) {
+        channel.sendMessage("I am back!");
+      };
+    })
+  })
+  
+}
 
 /* YEAH MEHR EVENTS ZUM ABFRAGEN - Wegen reconnect und so */
 discord_bot.on('disconnect', () => {
