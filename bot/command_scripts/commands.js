@@ -25,7 +25,8 @@ var self = module.exports = {
   use_commands: function(command, msg) {
     if ((command in commands)) {
       if (typeof commands[command].execute == 'function') {
-        console.log(msg.author.username + ": " + msg.content);
+        time = Date.now();
+        console.log(time + " " + msg.author.username + ": Command :"+msg.content);
         commands[command].execute(msg);
       }
     }
@@ -33,3 +34,4 @@ var self = module.exports = {
 };
 
 var commands={};
+var time=0;

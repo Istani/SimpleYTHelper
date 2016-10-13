@@ -1,5 +1,15 @@
-# PHP-YT-API-Test
-Test für Scripte!
+# SimpleYTHelper
 
-Ggf können diese Scripte auch für den Nightbot benutzt werden!
+Webiste for Helping Youtubers with Stats and Data!
 
+
+##Youtube Data
+Folder: Data
+### Cornjob
+Folder: Cronjob
+
+## Discord Bot
+Folder: Bot
+
+### Commands for Bots
+Folder: Commands
