@@ -38,7 +38,7 @@ $ChatId=$broadcastsResponse["items"][0]["snippet"]["liveChatId"];
 
 echo "ChatId:".$ChatId."\n\r";
 
-$broadcastsResponse = $youtube->liveChatMessages->list('snippet,authorDetails',array("liveChatId"=>$ChatId,"maxResults"=>2000));
+$broadcastsResponse = $youtube->liveChatMessages->listLiveChatMessages('snippet,authorDetails',array("liveChatId"=>$ChatId,"maxResults"=>2000));
 
 
 debug_log($broadcastsResponse);
