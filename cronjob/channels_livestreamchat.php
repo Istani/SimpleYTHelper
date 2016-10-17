@@ -45,6 +45,7 @@ if ($tt["last_used"]+$tt["interval"]<time()) {
   $newData["broadcastId"]=$BroadcastId;
   $newData["chatId"]=$ChatId;
   $database->sql_insert_update($_tmp_tabellename, $newData);
+  unset($newData);
   
   echo $_tmp_tabellename." updated!<br>";
   $tt["last_used"]=time();
