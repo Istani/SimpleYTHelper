@@ -12,7 +12,7 @@ $client = new Google_Client();
 $client->setClientId($OAUTH2_CLIENT_ID);
 $client->setClientSecret($OAUTH2_CLIENT_SECRET);
 $client->setDeveloperKey($DEV_KEY);
-$client->setScopes('https: //www.googleapis.com/auth/youtube.readonly');
+$client->setScopes('https: //www.googleapis.com/auth/youtube');
 
 $client->setAccessToken($accessToken);
 if ($client->isAccessTokenExpired()) {
