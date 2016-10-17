@@ -15,8 +15,6 @@ use Monolog\TestCase;
 
 class DynamoDbHandlerTest extends TestCase
 {
-    private $client;
-
     public function setUp()
     {
         if (!class_exists('Aws\DynamoDb\DynamoDbClient')) {
@@ -67,7 +65,7 @@ class DynamoDbHandlerTest extends TestCase
              ->method('__call')
              ->with('putItem', array(array(
                  'TableName' => 'foo',
-                 'Item' => $formatted,
+                 'Item' => $formatted
              )));
 
         $handler->handle($record);

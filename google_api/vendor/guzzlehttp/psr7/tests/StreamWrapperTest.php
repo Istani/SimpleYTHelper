@@ -21,8 +21,6 @@ class StreamWrapperTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('', fread($handle, 1));
         $this->assertTrue(feof($handle));
 
-        $stBlksize  = defined('PHP_WINDOWS_VERSION_BUILD') ? -1 : 0;
-
         // This fails on HHVM for some reason
         if (!defined('HHVM_VERSION')) {
             $this->assertEquals([
@@ -37,8 +35,8 @@ class StreamWrapperTest extends \PHPUnit_Framework_TestCase
                 'atime'   => 0,
                 'mtime'   => 0,
                 'ctime'   => 0,
-                'blksize' => $stBlksize,
-                'blocks'  => $stBlksize,
+                'blksize' => 0,
+                'blocks'  => 0,
                 0         => 0,
                 1         => 0,
                 2         => 33206,
@@ -50,8 +48,8 @@ class StreamWrapperTest extends \PHPUnit_Framework_TestCase
                 8         => 0,
                 9         => 0,
                 10        => 0,
-                11        => $stBlksize,
-                12        => $stBlksize,
+                11        => 0,
+                12        => 0,
             ], fstat($handle));
         }
 
