@@ -25,7 +25,7 @@ class Google_Model implements ArrayAccess
 {
   /**
    * If you need to specify a NULL JSON value, use Google_Model::NULL_VALUE
-   * instead - it will be replaced when converting to JSON with a real null. 
+   * instead - it will be replaced when converting to JSON with a real null.
    */
   const NULL_VALUE = "{}gapi-php-null";
   protected $internal_gapi_mappings = array();
@@ -102,7 +102,7 @@ class Google_Model implements ArrayAccess
         property_exists($this, $key)) {
           $this->$key = $val;
           unset($array[$key]);
-      } elseif (property_exists($this, $camelKey = Google_Utils::camelCase($key))) {
+      } elseif (property_exists($this, $camelKey = $this->camelCase($key))) {
           // This checks if property exists as camelCase, leaving it in array as snake_case
           // in case of backwards compatibility issues.
           $this->$camelKey = $val;
@@ -175,7 +175,7 @@ class Google_Model implements ArrayAccess
     }
     return $value;
   }
-  
+
   /**
    * Check whether the value is the null placeholder and return true null.
    */
@@ -291,5 +291,18 @@ class Google_Model implements ArrayAccess
   public function __unset($key)
   {
     unset($this->modelData[$key]);
+  }
+
+  /**
+   * Convert a string to camelCase
+   * @param  string $value
+   * @return string
+   */
+  private function camelCase($value)
+  {
+    $value = ucwords(str_replace(array('-', '_'), ' ', $value));
+    $value = str_replace(' ', '', $value);
+    $value[0] = strtolower($value[0]);
+    return $value;
   }
 }
