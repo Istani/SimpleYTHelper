@@ -7,10 +7,8 @@ namespace Composer\Autoload;
 class ComposerStaticInitc323ec96dd0a09c1a8763ac531972615
 {
     public static $files = array (
+        'e7ef766f7bcc15ba09cd6308370a95d7' => __DIR__ . '/..' . '/react/promise/src/React/Promise/functions.php',
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
-        'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
-        '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
-        'decc78cc4436b1292c6c0d151b19445c' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/bootstrap.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -29,14 +27,11 @@ class ComposerStaticInitc323ec96dd0a09c1a8763ac531972615
         ),
         'G' => 
         array (
+            'GuzzleHttp\\Stream\\' => 18,
+            'GuzzleHttp\\Ring\\' => 16,
             'GuzzleHttp\\Psr7\\' => 16,
-            'GuzzleHttp\\Promise\\' => 19,
             'GuzzleHttp\\' => 11,
             'Google\\Auth\\' => 12,
-        ),
-        'F' => 
-        array (
-            'Firebase\\JWT\\' => 13,
         ),
     );
 
@@ -57,13 +52,17 @@ class ComposerStaticInitc323ec96dd0a09c1a8763ac531972615
         array (
             0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
         ),
+        'GuzzleHttp\\Stream\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/guzzlehttp/streams/src',
+        ),
+        'GuzzleHttp\\Ring\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/guzzlehttp/ringphp/src',
+        ),
         'GuzzleHttp\\Psr7\\' => 
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
-        ),
-        'GuzzleHttp\\Promise\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/guzzlehttp/promises/src',
         ),
         'GuzzleHttp\\' => 
         array (
@@ -73,13 +72,16 @@ class ComposerStaticInitc323ec96dd0a09c1a8763ac531972615
         array (
             0 => __DIR__ . '/..' . '/google/auth/src',
         ),
-        'Firebase\\JWT\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
-        ),
     );
 
     public static $prefixesPsr0 = array (
+        'R' => 
+        array (
+            'React\\Promise' => 
+            array (
+                0 => __DIR__ . '/..' . '/react/promise/src',
+            ),
+        ),
         'P' => 
         array (
             'Psr\\Log\\' => 
@@ -101,6 +103,8 @@ class ComposerStaticInitc323ec96dd0a09c1a8763ac531972615
     );
 
     public static $classMap = array (
+        'BeforeValidException' => __DIR__ . '/..' . '/firebase/php-jwt/Firebase/PHP-JWT/Exceptions/BeforeValidException.php',
+        'ExpiredException' => __DIR__ . '/..' . '/firebase/php-jwt/Firebase/PHP-JWT/Exceptions/ExpiredException.php',
         'Google\\Auth\\ApplicationDefaultCredentials' => __DIR__ . '/..' . '/google/auth/src/ApplicationDefaultCredentials.php',
         'Google\\Auth\\CacheTrait' => __DIR__ . '/..' . '/google/auth/src/CacheTrait.php',
         'Google\\Auth\\Cache\\InvalidArgumentException' => __DIR__ . '/..' . '/google/auth/src/Cache/InvalidArgumentException.php',
@@ -127,6 +131,8 @@ class ComposerStaticInitc323ec96dd0a09c1a8763ac531972615
         'Google\\Auth\\Subscriber\\SimpleSubscriber' => __DIR__ . '/..' . '/google/auth/src/Subscriber/SimpleSubscriber.php',
         'Google_Service_Exception' => __DIR__ . '/../..' . '/src/Google/Service/Exception.php',
         'Google_Service_Resource' => __DIR__ . '/../..' . '/src/Google/Service/Resource.php',
+        'JWT' => __DIR__ . '/..' . '/firebase/php-jwt/Firebase/PHP-JWT/Authentication/JWT.php',
+        'SignatureInvalidException' => __DIR__ . '/..' . '/firebase/php-jwt/Firebase/PHP-JWT/Exceptions/SignatureInvalidException.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
