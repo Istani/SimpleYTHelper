@@ -23,7 +23,7 @@ $KANALID = "UCoL8PZGa__nCk_OgZeenRtw";
 $KANALID = "UC5DOhI70dI3PnLPMkUsosgw";
 
 
-require_once 'google_api/vendor/autoload.php';
+require_once 'google_api/src/Google/autoload.php';
 
 /* eigene scripte */
 require_once 'functions/db.php';
