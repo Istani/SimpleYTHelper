@@ -17,7 +17,7 @@ $client->setScopes('https: //www.googleapis.com/auth/youtube');
 $client->setAccessToken($accessToken);
 if ($client->isAccessTokenExpired()) {
   $client->refreshToken(load_refreshtoken($KANALID));
-  $_SESSION["token"]=$client->getAccessToken();
+  $_SESSION["token"]=json_encode($client->getAccessToken());
   save_accesstoken($KANALID, $_SESSION["token"]);
 }
 
