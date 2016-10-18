@@ -28,7 +28,7 @@ $BroadcastId=$db_stats[0]["broadcastId"];
 $ChatId=$db_stats[0]["chatId"];
 
 if ($BroadcastId!="null") {
-  $broadcastsResponse = $youtube->liveChatMessages->listLiveChatMessages('snippet,authorDetails',array("liveChatId"=>$ChatId,"maxResults"=>2000));
+  $broadcastsResponse = $youtube->liveChatMessages->listLiveChatMessages('id',array("liveChatId"=>$ChatId,"maxResults"=>2000));
   debug_log($broadcastsResponse);
 } else {
   echo "Kein Livestream gefunden!";

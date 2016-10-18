@@ -27,7 +27,7 @@ if ($tt["last_used"]+$tt["interval"]<time()) {
     $listResponse = $youtube-> search->listSearch('id', array('channelId'=>$KANALID, 'eventType'=>'live', 'type'=>'video', "pageToken" => $tt["token"] ));
   }
   $tt["token"]=$listResponse["nextPageToken"];
-  if (isset($broadcastsResponse["items"][0])) {
+  if (isset($listResponse["items"][0])) {
     $BroadcastId=$listResponse["items"][0]["id"]["videoId"];
     
     $listResponse = $youtube->liveBroadcasts->listLiveBroadcasts('snippet',array('id'=>$BroadcastId));
@@ -44,7 +44,6 @@ if ($tt["last_used"]+$tt["interval"]<time()) {
   $newData["last_seen"]=time();
   $newData["broadcastId"]=$BroadcastId;
   $newData["chatId"]=$ChatId;
-  echo debug_log($newData);
   $database->sql_insert_update($_tmp_tabellename, $newData);
   unset($newData);
   
