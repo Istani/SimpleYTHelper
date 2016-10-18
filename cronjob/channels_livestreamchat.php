@@ -22,9 +22,9 @@ if ($tt["last_used"]+$tt["interval"]<time()) {
   
   // Youtube Channel Statistics
   if ($tt["token"] == "null") {
-    $listResponse = $youtube-> search->listSearch('id', array('channelId'=>$KANALID, 'eventType'=>'live','type'=>'video'));
+    $listResponse = $youtube-> search->listSearch('id', array('channelId'=>$KANALID, 'eventType'=>'live', 'type'=>'video'));
   } else {
-    $listResponse = $youtube-> search->listSearch('id', array('channelId'=>$KANALID, 'eventType'=>'live','type'=>'video', "pageToken" => $tt["token"] ));
+    $listResponse = $youtube-> search->listSearch('id', array('channelId'=>$KANALID, 'eventType'=>'live', 'type'=>'video', "pageToken" => $tt["token"] ));
   }
   $tt["token"]=$listResponse["nextPageToken"];
   if (isset($broadcastsResponse["items"][0])) {
@@ -44,6 +44,7 @@ if ($tt["last_used"]+$tt["interval"]<time()) {
   $newData["last_seen"]=time();
   $newData["broadcastId"]=$BroadcastId;
   $newData["chatId"]=$ChatId;
+  echo debug_log($newData);
   $database->sql_insert_update($_tmp_tabellename, $newData);
   unset($newData);
   

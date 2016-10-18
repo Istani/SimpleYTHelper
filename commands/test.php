@@ -16,10 +16,6 @@ $client->setDeveloperKey($DEV_KEY);
 $client->setScopes('https: //www.googleapis.com/auth/youtube');
 
 $client->setAccessToken($accessToken);
-if ($client->isAccessTokenExpired()) {
-  $client->refreshToken(load_refreshtoken($KANALID));
-  save_accesstoken($KANALID, $client->getAccessToken());
-}
 
 $youtube = new Google_Service_YouTube($client);
 
