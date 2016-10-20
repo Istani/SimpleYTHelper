@@ -28,8 +28,8 @@ $BroadcastId=$db_stats[0]["broadcastId"];
 $ChatId=$db_stats[0]["chatId"];
 
 if ($BroadcastId!="null") {
-  $broadcastsResponse = $youtube->liveChatMessages->listLiveChatMessages($ChatId,'snippet, authorDetails' , array("maxResults"=>2000));
-  debug_log($broadcastsResponse);
+  echo "http://youtube.com/Defender833/live";
+  
 } else {
   echo "Kein Livestream gefunden!";
 }
