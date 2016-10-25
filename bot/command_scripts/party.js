@@ -14,10 +14,11 @@ var self = module.exports = {
     
   }
 };
+
 function execute_repeat (msg, amount) {
   msg.channel.sendTTSMessage("PARTY @everyone");
   amount=amount-1;
   if (amount>0) {
-    setTimeout(execute_repeat(msg, amount), 1000);
+    setTimeout(execute_repeat, 1000, msg, amount);
   }
 };
