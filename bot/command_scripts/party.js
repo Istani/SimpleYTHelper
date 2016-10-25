@@ -2,11 +2,11 @@ var self = module.exports = {
   execute: function (msg) {
     var amount=0;
     var tmp_para=msg.content.split(" ");
-    if (typeof para[1]==undefiend) {
+    if (typeof tmp_para[1]==undefiend) {
       amount=1;
     } else {
-      if (parseInt(para[1]>0)) {
-        amount=parseInt(para[1]);
+      if (parseInt(tmp_para[1]>0)) {
+        amount=parseInt(tmp_para[1]);
       }
     }
     self.execute_repeat(msg, amount);
