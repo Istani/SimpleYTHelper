@@ -5,7 +5,7 @@ var self = module.exports = {
     if (typeof para[1]==undefiend) {
       amount=1;
     } else {
-      if (parseInt(para[1]>0) {
+      if (parseInt(para[1]>0)) {
         amount=parseInt(para[1]);
       }
     }
