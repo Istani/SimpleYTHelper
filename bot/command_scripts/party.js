@@ -19,5 +19,5 @@ var self = module.exports = {
     if (amount>0) {
       setTimeout(self.execute_repeat(msg, amount), 1000);
     }
-  };
+  },
 };
