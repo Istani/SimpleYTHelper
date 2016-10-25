@@ -9,15 +9,15 @@ var self = module.exports = {
         amount=parseInt(tmp_para[1]);
       }
     }
-    self.execute_repeat(msg, amount);
+    execute_repeat(msg, amount);
     
     
-  },
-  execute_repeat:function (msg, amount) {
-    msg.channel.sendTTSMessage("PARTY @everyone");
-    amount=amount-1;
-    if (amount>0) {
-      setTimeout(self.execute_repeat(msg, amount), 1000);
-    }
-  },
+  }
+};
+function execute_repeat (msg, amount) {
+  msg.channel.sendTTSMessage("PARTY @everyone");
+  amount=amount-1;
+  if (amount>0) {
+    setTimeout(self.execute_repeat(msg, amount), 1000);
+  }
 };
