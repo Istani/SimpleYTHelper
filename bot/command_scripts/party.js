@@ -2,7 +2,7 @@ var self = module.exports = {
   execute: function (msg) {
     var amount=0;
     var tmp_para=msg.content.split(" ");
-    if (typeof tmp_para[1]==undefiend) {
+    if (typeof tmp_para[1]=='undefined') {
       amount=1;
     } else {
       if (parseInt(tmp_para[1]>0)) {
