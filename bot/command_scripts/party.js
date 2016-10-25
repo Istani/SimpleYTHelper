@@ -18,6 +18,6 @@ function execute_repeat (msg, amount) {
   msg.channel.sendTTSMessage("PARTY @everyone");
   amount=amount-1;
   if (amount>0) {
-    setTimeout(self.execute_repeat(msg, amount), 1000);
+    setTimeout(execute_repeat(msg, amount), 1000);
   }
 };
