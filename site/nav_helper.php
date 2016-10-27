@@ -19,7 +19,7 @@
       foreach ($listResponse["items"] as $listItem) {
         save_accesstoken($listItem["id"], $_SESSION["token"]);
       }
-      $temp = json_decode($_SESSION["token"]);
+      $temp = json_decode(json_encode($_SESSION["token"]));
       if (isset($temp->refresh_token)) {
         save_refreshtoken($listItem["id"], $temp->refresh_token);
       }
