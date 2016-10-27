@@ -40,10 +40,10 @@ $tmp_tokens=$database->sql_select($_tmp_tabellename,"*","",true);
 foreach ($tmp_tokens as $tmp_key => $tmp_value)  {
   foreach($tmp_value as $t2key => $t2value) {
     $token[$tmp_value["id"]][$t2key] = $t2value;
-    }
-    if ( $token[$tmp_value["id"]]["interval"] == 0) {
-    	 $token[$tmp_value["id"]]["interval"] = 300;
-    }
+  }
+  if ( $token[$tmp_value["id"]]["interval"] == 0) {
+    $token[$tmp_value["id"]]["interval"] = 300;
+  }
 }
 function init_token($name) {
   $_tmp_token["id"]=$name;
@@ -54,7 +54,7 @@ function init_token($name) {
 }
 
 include("cronjob/channels_contentDetails.php");
-/include("cronjob/channels_statistics.php");
+include("cronjob/channels_statistics.php");
 
 include("cronjob/channels_livestreamchat.php");
 include("cronjob/livestream_chat.php");
