@@ -56,14 +56,14 @@ function init_token($name) {
 include("cronjob/channels_contentDetails.php");
 include("cronjob/channels_statistics.php");
 
-include("cronjob/channels_livestreamchat.php");
-include("cronjob/livestream_chat.php");
-
 include("cronjob/subscriptions_subscriberSnippet.php");
 
 include("cronjob/playlistItems_snippet_upload44ed.php");
 include("cronjob/videos_statistics.php");
 include("cronjob/videos_status.php");
+
+include("cronjob/channels_livestreamchat.php");
+include("cronjob/livestream_chat.php");
 
 
 //include("cronjob/videos_contentDetails.php");
