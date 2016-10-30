@@ -22,11 +22,11 @@ var self = module.exports = {
     }
     return commands;
   },
-  use_commands: function(command, msg) {
+  use_commands_discord: function(command, msg) {
     if ((command in commands)) {
       if (typeof commands[command].execute == 'function') {
         time = Date.now();
-        console.log(time + " " + msg.author.username + ": Command :"+msg.content);
+        console.log("Discord: " + msg.author.username + ": Command :"+msg.content);
         commands[command].execute(msg);
       }
     }
