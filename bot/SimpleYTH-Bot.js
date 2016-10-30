@@ -1,6 +1,9 @@
-const private_settings = require('./private_settings.json');
+const google_api_access =require('../token/bot.access.json');
+//const google_api_refresh=require('../token/bot.refresh');
+const private_settings  =require('./private_settings.json');
 
-var Discord = require("discord.js");
+
+var Discord = require("./discord.js");
 var discord_bot = new Discord.Client();
 
 discord_bot.login(private_settings.discord_token);
@@ -28,9 +31,12 @@ discord_bot.on("message", function (msg) {
   if (message.startsWith(command_prefix)) {
     message=message.replace("!","");
     message=message.split(" ")[0];
-    cmd.use_commands(message,msg);
+    cmd.use_commands_discord(message,msg);
   }
 });
+
+
+
 
 // Functions
 function Discord_NotifyDevChannels() {
