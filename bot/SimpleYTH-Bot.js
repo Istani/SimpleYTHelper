@@ -38,7 +38,7 @@ function Discord_NotifyDevChannels() {
   guilds.forEach(function (guild) {
     var channels =guild.channels;
     channels.forEach (function (channel) {
-      if (channel.name.includes("development")) {
+      if (channel.name=="Development") {
         channel.sendMessage("I am back!");
       };
     })
