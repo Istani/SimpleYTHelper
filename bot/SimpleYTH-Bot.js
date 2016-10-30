@@ -3,7 +3,7 @@ const google_api_access =require('../token/bot.access.json');
 const private_settings  =require('./private_settings.json');
 
 
-var Discord = require("./discord.js");
+var Discord = require("discord.js");
 var discord_bot = new Discord.Client();
 
 discord_bot.login(private_settings.discord_token);
