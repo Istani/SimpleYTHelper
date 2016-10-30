@@ -6,7 +6,7 @@ const private_settings  =require('./private_settings.json');
 var Discord = require("discord.js");
 var discord_bot = new Discord.Client();
 
-var Google = require("scripts/google_scripts.js");
+//var Google = require("scripts/google_scripts.js");
 
 
 discord_bot.login(private_settings.discord_token);
