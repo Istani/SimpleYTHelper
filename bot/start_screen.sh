@@ -1,2 +1,2 @@
-cd /var/www/html/SimpleYTH/bot
-screen -S DiscordBot -X start_bot.sh
+cd /var/www/html/SimpleYTH/bot/
+screen -R DiscordBot -X start_bot.sh

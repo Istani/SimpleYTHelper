@@ -1,5 +1,5 @@
-cd /var/www/html/SimpleYTH/bot
+cd /var/www/html/SimpleYTH/bot/
 for (( ; ; ))
 do
-  node SimpleYTH-Bot.js
+	node SimpleYTH-Bot.js
 done
