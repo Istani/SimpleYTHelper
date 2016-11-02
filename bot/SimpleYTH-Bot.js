@@ -51,7 +51,7 @@ function Google_CheckMessage() {
     }
     for (var i = 0; i < rows.length; i++) {
       var row_org = rows[i];
-      var SQL_UPDATE ="UPDATE livestream_chat SET ignore='1' WHERE id='" + row.id + "'";
+      var SQL_UPDATE ="UPDATE livestream_chat SET ignore='1' WHERE id='" + row_org.id + "'";
       data.exec(SQL_UPDATE, function (err, row) {
         if (err != null) {
           console.log ("SQLite: " + err);
