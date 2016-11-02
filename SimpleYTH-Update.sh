@@ -1,6 +1,4 @@
-#!/bin/bash
-MY_PATH="/var/www/html/SimpleYTH"
-cd $MY_PATH
+cd /var/www/html/SimpleYTH
 git add .
 git stash
 git stash clear
