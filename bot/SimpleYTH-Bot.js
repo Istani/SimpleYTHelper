@@ -50,20 +50,20 @@ function Google_CheckMessage() {
       console.log ("SQLite: " + err);
     }
     for (var i = 0; i < rows.length; i++) {
-      var row = rows[i];
+      var row_org = rows[i];
       var SQL_UPDATE ="UPDATE livestream_chat SET ignore='1' WHERE id='" + row.id + "'";
       data.exec(SQL_UPDATE, function (err, row) {
         if (err != null) {
           console.log ("SQLite: " + err);
         }
-        var message = row.displayMessage;
+        var message = row_org.displayMessage;
         if (message.startsWith(command_prefix)) {
           message=message.replace("!","");
           message=message.split(" ")[0];
           cmd.use_commands_google(message,google_bot);
         }
       });
-      console.log(row.displayMessage);
+      console.log(row_org.displayMessage);
     }
   });
   setTimeout(Google_CheckMessage,100);
