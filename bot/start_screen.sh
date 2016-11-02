@@ -1,4 +1,2 @@
-#!/bin/bash
-MY_PATH="/var/www/html/SimpleYTH/bot"
-cd $MY_PATH
+cd /var/www/html/SimpleYTH/bot
 screen -S DiscordBot -X start_bot.sh

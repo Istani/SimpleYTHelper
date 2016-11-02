@@ -1,6 +1,4 @@
-#!/bin/bash
-MY_PATH="/var/www/html/SimpleYTH/bot"
-cd $MY_PATH
+cd /var/www/html/SimpleYTH/bot
 for (( ; ; ))
 do
   node SimpleYTH-Bot.js
