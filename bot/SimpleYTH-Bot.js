@@ -3,7 +3,7 @@ const google_api_access =require('../token/bot.access.json');
 const private_settings  =require('./private_settings.json');
 
 var sqlite3 = require('sqlite3');
-var data = new sqlite3.Database(BuildFunc.checkpath('../data/UC5DOhI70dI3PnLPMkUsosgw.sqlite3'));
+var data = new sqlite3.Database('../data/UC5DOhI70dI3PnLPMkUsosgw.sqlite3');
 
 // Discrod Bot
 var Discord = require("discord.js");
