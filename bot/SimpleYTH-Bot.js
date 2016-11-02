@@ -68,7 +68,8 @@ function Google_CheckMessage() {
   });
   setTimeout(Google_CheckMessage,100);
 }
-Google_CheckMessage();
+//Google_CheckMessage();
+// Irgendwas muss ich mir noch ausdenken, so kann ich die Datei nicht lesen
 
 
 
