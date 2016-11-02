@@ -1,5 +1,5 @@
 #!/bin/bash
-MY_PATH="`dirname \"$0\"`"
+MY_PATH="/var/www/html/SimpleYTH/bot"
 cd $MY_PATH
 for (( ; ; ))
 do
