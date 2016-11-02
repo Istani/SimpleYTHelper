@@ -1,5 +1,5 @@
 #!/bin/bash
-MY_PATH="`dirname \"$0\"`"
+MY_PATH="/var/www/html/SimpleYTH"
 cd $MY_PATH
 git add .
 git stash
