@@ -1,5 +1,5 @@
 cd /var/www/html/SimpleYTH/bot/
-for (( ; ; ))
+while true
 do
 	node SimpleYTH-Bot.js
 done
