@@ -92,26 +92,5 @@ function Discord_NotifyDevChannels() {
 discord_bot.on('disconnect', () => {
   time = Date.now();
   console.log(time + " BOT: --- :Disconnect!");
-  discord_bot.login(private_settings.discord_token);
-});
-discord_bot.on('reconnecting', () => {
-  if (log_new_reconnect) {
-    time = Date.now();
-    log_new_reconnect=false;
-    console.log(time + " BOT: --- :Reconnecting!");
-    discord_bot.login(private_settings.discord_token);
-  }
-});
-
-discord_bot.on('error', (error) => {
-  time = Date.now();
-  log_new_reconnect=false;
-  console.log(time + " BOT: --- :Error!");
-  console.log(time + " BOT: --- :" + error + "");
-});
-discord_bot.on('warn', (warning) => {
-  time = Date.now();
-  log_new_reconnect=false;
-  console.log(time + " BOT: --- :Warning!");
-  console.log(time + " BOT: --- :" + warning + "");
+  process.exit();
 });

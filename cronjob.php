@@ -58,7 +58,7 @@ include("cronjob/channels_statistics.php");
 
 include("cronjob/subscriptions_subscriberSnippet.php");
 
-include("cronjob/playlistItems_snippet_upload44ed.php");
+include("cronjob/playlistItems_snippet_uploaded.php");
 include("cronjob/videos_statistics.php");
 include("cronjob/videos_status.php");
 
