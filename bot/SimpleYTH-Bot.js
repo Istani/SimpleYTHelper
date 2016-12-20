@@ -30,7 +30,7 @@ discord_bot.on('ready', function () {
   log_new_reconnect=true;
   console.log(time + " BOT: --- :Ready!");
   discord_bot.user.setStatus('online', 'SimpleYTH');
-  Discord_NotifyDevChannels();
+  SpeakToDevs("I am back online!");
 });
 
 discord_bot.on("message", function (msg) {
@@ -47,14 +47,16 @@ function Google_CheckMessage() {
   var SQL_STRING = "SELECT id, displayMessage FROM livestream_chat WHERE ignore = '0' ORDER BY publishedAt LIMIT 1";
   data.all(SQL_STRING, function (err, rows) {
     if (err != null) {
-      console.log ("SQLite: " + err);
+      SpeakToDevs("SQLite: " + err);
+      return;
     }
     for (var i = 0; i < rows.length; i++) {
       var row_org = rows[i];
       var SQL_UPDATE ="UPDATE livestream_chat SET ignore='1' WHERE id='" + row_org.id + "'";
       data.exec(SQL_UPDATE, function (err, row) {
         if (err != null) {
-          console.log ("SQLite: " + err);
+          SpeakToDevs("SQLite: " + err);
+          return;
         }
         var message = row_org.displayMessage;
         if (message.startsWith(command_prefix)) {
@@ -63,7 +65,7 @@ function Google_CheckMessage() {
           cmd.use_commands_google(message,google_bot);
         }
       });
-      console.log(row_org.displayMessage);
+      SpeakToDevs("Test Read: "+ row_org.displayMessage);
     }
   });
   setTimeout(Google_CheckMessage,100);
@@ -75,17 +77,17 @@ function Google_CheckMessage() {
 
 
 // Functions
-function Discord_NotifyDevChannels() {
+function SpeakToDevs(msg) {
+  // Discord
   var guilds = discord_bot.guilds;
   guilds.forEach(function (guild) {
     var channels =guild.channels;
     channels.forEach (function (channel) {
-      if (channel.name=="development") {
-        channel.sendMessage("I am back!");
+      if (channel.name.contains("development")) {
+        channel.sendMessage(Msg);
       };
     })
   })
-  
 }
 
 /* YEAH MEHR EVENTS ZUM ABFRAGEN - Wegen reconnect und so */

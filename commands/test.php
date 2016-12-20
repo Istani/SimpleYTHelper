@@ -3,6 +3,7 @@
 // Getting SUB count & last name
 require 'inc/php_inc.php';
 
+// TODO: Load Access Token from Bot Account!
 $accessToken = load_accesstoken($KANALID);
 
 $database=new db("sqlite","");
@@ -30,15 +31,14 @@ $ChatId=$db_stats[0]["chatId"];
 if ($BroadcastId!="null") {
   
   //
- $send=new  Google_Service_YouTube_LiveChatMessage();
- $sendlid=new Google_Service_YouTube_LiveChatMessageSnippet();
- $sendlid->setLiveChatId($ChatId);
- $sendlid->setType("textMessageEvent");
- 
- $sendtext=new Google_Service_YouTube_LiveChatTextMessageDetails();
- $sendtext->setMessageText("SimpleYTH rocks!");
- $sendlid->setTextMessageDetails($sendtext);
- 
+  $send=new  Google_Service_YouTube_LiveChatMessage();
+  $sendlid=new Google_Service_YouTube_LiveChatMessageSnippet();
+  $sendlid->setLiveChatId($ChatId);
+  $sendlid->setType("textMessageEvent");
+  
+  $sendtext=new Google_Service_YouTube_LiveChatTextMessageDetails();
+  $sendtext->setMessageText("SimpleYTH rocks!");
+  $sendlid->setTextMessageDetails($sendtext);
   $send->setSnippet($sendlid);
   
   $test=$youtube->liveChatMessages->insert('snippet', $send);

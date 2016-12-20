@@ -46,7 +46,7 @@ var self = module.exports = {
     if ((command in commands)) {
       if (typeof commands[command].execute_text == 'function') {
         time = Date.now();
-        console.log("Discord: " + msg.author.username + ": Command :"+command);
+        console.log("Google: " + msg.author.username + ": Command :"+command);
         bot.sendMessage(commands[command].execute_text(command));
       }
     }
