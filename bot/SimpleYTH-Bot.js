@@ -43,12 +43,13 @@ discord_bot.on("message", function (msg) {
   }
 });
 
+var repeat_google_check=true;
 function Google_CheckMessage() {
   var SQL_STRING = "SELECT id, displayMessage FROM livestream_chat WHERE ignore = '0' ORDER BY publishedAt LIMIT 1";
   data.all(SQL_STRING, function (err, rows) {
     if (err != null) {
       SpeakToDevs("SQLite: " + err);
-      return;
+      repeat_google_check=false;
     }
     for (var i = 0; i < rows.length; i++) {
       var row_org = rows[i];
@@ -56,7 +57,7 @@ function Google_CheckMessage() {
       data.exec(SQL_UPDATE, function (err, row) {
         if (err != null) {
           SpeakToDevs("SQLite: " + err);
-          return;
+          repeat_google_check=false;
         }
         var message = row_org.displayMessage;
         if (message.startsWith(command_prefix)) {
@@ -68,7 +69,9 @@ function Google_CheckMessage() {
       SpeakToDevs("Test Read: "+ row_org.displayMessage);
     }
   });
-  setTimeout(Google_CheckMessage,100);
+  if (repeat_google_check) {
+    setTimeout(Google_CheckMessage,100);
+  }
 }
 Google_CheckMessage();
 // Irgendwas muss ich mir noch ausdenken, so kann ich die Datei nicht lesen
@@ -78,6 +81,8 @@ Google_CheckMessage();
 
 // Functions
 function SpeakToDevs(msg) {
+  time = Date.now();
+  console.log(time + " ERR : --- : "+msg);
   // Discord
   var guilds = discord_bot.guilds;
   guilds.forEach(function (guild) {
