@@ -83,8 +83,8 @@ function SpeakToDevs(msg) {
   guilds.forEach(function (guild) {
     var channels =guild.channels;
     channels.forEach (function (channel) {
-      if (channel.name.contains("development")) {
-        channel.sendMessage(msg);
+      if (channel.name.indexOf("development") > -1) {
+        channel.sendMessage("Dear Devs: " + msg);
       };
     })
   })
