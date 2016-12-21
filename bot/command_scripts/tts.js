@@ -6,7 +6,7 @@ var self = module.exports = {
       parameter2=parameter2+ " " +tmp_para[i];
     }
     parameter2 = parameter2.trim();
-    parameter2 = msg.user.name + " schreibt: "+parameter2;
+    parameter2 = msg.author.username + " schreibt: "+parameter2;
     msg.channel.sendTTSMessage(parameter2);
     msg.delete();
   }
