@@ -1,0 +1,32 @@
+{
+  "name": "simpleyth-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "SimpleYTH-Bot.js",
+  "dependencies": {
+    "discord": "^0.8.2",
+    "discord.js": "^10.0.1",
+    "googleapis": "^14.1.0",
+    "mysql": "^2.12.0",
+    "node-fetch": "^1.6.1",
+    "node-opus": "^0.2.2",
+    "opusscript": "^0.0.1",
+    "performance-now": "^0.2.0",
+    "sqlite": "^2.2.1",
+    "sqlite3": "^3.1.8"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Istani/SimpleYTHelper.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Istani/SimpleYTHelper/issues"
+  },
+  "homepage": "https://github.com/Istani/SimpleYTHelper#readme"
+}
