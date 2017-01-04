@@ -1,8 +1,14 @@
 <?php
-	// Settings
+// Settings
 
-	$DEV_KEY="SERVER TOKEN";
+$DEV_KEY="SERVER TOKEN";
 
-	$OAUTH2_CLIENT_ID = 'TOKEN';
-	$OAUTH2_CLIENT_SECRET = 'SECRET';
+$OAUTH2_CLIENT_ID = 'TOKEN';
+$OAUTH2_CLIENT_SECRET = 'SECRET';
+
+// Mysql Settings
+$mysql['host'] = "127.0.0.1";
+$mysql['user'] = "";
+$mysql['pass'] = "";
+$mysql['base'] = "";
 ?>

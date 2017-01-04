@@ -1,13 +1,8 @@
 <?php
-
-// Getting SUB count & last name
 require 'inc/php_inc.php';
 
 // TODO: Load Access Token from Bot Account!
 $accessToken = load_accesstoken($KANALID);
-
-$database=new db("sqlite","");
-$database->connect_db("data/".$KANALID.".sqlite3");
 
 // Google Verbindung
 $client = new Google_Client();

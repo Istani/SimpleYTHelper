@@ -1,11 +1,5 @@
 <?php
-
-// Getting 5 (a day) Random SUB Name
 require 'inc/php_inc.php';
-
-
-$database=new db("sqlite","");
-$database->connect_db("data/".$KANALID.".sqlite3");
 
 $check_table=$database->show_tables();
 

@@ -1,10 +1,5 @@
 <?php
-
-// Getting SUB count & last name
 require 'inc/php_inc.php';
-
-$database=new db("sqlite","");
-$database->connect_db("data/".$KANALID.".sqlite3");
 
 // default
 $vidtitle = 0;

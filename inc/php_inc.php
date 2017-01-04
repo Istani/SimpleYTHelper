@@ -28,8 +28,11 @@ require_once 'google_api/vendor/autoload.php';
 /* eigene scripte */
 require_once 'functions/db.php';
 require_once 'functions/func_token.php';
-//$database = new db("mysql", $mysql['host'], $mysql['user'], $mysql['pass']);
-//$database->connect_db($mysql['base']);
 // load private settings
 include("private_settings.php");
+
+//$database = new db("mysql", $mysql['host'], $mysql['user'], $mysql['pass']);
+//$database->connect_db($mysql['base']);
+$database=new db("sqlite","");
+$database->connect_db("data/".$KANALID.".sqlite3");
 ?>

@@ -4,9 +4,6 @@ include("functions/func_command.php");
 
 $accessToken = load_accesstoken($KANALID);
 
-$database=new db("sqlite","");
-$database->connect_db("data/".$KANALID.".sqlite3");
-
 // Google Verbindung
 $client = new Google_Client();
 $client->setClientId($OAUTH2_CLIENT_ID);
