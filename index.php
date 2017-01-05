@@ -1,6 +1,21 @@
 <?php
 require_once 'inc/php_inc.php';
 require_once 'inc/google_connect.php';
+
+/*
+// Test weil ich mich offline nicht einloggen kann!
+require 'inc/php_inc.php';
+$accessToken = load_accesstoken($KANALID);
+
+// Google Verbindung
+$client = new Google_Client();
+$client->setClientId($OAUTH2_CLIENT_ID);
+$client->setClientSecret($OAUTH2_CLIENT_SECRET);
+$client->setDeveloperKey($DEV_KEY);
+$client->setScopes('https: //www.googleapis.com/auth/youtube');
+
+$client->setAccessToken($accessToken);
+*/
 ?>
 <!doctype html>
 <html>
@@ -24,8 +39,16 @@ require_once 'inc/google_connect.php';
       <td width="250"><?php
       require_once 'site/nav_main.php';
       require_once 'site/nav_helper.php';
+      require_once 'site/nav_development.php';
       ?></td>
-      <td><?php include("site/info.php"); ?></td>
+      <td class="content_page">
+        <div id="site_content" class="ui-accordion ui-widget ui-helper-reset">
+          <h3 class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">Content</h3>
+          <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
+            <?php include("site/site_switch.php"); ?>
+          </div>
+        </div>
+      </td>
     </tr>
   </table>
 </body>
