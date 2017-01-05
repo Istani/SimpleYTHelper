@@ -1,7 +1,6 @@
 <?php
 require 'inc/php_inc.php';
-
-
+// TODO: Token laden muss umgestellt werden auf MySQL
 $accessToken = load_accesstoken($KANALID);
 
 // Google Verbindung
