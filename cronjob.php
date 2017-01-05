@@ -2,6 +2,7 @@
 require 'inc/php_inc.php';
 // TODO: Token laden muss umgestellt werden auf MySQL
 $accessToken = load_accesstoken($KANALID);
+session_to_database($database, $accessToken);
 
 // Google Verbindung
 $client = new Google_Client();
@@ -48,6 +49,8 @@ function init_token($name) {
   $_tmp_token["interval"]=300;
   return $_tmp_token;
 }
+
+//include("cronjob/load_channels.php");
 
 include("cronjob/channels_contentDetails.php");
 include("cronjob/channels_statistics.php");
