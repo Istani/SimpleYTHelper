@@ -1,6 +1,6 @@
 <?php
 require 'inc/php_inc.php';
-include("functions/func_command.php");
+
 
 $accessToken = load_accesstoken($KANALID);
 
@@ -10,8 +10,8 @@ $client->setClientId($OAUTH2_CLIENT_ID);
 $client->setClientSecret($OAUTH2_CLIENT_SECRET);
 $client->setDeveloperKey($DEV_KEY);
 $client->setScopes('https: //www.googleapis.com/auth/youtube');
-
 $client->setAccessToken($accessToken);
+
 if ($client->isAccessTokenExpired()) {
   $client->refreshToken(load_refreshtoken($KANALID));
   $_SESSION["token"]=$client->getAccessToken();
