@@ -5,7 +5,7 @@ if (!isset($token[$_tmp_tabellename])) {
 	$token[$_tmp_tabellename] = init_token($_tmp_tabellename);
 }
 $tt=$token[$_tmp_tabellename];
-if ($tt["last_used"]+$tt["interval"]<time()) {
+if ($tt["last_used"]+$tt["cooldown"]<time()) {
 	
 	// Youtube Channel Statistics
 	if ($tt["token"] == "null") {
@@ -22,7 +22,7 @@ if ($tt["last_used"]+$tt["interval"]<time()) {
 		$felder=null;
 		$felder["id"]="TEXT";
 		$felder["last_seen"]="TEXT";
-		$database->create_table($_tmp_tabellename, $felder, "id");
+		$database->create_table($_tmp_tabellename, $felder, "");
 		unset($felder);
 	}
 	$database->sql_select($_tmp_tabellename, "*", "id='".$KANALID."' LIMIT 1", true);

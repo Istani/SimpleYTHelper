@@ -70,10 +70,6 @@ class db {
       $this->error("<b>Format:</b> <i></i><br>Benötigt Array als Input!<br>");
       return $return_status;
     }
-    if ($pkfeld==""){
-      $this->error("<b>Format:</b> <i></i><br>Benötigt Feldnamen als Key!<br>");
-      return $return_status;
-    }
     
     foreach ($felder as $key => $value) {
       if ($sql_felder == "") {
@@ -96,6 +92,7 @@ class db {
     } else if ($this->system=="sqlite"){
       $return_status=$this->database->exec($sql_string);
     }
+    echo $sql_string;
     return $return_status;
   }
   

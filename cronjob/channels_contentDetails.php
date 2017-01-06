@@ -5,7 +5,7 @@ if (!isset($token[$_tmp_tabellename])) {
 	$token[$_tmp_tabellename] = init_token($_tmp_tabellename);
 }
 $tt=$token[$_tmp_tabellename];
-if ($tt["last_used"]+$tt["interval"]<time()) {
+if ($tt["last_used"]+$tt["cooldown"]<time()) {
 	
 	// Youtube Channel Statistics
 	if ($tt["token"] == "null") {
@@ -23,7 +23,7 @@ if ($tt["last_used"]+$tt["interval"]<time()) {
 		$felder=null;
 		$felder["id"]="TEXT";
 		$felder["last_seen"]="TEXT";
-		$database->create_table($_tmp_tabellename, $felder, "id");
+		$database->create_table($_tmp_tabellename, $felder, "");
 		unset($felder);
 	}
 	$database->sql_select($_tmp_tabellename, "*", "id='".$KANALID."' LIMIT 1", true);
@@ -39,7 +39,7 @@ if ($tt["last_used"]+$tt["interval"]<time()) {
 	unset($newData);
 	echo $_tmp_tabellename." updated!<br>";
 	$tt["last_used"]=time();
-	$tt["interval"]=86400; // Einmal am Tag aktualisieren, eigentlich sollte auch einmalig reichen, aber für den Fall das was flasch läuft oder YT was ändert....
+	$tt["cooldown"]=86400; // Einmal am Tag aktualisieren, eigentlich sollte auch einmalig reichen, aber für den Fall das was flasch läuft oder YT was ändert....
 }
 // Save Token
 if($tt["token"]==""){$tt["token"]="null";}

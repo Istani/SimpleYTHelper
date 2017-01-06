@@ -7,7 +7,7 @@ if (!isset($token[$_tmp_tabellename])) {
   $token[$_tmp_tabellename] = init_token($_tmp_tabellename);
 }
 $tt=$token[$_tmp_tabellename];
-if ($tt["last_used"]+$tt["interval"]<time()) {
+if ($tt["last_used"]+$tt["cooldown"]<time()) {
   
   $listResponse = $youtube->channels->listChannels('id', array('mine' => 'true',));
   $check_table=$database->show_tables();

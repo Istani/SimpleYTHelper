@@ -5,7 +5,7 @@ if (!isset($token[$_tmp_tabellename])) {
 	$token[$_tmp_tabellename] = init_token($_tmp_tabellename);
 }
 $tt=$token[$_tmp_tabellename];
-if ($tt["last_used"]+$tt["interval"]<time()) {
+if ($tt["last_used"]+$tt["cooldown"]<time()) {
 	
 	// Youtube
 	$req_count=50;
@@ -22,7 +22,7 @@ if ($tt["last_used"]+$tt["interval"]<time()) {
 		$felder=null;
 		$felder["channelId"]="TEXT";
 		$felder["last_seen"]="TEXT";
-		$database->create_table($_tmp_tabellename, $felder, "channelId");
+		$database->create_table($_tmp_tabellename, $felder, "");
 		unset($felder);
 	}
 	$new_feld["first_seen"]="TEXT";

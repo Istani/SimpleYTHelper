@@ -9,14 +9,14 @@ $tt=$token[$_tmp_tabellename];
 $BroadcastId=null;
 $ChatId=null;
 
-if ($tt["last_used"]+$tt["interval"]<time()) {
+if ($tt["last_used"]+$tt["cooldown"]<time()) {
   // SQL Channel Statistics
   $check_table=$database->show_tables();
   if(!in_array($_tmp_tabellename, $check_table)) {
     $felder=null;
     $felder["id"]="TEXT";
     $felder["last_seen"]="TEXT";
-    $database->create_table($_tmp_tabellename, $felder, "id");
+    $database->create_table($_tmp_tabellename, $felder, "");
     unset($felder);
   }
   
