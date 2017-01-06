@@ -1,6 +1,6 @@
 <?php
 // Cronjob Channel Statistics
-$_tmp_tabellename="channels_statistics";
+$_tmp_tabellename=strtolower("channels_statistics");
 if (!isset($token[$_tmp_tabellename])) {
 	$token[$_tmp_tabellename] = init_token($_tmp_tabellename);
 }

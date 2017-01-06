@@ -1,6 +1,6 @@
 <?php
 // Cronjob Channel Statistics
-$_tmp_tabellename="livestream_chat";
+$_tmp_tabellename=strtolower("livestream_chat");
 if (!isset($token[$_tmp_tabellename])) {
 	$token[$_tmp_tabellename] = init_token($_tmp_tabellename);
 }
@@ -12,7 +12,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 	$BroadcastId=$db_stats[0]["broadcastId"];
 	$ChatId=$db_stats[0]["chatId"];
 	
-	if ($BroadcastId!="null") {
+	if ($BroadcastId!="null" && $BroadcastId!="") {
 		
 		if ($tt["token"] == "null") {
 			$listResponse = $youtube->liveChatMessages->listLiveChatMessages($ChatId,'snippet, authorDetails' , array("maxResults"=>2000));

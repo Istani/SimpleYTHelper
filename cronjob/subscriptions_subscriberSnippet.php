@@ -1,6 +1,6 @@
 <?php
 // Cronjob Subscriptions subscriberSnippet
-$_tmp_tabellename="subscriptions_subscriberSnippet";
+$_tmp_tabellename=strtolower("subscriptions_subscriberSnippet");
 if (!isset($token[$_tmp_tabellename])) {
 	$token[$_tmp_tabellename] = init_token($_tmp_tabellename);
 }

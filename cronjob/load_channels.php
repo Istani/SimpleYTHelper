@@ -2,7 +2,7 @@
 // Cronjob Channel for Token
 die("Noch nicht fertig");
 
-$_tmp_tabellename="channel_token";
+$_tmp_tabellename=strtolower("channel_token");
 if (!isset($token[$_tmp_tabellename])) {
   $token[$_tmp_tabellename] = init_token($_tmp_tabellename);
 }

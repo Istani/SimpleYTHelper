@@ -73,10 +73,10 @@ class db {
     
     foreach ($felder as $key => $value) {
       if ($sql_felder == "") {
-        $sql_felder = $key." ".$value;
+        $sql_felder = "`".$key."` ".$value;
         
       } else {
-        $sql_felder.=', ' . $key." ".$value;
+        $sql_felder.=', ' . "`".$key."` ".$value;
         
       }
       if ($key==$pkfeld){
@@ -109,12 +109,13 @@ class db {
     foreach ($felder as $key=>$value){
       if (!isset($isFelder[0][trim($key)])){
         if ($this->system=="mysql") {
-          $sql_string="ALTER TABLE ".$tabelle." ADD COLUMN ".$key." ".$value.";";
+          $sql_string="ALTER TABLE ".$tabelle." ADD COLUMN `".$key."` ".$value.";";
           $return_status=mysql_query($sql_string, $this->connection);
           $isFelder[0][$key]=$value;
-          if (!$return_status){
-            $this->error("<b>Abfrage:</b> <i>" . $sql_string . "</i><br>Konnte nicht ausgeführt werden!<br>" . mysql_error());
-          }
+          // Bei Duplicate column Name macht der Probleme... bei Sqlite klappte des -.-
+          //if (!$return_status){
+          //  $this->error("<b>Abfrage:</b> <i>" . $sql_string . "</i><br>Konnte nicht ausgeführt werden!<br>" . mysql_error());
+          //}
         } else if ($this->system=="sqlite") {
           $sql_string="ALTER TABLE ".$tabelle." ADD COLUMN ".$key." ".$value.";";
           $return_status=$this->database->exec($sql_string);
@@ -238,12 +239,12 @@ class db {
       $value = str_replace("'", "", $value);
       $value = utf8_encode($value);
       if ($sql_felder == "") {
-        $sql_felder = $key . "='" . $value . "'";
-        $felder_list=$key;
+        $sql_felder ="`".$key."`='" . $value . "'";
+        $felder_list="`".$key."`";
         $value_list="'".$value."'";
       } else {
-        $sql_felder.=", " . $key . "='" . $value . "'";
-        $felder_list.=", ".$key;
+        $sql_felder.=", `".$key."`='" . $value . "'";
+        $felder_list.=", `".$key."`";
         $value_list.=", '".$value."'";
       }
     }

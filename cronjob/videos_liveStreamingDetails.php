@@ -1,6 +1,6 @@
 <?php
 // Cronjob
-$_tmp_tabellename="videos_liveStreamingDetails";
+$_tmp_tabellename=strtolower("videos_liveStreamingDetails");
 if (!isset($token[$_tmp_tabellename])) {
   $token[$_tmp_tabellename] = init_token($_tmp_tabellename);
 }

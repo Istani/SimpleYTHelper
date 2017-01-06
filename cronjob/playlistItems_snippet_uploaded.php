@@ -1,6 +1,7 @@
 <?php
 // Benötigte Daten
-$_tmp_tabellename="channels_contentDetails";
+$check_table=$database->show_tables();
+$_tmp_tabellename=strtolower("channels_contentDetails");
 if(in_array($_tmp_tabellename, $check_table)) {
   $db_stats = $database->sql_select($_tmp_tabellename, "*", "id='".$KANALID."'", true);
   $uploadsListId=$db_stats[0]["uploads"];
