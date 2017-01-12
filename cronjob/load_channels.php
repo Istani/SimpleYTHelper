@@ -1,7 +1,5 @@
 <?php
 // Cronjob Channel for Token
-die("Noch nicht fertig");
-
 $_tmp_tabellename=strtolower("channel_token");
 if (!isset($token[$_tmp_tabellename])) {
   $token[$_tmp_tabellename] = init_token($_tmp_tabellename);
@@ -22,20 +20,20 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     unset($data4sql);
   }
   foreach ($listResponse["items"] as $listItem) {
-    $data4sql['id']=$listItem["id"];
+    $data4sql['channel_id']=$listItem["id"];
     foreach ($data4sql as $key=>$value){
       $new_feld[$key]="TEXT";
       $database->add_columns($_tmp_tabellename, $new_feld);
       unset($new_feld);
       $newData[$key]=$value;
     }
-    $newData["id"]=$KANALID;
-    $newData["last_seen"]=time();
+    $newData["token_id"]=$_SESSION['token']['id'];
     $database->sql_insert_update($_tmp_tabellename, $newData);
     unset($newData);
   }
   echo $_tmp_tabellename." updated!<br>";
   $tt["last_used"]=time();
+  $tt["yt_token"]=$_SESSION['token']['id'];
 }
 // Save Token
 if($tt["token"]==""){$tt["token"]="null";}

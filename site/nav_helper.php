@@ -12,6 +12,8 @@
         echo sprintf('<p>An client error occurred: <code>%s</code></p>', htmlspecialchars($e->getMessage()));
       }
       $token_id=session_to_database($database, $_SESSION['token']);
+      $tmp_yt_tokens=$database->sql_select($_tmp_tabellename,"*","id=".$token_id." LIMIT 1",true);
+      $_SESSION['token'] = $tmp_yt_tokens[0];
     } else {
       $state = mt_rand();
       $client->setState($state);

@@ -21,9 +21,10 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 	$check_table=$database->show_tables();
 	if(!in_array($_tmp_tabellename, $check_table)) {
 		$felder=null;
+		$felder["yt_token"]="VARCHAR(255)";
 		$felder["id"]="TEXT";
-		$felder["last_seen"]="TEXT";
-		$database->create_table($_tmp_tabellename, $felder, "");
+		$felder["last_seen"]="INT(20)";
+		$database->create_table($_tmp_tabellename, $felder, "yt_token, id");
 		unset($felder);
 	}
 	$database->sql_select($_tmp_tabellename, "*", "id='".$KANALID."' LIMIT 1", true);

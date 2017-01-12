@@ -51,6 +51,7 @@ function session_to_database($database, $data4sql) {
     $felder=null;
     $felder["id"]="INT(20) NOT NULL AUTO_INCREMENT";
     $felder["last_seen"]="INT(20)";
+    $felder["last_cronjob"]="INT(20)";
     $database->create_table($_tmp_tabellename, $felder, "id");
     unset($felder);
   }
@@ -62,6 +63,9 @@ function session_to_database($database, $data4sql) {
     $newData[$key]=$value;
   }
   $check_token=$database->sql_select($_tmp_tabellename, "*", "access_token='".$data4sql['access_token']."'", true);
+  if (isset($data4sql['id'])) {
+    $check_token[0]['id']=$data4sql['id'];
+  }
   if (($check_token[0]['id']>0)) {
     $newData["id"]=$check_token[0]['id'];
   } else {
