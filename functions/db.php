@@ -92,7 +92,6 @@ class db {
     } else if ($this->system=="sqlite"){
       $return_status=$this->database->exec($sql_string);
     }
-    echo $sql_string;
     return $return_status;
   }
   

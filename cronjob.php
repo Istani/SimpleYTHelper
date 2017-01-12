@@ -1,6 +1,31 @@
 <?php
 require 'inc/php_inc.php';
 // TODO: Token laden muss umgestellt werden auf MySQL
+
+function Temp_TokenToMysql($database) {
+  $handle = opendir('token');
+  while (false !== ($entry = readdir($handle))) {
+    if ($entry!=str_replace(".access","",$entry)) {
+      $channel=str_replace(".access","",$entry);
+      if ($channel!="bot.json") {
+        $accessToken=load_accesstoken($channel);
+        $refreshToken=load_refreshtoken($channel);
+        if (gettype($accessToken)=="string") {
+          echo '- '.$channel.' -<br>';
+          
+          $accessToken=json_decode($accessToken, true);
+          $accessToken['refresh_token']=$refreshToken;
+          if (session_to_database($database, $accessToken)) {
+            unlink('token/'.$entry);
+          }
+        }
+      }
+    }
+  }
+}
+Temp_TokenToMysql($database);
+
+die();
 $accessToken = load_accesstoken($KANALID);
 
 // Google Verbindung

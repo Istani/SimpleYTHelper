@@ -41,6 +41,9 @@ function load_refreshtoken($kanal) {
 
 function session_to_database($database, $data4sql) {
   $return_id=0;
+  if (isset($data4sql['token'])) {
+    $data4sql=$data4sql['token'];
+  }
   // Auth Tabelle Anlegen!
   $_tmp_tabellename="AuthToken";
   $check_table=$database->show_tables();
@@ -58,7 +61,7 @@ function session_to_database($database, $data4sql) {
     unset($new_feld);
     $newData[$key]=$value;
   }
-  $check_token=$database->sql_select($_tmp_tabellename, "*", "access_token='".$_SESSION['token']['access_token']."'", true);
+  $check_token=$database->sql_select($_tmp_tabellename, "*", "access_token='".$data4sql['access_token']."'", true);
   if (($check_token[0]['id']>0)) {
     $newData["id"]=$check_token[0]['id'];
   } else {
@@ -66,7 +69,7 @@ function session_to_database($database, $data4sql) {
   }
   $newData["last_seen"]=time();
   $database->sql_insert_update($_tmp_tabellename, $newData);
-  $check_token=$database->sql_select($_tmp_tabellename, "*", "access_token='".$_SESSION['token']['access_token']."'", true);
+  $check_token=$database->sql_select($_tmp_tabellename, "*", "access_token='".$data4sql['access_token']."'", true);
   
   $return_id=$check_token[0]['id'];
   
