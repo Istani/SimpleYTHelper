@@ -32,8 +32,15 @@ $check_table=$database->show_tables();
 if(!in_array($_tmp_tabellename, $check_table)) {
   die("ERROR!");
 }
-$tmp_yt_tokens=$database->sql_select($_tmp_tabellename,"*","true ORDER BY last_seen LIMIT 1",true);
+$_tmp_tabellename="channel_token";
+$check_table=$database->show_tables();
+if(!in_array($_tmp_tabellename, $check_table)) {
+  $tmp_yt_tokens=$database->sql_select("authtoken","*","true ORDER BY last_seen LIMIT 1",true);
+} else {
+  $tmp_yt_tokens=$database->sql_select("authtoken LEFT JOIN channel_token ON authtoken.id=channel_token.token_id","authtoken.*, channel_token.channel_id","true ORDER BY channel_token.last_cron LIMIT 1",true);
+}
 $accessToken = json_encode($tmp_yt_tokens[0]);
+$_tmp_tabellename="authtoken";
 
 // Google Verbindung
 $client = new Google_Client();
@@ -86,6 +93,9 @@ function init_token($name) {
 }
 
 include("cronjob/load_channels.php");
+if (!isset($tmp_yt_tokens['channel_id'])) {
+  die();
+}
 die();
 
 include("cronjob/channels_contentDetails.php");
