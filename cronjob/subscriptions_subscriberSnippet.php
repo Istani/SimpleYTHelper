@@ -20,9 +20,10 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 	$check_table=$database->show_tables();
 	if(!in_array($_tmp_tabellename, $check_table)) {
 		$felder=null;
+		$felder["channelid"]="INT(50)";
 		$felder["token_id"]="INT(20)";
 		$felder["last_seen"]="TEXT";
-		$database->create_table($_tmp_tabellename, $felder, "token_id, channelId");
+		$database->create_table($_tmp_tabellename, $felder, "token_id, channelid");
 		unset($felder);
 	}
 	$new_feld["first_seen"]="TEXT";
@@ -49,7 +50,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 		unset($newData);
 	}
 	// Update
-	$empty_data=$database->sql_select($_tmp_tabellename, "channelId, token_id","first_seen IS NULL", false);
+	$empty_data=$database->sql_select($_tmp_tabellename, "channelid, token_id","first_seen IS NULL", false);
 	foreach ($empty_data as $k=>$v){
 		$newData=$v;
 		$newData["first_seen"]=time();
