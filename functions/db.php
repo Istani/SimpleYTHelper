@@ -40,6 +40,7 @@ class db {
     $return_array = array();
     if ($this->system == "mysql") {
       $sql_string = "SHOW TABLE STATUS";
+      $sql_string=strtolower($sql_string);
       if ($query = mysql_query($sql_string, $this->connection)) {
         while ($row = mysql_fetch_assoc($query)) {
           if ($row['Comment'] != "view") {
@@ -50,6 +51,7 @@ class db {
         $this->error("<b>Abfrage:</b> <i>" . $sql_string . "</i><br>Konnte nicht ausgefuehrt werden!<br>" . mysql_error());
       }
     } else if ($this->system == "sqlite") {
+      $sql_string=strtolower($sql_string);
       $sql_string = "SELECT * FROM sqlite_master";
       if ($query = $this->database->query($sql_string)) {
         while ($row =$query->fetchArray()) {
@@ -86,12 +88,13 @@ class db {
     }
     
     $sql_string=" CREATE TABLE ".strtolower($table)." (".$sql_felder.")";
-    
+    $sql_string=strtolower($sql_string);
     if ($this->system=="mysql") {
       $return_status=mysql_query($sql_string, $this->connection);
     } else if ($this->system=="sqlite"){
       $return_status=$this->database->exec($sql_string);
     }
+    echo $sql_string;
     return $return_status;
   }
   
@@ -109,8 +112,9 @@ class db {
       $key=strtolower($key);
       $key=trim($key);
       if (!isset($isFelder[0][trim($key)])){
+        $sql_string="ALTER TABLE ".$tabelle." ADD COLUMN `".$key."` ".$value.";";
+        $sql_string=strtolower($sql_string);
         if ($this->system=="mysql") {
-          $sql_string="ALTER TABLE ".$tabelle." ADD COLUMN `".$key."` ".$value.";";
           $return_status=mysql_query($sql_string, $this->connection);
           $isFelder[0][$key]=$value;
           // Bei Duplicate column Name macht der Probleme... bei Sqlite klappte des -.-
@@ -118,7 +122,6 @@ class db {
           //  $this->error("<b>Abfrage:</b> <i>" . $sql_string . "</i><br>Konnte nicht ausgeführt werden!<br>" . mysql_error());
           //}
         } else if ($this->system=="sqlite") {
-          $sql_string="ALTER TABLE ".$tabelle." ADD COLUMN ".$key." ".$value.";";
           $return_status=$this->database->exec($sql_string);
           $isFelder[0][$key]=$value;
         }
@@ -149,6 +152,7 @@ class db {
       } else {
         $sql_string = "SELECT " . $sql_felder . " FROM " . $tabelle;
       }
+      $sql_string=strtolower($sql_string);
       if ($query = mysql_query($sql_string, $this->connection)) {
         if (mysql_num_rows($query) > 0) {
           while ($row = mysql_fetch_assoc($query)) {
@@ -157,6 +161,7 @@ class db {
         } else {
           if ($show_empty) {
             $sql_string = "SHOW COLUMNS FROM " . $tabelle;
+            $sql_string=strtolower($sql_string);
             if ($query = mysql_query($sql_string, $this->connection)) {
               while ($row = mysql_fetch_assoc($query)) {
                 $return_array[0][$row['Field']] = "";
@@ -176,6 +181,7 @@ class db {
       } else {
         $sql_string = "SELECT " . $sql_felder . " FROM " . $tabelle;
       }
+      $sql_string=strtolower($sql_string);
       if ($query =$this->database->query($sql_string)) {
         
         if ($query->numColumns()>0) {
@@ -195,7 +201,7 @@ class db {
       }
       if ((count($return_array)==0) && ($show_empty)) {
         $sql_string = "PRAGMA table_info('".$tabelle."')";
-        //
+        $sql_string=strtolower($sql_string);
         if ($query =$this->database->query($sql_string)) {
           if ($query->numColumns()>0) {
             while ($row = $query->fetchArray()) {
@@ -213,14 +219,14 @@ class db {
   function sql_delete($tabelle, $where_string) {
     $tabelle=strtolower($tabelle);
     $return_bool = false;
+    $sql_string = "DELETE FROM " . $tabelle . " WHERE " . $where_string;
+    $sql_string=strtolower($sql_string);
     if ($this->system == "mysql") {
-      $sql_string = "DELETE FROM " . $tabelle . " WHERE " . $where_string;
       if ($query = mysql_query($sql_string, $this->connection)) {
         $return_bool = true;
       }
     }
     if ($this->system == "sqlite") {
-      $sql_string = "DELETE FROM " . $tabelle . " WHERE " . $where_string;
       if ($query = sqlite_query($this->database, $sql_string)) {
         $return_bool = true;
       }
@@ -257,6 +263,7 @@ class db {
     }
     if ($this->system == "mysql") {
       $sql_string = "INSERT INTO " . $tabelle . " SET " . $sql_felder . " ON DUPLICATE KEY UPDATE " . $sql_felder;
+      $sql_string=strtolower($sql_string);
       if ($query = mysql_query($sql_string, $this->connection)) {
         $return = true;
       } else {
@@ -268,6 +275,7 @@ class db {
       //get primary key
       $pk="";
       $sql_string = "PRAGMA table_info('".$tabelle."')";
+      $sql_string=strtolower($sql_string);
       $query=$this->database->query($sql_string);
       while ($row=$query->fetchArray()) {
         if ($row["pk"]=="1"){
@@ -289,7 +297,7 @@ class db {
         //update
         $sql_string="UPDATE ".$tabelle." SET ".$sql_felder." WHERE ".$pk."='".$felder_werte_array[$pk]."'";
       }
-      
+      $sql_string=strtolower($sql_string);
       if (!$return=$this->database->exec($sql_string)) {
         $this->error("<b>Abfrage:</b> <i>" . $sql_string . "</i><br>Konnte nicht ausgefuehrt werden!<br>SQLite wird noch nicht unterstützt!<br>");
       }
