@@ -39,6 +39,12 @@ $_tmp_tabellename="channel_token";
 $check_table=$database->show_tables();
 if(!in_array($_tmp_tabellename, $check_table)) {
   $tmp_yt_tokens=$database->sql_select("authtoken","*","true ORDER BY last_seen LIMIT 1",false);
+  $felder=null;
+  $felder["token_id"]="INT(20)";
+  $felder["channel_id"]="VARCHAR(50)";
+  $felder["last_cron"]="INT(20)";
+  $database->create_table($_tmp_tabellename, $felder, "token_id, channel_id");
+  unset($felder);
 } else {
   $tmp_yt_tokens=$database->sql_select("authtoken LEFT JOIN channel_token ON authtoken.id=channel_token.token_id","authtoken.*, channel_token.channel_id","true ORDER BY channel_token.last_cron LIMIT 1",false);
 }
