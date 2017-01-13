@@ -3,12 +3,12 @@
 $check_table=$database->show_tables();
 $_tmp_tabellename=strtolower("channels_contentDetails");
 if(in_array($_tmp_tabellename, $check_table)) {
-  $db_stats = $database->sql_select($_tmp_tabellename, "*", "id='".$KANALID."'", true);
+  $db_stats = $database->sql_select($_tmp_tabellename, "*", "channel_id='".$_SESSION['token']['channel_id']."'", true);
   $uploadsListId=$db_stats[0]["uploads"];
 }
 
 // Cronjob
-$_tmp_tabellename="videos_snippet";
+$_tmp_tabellename=strtolower("videos_snippet");
 if (!isset($token[$_tmp_tabellename])) {
   $token[$_tmp_tabellename] = init_token($_tmp_tabellename);
 }
@@ -23,7 +23,6 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     $listResponse = $youtube->playlistItems->listPlaylistItems("snippet", array('playlistId' => $uploadsListId, "maxResults" => $req_count, "pageToken" => $tt["token"]));
   }
   
-  
   $data4sql= $listResponse["items"];
   $tt["token"]=$listResponse["nextPageToken"];
   
@@ -31,9 +30,9 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $check_table=$database->show_tables();
   if(!in_array($_tmp_tabellename, $check_table)) {
     $felder=null;
-    $felder["videoId"]="TEXT";
+    $felder["videoId"]="VARCHAR(50)";
     $felder["last_seen"]="TEXT";
-    $database->create_table($_tmp_tabellename, $felder, "");
+    $database->create_table($_tmp_tabellename, $felder, "videoId");
     unset($felder);
   }
   $new_feld["first_seen"]="TEXT";
@@ -55,7 +54,6 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     $row4sql=null;
     $row4sql=$tmp_row4sql;
     
-    unset($row4sql["channelId"]);
     unset($row4sql["channelTitle"]);
     unset($row4sql["playlistId"]);
     unset($row4sql["position"]);
@@ -83,6 +81,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   
   echo $_tmp_tabellename." updated!<br>";
   $tt["last_used"]=time();
+  $tt["yt_token"]=$_SESSION['token']['id'];
 }
 // Save Token
 if($tt["token"]==""){$tt["token"]="null";}

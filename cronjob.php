@@ -56,7 +56,7 @@ if ($client->isAccessTokenExpired()) {
   $tmp_insert_token["token"]['id']=$tmp_yt_tokens[0]['id'];
   session_to_database($database, $tmp_insert_token);
 }
-$tmp_yt_tokens=$database->sql_select($_tmp_tabellename,"*","true ORDER BY last_seen LIMIT 1",true);
+$tmp_yt_tokens=$database->sql_select("authtoken LEFT JOIN channel_token ON authtoken.id=channel_token.token_id","authtoken.*, channel_token.channel_id","true ORDER BY channel_token.last_cron LIMIT 1",true);
 $_SESSION['token'] = $tmp_yt_tokens[0];
 
 $youtube = new Google_Service_YouTube($client);
@@ -93,24 +93,22 @@ function init_token($name) {
 }
 
 include("cronjob/load_channels.php");
-if (!isset($tmp_yt_tokens['channel_id'])) {
-  die();
+if (!isset($tmp_yt_tokens[0]['channel_id'])) {
+  die("CHANNEL ID KANN NICHT GEFUNDEN WERDEN!");
 }
-die();
 
 include("cronjob/channels_contentDetails.php");
 include("cronjob/channels_statistics.php");
 
 include("cronjob/subscriptions_subscriberSnippet.php");
-
 include("cronjob/playlistItems_snippet_uploaded.php");
+
 include("cronjob/videos_statistics.php");
 include("cronjob/videos_status.php");
+//include("cronjob/videos_contentDetails.php");
 
 include("cronjob/channels_livestreamchat.php");
 include("cronjob/livestream_chat.php");
-
-
-//include("cronjob/videos_contentDetails.php");
 //include("cronjob/videos_liveStreamingDetails.php");
+
 ?>

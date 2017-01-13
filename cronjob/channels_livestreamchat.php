@@ -14,17 +14,17 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $check_table=$database->show_tables();
   if(!in_array($_tmp_tabellename, $check_table)) {
     $felder=null;
-    $felder["id"]="TEXT";
+    $felder["channel_id"]="VARCHAR(50)";
     $felder["last_seen"]="TEXT";
-    $database->create_table($_tmp_tabellename, $felder, "");
+    $database->create_table($_tmp_tabellename, $felder, "channel_id");
     unset($felder);
   }
   
   // Youtube Channel Statistics
   if ($tt["token"] == "null") {
-    $listResponse = $youtube-> search->listSearch('id', array('channelId'=>$KANALID, 'eventType'=>'live', 'type'=>'video'));
+    $listResponse = $youtube-> search->listSearch('id', array('channelId'=>$_SESSION['token']['channel_id'], 'eventType'=>'live', 'type'=>'video'));
   } else {
-    $listResponse = $youtube-> search->listSearch('id', array('channelId'=>$KANALID, 'eventType'=>'live', 'type'=>'video', "pageToken" => $tt["token"] ));
+    $listResponse = $youtube-> search->listSearch('id', array('channelId'=>$_SESSION['token']['channel_id'], 'eventType'=>'live', 'type'=>'video', "pageToken" => $tt["token"] ));
   }
   $tt["token"]=$listResponse["nextPageToken"];
   if (isset($listResponse["items"][0])) {
@@ -40,7 +40,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $database->add_columns($_tmp_tabellename, $new_feld);
   unset($new_feld);
   
-  $newData["id"]=$KANALID;
+  $newData["channel_id"]=$_SESSION['token']['channel_id'];
   $newData["last_seen"]=time();
   $newData["broadcastId"]=$BroadcastId;
   $newData["chatId"]=$ChatId;
@@ -49,6 +49,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   
   echo $_tmp_tabellename." updated!<br>";
   $tt["last_used"]=time();
+  $tt["yt_token"]=$_SESSION['token']['id'];
 }
 // Save Token
 if($tt["token"]==""){$tt["token"]="null";}

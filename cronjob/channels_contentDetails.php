@@ -1,6 +1,6 @@
 <?php
 // Cronjob Channel Statistics
-$_tmp_tabellename=strtolower("channels_contentDetails");
+$_tmp_tabellename=strtolower("channels_contentdetails");
 if (!isset($token[$_tmp_tabellename])) {
 	$token[$_tmp_tabellename] = init_token($_tmp_tabellename);
 }
@@ -9,9 +9,9 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 	
 	// Youtube Channel Statistics
 	if ($tt["token"] == "null") {
-		$listResponse = $youtube->channels->listChannels('contentDetails', array('id' => $KANALID));
+		$listResponse = $youtube->channels->listChannels('contentDetails', array('id' => $_SESSION['token']['channel_id']));
 	} else {
-		$listResponse = $youtube->channels->listChannels('contentDetails', array('id' => $KANALID, "pageToken" => $tt["token"] ));
+		$listResponse = $youtube->channels->listChannels('contentDetails', array('id' => $_SESSION['token']['channel_id'], "pageToken" => $tt["token"] ));
 	}
 	
 	$data4sql= $listResponse[0]["modelData"]["contentDetails"]["relatedPlaylists"];
@@ -21,25 +21,25 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 	$check_table=$database->show_tables();
 	if(!in_array($_tmp_tabellename, $check_table)) {
 		$felder=null;
-		$felder["yt_token"]="VARCHAR(255)";
-		$felder["id"]="TEXT";
+		$felder["channel_id"]="VARCHAR(50)";
 		$felder["last_seen"]="INT(20)";
-		$database->create_table($_tmp_tabellename, $felder, "yt_token, id");
+		$database->create_table($_tmp_tabellename, $felder, "channel_id");
 		unset($felder);
 	}
-	$database->sql_select($_tmp_tabellename, "*", "id='".$KANALID."' LIMIT 1", true);
+	$database->sql_select($_tmp_tabellename, "*", "channel_id='".$_SESSION['token']['channel_id']."' LIMIT 1", true);
 	foreach ($data4sql as $key=>$value){
 		$new_feld[$key]="TEXT";
 		$database->add_columns($_tmp_tabellename, $new_feld);
 		unset($new_feld);
 		$newData[$key]=$value;
 	}
-	$newData["id"]=$KANALID;
+	$newData["channel_id"]=$_SESSION['token']['channel_id'];
 	$newData["last_seen"]=time();
 	$database->sql_insert_update($_tmp_tabellename, $newData);
 	unset($newData);
 	echo $_tmp_tabellename." updated!<br>";
 	$tt["last_used"]=time();
+	$tt["yt_token"]=$_SESSION['token']['id'];
 	$tt["cooldown"]=86400; // Einmal am Tag aktualisieren, eigentlich sollte auch einmalig reichen, aber für den Fall das was flasch läuft oder YT was ändert....
 }
 // Save Token

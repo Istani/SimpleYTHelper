@@ -11,10 +11,10 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $req_count=50;
   if ($tt["token"] == "null") {
     //$listResponse = $youtube->playlistItems->listPlaylistItems("snippet", array('playlistId' => $uploadsListId, "maxResults" => $req_count));
-    $listRequests = $database->sql_select("videos_snippet","videoId", "`ignore`=0 ORDER BY last_statisticsupdate LIMIT ".$req_count, true);
+    $listRequests = $database->sql_select("videos_snippet","videoId", "`channelId`='".$_SESSION['token']['channel_id']."' AND `ignore`=0 ORDER BY last_statisticsupdate LIMIT ".$req_count, true);
   } else {
     //$listResponse = $youtube->playlistItems->listPlaylistItems("snippet", array('playlistId' => $uploadsListId, "maxResults" => $req_count, "pageToken" => $tt["token"]));
-    $listRequests = $database->sql_select("videos_snippet","videoId", "`ignore`=0 ORDER BY last_statisticsupdate LIMIT ".$req_count, true);
+    $listRequests = $database->sql_select("videos_snippet","videoId", "`channelId`='".$_SESSION['token']['channel_id']."' AND `ignore`=0 ORDER BY last_statisticsupdate LIMIT ".$req_count, true);
   }
   
   //$data4sql= $listResponse["items"];
@@ -25,9 +25,9 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $check_table=$database->show_tables();
   if(!in_array($_tmp_tabellename, $check_table)) {
     $felder=null;
-    $felder["videoId"]="TEXT";
+    $felder["videoId"]="VARCHAR(50)";
     $felder["last_seen"]="TEXT";
-    $database->create_table($_tmp_tabellename, $felder, "");
+    $database->create_table($_tmp_tabellename, $felder, "videoId");
     unset($felder);
   }
   $new_feld["first_seen"]="TEXT";
@@ -73,6 +73,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   
   echo $_tmp_tabellename." updated!<br>";
   $tt["last_used"]=time();
+  $tt["yt_token"]=$_SESSION['token']['id'];
 }
 // Save Token
 if($tt["token"]==""){$tt["token"]="null";}

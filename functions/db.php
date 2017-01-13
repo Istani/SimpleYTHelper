@@ -202,6 +202,7 @@ class db {
         }
       }
     }
+    //echo $sql_string.'<br>';
     return $return_array;
   }
   
@@ -286,6 +287,7 @@ class db {
         $this->error("<b>Abfrage:</b> <i>" . $sql_string . "</i><br>Konnte nicht ausgefuehrt werden!<br>SQLite wird noch nicht unterstützt!<br>");
       }
     }
+    //echo $sql_string.'<br><br>';
     return $return;
   }
   

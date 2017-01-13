@@ -1,6 +1,6 @@
 <?php
 // Cronjob Subscriptions subscriberSnippet
-$_tmp_tabellename=strtolower("subscriptions_subscriberSnippet");
+$_tmp_tabellename=strtolower("subscriptions_subscribersnippet");
 if (!isset($token[$_tmp_tabellename])) {
 	$token[$_tmp_tabellename] = init_token($_tmp_tabellename);
 }
@@ -20,9 +20,9 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 	$check_table=$database->show_tables();
 	if(!in_array($_tmp_tabellename, $check_table)) {
 		$felder=null;
-		$felder["channelId"]="TEXT";
+		$felder["token_id"]="INT(20)";
 		$felder["last_seen"]="TEXT";
-		$database->create_table($_tmp_tabellename, $felder, "");
+		$database->create_table($_tmp_tabellename, $felder, "token_id, channelId");
 		unset($felder);
 	}
 	$new_feld["first_seen"]="TEXT";
@@ -43,12 +43,13 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 			unset($new_feld);
 			$newData[$key]=$value;
 		}
+		$newData["token_id"]=$_SESSION['token']['id'];
 		$newData["last_seen"]=time();
 		$database->sql_insert_update($_tmp_tabellename, $newData);
 		unset($newData);
 	}
 	// Update
-	$empty_data=$database->sql_select($_tmp_tabellename, "channelId","first_seen IS NULL", false);
+	$empty_data=$database->sql_select($_tmp_tabellename, "channelId, token_id","first_seen IS NULL", false);
 	foreach ($empty_data as $k=>$v){
 		$newData=$v;
 		$newData["first_seen"]=time();
@@ -56,10 +57,9 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 		$database->sql_insert_update($_tmp_tabellename, $newData);
 	}
 	unset($newData);
-	
-	
 	echo $_tmp_tabellename." updated!<br>";
 	$tt["last_used"]=time();
+	$tt["yt_token"]=$_SESSION['token']['id'];
 }
 // Save Token
 if($tt["token"]==""){$tt["token"]="null";}
