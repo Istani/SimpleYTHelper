@@ -16,14 +16,14 @@ $output[5] = "Nobody";
 
 $check_table=$database->show_tables();
 
-$_tmp_tabellename="subscriptions_subscriberSnippet";
+$_tmp_tabellename=strtolower("subscriptions_subscriberSnippet");
 if(in_array($_tmp_tabellename, $check_table)) {
   // Neu Benötigtes Feld hinzufügen
   $new_feld["BOT_five_subs"]="TEXT";
   $database->add_columns($_tmp_tabellename, $new_feld);
   unset($new_feld);
   // Feld für Datensätze updaten
-  $empty_data=$database->sql_select($_tmp_tabellename, "channelId","not BOT_five_subs = '".$output[0]."'", false);
+  $empty_data=$database->sql_select($_tmp_tabellename, "channelId","token_id='".$_SESSION['token']['id']."' AND not BOT_five_subs = '".$output[0]."'", false);
   foreach ($empty_data as $k=>$v){
     $newData=$v;
     $newData["BOT_five_subs"]="";
@@ -32,9 +32,9 @@ if(in_array($_tmp_tabellename, $check_table)) {
   unset($newData);
   
   // Abfrage
-  $db_subs = $database->sql_select($_tmp_tabellename, "*", "ignore=0 AND BOT_five_subs='".$output[0]."' ORDER BY RANDOM() LIMIT 5",true);
+  $db_subs = $database->sql_select($_tmp_tabellename, "*", "token_id='".$_SESSION['token']['id']."' AND `ignore`=0 AND BOT_five_subs='".$output[0]."' ORDER BY RAND() LIMIT 5",true);
   if (count($db_subs)<3) {
-    $db_subs = $database->sql_select($_tmp_tabellename, "*", "ignore=0 ORDER BY RANDOM() LIMIT 5",true);
+    $db_subs = $database->sql_select($_tmp_tabellename, "*", "token_id='".$_SESSION['token']['id']."' AND `ignore`=0 ORDER BY RAND() LIMIT 5",true);
   }
   for ($i=0;$i<5;$i++) {
     $newData=$db_subs[$i];
@@ -43,7 +43,7 @@ if(in_array($_tmp_tabellename, $check_table)) {
   }
   unset($newData);
   
-  $db_subs = $database->sql_select($_tmp_tabellename, "*", "ignore=0 AND BOT_five_subs='".$output[0]."' ORDER BY title LIMIT 5",true);
+  $db_subs = $database->sql_select($_tmp_tabellename, "*", "token_id='".$_SESSION['token']['id']."' AND `ignore`=0 AND BOT_five_subs='".$output[0]."' ORDER BY title LIMIT 5",true);
   $output[1]=$db_subs[0]["title"];
   $output[2]=$db_subs[1]["title"];
   $output[3]=$db_subs[2]["title"];
