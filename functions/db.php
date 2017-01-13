@@ -110,6 +110,7 @@ class db {
       $key=trim($key);
       if (!isset($isFelder[0][trim($key)])){
         $sql_string="ALTER TABLE ".$tabelle." ADD COLUMN `".$key."` ".$value.";";
+        echo $sql_string.'<br>';
         if ($this->system=="mysql") {
           $return_status=mysql_query($sql_string, $this->connection);
           $isFelder[0][$key]=$value;
