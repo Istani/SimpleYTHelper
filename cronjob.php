@@ -35,9 +35,9 @@ if(!in_array($_tmp_tabellename, $check_table)) {
 $_tmp_tabellename="channel_token";
 $check_table=$database->show_tables();
 if(!in_array($_tmp_tabellename, $check_table)) {
-  $tmp_yt_tokens=$database->sql_select("authtoken","*","true ORDER BY last_seen LIMIT 1",true);
+  $tmp_yt_tokens=$database->sql_select("authtoken","*","true ORDER BY last_seen LIMIT 1",false);
 } else {
-  $tmp_yt_tokens=$database->sql_select("authtoken LEFT JOIN channel_token ON authtoken.id=channel_token.token_id","authtoken.*, channel_token.channel_id","true ORDER BY channel_token.last_cron LIMIT 1",true);
+  $tmp_yt_tokens=$database->sql_select("authtoken LEFT JOIN channel_token ON authtoken.id=channel_token.token_id","authtoken.*, channel_token.channel_id","true ORDER BY channel_token.last_cron LIMIT 1",false);
 }
 $accessToken = json_encode($tmp_yt_tokens[0]);
 $_tmp_tabellename="authtoken";
@@ -56,7 +56,7 @@ if ($client->isAccessTokenExpired()) {
   $tmp_insert_token["token"]['id']=$tmp_yt_tokens[0]['id'];
   session_to_database($database, $tmp_insert_token);
 }
-$tmp_yt_tokens=$database->sql_select("authtoken LEFT JOIN channel_token ON authtoken.id=channel_token.token_id","authtoken.*, channel_token.channel_id","true ORDER BY channel_token.last_cron LIMIT 1",true);
+$tmp_yt_tokens=$database->sql_select("authtoken LEFT JOIN channel_token ON authtoken.id=channel_token.token_id","authtoken.*, channel_token.channel_id","true ORDER BY channel_token.last_cron LIMIT 1",false);
 $_SESSION['token'] = $tmp_yt_tokens[0];
 
 $youtube = new Google_Service_YouTube($client);
