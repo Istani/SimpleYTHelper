@@ -22,7 +22,6 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 		$data4sql= $listResponse["items"][0];
 		debug_log($data4sql);
 		
-		die();
 		$tt["token"]=$listResponse["nextPageToken"];
 		$tt["cooldown"]=$listResponse["pollingcooldownMillis"]/1000+1;
 		
