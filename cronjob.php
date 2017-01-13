@@ -11,12 +11,15 @@ function Temp_TokenToMysql($database) {
       if ($channel!="bot.json") {
         $accessToken=load_accesstoken($channel);
         $refreshToken=load_refreshtoken($channel);
+        
+        if (gettype($accessToken)!="string") {
+          $accessToken=json_encode($accessToken, true);
+        }
         if (gettype($accessToken)=="string") {
           echo '- '.$channel.' -<br>';
-          
           $accessToken=json_decode($accessToken, true);
           $accessToken['refresh_token']=$refreshToken;
-          if (session_to_database($database, $accessToken)) {
+          if (session_to_database($database, $accessToken)>0) {
             unlink('token/'.$channel.".access");
             unlink('token/'.$channel.".refresh");
           }

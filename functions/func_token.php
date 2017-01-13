@@ -45,7 +45,7 @@ function session_to_database($database, $data4sql) {
     $data4sql=$data4sql['token'];
   }
   // Auth Tabelle Anlegen!
-  $_tmp_tabellename="AuthToken";
+  $_tmp_tabellename="authtoken";
   $check_table=$database->show_tables();
   if(!in_array($_tmp_tabellename, $check_table)) {
     $felder=null;
