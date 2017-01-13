@@ -73,10 +73,10 @@ class db {
     
     foreach ($felder as $key => $value) {
       if ($sql_felder == "") {
-        $sql_felder = "`".$key."` ".$value;
+        $sql_felder = "`".strtolower($key)."` ".$value;
         
       } else {
-        $sql_felder.=', ' . "`".$key."` ".$value;
+        $sql_felder.=', ' . "`".strtolower($key)."` ".$value;
         
       }
       if ($key==$pkfeld){
@@ -85,7 +85,7 @@ class db {
       
     }
     
-    $sql_string=" CREATE TABLE ".$table." (".$sql_felder.")";
+    $sql_string=" CREATE TABLE ".strtolower($table)." (".$sql_felder.")";
     
     if ($this->system=="mysql") {
       $return_status=mysql_query($sql_string, $this->connection);
@@ -102,10 +102,12 @@ class db {
       $this->error("<b>Format:</b> <i></i><br>Benötigt Array als Input!<br>");
       return false;
     }
-    
+    $tabelle=strtolower($tabelle);
     $isFelder=$this->sql_select($tabelle, "*", "", true);
     
     foreach ($felder as $key=>$value){
+      $key=strtolower($key);
+      $key=trim($key);
       if (!isset($isFelder[0][trim($key)])){
         if ($this->system=="mysql") {
           $sql_string="ALTER TABLE ".$tabelle." ADD COLUMN `".$key."` ".$value.";";
@@ -126,10 +128,12 @@ class db {
   }
   
   function sql_select($tabelle, $felder = "*", $where_string = "", $show_empty = false) {
+    $tabelle=strtolower($tabelle);
     $sql_felder = "";
     $return_array = array();
     if (is_array($felder)) {
       foreach ($felder as $key => $value) {
+        $value=strtolower($value);
         if ($sql_felder == "") {
           $sql_felder = $value;
         } else {
@@ -207,6 +211,7 @@ class db {
   }
   
   function sql_delete($tabelle, $where_string) {
+    $tabelle=strtolower($tabelle);
     $return_bool = false;
     if ($this->system == "mysql") {
       $sql_string = "DELETE FROM " . $tabelle . " WHERE " . $where_string;
@@ -224,6 +229,7 @@ class db {
   }
   
   function sql_insert_update($tabelle, $felder_werte_array) {
+    $tabelle=strtolower($tabelle);
     $sql_felder = "";
     $felder_list="";
     $value_list="";
@@ -236,6 +242,7 @@ class db {
       if (get_magic_quotes_gpc()) {
         $value = stripslashes($value);
       }
+      $key=strtolower($key);
       $value = str_replace("'", "", $value);
       $value = utf8_encode($value);
       if ($sql_felder == "") {
