@@ -9,8 +9,8 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 	$load_tabellename="channels_liveStreamChat";
 	$db_stats = $database->sql_select($load_tabellename, "*", "channel_id='".$_SESSION['token']['channel_id']."'", true);
 	
-	$BroadcastId=$db_stats[0]["broadcastId"];
-	$ChatId=$db_stats[0]["chatId"];
+	$BroadcastId=$db_stats[0]["broadcastid"];
+	$ChatId=$db_stats[0]["chatid"];
 	
 	if ($BroadcastId!="null" && $BroadcastId!="") {
 		

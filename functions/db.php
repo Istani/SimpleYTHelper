@@ -91,7 +91,6 @@ class db {
     } else if ($this->system=="sqlite"){
       $return_status=$this->database->exec($sql_string);
     }
-    echo $sql_string;
     return $return_status;
   }
   
@@ -110,7 +109,7 @@ class db {
       $key=trim($key);
       if (!isset($isFelder[0][trim($key)])){
         $sql_string="ALTER TABLE ".$tabelle." ADD COLUMN `".$key."` ".$value.";";
-        echo $sql_string.'<br>';
+        
         if ($this->system=="mysql") {
           $return_status=mysql_query($sql_string, $this->connection);
           $isFelder[0][$key]=$value;
@@ -205,7 +204,6 @@ class db {
         }
       }
     }
-    //echo $sql_string.'<br>';
     return $return_array;
   }
   
@@ -291,7 +289,6 @@ class db {
         $this->error("<b>Abfrage:</b> <i>" . $sql_string . "</i><br>Konnte nicht ausgefuehrt werden!<br>SQLite wird noch nicht unterstützt!<br>");
       }
     }
-    //echo $sql_string.'<br><br>';
     return $return;
   }
   

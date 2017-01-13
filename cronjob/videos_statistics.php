@@ -11,10 +11,10 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $req_count=50;
   if ($tt["token"] == "null") {
     //$listResponse = $youtube->playlistItems->listPlaylistItems("snippet", array('playlistId' => $uploadsListId, "maxResults" => $req_count));
-    $listRequests = $database->sql_select("videos_snippet","videoId", "`channelid`='".$_SESSION['token']['channel_id']."' AND `ignore`=0 ORDER BY last_statisticsupdate LIMIT ".$req_count, true);
+    $listRequests = $database->sql_select("videos_snippet","videoid", "`channelid`='".$_SESSION['token']['channel_id']."' AND `ignore`=0 ORDER BY last_statisticsupdate LIMIT ".$req_count, true);
   } else {
     //$listResponse = $youtube->playlistItems->listPlaylistItems("snippet", array('playlistId' => $uploadsListId, "maxResults" => $req_count, "pageToken" => $tt["token"]));
-    $listRequests = $database->sql_select("videos_snippet","videoId", "`channelid`='".$_SESSION['token']['channel_id']."' AND `ignore`=0 ORDER BY last_statisticsupdate LIMIT ".$req_count, true);
+    $listRequests = $database->sql_select("videos_snippet","videoid", "`channelid`='".$_SESSION['token']['channel_id']."' AND `ignore`=0 ORDER BY last_statisticsupdate LIMIT ".$req_count, true);
   }
   
   //$data4sql= $listResponse["items"];
@@ -25,9 +25,9 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $check_table=$database->show_tables();
   if(!in_array($_tmp_tabellename, $check_table)) {
     $felder=null;
-    $felder["videoId"]="VARCHAR(50)";
+    $felder["videoid"]="VARCHAR(50)";
     $felder["last_seen"]="TEXT";
-    $database->create_table($_tmp_tabellename, $felder, "videoId");
+    $database->create_table($_tmp_tabellename, $felder, "videoid");
     unset($felder);
   }
   $new_feld["first_seen"]="TEXT";
@@ -36,12 +36,12 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   unset($new_feld);
   
   for($i=0;$i<count($data4sql);$i++) {
-    $listResponse = $youtube->videos->listVideos("statistics", array('id' => $data4sql[$i]["videoId"]));
+    $listResponse = $youtube->videos->listVideos("statistics", array('id' => $data4sql[$i]["videoid"]));
     $row4sql=$listResponse["items"][0]["statistics"];
     
     $json=json_encode($row4sql);
     $tmp_row4sql = json_decode($json, true);
-    $tmp_row4sql["videoId"]= protected_settings($data4sql[$i]["videoId"]);
+    $tmp_row4sql["videoid"]= protected_settings($data4sql[$i]["videoId"]);
     $row4sql=null;
     $row4sql=$tmp_row4sql;
     
@@ -55,13 +55,13 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     $database->sql_insert_update($_tmp_tabellename, $newData);
     unset($newData);
     
-    $newData["videoId"]=$row4sql["videoId"];
+    $newData["videoid"]=$row4sql["videoid"];
     $newData["last_statisticsupdate"]=time();
     $database->sql_insert_update("videos_snippet", $newData);
     unset($newData);
   }
   // Update
-  $empty_data=$database->sql_select($_tmp_tabellename, "videoId","first_seen IS NULL", false);
+  $empty_data=$database->sql_select($_tmp_tabellename, "videoid","first_seen IS NULL", false);
   foreach ($empty_data as $k=>$v){
     $newData=$v;
     $newData["first_seen"]=time();

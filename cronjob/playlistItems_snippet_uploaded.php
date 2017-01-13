@@ -31,6 +31,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   if(!in_array($_tmp_tabellename, $check_table)) {
     $felder=null;
     $felder["videoid"]="VARCHAR(50)";
+    $felder["channelid"]="VARCHAR(50)";
     $felder["last_seen"]="TEXT";
     $database->create_table($_tmp_tabellename, $felder, "videoid");
     unset($felder);
