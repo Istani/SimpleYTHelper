@@ -39,7 +39,7 @@ if(in_array($_tmp_tabellename, $check_table)) {
   }
   for ($i=0;$i<5;$i++) {
     $newData=$db_subs[$i];
-    $newData["BOT_five_subs"]=$output[0];
+    $newData["bot_five_subs"]=$output[0];
     $database->sql_insert_update($_tmp_tabellename, $newData);
   }
   unset($newData);
