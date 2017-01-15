@@ -11,10 +11,10 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $req_count=50;
   if ($tt["token"] == "null") {
     //$listResponse = $youtube->playlistItems->listPlaylistItems("snippet", array('playlistId' => $uploadsListId, "maxResults" => $req_count));
-    $listRequests = $database->sql_select("videos_snippet","videoId", "`channelid`='".$_SESSION['token']['channel_id']."' AND `ignore`=0 ORDER BY last_liveStreamingDetailsupdate LIMIT ".$req_count, true);
+    $listRequests = $database->sql_select("videos_snippet","videoid", "`channelid`='".$_SESSION['token']['channel_id']."' AND `ignore`=0 ORDER BY last_liveStreamingDetailsupdate LIMIT ".$req_count, true);
   } else {
     //$listResponse = $youtube->playlistItems->listPlaylistItems("snippet", array('playlistId' => $uploadsListId, "maxResults" => $req_count, "pageToken" => $tt["token"]));
-    $listRequests = $database->sql_select("videos_snippet","videoId", "`channelid`='".$_SESSION['token']['channel_id']."' AND `ignore`=0 ORDER BY last_liveStreamingDetailsupdate LIMIT ".$req_count, true);
+    $listRequests = $database->sql_select("videos_snippet","videoid", "`channelid`='".$_SESSION['token']['channel_id']."' AND `ignore`=0 ORDER BY last_liveStreamingDetailsupdate LIMIT ".$req_count, true);
   }
   
   //$data4sql= $listResponse["items"];
@@ -61,7 +61,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     unset($newData);
   }
   // Update
-  $empty_data=$database->sql_select($_tmp_tabellename, "videoId","first_seen IS NULL", false);
+  $empty_data=$database->sql_select($_tmp_tabellename, "videoid","first_seen IS NULL", false);
   foreach ($empty_data as $k=>$v){
     $newData=$v;
     $newData["first_seen"]=time();
