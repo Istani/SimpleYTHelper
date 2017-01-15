@@ -38,21 +38,22 @@ if(in_array($_tmp_tabellename, $check_table)) {
     $db_subs = $database->sql_select($_tmp_tabellename, "*", "token_id='".$_SESSION['token']['id']."' AND `ignore`=0 ORDER BY RAND() LIMIT 5",true);
   }
   for ($i=0;$i<5;$i++) {
-    $newData=$db_subs[$i];
-    $newData["bot_five_subs"]=$output[0];
-    $database->sql_insert_update($_tmp_tabellename, $newData);
+    if (isset($db_subs[$i])) {
+      $newData=$db_subs[$i];
+      $newData["bot_five_subs"]=$output[0];
+      $database->sql_insert_update($_tmp_tabellename, $newData);
+    }
   }
   unset($newData);
   
   $db_subs = $database->sql_select($_tmp_tabellename, "*", "token_id='".$_SESSION['token']['id']."' AND `ignore`=0 AND bot_five_subs='".$output[0]."' ORDER BY title LIMIT 5",true);
-  $output[1]=$db_subs[0]["title"];
-  $output[2]=$db_subs[1]["title"];
-  $output[3]=$db_subs[2]["title"];
-  $output[4]=$db_subs[3]["title"];
-  $output[5]=$db_subs[4]["title"];
+  
 }
 
 for ($i = 1; $i <= 5; $i++) {
-  echo $output[$i] . ", ";
+  if (isset($db_subs[$i])) {
+    $output[$i]=$db_subs[$i]["title"];
+    echo $output[$i] . ", ";
+  }
 }
 ?>

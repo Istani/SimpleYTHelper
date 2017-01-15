@@ -19,7 +19,7 @@ if (!isset($_GET["param"])) {
 if ($_GET["command"] == "debug") {
   echo "<h1>Defender Tests</h1><br>";
   //echo "DEV-Key: ". $settings["google"]["devkey"]."<br>";
-  echo "Kanal-ID: " . $KANALID . "<br>";
+  echo "Kanal-ID: " . $_SESSION['token']['channel_id'] . "<br>";
   echo "<br>";
 }
 // AREA: Includes zum Test
