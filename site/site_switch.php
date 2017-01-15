@@ -5,13 +5,13 @@ if (!isset($_GET['site'])) {
 }
 switch ($_GET['site']) {
   case 'info':
-  include("site/info.php");
-  break;
+    include("site/info.php");
+    break;
   case 'Cronjob_Channels':
-  include("cronjob/load_channels.php");
-  break;
+    include("cronjob/load_channels.php");
+    break;
   default:
-  echo "Error";
-  break;
-}
+    echo "Error";
+    break;  
+  }
 ?>
