@@ -20,7 +20,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 	$check_table=$database->show_tables();
 	if(!in_array($_tmp_tabellename, $check_table)) {
 		$felder=null;
-		$felder["channelid"]="INT(50)";
+		$felder["channelid"]="VARCHAR(50)";
 		$felder["token_id"]="INT(20)";
 		$felder["last_seen"]="TEXT";
 		$database->create_table($_tmp_tabellename, $felder, "token_id, channelid");
