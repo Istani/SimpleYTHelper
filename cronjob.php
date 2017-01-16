@@ -101,6 +101,10 @@ function init_token($name) {
   return $_tmp_token;
 }
 
+if (isset($tmp_yt_tokens[0]['channel_id'])) {
+	echo date("d.m.Y - H:i:s")." - ".$tmp_yt_tokens[0]['channel_id'].'<br><br>';
+}
+
 include("cronjob/load_channels.php");
 if (!isset($tmp_yt_tokens[0]['channel_id'])) {
   die("CHANNEL ID KANN NICHT GEFUNDEN WERDEN!");
