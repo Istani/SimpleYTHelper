@@ -4,7 +4,7 @@
 require_once 'inc/php_inc.php';
 
 // TODO: Irgendwie das mit den Token regeln
-$tmp_yt_tokens=$database->sql_select("authtoken LEFT JOIN channel_token ON authtoken.id=channel_token.token_id","authtoken.*, channel_token.channel_id","true ORDER BY channel_token.last_cron LIMIT 1",true);
+$tmp_yt_tokens=$database->sql_select("authtoken LEFT JOIN channel_token ON authtoken.id=channel_token.token_id","authtoken.*, channel_token.channel_id","channel_token.channel_id='".$KANALID."' ORDER BY channel_token.last_cron LIMIT 1",true);
 $_SESSION['token']=$tmp_yt_tokens[0];
 if (!isset($_GET["command"]) OR $_GET["command"] == "" OR $_GET["command"] == "null") {
   echo "No Command given!
