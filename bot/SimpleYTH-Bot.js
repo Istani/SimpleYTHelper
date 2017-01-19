@@ -2,8 +2,13 @@ const google_api_access =require('../token/bot.access.json');
 //const google_api_refresh=require('../token/bot.refresh');
 const private_settings  =require('./private_settings.json');
 
-var sqlite3 = require('sqlite3');
-var data = new sqlite3.Database('../data/UC5DOhI70dI3PnLPMkUsosgw.sqlite3');
+var mysql = require("mysql");
+var connection = mysql.createConnection({
+  host     : private_settings.mysql_host,
+  user     : private_settings.mysql_user,
+  password : private_settings.mysql_pass,
+  database : private_settings.mysql_base
+});
 
 // Discrod Bot
 var Discord = require("discord.js");
@@ -45,16 +50,16 @@ discord_bot.on("message", function (msg) {
 
 var repeat_google_check=true;
 function Google_CheckMessage() {
-  var SQL_STRING = "SELECT id, displayMessage FROM livestream_chat WHERE ignore = '0' ORDER BY publishedAt LIMIT 1";
-  data.all(SQL_STRING, function (err, rows) {
+  var SQL_STRING = "SELECT id, displayMessage FROM livestream_chat WHERE `ignore` = '0' ORDER BY publishedAt LIMIT 1";
+  connection.query(SQL_STRING, function (err, rows) {
     if (err != null) {
       SpeakToDevs("SQLite: " + err);
       repeat_google_check=false;
     }
     for (var i = 0; i < rows.length; i++) {
       var row_org = rows[i];
-      var SQL_UPDATE ="UPDATE livestream_chat SET ignore='1' WHERE id='" + row_org.id + "'";
-      data.exec(SQL_UPDATE, function (err, row) {
+      var SQL_UPDATE ="UPDATE livestream_chat SET `ignore`='1' WHERE id='" + row_org.id + "'";
+      connection.query(SQL_UPDATE, function (err, row) {
         if (err != null) {
           SpeakToDevs("SQLite: " + err);
           repeat_google_check=false;
