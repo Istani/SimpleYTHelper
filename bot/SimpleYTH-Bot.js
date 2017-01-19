@@ -79,10 +79,6 @@ function Google_CheckMessage() {
   }
 }
 Google_CheckMessage();
-// Irgendwas muss ich mir noch ausdenken, so kann ich die Datei nicht lesen
-
-
-
 
 // Functions
 function SpeakToDevs(msg) {
