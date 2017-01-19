@@ -37,28 +37,30 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   
   for($i=0;$i<count($data4sql);$i++) {
     $listResponse = $youtube->videos->listVideos("status", array('id' => $data4sql[$i]["videoid"]));
-    $row4sql=$listResponse["items"][0]["status"];
-    
-    $json=json_encode($row4sql);
-    $tmp_row4sql = json_decode($json, true);
-    $tmp_row4sql["videoid"]= protected_settings($data4sql[$i]["videoId"]);
-    $row4sql=null;
-    $row4sql=$tmp_row4sql;
-    
-    foreach ($row4sql as $key=>$value){
-      $new_feld[$key]="TEXT";
-      $database->add_columns($_tmp_tabellename, $new_feld);
-      unset($new_feld);
-      $newData[$key]=$value;
+    if (isset($listResponse["items"][0]["status"])) {
+      $row4sql=$listResponse["items"][0]["status"];
+      
+      $json=json_encode($row4sql);
+      $tmp_row4sql = json_decode($json, true);
+      $tmp_row4sql["videoid"]= protected_settings($data4sql[$i]["videoid"]);
+      $row4sql=null;
+      $row4sql=$tmp_row4sql;
+      
+      foreach ($row4sql as $key=>$value){
+        $new_feld[$key]="TEXT";
+        $database->add_columns($_tmp_tabellename, $new_feld);
+        unset($new_feld);
+        $newData[$key]=$value;
+      }
+      $newData["last_seen"]=time();
+      $database->sql_insert_update($_tmp_tabellename, $newData);
+      unset($newData);
+      
+      $newData["videoid"]=$row4sql["videoid"];
+      $newData["last_statusupdate"]=time();
+      $database->sql_insert_update("videos_snippet", $newData);
+      unset($newData);
     }
-    $newData["last_seen"]=time();
-    $database->sql_insert_update($_tmp_tabellename, $newData);
-    unset($newData);
-    
-    $newData["videoid"]=$row4sql["videoid"];
-    $newData["last_statusupdate"]=time();
-    $database->sql_insert_update("videos_snippet", $newData);
-    unset($newData);
   }
   // Update
   $empty_data=$database->sql_select($_tmp_tabellename, "videoid","first_seen IS NULL", false);
