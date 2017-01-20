@@ -71,14 +71,14 @@ function Google_CheckMessage() {
           cmd.use_commands_google(message,google_bot);
         }
       });
-      SpeakToDevs("Test Read: "+ row_org.displayMessage);
+      //SpeakToDevs("Test Read: "+ row_org.displayMessage);
     }
   });
   if (repeat_google_check) {
     setTimeout(Google_CheckMessage,100);
   }
 }
-Google_CheckMessage();
+//Google_CheckMessage();
 
 // Functions
 function SpeakToDevs(msg) {
