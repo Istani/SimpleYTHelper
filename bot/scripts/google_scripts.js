@@ -46,7 +46,7 @@ var self = module.exports = {
       }
     }, function(err,response){
       if (err) {
-        parent('The Google API returned an error: ' + err);
+        parent('The Google API returned an error: ' + err + '\n' + msg);
         return;
       } else {
         //

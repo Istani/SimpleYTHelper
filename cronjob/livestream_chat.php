@@ -19,8 +19,6 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 		} else{
 			$listResponse = $youtube->liveChatMessages->listLiveChatMessages($ChatId,'snippet, authorDetails' , array("maxResults"=>2000, "pageToken" => $tt["token"]));
 		}
-		$listResponse = $youtube->liveChatMessages->listLiveChatMessages($ChatId,'snippet, authorDetails' , array("maxResults"=>2000));
-		
 		$data4sql= $listResponse["items"];
 		for($i=0;$i<count($data4sql);$i++) {
 			//$row4sql=$data4sql[$i];
@@ -45,6 +43,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 				$felder["channel_id"]="VARCHAR(50)";
 				$felder["last_seen"]="TEXT";
 				$felder["id"]="VARCHAR(255)";
+				$felder["ignore"]="VARCHAR(255)";
 				$database->create_table($_tmp_tabellename, $felder, "id");
 				unset($felder);
 			}

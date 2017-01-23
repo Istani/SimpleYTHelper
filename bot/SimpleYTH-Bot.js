@@ -17,10 +17,19 @@ var discord_bot = new Discord.Client();
 // Google Bot
 var google_bot = require("./scripts/google_scripts.js");
 
-google_bot.init(SpeakToDevs);
-// Logins
-discord_bot.login(private_settings.discord_token);
-google_bot.client(private_settings.google_clientid,private_settings.google_clientscret,google_api_access.access_token);
+var LoadToken_String = "SELECT * FROM authtoken WHERE is_bot = '1' LIMIT 1";
+connection.query(LoadToken_String, function (err, rows) {
+  if (err != null) {
+    console.log("Token konnten nicht geladen werden!");
+    console.log(err);
+    return;
+  }
+  for (var i = 0; i < rows.length; i++) {
+    google_bot.init(SpeakToDevs);
+    discord_bot.login(rows[i].discrod_token);
+    google_bot.client(rows[i].google_clientid,rows[i].google_clientsecret,rows[i].access_token);
+  }
+});
 
 // Other Vars
 var command_prefix = "!";
