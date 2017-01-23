@@ -42,12 +42,14 @@ var self = module.exports = {
       }
     }
   },
-  use_commands_google: function (command, bot) {
+  use_commands_google: function (command, livestream_chat, bot) {
+    var msg=command;
+    command=msg.split(" ")[0]
     if ((command in commands)) {
-      if (typeof commands[command].execute_text == 'function') {
+      if (typeof commands[command].execute_google == 'function') {
         time = Date.now();
-        console.log("Google: " + msg.author.username + ": Command :"+command);
-        bot.sendMessage(commands[command].execute_text(command));
+        console.log("Google: Command :"+command);
+        commands[command].execute_google(msg,bot, livestream_chat);
       }
     }
   }

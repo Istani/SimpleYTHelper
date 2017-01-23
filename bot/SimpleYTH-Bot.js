@@ -17,6 +17,7 @@ var discord_bot = new Discord.Client();
 // Google Bot
 var google_bot = require("./scripts/google_scripts.js");
 
+google_bot.init(SpeakToDevs);
 // Logins
 discord_bot.login(private_settings.discord_token);
 google_bot.client(private_settings.google_clientid,private_settings.google_clientscret,google_api_access.access_token);
@@ -50,41 +51,46 @@ discord_bot.on("message", function (msg) {
 
 var repeat_google_check=true;
 function Google_CheckMessage() {
-  var SQL_STRING = "SELECT id, displayMessage FROM livestream_chat WHERE `ignore` = '0' ORDER BY publishedAt LIMIT 1";
-  connection.query(SQL_STRING, function (err, rows) {
-    if (err != null) {
-      SpeakToDevs("SQLite: " + err);
-      repeat_google_check=false;
-    }
-    for (var i = 0; i < rows.length; i++) {
-      var row_org = rows[i];
-      var SQL_UPDATE ="UPDATE livestream_chat SET `ignore`='1' WHERE id='" + row_org.id + "'";
-      connection.query(SQL_UPDATE, function (err, row) {
-        if (err != null) {
-          SpeakToDevs("SQLite: " + err);
-          repeat_google_check=false;
-        }
-        var message = row_org.displayMessage;
-        if (message.startsWith(command_prefix)) {
-          message=message.replace("!","");
-          message=message.split(" ")[0];
-          cmd.use_commands_google(message,google_bot);
-        }
-      });
-      //SpeakToDevs("Test Read: "+ row_org.displayMessage);
-    }
-  });
+  if (google_bot.is_started) {
+    var SQL_STRING = "SELECT id, displayMessage, livechatid FROM livestream_chat WHERE `ignore` = '0' ORDER BY publishedAt LIMIT 1";
+    connection.query(SQL_STRING, function (err, rows) {
+      if (err != null) {
+        SpeakToDevs("SQLite: " + err);
+        repeat_google_check=false;
+      }
+      for (var i = 0; i < rows.length; i++) {
+        var row_org = rows[i];
+        var SQL_UPDATE ="UPDATE livestream_chat SET `ignore`='1' WHERE id='" + row_org.id + "'";
+        connection.query(SQL_UPDATE, function (err, row) {
+          if (err != null) {
+            SpeakToDevs("SQLite: " + err);
+            repeat_google_check=false;
+          }
+          var message = row_org.displayMessage;
+          var lcID=row_org.livechatid;
+          if (message.startsWith(command_prefix)) {
+            message=message.replace("!","");
+            //message=message.split(" ")[0];
+            cmd.use_commands_google(message, lcID, google_bot);
+          }
+        });
+        //SpeakToDevs("Test Read: "+ row_org.displayMessage);
+      }
+    });
+  }
   if (repeat_google_check) {
     setTimeout(Google_CheckMessage,100);
   }
 }
-//Google_CheckMessage();
+Google_CheckMessage();
 
 // Functions
 function SpeakToDevs(msg) {
   time = Date.now();
   console.log(time + " ERR : --- : "+msg);
   // Discord
+  //return;
+  
   var guilds = discord_bot.guilds;
   guilds.forEach(function (guild) {
     var channels =guild.channels;

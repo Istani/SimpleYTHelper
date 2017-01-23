@@ -19,6 +19,8 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 		} else{
 			$listResponse = $youtube->liveChatMessages->listLiveChatMessages($ChatId,'snippet, authorDetails' , array("maxResults"=>2000, "pageToken" => $tt["token"]));
 		}
+		$listResponse = $youtube->liveChatMessages->listLiveChatMessages($ChatId,'snippet, authorDetails' , array("maxResults"=>2000));
+		
 		$data4sql= $listResponse["items"];
 		for($i=0;$i<count($data4sql);$i++) {
 			//$row4sql=$data4sql[$i];
@@ -32,7 +34,6 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 			}
 			
 			$row4sql['id']=protected_settings($data4sql[$i]['id']);
-			debug_log($row4sql);
 			
 			$tt["token"]=$listResponse["nextPageToken"];
 			$tt["cooldown"]=$listResponse["pollingcooldownMillis"]/1000+1;
@@ -58,9 +59,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 			$newData["last_seen"]=time();
 			$database->sql_insert_update($_tmp_tabellename, $newData);
 			unset($newData);
-			
 		}
-		die();
 		echo $_tmp_tabellename." updated!<br>";
 		$tt["last_used"]=time();
 		$tt["yt_token"]=$_SESSION['token']['id'];
