@@ -36,12 +36,13 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 	$newData["last_seen"]=time();
 	$database->sql_insert_update($_tmp_tabellename, $newData);
 	unset($newData);
-	echo $_tmp_tabellename." updated!<br>";
-	$tt["last_used"]=time();
-	$tt["yt_token"]=$_SESSION['token']['id'];
 }
 // Save Token
+echo date("d.m.Y - H:i:s")." - ".$tmp_token['channel_id'].': '.$_tmp_tabellename." updated!<br>";
+$tt["last_used"]=time();
+$tt["yt_token"]=$_SESSION['token']['id'];
 if($tt["token"]==""){$tt["token"]="null";}
 $database->sql_insert_update("bot_token",$tt);
+unset($tt);
 
 ?>
