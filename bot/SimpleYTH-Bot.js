@@ -31,6 +31,20 @@ connection.query(LoadToken_String, function (err, rows) {
   }
 });
 
+function Reset_GoogleAuth() {
+  var LoadToken_String = "SELECT * FROM authtoken WHERE is_bot = '1' LIMIT 1";
+  connection.query(LoadToken_String, function (err, rows) {
+    if (err != null) {
+      console.log("Token konnten nicht geladen werden!");
+      console.log(err);
+      return;
+    }
+    for (var i = 0; i < rows.length; i++) {
+      google_bot.client(rows[i].google_clientid,rows[i].google_clientsecret,rows[i].access_token);
+    }
+  });
+}
+
 // Other Vars
 var command_prefix = "!";
 var time=0;
@@ -80,6 +94,7 @@ function Google_CheckMessage() {
           if (message.startsWith(command_prefix)) {
             message=message.replace("!","");
             //message=message.split(" ")[0];
+            Reset_GoogleAuth();
             cmd.use_commands_google(message, lcID, google_bot);
           }
         });
