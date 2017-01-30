@@ -64,6 +64,7 @@ discord_bot.on('ready', function () {
 
 discord_bot.on("message", function (msg) {
   // Starting Commands!
+  msg.content=msg.content.toLowerCase(); // TODO: Check
   var message=msg.content;
   if (message.startsWith(command_prefix)) {
     message=message.replace("!","");
