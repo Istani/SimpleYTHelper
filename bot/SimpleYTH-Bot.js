@@ -107,8 +107,8 @@ function LogMessage(service, host, room, id, time, user, message) {
         return;
       }
       for (var i = 0; i < rows.length; i++) {
-        msg.message = msg.message.toLowerCase();
         var msg=rows[i];
+        msg.message = msg.message.toLowerCase();
         var check_command=false;
         var message=msg.message.toLowerCase();
         if (message.startsWith(command_prefix)) {
