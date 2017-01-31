@@ -1,9 +1,9 @@
+var global_cooldown=600; // in Sekunden
+var global_lastuse=0;
+var global_max=3;
+
 var self = module.exports = {
   execute: function (message_row, SendFunc, NewMessageFunc) {
-    if (message_row.service=="Discord") {
-      NewMessageFunc("Discord TTS", message_row.host, message_row.room, message_row.id, message_row.time, message_row.user, message_row.message);
-      return;
-    }
     var amount=0;
     var tmp_para=message_row.message.split(" ");
     if (typeof tmp_para[1]=='undefined') {
@@ -12,6 +12,19 @@ var self = module.exports = {
       if (parseInt(tmp_para[1])>0) {
         amount=parseInt(tmp_para[1]);
       }
+    }
+    if (global_lastuse+global_cooldown>=Date.now()) {
+      SendFunc("Zuviel Party hintereinander!\r\nDer Bot kann gerade keine Party machen!\r\nWarte doch noch einen Moment!");
+      return;
+    }
+    global_lastuse=Date.now();
+    if (amount>global_max) {
+      amount=global_max;
+      SendFunc("Maximal " + global_max + " Partys erlaubt!");
+    }
+    if (message_row.service=="Discord") {
+      NewMessageFunc("Discord TTS", message_row.host, message_row.room, message_row.id, message_row.time, message_row.user, "!party "+amount);
+      return;
     }
     while (amount>0) {
       setTimeout(function () {SendFunc("PARTY @everyone");}, 1000*amount);

@@ -86,6 +86,7 @@ function LogMessage(service, host, room, id, time, user, message) {
 }
 
 function UpdateHosts(service, host, hostname) {
+  // Befehle per Host ein/aus schalten!?!
   var time = Date.now();
   var tmp_felder="service='" + service + "',";
   tmp_felder+="host='" + host + "',";
