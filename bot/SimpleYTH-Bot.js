@@ -139,8 +139,8 @@ function LogMessage(service, host, room, id, time, user, message) {
                     channels.forEach (function (channel) {
                       if (channel.id==msg.room) {
                         if (msg.service=="Discord TTS") {
-                          //channel.sendTTSMessage(SendText);
-                          channel.sendMessage(SendText);
+                          channel.sendTTSMessage(SendText);
+                          //channel.sendMessage(SendText);
                         } else {
                           channel.sendMessage(SendText);
                         }
