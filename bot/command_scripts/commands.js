@@ -1,25 +1,15 @@
 var self = module.exports = {
-  execute: function (msg) {
-    self.reload_commands();
-    var returnmsg="";
-    returnmsg+="**Commands:**\r\n";
-    returnmsg+="\`\`\`\r\n";
-    for (cmd in commands) {
-      returnmsg+=cmd.toString()+"\r\n";
-    }
-    returnmsg+="\`\`\`";
-    msg.channel.sendMessage(returnmsg).catch(console.error);
+  init: function (MySQL) {
+    mysql=MySQL;
   },
-  execute_text: function (msg) {
+  execute: function (message_row, SendFunc, NewMessageFunc) {
     self.reload_commands();
     var returnmsg="";
     returnmsg+="**Commands:**\r\n";
-    returnmsg+="\`\`\`\r\n";
     for (cmd in commands) {
       returnmsg+=cmd.toString()+"\r\n";
     }
-    returnmsg+="\`\`\`";
-    msg.channel.sendMessage(returnmsg).catch(console.error);
+    SendFunc(returnmsg);
   },
   reload_commands: function () {
     var fs = require('fs');
@@ -30,30 +20,30 @@ var self = module.exports = {
       var filename=files[i];
       var cmd_name=filename.split(".")[0];
       commands[cmd_name]=require("../command_scripts/"+filename);
+      if (typeof commands[cmd_name].init == 'function') {
+        commands[cmd_name].init(mysql);
+      }
     }
     return commands;
   },
-  use_commands_discord: function(command, msg) {
+  use: function (command, message_row, SendFunc, NewMessageFunc) {
     if ((command in commands)) {
       if (typeof commands[command].execute == 'function') {
+        // TODO: Vielleicht hier Permissions Abfragen?!?
         time = Date.now();
-        console.log("Discord: " + msg.author.username + ": Command :"+msg.content);
-        commands[command].execute(msg);
+        commands[command].execute(message_row, SendFunc, NewMessageFunc);
       }
     }
   },
-  use_commands_google: function (command, livestream_chat, bot) {
-    var msg=command;
-    command=msg.split(" ")[0]
+  is_command: function (command) {
+    var returnvalue=false;
     if ((command in commands)) {
-      if (typeof commands[command].execute_google == 'function') {
-        time = Date.now();
-        console.log("Google: Command :"+command);
-        commands[command].execute_google(msg,bot, livestream_chat);
+      if (typeof commands[command].execute == 'function') {
+        returnvalue=true;
       }
     }
+    return returnvalue;
   }
 };
-
+var mysql=null;
 var commands={};
-var time=0;

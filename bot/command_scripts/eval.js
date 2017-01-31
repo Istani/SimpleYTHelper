@@ -1,8 +1,8 @@
 var self = module.exports = {
-  execute: function (msg) {
+  execute: function (message_row, SendFunc, NewMessageFunc)  {
     var IstaniUserID='202892723420659714';
-    var code = msg.content.split(" ").slice(1).join(" ");
-    if (msg.author.id==IstaniUserID) {
+    var code = message_row.mesage.split(" ").slice(1).join(" ");
+    if (message_row.user==IstaniUserID) {
       var returnmsg="**Input**\r\n";
       returnmsg+="\`\`\`JS\`\`\r\n";
       returnmsg+=code;
@@ -21,10 +21,10 @@ var self = module.exports = {
       }
       returnmsg+="\r\n";
       returnmsg+="\`\`\`\r\n";
-      msg.channel.sendMessage(returnmsg).catch(console.error);
+      SendFunc(returnmsg);
       
     } else {
-      msg.channel.sendMessage("No Permissions! Ask <@"+IstaniUserID+">").catch(console.error);
+      SendFunc("No Permissions!");
     }
   },
 };

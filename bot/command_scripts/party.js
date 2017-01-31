@@ -1,7 +1,11 @@
 var self = module.exports = {
-  execute: function (msg) {
+  execute: function (message_row, SendFunc, NewMessageFunc) {
+    if (message_row.service=="Discord") {
+      NewMessageFunc("Discord TTS", message_row.host, message_row.room, message_row.id, message_row.time, message_row.user, message_row.message);
+      return;
+    }
     var amount=0;
-    var tmp_para=msg.content.split(" ");
+    var tmp_para=message_row.message.split(" ");
     if (typeof tmp_para[1]=='undefined') {
       amount=1;
     } else {
@@ -9,16 +13,9 @@ var self = module.exports = {
         amount=parseInt(tmp_para[1]);
       }
     }
-    execute_repeat(msg, amount);
-    
-    
-  }
-};
-
-function execute_repeat (msg, amount) {
-  msg.channel.sendTTSMessage("PARTY @everyone");
-  amount=amount-1;
-  if (amount>0) {
-    setTimeout(execute_repeat, 1000, msg, amount);
+    while (amount>0) {
+      setTimeout(function () {SendFunc("PARTY @everyone");}, 1000*amount);
+      amount=amount-1;
+    }
   }
 };
