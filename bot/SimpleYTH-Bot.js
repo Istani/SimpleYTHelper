@@ -21,6 +21,7 @@ discord_bot.on("message", msg => {
 });
 
 discord_bot.on('ready', function () {
+  //discord_bot.user.setStatus('online', 'http://simpleyth.randompeople.de');
   discord_bot.user.setStatus('online', 'SimpleYTH');
 });
 

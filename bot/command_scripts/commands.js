@@ -7,10 +7,18 @@ var self = module.exports = {
     var returnmsg="";
     returnmsg+="**Commands:**\r\n";
     for (cmd in commands) {
-      returnmsg+=cmd.toString()+"\r\n";
+      returnmsg+="!" + cmd.toString()+"\r\n";
+      if (typeof cmd.description == 'function') {
+        returnmsg+=cmd.description()+"\r\n";
+      }
     }
     SendFunc(returnmsg);
   },
+  description: function() {
+    var returnvalue="";
+    returnvalue+="Listet alle Befehle auf!";
+    return returnvalue;
+  }
   reload_commands: function () {
     var fs = require('fs');
     var files = fs.readdirSync("./command_scripts/");
