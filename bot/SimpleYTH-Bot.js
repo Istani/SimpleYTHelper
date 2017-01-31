@@ -125,9 +125,6 @@ function LogMessage(service, host, room, id, time, user, message) {
             case 'Discord TTS':
             cmd.use(command, msg,function (text) {
               var sendcount=0;
-              if (msg.service=="Discord TTS") {
-                text="Sorry no TTS ATM!\r\n"+text;
-              }
               //while (text.size>0) {
               setTimeout(function () {
                 // TODO: Text in 200 Zeichen Teile Trennen!
