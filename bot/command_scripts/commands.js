@@ -18,7 +18,7 @@ var self = module.exports = {
     var returnvalue="";
     returnvalue+="Listet alle Befehle auf!";
     return returnvalue;
-  }
+  },
   reload_commands: function () {
     var fs = require('fs');
     var files = fs.readdirSync("./command_scripts/");
