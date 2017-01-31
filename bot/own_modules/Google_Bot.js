@@ -102,13 +102,22 @@ function CheckMessage(self) {
           return;
         }
         // NOTE: Add more information for Author Log (and more)
+        var role="User";
+        if (msg_line.ischatmoderator=="1") {
+          role="Moderator";
+        }
+        if (msg_line.ischatowner=="1") {
+          role="Admin";
+        }
         var msg = {
           host:msg_line.channel_id,
           room: msg_line.livechatid,
           id: msg_line.id,
           //TODO: createdTimestamp:msg_line.publishedat.toDate(),
           author:msg_line.authorchannelid,
+          authorname:msg_line.displayname,
           content: msg_line.displaymessage,
+          
           misc: msg_line
         };
         self.emit('message', msg);

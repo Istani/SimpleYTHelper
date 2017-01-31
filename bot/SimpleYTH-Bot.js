@@ -17,6 +17,8 @@ var discord_bot = new Discord.Client();
 discord_bot.on("message", msg => {
   if(msg.author !== discord_bot.user) { // nicht auf eigene Nachrichten Reagieren!
     //msg.channel.sendMessage(msg.content);
+    UpdateHosts("Discord", msg.guild.id, msg.guild.name);
+    UpdateUser("Discord", msg.guild.id, msg.author.id, msg.author.name, "User");
     LogMessage("Discord", msg.guild.id, msg.channel.id, msg.id, msg.createdTimestamp, msg.author.id, msg.content);
   }
 });
@@ -34,6 +36,8 @@ var Google_Bot = require("./own_modules/Google_Bot");
 var google_bot = new Google_Bot(mysql_connection);
 google_bot.on("message", msg => {
   if(msg.author !== google_bot.user) { // nicht auf eigene Nachrichten Reagieren!
+    UpdateHosts("YouTube",msg.host, "Youtube Gaming");
+    UpdateUser("YouTube", msg.host, msg.author, msg.authorname, "User");
     LogMessage("YouTube", msg.host, msg.room, msg.id, msg.createdTimestamp, msg.author, msg.content);
   }
 });
@@ -81,113 +85,148 @@ function LogMessage(service, host, room, id, time, user, message) {
   mysql_connection.query(ADD_MESSAGE, function (err, rows) {
     if (err != null) {
       console.log("MySQL: " + err);
-      mysql_connection.query( // Vielleicht ist der Fehler ja das die Tabelle nicht existiert?
-        "CREATE TABLE `bot_chatlog` (`service` varchar(50) NOT NULL," +
-        "`host` varchar(255) NOT NULL,"+
-        "`room` varchar(255) NOT NULL,"+
-        "`id` varchar(255) NOT NULL,"+
-        "`time` int(20) NOT NULL,"+
-        "`user` varchar(255) NOT NULL,"+
-        "`message` text NOT NULL,"+
-        "`process` int(1) NOT NULL DEFAULT '0'"+
-        ") ENGINE=InnoDB DEFAULT CHARSET=latin1;", function (err, rows) {
-          if (err != null) {
-            console.log("MySQL: " + err);
-            return;
-          }
-          // TRY AGAIN
-          mysql_connection.query(ADD_MESSAGE, function (err, rows) {
-            if (err != null) {
-              console.log("MySQL: " + err);
-            }
-            return;
-          });
-        });
-        return;
-      }
-    });
+      return;
+    }
+  });
+}
+
+function UpdateHosts(service, host, hostname) {
+  var time = Date.now();
+  var tmp_felder="service='" + service + "',";
+  tmp_felder+="host='" + host + "',";
+  tmp_felder+="name='" + hostname + "',";
+  tmp_felder+="last_seen='"+time+"'";
+  var ADD_SQL="INSERT INTO bot_chathosts SET " + tmp_felder + " ON DUPLICATE KEY UPDATE " + tmp_felder;
+  mysql_connection.query(ADD_SQL, function (err, rows) {
+    if (err != null) {
+      console.log("MySQL: " + err);
+      return;
+    }
+  });
+}
+
+function UpdateUser(service, host, userid, username, role) {
+  // TODO: Was wenn ein User mehr als eine Rolle in Discord hat?
+  // NOTE: Wenn es mehr als eine Role gibt, wie verhalten sich dann die Rechte?!?
+  // 0=no 1=yes und dann immer >
+  var time = Date.now();
+  var tmp_felder="service='" + service + "',";
+  tmp_felder+="host='" + host + "',";
+  tmp_felder+="user='"+userid+"',";
+  tmp_felder+="name='"+username+"',";
+  tmp_felder+="role='"+role+"',";
+  tmp_felder+="last_seen='"+time+"'";
+  var ADD_SQL="INSERT INTO bot_chatuser SET " + tmp_felder + " ON DUPLICATE KEY UPDATE " + tmp_felder;
+  mysql_connection.query(ADD_SQL, function (err, rows) {
+    if (err != null) {
+      console.log("MySQL: " + err);
+      return;
+    }
+  });
+  UpdateRoles(service, host, role);
+}
+
+function UpdateRoles(service, host, role) {
+  var time = Date.now();
+  var tmp_felder="service='" + service + "',";
+  tmp_felder+="host='" + host + "',";
+  tmp_felder+="role='"+role+"'";
+  var ADD_SQL="INSERT INTO bot_chatroles SET " + tmp_felder + " ON DUPLICATE KEY UPDATE " + tmp_felder;
+  mysql_connection.query(ADD_SQL, function (err, rows) {
+    if (err != null) {
+      console.log("MySQL: " + err);
+      return;
+    }
+  });
+}
+
+function ProcessMessage() {
+  var LOAD_MESSAGE="SELECT * FROM `bot_chatlog` WHERE `process`=0 ORDER BY `time` LIMIT 1";
+  mysql_connection.query(LOAD_MESSAGE, function (err, rows) {
+    if (err != null) {
+      console.log("MySQL: " + err);
+      return;
+    }
+    for (var i = 0; i < rows.length; i++) {
+      GenerateAnwser(rows[i]);
+      ProcessMessageUpdate(rows[i].service, rows[i].id)
+    }
+  });
+  setTimeout(ProcessMessage, 100);
+}
+
+function ProcessMessageUpdate(service, id) {
+  var UPDATE_MESSAGE="UPDATE `bot_chatlog` SET process='1' WHERE service='"+ service + "' AND id='"+ id + "'";
+  mysql_connection.query(UPDATE_MESSAGE, function (err, rows) {
+    if (err != null) {
+      console.log("MySQL: " + err);
+      return;
+    }
+  });
+}
+
+function GenerateAnwser(msg_row) {
+  var msg=msg_row;
+  msg.message = msg.message.toLowerCase();
+  var check_command=false;
+  var message=msg.message.toLowerCase();
+  if (message.startsWith(command_prefix)) {
+    message=message.replace("!","");
+    command=message.split(" ")[0];
+    if (cmd.is_command(command)) {
+      check_command=true;
+    }
   }
   
-  function ProcessMessage() {
-    var LOAD_MESSAGE="SELECT * FROM `bot_chatlog` WHERE `process`=0 ORDER BY `time` LIMIT 1";
-    mysql_connection.query(LOAD_MESSAGE, function (err, rows) {
-      if (err != null) {
-        console.log("MySQL: " + err);
-        return;
-      }
-      for (var i = 0; i < rows.length; i++) {
-        var msg=rows[i];
-        msg.message = msg.message.toLowerCase();
-        var check_command=false;
-        var message=msg.message.toLowerCase();
-        if (message.startsWith(command_prefix)) {
-          message=message.replace("!","");
-          command=message.split(" ")[0];
-          if (cmd.is_command(command)) {
-            check_command=true;
-          }
-        }
-        
-        if (check_command) { // Check if command!
-          switch (msg.service) {
-            case 'Discord':
-            case 'Discord TTS':
-            cmd.use(command, msg,function (text) {
-              var sendcount=0;
-              //while (text.size>0) {
-              setTimeout(function () {
-                // TODO: Text in 200 Zeichen Teile Trennen!
-                var SendText=text;
-                var guilds = discord_bot.guilds;
-                guilds.forEach(function (guild) {
-                  if (guild.id==msg.host) {
-                    var channels =guild.channels;
-                    channels.forEach (function (channel) {
-                      if (channel.id==msg.room) {
-                        if (msg.service=="Discord TTS") {
-                          channel.sendTTSMessage(SendText);
-                          //channel.sendMessage(SendText);
-                        } else {
-                          channel.sendMessage(SendText);
-                        }
-                      };
-                    })
+  if (check_command) { // Check if command!
+    switch (msg.service) {
+      case 'Discord':
+      case 'Discord TTS':
+      cmd.use(command, msg,function (text) {
+        var sendcount=0;
+        //while (text.size>0) {
+        setTimeout(function () {
+          // TODO: Text in 200 Zeichen Teile Trennen!
+          var SendText=text;
+          var guilds = discord_bot.guilds;
+          guilds.forEach(function (guild) {
+            if (guild.id==msg.host) {
+              var channels =guild.channels;
+              channels.forEach (function (channel) {
+                if (channel.id==msg.room) {
+                  if (msg.service=="Discord TTS") {
+                    channel.sendTTSMessage(SendText);
+                    //channel.sendMessage(SendText);
+                  } else {
+                    channel.sendMessage(SendText);
                   }
-                });
-              }, sendcount*100);
-              sendcount++;
-              //}
-            }, LogMessage);
-            break;
-            case 'YouTube':
-            cmd.use(command, msg,function (text) {
-              var sendcount=0;
-              //while (text.size>0) {
-              setTimeout(function () {
-                // TODO: Text in 200 Zeichen Teile Trennen!
-                var SendText=text;
-                google_bot.sendMessage(msg.room, SendText);
-              }, sendcount*100);
-              sendcount++;
-              //}
-            }, LogMessage);
-            break;
-            default:
-            console.log("MSG Service: " + msg.service + " unkonwn!");
-          }
-        }
-        
-        var UPDATE_MESSAGE="UPDATE `bot_chatlog` SET process='1' WHERE service='"+ msg.service + "' AND id='"+ msg.id + "'";
-        mysql_connection.query(UPDATE_MESSAGE, function (err, rows) {
-          if (err != null) {
-            console.log("MySQL: " + err);
-            return;
-          }
-        });
-      }
-    });
-    setTimeout(ProcessMessage, 100);
+                };
+              })
+            }
+          });
+        }, sendcount*100);
+        sendcount++;
+        //}
+      }, LogMessage);
+      break;
+      case 'YouTube':
+      cmd.use(command, msg,function (text) {
+        var sendcount=0;
+        //while (text.size>0) {
+        setTimeout(function () {
+          // TODO: Text in 200 Zeichen Teile Trennen!
+          var SendText=text;
+          google_bot.sendMessage(msg.room, SendText);
+        }, sendcount*100);
+        sendcount++;
+        //}
+      }, LogMessage);
+      break;
+      default:
+      console.log("MSG Service: " + msg.service + " unkonwn!");
+    }
   }
-  
-  // Start Bot
-  StartBot();
+}
+
+// Start Bot
+StartBot();
