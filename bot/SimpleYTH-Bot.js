@@ -21,6 +21,14 @@ discord_bot.on("message", msg => {
   }
 });
 
+discord_bot.on('ready', function () {
+  discord_bot.user.setStatus('online', 'SimpleYTH');
+});
+
+discord_bot.on('disconnect', function () => {
+  process.exit();
+});
+
 // Google - Settings
 var Google_Bot = require("./own_modules/Google_Bot");
 var google_bot = new Google_Bot(mysql_connection);
@@ -60,6 +68,7 @@ function Login() {
 }
 
 function LogMessage(service, host, room, id, time, user, message) {
+  time = Date.now(); // timestamp überschreiben mit aktuellen Timestamo... wahrscheinlich gar keine so gute Idee!
   // log Message to MySQL;
   var tmp_felder="service='" + service + "',";
   tmp_felder+="host='" + host + "',";
