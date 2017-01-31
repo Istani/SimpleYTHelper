@@ -24,7 +24,7 @@ discord_bot.on('ready', function () {
   discord_bot.user.setStatus('online', 'SimpleYTH');
 });
 
-discord_bot.on('disconnect', function () => {
+discord_bot.on('disconnect', function () {
   process.exit();
 });
 
