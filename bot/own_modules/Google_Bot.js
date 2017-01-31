@@ -17,7 +17,6 @@ var oauth2Client;
 // Constructor
 var Google_Bot = function(MySQL) {
   this.mysql=MySQL;
-  this.user="bla";
 };
 Google_Bot.prototype = new events.EventEmitter;
 
@@ -57,7 +56,6 @@ Google_Bot.prototype.sendMessage = function (room, text) {
       return;
     }
   });
-  console.log(room + " - " + this.user + ": " + text);
 }
 
 function SetLogin(self, client_id, client_secret, access_token) {

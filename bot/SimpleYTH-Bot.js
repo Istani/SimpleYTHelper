@@ -15,12 +15,9 @@ var mysql_connection = mysql.createConnection({
 var Discord = require("discord.js");
 var discord_bot = new Discord.Client();
 discord_bot.on("message", msg => {
-  if(msg.author !== discord_bot.user) { // nicht auf eigene Nachrichten Reagieren!
-    //msg.channel.sendMessage(msg.content);
-    UpdateHosts("Discord", msg.guild.id, msg.guild.name);
-    UpdateUser("Discord", msg.guild.id, msg.author.id, msg.author.name, "User");
-    LogMessage("Discord", msg.guild.id, msg.channel.id, msg.id, msg.createdTimestamp, msg.author.id, msg.content);
-  }
+  UpdateHosts("Discord", msg.guild.id, msg.guild.name);
+  UpdateUser("Discord", msg.guild.id, msg.author.id, msg.author.name, "User");
+  LogMessage("Discord", msg.guild.id, msg.channel.id, msg.id, msg.createdTimestamp, msg.author.id, msg.content);
 });
 
 discord_bot.on('ready', function () {
@@ -35,11 +32,9 @@ discord_bot.on('disconnect', function () => {
 var Google_Bot = require("./own_modules/Google_Bot");
 var google_bot = new Google_Bot(mysql_connection);
 google_bot.on("message", msg => {
-  if(msg.author !== google_bot.user) { // nicht auf eigene Nachrichten Reagieren!
-    UpdateHosts("YouTube",msg.host, "Youtube Gaming");
-    UpdateUser("YouTube", msg.host, msg.author, msg.authorname, "User");
-    LogMessage("YouTube", msg.host, msg.room, msg.id, msg.createdTimestamp, msg.author, msg.content);
-  }
+  UpdateHosts("YouTube",msg.host, "Youtube Gaming");
+  UpdateUser("YouTube", msg.host, msg.author, msg.authorname, "User");
+  LogMessage("YouTube", msg.host, msg.room, msg.id, msg.createdTimestamp, msg.author, msg.content);
 });
 
 // Whatever - Settings
@@ -107,8 +102,13 @@ function UpdateHosts(service, host, hostname) {
 
 function UpdateUser(service, host, userid, username, role) {
   // TODO: Was wenn ein User mehr als eine Rolle in Discord hat?
+  // Warscheinlich besser wenn es eine Zuordnung User, Role gibt und dann ne Tabelle Roles, Rechte... <- Ja Nein Vielleicht
   // NOTE: Wenn es mehr als eine Role gibt, wie verhalten sich dann die Rechte?!?
   // 0=no 1=yes und dann immer >
+  // TODO: Manuell verteilte Rechte?!? Wie? Nicht überschreiben! <- Eigentlich nur nötig für den Bot selbst!
+  // Und das auch nur bei bestimmten Sachen, vielleicht kann ich das irgendwie anders lösen?!?
+  // Oder aber in Discord falls jemand nicht die Rechte haben soll? Nein ich übernehm ja die rollen und nicht die rechte
+  // NOTE: Rechte je Command?!? Oder Command Gruppe? Spontan je Einzel Command
   var time = Date.now();
   var tmp_felder="service='" + service + "',";
   tmp_felder+="host='" + host + "',";
