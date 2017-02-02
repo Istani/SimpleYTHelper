@@ -115,6 +115,7 @@ function CheckMessage(self) {
           author:msg_line.authorchannelid,
           authorname:msg_line.displayname,
           content: msg_line.displaymessage,
+          role: role,
           
           misc: msg_line
         };

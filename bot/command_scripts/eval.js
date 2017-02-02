@@ -4,11 +4,11 @@ var self = module.exports = {
     var code = message_row.message.split(" ").slice(1).join(" ");
     if (message_row.user==IstaniUserID) {
       var returnmsg="**Input**\r\n";
-      returnmsg+="\`\`\`JS\`\`\r\n";
+      returnmsg+="JS\r\n";
       returnmsg+=code;
-      returnmsg+="\`\`\`\r\n";
+      returnmsg+="\r\n";
       returnmsg+="**Output**\r\n";
-      returnmsg+="\`\`\`\r\n";
+      returnmsg+="\r\n";
       try {
         var evaled = eval(code);
         if (typeof evaled !== 'string') {
@@ -20,7 +20,6 @@ var self = module.exports = {
         returnmsg+=clean(err);
       }
       returnmsg+="\r\n";
-      returnmsg+="\`\`\`\r\n";
       SendFunc(returnmsg);
       
     } else {

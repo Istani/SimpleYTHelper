@@ -15,6 +15,7 @@ var mysql_connection = mysql.createConnection({
 
 // Discord - Settings
 // https://discordapp.com/oauth2/authorize?client_id=275587526457294848&scope=bot // Dev Shame Bot Add
+
 var Discord = require("discord.js");
 var discord_bot = new Discord.Client();
 discord_bot.on("message", msg => {
@@ -37,7 +38,7 @@ var Google_Bot = require("./own_modules/Google_Bot");
 var google_bot = new Google_Bot(mysql_connection);
 google_bot.on("message", msg => {
   UpdateHosts("YouTube",msg.host, "Youtube Gaming");
-  UpdateUser("YouTube", msg.host, msg.author, msg.authorname, "User");
+  UpdateUser("YouTube", msg.host, msg.author, msg.authorname, msg.role);
   LogMessage("YouTube", msg.host, msg.room, msg.id, msg.createdTimestamp, msg.author, msg.content);
 });
 
