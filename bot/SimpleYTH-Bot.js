@@ -16,7 +16,7 @@ var Discord = require("discord.js");
 var discord_bot = new Discord.Client();
 discord_bot.on("message", msg => {
   UpdateHosts("Discord", msg.guild.id, msg.guild.name);
-  UpdateUser("Discord", msg.guild.id, msg.author.id, msg.author.name, "User");
+  UpdateUser("Discord", msg.guild.id, msg.author.id, msg.author.username, "User");
   LogMessage("Discord", msg.guild.id, msg.channel.id, msg.id, msg.createdTimestamp, msg.author.id, msg.content);
 });
 
