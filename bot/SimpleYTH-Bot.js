@@ -186,7 +186,7 @@ function GenerateAnwser(msg_row) {
       case 'Discord TTS':
       cmd.use(command, msg,function (text) {
         var sendcount=0;
-        while (text.size>0) {
+        while (text.length>0) {
           setTimeout(function () {
             // TODO: Text in 200 Zeichen Teile Trennen!
             var SendText=text.substr(0,200);
