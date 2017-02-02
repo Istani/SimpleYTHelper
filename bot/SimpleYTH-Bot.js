@@ -186,29 +186,30 @@ function GenerateAnwser(msg_row) {
       case 'Discord TTS':
       cmd.use(command, msg,function (text) {
         var sendcount=0;
-        //while (text.size>0) {
-        setTimeout(function () {
-          // TODO: Text in 200 Zeichen Teile Trennen!
-          var SendText=text;
-          var guilds = discord_bot.guilds;
-          guilds.forEach(function (guild) {
-            if (guild.id==msg.host) {
-              var channels =guild.channels;
-              channels.forEach (function (channel) {
-                if (channel.id==msg.room) {
-                  if (msg.service=="Discord TTS") {
-                    channel.sendTTSMessage(SendText);
-                    //channel.sendMessage(SendText);
-                  } else {
-                    channel.sendMessage(SendText);
-                  }
-                };
-              })
-            }
-          });
-        }, sendcount*100);
-        sendcount++;
-        //}
+        while (text.size>0) {
+          setTimeout(function () {
+            // TODO: Text in 200 Zeichen Teile Trennen!
+            var SendText=text.substr(0,200);
+            text=text.replace(SendText,"");
+            var guilds = discord_bot.guilds;
+            guilds.forEach(function (guild) {
+              if (guild.id==msg.host) {
+                var channels =guild.channels;
+                channels.forEach (function (channel) {
+                  if (channel.id==msg.room) {
+                    if (msg.service=="Discord TTS") {
+                      channel.sendTTSMessage(SendText);
+                      //channel.sendMessage(SendText);
+                    } else {
+                      channel.sendMessage(SendText);
+                    }
+                  };
+                })
+              }
+            });
+          }, sendcount*100);
+          sendcount++;
+        }
       }, LogMessage);
       break;
       case 'YouTube':
