@@ -70,13 +70,13 @@ function Login() {
 function LogMessage(service, host, room, id, time, user, message) {
   time = Date.now(); // timestamp überschreiben mit aktuellen Timestamo... wahrscheinlich gar keine so gute Idee!
   // log Message to MySQL;
-  var tmp_felder="service='" + service + "',";
-  tmp_felder+="host='" + host + "',";
-  tmp_felder+="room='"+ room +"',";
-  tmp_felder+="id='"+ id + "',";
-  tmp_felder+="time='"+ time +"',";
-  tmp_felder+="user='"+user+"',";
-  tmp_felder+="message='"+ message + "'";
+  var tmp_felder="service='" + service.replace("'","") + "',";
+  tmp_felder+="host='" + host.replace("'","") + "',";
+  tmp_felder+="room='"+ room.replace("'","") +"',";
+  tmp_felder+="id='"+ id.replace("'","") + "',";
+  tmp_felder+="time='"+ time.replace("'","") +"',";
+  tmp_felder+="user='"+user.replace("'","")+"',";
+  tmp_felder+="message='"+ message.replace("'","") + "'";
   var ADD_MESSAGE="INSERT INTO bot_chatlog SET " + tmp_felder + " ON DUPLICATE KEY UPDATE " + tmp_felder;
   mysql_connection.query(ADD_MESSAGE, function (err, rows) {
     if (err != null) {
@@ -89,10 +89,10 @@ function LogMessage(service, host, room, id, time, user, message) {
 function UpdateHosts(service, host, hostname) {
   // Befehle per Host ein/aus schalten!?!
   var time = Date.now();
-  var tmp_felder="service='" + service + "',";
-  tmp_felder+="host='" + host + "',";
-  tmp_felder+="name='" + hostname + "',";
-  tmp_felder+="last_seen='"+time+"'";
+  var tmp_felder="service='" + service.replace("'","") + "',";
+  tmp_felder+="host='" + host.replace("'","") + "',";
+  tmp_felder+="name='" + hostname.replace("'","") + "',";
+  tmp_felder+="last_seen='"+time.replace("'","")+"'";
   var ADD_SQL="INSERT INTO bot_chathosts SET " + tmp_felder + " ON DUPLICATE KEY UPDATE " + tmp_felder;
   mysql_connection.query(ADD_SQL, function (err, rows) {
     if (err != null) {
@@ -112,12 +112,12 @@ function UpdateUser(service, host, userid, username, role) {
   // Oder aber in Discord falls jemand nicht die Rechte haben soll? Nein ich übernehm ja die rollen und nicht die rechte
   // NOTE: Rechte je Command?!? Oder Command Gruppe? Spontan je Einzel Command
   var time = Date.now();
-  var tmp_felder="service='" + service + "',";
-  tmp_felder+="host='" + host + "',";
-  tmp_felder+="user='"+userid+"',";
-  tmp_felder+="name='"+username+"',";
-  tmp_felder+="role='"+role+"',";
-  tmp_felder+="last_seen='"+time+"'";
+  var tmp_felder="service='" + service.replace("'","") + "',";
+  tmp_felder+="host='" + host.replace("'","") + "',";
+  tmp_felder+="user='"+userid.replace("'","")+"',";
+  tmp_felder+="name='"+username.replace("'","")+"',";
+  tmp_felder+="role='"+role.replace("'","")+"',";
+  tmp_felder+="last_seen='"+time.replace("'","")+"'";
   var ADD_SQL="INSERT INTO bot_chatuser SET " + tmp_felder + " ON DUPLICATE KEY UPDATE " + tmp_felder;
   mysql_connection.query(ADD_SQL, function (err, rows) {
     if (err != null) {
@@ -130,9 +130,9 @@ function UpdateUser(service, host, userid, username, role) {
 
 function UpdateRoles(service, host, role) {
   var time = Date.now();
-  var tmp_felder="service='" + service + "',";
-  tmp_felder+="host='" + host + "',";
-  tmp_felder+="role='"+role+"'";
+  var tmp_felder="service='" + service.replace("'","") + "',";
+  tmp_felder+="host='" + host.replace("'","") + "',";
+  tmp_felder+="role='"+role.replace("'","")+"'";
   var ADD_SQL="INSERT INTO bot_chatroles SET " + tmp_felder + " ON DUPLICATE KEY UPDATE " + tmp_felder;
   mysql_connection.query(ADD_SQL, function (err, rows) {
     if (err != null) {
