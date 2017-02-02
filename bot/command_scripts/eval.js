@@ -1,7 +1,7 @@
 var self = module.exports = {
   execute: function (message_row, SendFunc, NewMessageFunc)  {
     var IstaniUserID='202892723420659714';
-    var code = message_row.mesage.split(" ").slice(1).join(" ");
+    var code = message_row.message.split(" ").slice(1).join(" ");
     if (message_row.user==IstaniUserID) {
       var returnmsg="**Input**\r\n";
       returnmsg+="\`\`\`JS\`\`\r\n";
