@@ -17,7 +17,6 @@ var self = module.exports = {
       SendFunc("Zuviel Party hintereinander!\r\nDer Bot kann gerade keine Party machen!\r\nWarte doch noch einen Moment!");
       return;
     }
-    global_lastuse=Date.now();
     if (amount>global_max) {
       amount=global_max;
       SendFunc("Maximal " + global_max + " Partys erlaubt!");
@@ -27,6 +26,7 @@ var self = module.exports = {
       return;
     }
     while (amount>0) {
+      global_lastuse=Date.now();
       setTimeout(function () {SendFunc("PARTY @everyone");}, 1000*amount);
       amount=amount-1;
     }
