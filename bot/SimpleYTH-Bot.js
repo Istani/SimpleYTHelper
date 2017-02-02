@@ -74,7 +74,7 @@ function LogMessage(service, host, room, id, time, user, message) {
   tmp_felder+="host='" + host.replace("'","") + "',";
   tmp_felder+="room='"+ room.replace("'","") +"',";
   tmp_felder+="id='"+ id.replace("'","") + "',";
-  tmp_felder+="time='"+ time.replace("'","") +"',";
+  tmp_felder+="time='"+ time +"',";
   tmp_felder+="user='"+user.replace("'","")+"',";
   tmp_felder+="message='"+ message.replace("'","") + "'";
   var ADD_MESSAGE="INSERT INTO bot_chatlog SET " + tmp_felder + " ON DUPLICATE KEY UPDATE " + tmp_felder;
@@ -92,7 +92,7 @@ function UpdateHosts(service, host, hostname) {
   var tmp_felder="service='" + service.replace("'","") + "',";
   tmp_felder+="host='" + host.replace("'","") + "',";
   tmp_felder+="name='" + hostname.replace("'","") + "',";
-  tmp_felder+="last_seen='"+time.replace("'","")+"'";
+  tmp_felder+="last_seen='"+time+"'";
   var ADD_SQL="INSERT INTO bot_chathosts SET " + tmp_felder + " ON DUPLICATE KEY UPDATE " + tmp_felder;
   mysql_connection.query(ADD_SQL, function (err, rows) {
     if (err != null) {
@@ -117,7 +117,7 @@ function UpdateUser(service, host, userid, username, role) {
   tmp_felder+="user='"+userid.replace("'","")+"',";
   tmp_felder+="name='"+username.replace("'","")+"',";
   tmp_felder+="role='"+role.replace("'","")+"',";
-  tmp_felder+="last_seen='"+time.replace("'","")+"'";
+  tmp_felder+="last_seen='"+time+"'";
   var ADD_SQL="INSERT INTO bot_chatuser SET " + tmp_felder + " ON DUPLICATE KEY UPDATE " + tmp_felder;
   mysql_connection.query(ADD_SQL, function (err, rows) {
     if (err != null) {
