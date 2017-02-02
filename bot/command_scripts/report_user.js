@@ -6,8 +6,9 @@ var self = module.exports = {
     var returnmsg="";
     var parts=message_row.message.split(" ");
     var SQL = "";
-    var FELDER="service='" + message_row.service + "', host='" + message_row.host + "', name='"+parts[1]+"'";
-    SQL = "SELECT * FROM bot_chatuser WHERE "+FELDER.replace(", ", " and ") + " LIMIT 1";
+    var FELDER_UPDATE="service='" + message_row.service + "', host='" + message_row.host + "', name='"+parts[1]+"'";
+    var FELDER_WHERE="service='" + message_row.service + "' and host='" + message_row.host + "' and name='"+parts[1]+"'";;
+    SQL = "SELECT * FROM bot_chatuser WHERE "+FELDER_WHERE + " LIMIT 1";
     mysql.query(SQL, function (err, rows) {
       if (err != null) {
         console.log(SQL);
@@ -19,19 +20,20 @@ var self = module.exports = {
         return;
       }
       for (var i = 0; i < rows.length; i++) {
-        FELDER=FELDER+", verwarnung="+(rows[i].verwarnung+1);
-        SQL = "UPDATE bot_chatuser SET " + FELDER +" WHERE "+FELDER.replace(", ", " and ");
+        var tmp_row=rows[i];
+        FELDER_UPDATE=FELDER_UPDATE+", verwarnung="+(tmp_row.verwarnung+1);
+        SQL = "UPDATE bot_chatuser SET " + FELDER_UPDATE +" WHERE "+FELDER_WHERE;
         mysql.query(SQL, function (err2, rows2) {
           if (err2 != null) {
             console.log(SQL);
             console.log(err2);
             return;
           }
-          var user_mention=rows[i].user;
+          var user_mention=tmp_row.user;
           if (message_row.service=="Discord") {
-            user_mention="<@" + rows[i].user +">";
+            user_mention="<@" + tmp_row.user +">";
           }
-          if (rows[i].verwarnung<=1) {
+          if (tmp_row.verwarnung<=1) {
             SendFunc("VERWARNUNG: " + user_mention);
           } else {
             SendFunc("Hier sollte ein Bann für eine gewisse Zeit passieren: " + user_mention);
