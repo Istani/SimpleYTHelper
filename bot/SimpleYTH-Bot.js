@@ -2,7 +2,7 @@
 const private_settings  =require('./private_settings.json');
 
 // Requier other Moduls
-require("moment");
+moment=require("moment");
 
 // Mysql - Settings
 var mysql = require("mysql");
