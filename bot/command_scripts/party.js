@@ -1,4 +1,4 @@
-var global_cooldown=600; // in Sekunden
+var global_cooldown=60000; // in MS
 var global_lastuse=0;
 var global_max=3;
 
