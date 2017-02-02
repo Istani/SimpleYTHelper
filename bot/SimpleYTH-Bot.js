@@ -1,6 +1,9 @@
 // Private Settings
 const private_settings  =require('./private_settings.json');
 
+// Requier other Moduls
+require("moment");
+
 // Mysql - Settings
 var mysql = require("mysql");
 var mysql_connection = mysql.createConnection({
@@ -68,7 +71,7 @@ function Login() {
 }
 
 function LogMessage(service, host, room, id, time, user, message) {
-  time = new Date().getTime(); // timestamp überschreiben mit aktuellen Timestamo... wahrscheinlich gar keine so gute Idee!
+  time = moment(); // timestamp überschreiben mit aktuellen Timestamo... wahrscheinlich gar keine so gute Idee!
   // log Message to MySQL;
   var tmp_felder="service='" + service.replace("'","") + "',";
   tmp_felder+="host='" + host.replace("'","") + "',";
