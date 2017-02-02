@@ -53,6 +53,7 @@ function StartBot() {
 }
 var command_prefix = "!";
 var cmd=require("./command_scripts/commands.js");
+cmd.init(mysql_connection);
 cmd.reload_commands();
 
 function Login() {
@@ -231,6 +232,13 @@ function GenerateAnwser(msg_row) {
       break;
       default:
       console.log("MSG Service: " + msg.service + " unkonwn!");
+      cmd.use(command, msg,function (text) {
+        var sendcount=0;
+        setTimeout(function () {
+          var SendText=text;
+          console.log(SendText);
+        }, sendcount*100);
+      });
     }
   }
 }
