@@ -13,9 +13,6 @@ var self = module.exports = {
         amount=parseInt(tmp_para[1]);
       }
     }
-    console.log(global_lastuse);
-    console.log(global_cooldown);
-    console.log(Date.now());
     if (global_lastuse+global_cooldown>=Date.now()) {
       SendFunc("Zuviel Party hintereinander!\r\nDer Bot kann gerade keine Party machen!\r\nWarte doch noch einen Moment!");
       return;
