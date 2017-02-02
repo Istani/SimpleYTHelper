@@ -12,7 +12,7 @@ var self = module.exports = {
     if (typeof parameter == 'undefined') {
       parameter=null;
     }
-    var tmp_url = url + parameter +"&param="+parameter2;
+    var tmp_url = url + parameter +"&host="+message_row.host+"&param="+parameter2;
     fetch(tmp_url)
     .then(function (response) {
       return response.text();
