@@ -3,6 +3,7 @@ var self = module.exports = {
     mysql=MySQL;
   },
   execute: function (message_row, SendFunc, NewMessageFunc) {
+    time = moment();
     var returnmsg="";
     var parts=message_row.message.split(" ");
     var SQL = "";
@@ -22,6 +23,8 @@ var self = module.exports = {
       for (var i = 0; i < rows.length; i++) {
         var tmp_row=rows[i];
         FELDER_UPDATE=FELDER_UPDATE+", verwarnung="+(tmp_row.verwarnung+1);
+        FELDER_UPDATE=FELDER_UPDATE+", verwarnung_zeit="+time;
+        
         SQL = "UPDATE bot_chatuser SET " + FELDER_UPDATE +" WHERE "+FELDER_WHERE;
         mysql.query(SQL, function (err2, rows2) {
           if (err2 != null) {
@@ -44,3 +47,4 @@ var self = module.exports = {
   }
 };
 var mysql=null;
+moment=require("moment");
