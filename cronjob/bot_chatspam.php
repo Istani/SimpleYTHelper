@@ -3,7 +3,7 @@ $_tmp_tabellename=strtolower("bot_chatspam");
 if (!isset($token[$_tmp_tabellename])) {
   $token[$_tmp_tabellename] = init_token($_tmp_tabellename);
 }
-$tt=$token[$_tmp_tabellename];
+$tt=$token[strtolower("bot_chatspam")];
 if ($tt["last_used"]+$tt["cooldown"]<time()) {
   if (isset($data4sql)) {
     unset($data4sql);
@@ -66,6 +66,7 @@ echo date("d.m.Y - H:i:s")." - ".$_tmp_tabellename." updated!<br>";
 $tt["yt_token"]=0;
 if($tt["token"]==""){$tt["token"]="null";}
 $database->sql_insert_update("bot_token",$tt);
+$token[strtolower("bot_chatspam")]=$tt;
 unset($tt);
 
 ?>
