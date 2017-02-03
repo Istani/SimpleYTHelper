@@ -37,7 +37,9 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
           $user_name=$database->sql_select("bot_chatuser","name", "service='".$tmp_row4sql['service']."' AND host='".$tmp_row4sql['host']."' AND user='".$tmp_row4sql['user']."'", true);
           $tmp_row4sql['message']="!report_user ".$user_name[0]['name']." : Bad Word used!";
           if ($user_name[0]['name']!="") {
+            $milliseconds = round(microtime(true) * 1000);
             $tmp_row4sql['time']=0;
+            $tmp_row4sql['id']=$milliseconds;
             $database->sql_insert_update("bot_chatlog", $tmp_row4sql);
           }
         }
