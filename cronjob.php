@@ -56,7 +56,7 @@ $database->sql_delete("livestream_chat", "last_seen<".time()." AND `irgnore`=1")
 
 
 // Bot Token da hinzufügen wo es noch keine Token gibt?!?
-$tmp_all_token=$database->sql_select("bot_token", "id","yt_token>=0 GROUP BY id");
+$tmp_all_token=$database->sql_select("bot_token", "id","yt_token>0 GROUP BY id");
 $tmp_all_auth=$database->sql_select("authtoken", "id","access_token>=0 GROUP BY id");
 for($i=0;$i<count($tmp_all_token);$i++) {
   for($j=0;$j<count($tmp_all_auth);$j++) {
