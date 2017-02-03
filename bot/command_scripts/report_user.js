@@ -36,11 +36,11 @@ var self = module.exports = {
             if (message_row.service=="Discord") {
               user_mention="<@" + tmp_row.user +">";
             }
-            if (tmp_row.verwarnung<=1) {
-              SendFunc("VERWARNUNG: " + user_mention +"\r\n"+grund);
-            } else {
-              SendFunc("Hier sollte ein Bann für eine gewisse Zeit passieren: " + user_mention +"\r\n"+grund);
-            }
+            //if (tmp_row.verwarnung<=1) {
+            SendFunc("VERWARNUNG: " + user_mention +"\r\n"+grund);
+            //} else {
+            //  SendFunc("Hier sollte ein Bann für eine gewisse Zeit passieren: " + user_mention +"\r\n"+grund);
+            //}
           });
         }
       }
