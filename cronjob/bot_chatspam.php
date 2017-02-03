@@ -9,7 +9,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     unset($data4sql);
   }
   // Mehr als 3 Nachrichten in der Minute
-  $listRequests = $database->sql_select("bot_chatlog","service, host, room, user, count(message) as Anzahl", " time >='".($tt["last_used"]-$tt["cooldown"])."' GROUP BY service, host, room, user", true);
+  $listRequests = $database->sql_select("bot_chatlog","service, host, room, user, count(message) as Anzahl", "`time` >=".($tt["last_used"]-$tt["cooldown"])." GROUP BY service, host, room, user", true);
   $data4sql= $listRequests; // Hier unnötig, aber dann ist es so wie überall anders!
   for($i=0;$i<count($data4sql);$i++) {
     $tmp_row4sql=$data4sql[$i];
@@ -20,14 +20,14 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
       $tmp_row4sql['message']="!report_user ".$user_name[0]['name']." : Zuviele Nachrichten in kurzer Zeit!";
       if ($user_name[0]['name']!="") {
         $tmp_row4sql['time']=0;
-        $milliseconds = round(microtime(true) * 1000);
+        $milliseconds = round(microtime(true) * 10000);
         $tmp_row4sql['id']=$milliseconds;
         $database->sql_insert_update("bot_chatlog", $tmp_row4sql);
       }
     }
   }
   // bot_chatbadword
-  $welche_server_checken=$database->sql_select("bot_chatlog","service, host, room", "`time`>='".($tt["last_used"]-$tt["cooldown"])."' GROUP BY service, host, room", false);
+  $welche_server_checken=$database->sql_select("bot_chatlog","service, host, room", "`time` >=".($tt["last_used"]-$tt["cooldown"])."  GROUP BY service, host, room", false);
   for($i=0;$i<count($welche_server_checken);$i++) {
     $listWords = $database->sql_select("bot_chatbadword","service, host, word", "service='".$welche_server_checken[$i]['service']."' AND host='".$welche_server_checken[$i]['host']."'", false);
     $listMSG = $database->sql_select("bot_chatlog","service, host, room, user, message", "service='".$welche_server_checken[$i]['service']."' AND host='".$welche_server_checken[$i]['host']."' AND `time`>='".($tt["last_used"]-$tt["cooldown"])."'", false);
@@ -40,7 +40,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
           $tmp_row4sql['message']="!report_user ".$user_name[0]['name']." : Bad Word used!";
           if ($user_name[0]['name']!="") {
             $tmp_row4sql['time']=0;
-            $milliseconds = round(microtime(true) * 1000);
+            $milliseconds = round(microtime(true) * 10000);
             $tmp_row4sql['id']=$milliseconds;
             $database->sql_insert_update("bot_chatlog", $tmp_row4sql);
           }
