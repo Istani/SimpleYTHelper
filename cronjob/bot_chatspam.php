@@ -25,7 +25,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
           $tmp_row4sql['time']=0;
           $milliseconds = round(microtime(true) * 10000);
           $tmp_row4sql['id']=$milliseconds;
-          $database->sql_insert_update("bot_chatlog", $tmp_row4sql);
+          //$database->sql_insert_update("bot_chatlog", $tmp_row4sql);
         }
       }
     }
@@ -49,7 +49,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
               $tmp_row4sql['time']=0;
               $milliseconds = round(microtime(true) * 10000);
               $tmp_row4sql['id']=$milliseconds;
-              $database->sql_insert_update("bot_chatlog", $tmp_row4sql);
+              //$database->sql_insert_update("bot_chatlog", $tmp_row4sql);
             }
           }
         }
