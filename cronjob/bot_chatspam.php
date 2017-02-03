@@ -20,15 +20,17 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
       $tmp_row4sql['message']="!report_user ".$user_name[0]['name']." : Zuviele Nachrichten in kurzer Zeit!";
       if ($user_name[0]['name']!="") {
         $tmp_row4sql['time']=0;
+        $milliseconds = round(microtime(true) * 1000);
+        $tmp_row4sql['id']=$milliseconds;
         $database->sql_insert_update("bot_chatlog", $tmp_row4sql);
       }
     }
   }
   // bot_chatbadword
-  $welche_server_checken=$database->sql_select("bot_chatlog","service, host, room", "`time`>='".($tt["last_used"]-$tt["cooldown"])."' GROUP BY service, host, room", true);
+  $welche_server_checken=$database->sql_select("bot_chatlog","service, host, room", "`time`>='".($tt["last_used"]-$tt["cooldown"])."' GROUP BY service, host, room", false);
   for($i=0;$i<count($welche_server_checken);$i++) {
-    $listWords = $database->sql_select("bot_chatbadword","service, host, word", "service='".$welche_server_checken[$i]['service']."' AND host='".$welche_server_checken[$i]['host']."'", true);
-    $listMSG = $database->sql_select("bot_chatlog","service, host, room, user, message", "service='".$welche_server_checken[$i]['service']."' AND host='".$welche_server_checken[$i]['host']."' AND `time`>='".($tt["last_used"]-$tt["cooldown"])."'", true);
+    $listWords = $database->sql_select("bot_chatbadword","service, host, word", "service='".$welche_server_checken[$i]['service']."' AND host='".$welche_server_checken[$i]['host']."'", false);
+    $listMSG = $database->sql_select("bot_chatlog","service, host, room, user, message", "service='".$welche_server_checken[$i]['service']."' AND host='".$welche_server_checken[$i]['host']."' AND `time`>='".($tt["last_used"]-$tt["cooldown"])."'", false);
     for($j=0;$j<count($listWords);$j++) {
       for($k=0;$k<count($listMSG);$k++) {
         if ($listMSG[$k]['message']!=str_replace($listMSG[$k]['message'],$listWords[$j]['word'],"")) {
@@ -37,8 +39,8 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
           $user_name=$database->sql_select("bot_chatuser","name", "service='".$tmp_row4sql['service']."' AND host='".$tmp_row4sql['host']."' AND user='".$tmp_row4sql['user']."'", true);
           $tmp_row4sql['message']="!report_user ".$user_name[0]['name']." : Bad Word used!";
           if ($user_name[0]['name']!="") {
-            $milliseconds = round(microtime(true) * 1000);
             $tmp_row4sql['time']=0;
+            $milliseconds = round(microtime(true) * 1000);
             $tmp_row4sql['id']=$milliseconds;
             $database->sql_insert_update("bot_chatlog", $tmp_row4sql);
           }
