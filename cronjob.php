@@ -67,7 +67,7 @@ for($i=0;$i<count($tmp_all_token);$i++) {
   }
 }
 
-while (time()-$Time['Start']<=2) {
+while (time()-$Time['Start']<=45) {
   //if (time()>0) {
   // Getting Next Job
   $TmpNextJob=$database->sql_select("bot_token","*","last_used+cooldown <= ".time()." ORDER BY last_used+cooldown LIMIT 1",false);
