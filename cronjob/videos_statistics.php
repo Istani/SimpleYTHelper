@@ -7,7 +7,6 @@ if (!isset($token[$_tmp_tabellename])) {
 $tt=$token[$_tmp_tabellename];
 if ($tt["last_used"]+$tt["cooldown"]<time()) {
   
-  // Youtube
   $req_count=50;
   if ($tt["token"] == "null") {
     //$listResponse = $youtube->playlistItems->listPlaylistItems("snippet", array('playlistId' => $uploadsListId, "maxResults" => $req_count));

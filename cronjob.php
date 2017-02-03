@@ -48,7 +48,26 @@ function init_token($name) {
 
 // While - Cronjob
 $Time['Start']=time();
-while (time()-$Time['Start']<=30) {
+// Delete Wrong Data!
+$database->sql_delete("authtoken", "refresh_token='' AND discrod_token=''");
+$database->sql_delete("livestream_chat", "last_seen<".time()." AND `irgnore`=1");
+
+// TODO: Token für neue Dateien erstellen?
+
+
+// Bot Token da hinzufügen wo es noch keine Token gibt?!?
+$tmp_all_token=$database->sql_select("bot_token", "id","yt_token>=0 GROUP BY id");
+$tmp_all_auth=$database->sql_select("authtoken", "id","access_token>=0 GROUP BY id");
+for($i=0;$i<count($tmp_all_token);$i++) {
+  for($j=0;$j<count($tmp_all_auth);$j++) {
+    $new_data['id']=$tmp_all_token[$i]['id'];
+    $new_data['yt_token']=$tmp_all_auth[$j]['id'];
+    $database->sql_insert_update("bot_token",$new_data);
+    unset($new_data);
+  }
+}
+
+while (time()-$Time['Start']<=45) {
   //if (time()>0) {
   // Getting Next Job
   $TmpNextJob=$database->sql_select("bot_token","*","last_used+cooldown <= ".time()." ORDER BY last_used+cooldown LIMIT 1",false);
@@ -75,35 +94,43 @@ while (time()-$Time['Start']<=30) {
   
   //Check User Token
   $tmp_token=$TmpToken['User'];
-  if($tmp_token['google_clientid']=="") {
-    $tmp_token['google_clientid']=$TmpToken['Bot']['google_clientid'];
-    $tmp_token['google_clientsecret']=$TmpToken['Bot']['google_clientsecret'];
+  if($tmp_token['access_token']!="") {
+    if($tmp_token['google_clientid']=="") {
+      $tmp_token['google_clientid']=$TmpToken['Bot']['google_clientid'];
+      $tmp_token['google_clientsecret']=$TmpToken['Bot']['google_clientsecret'];
+    }
+    
+    // Google Verbindung
+    $client = new Google_Client();
+    $client->setClientId($tmp_token['google_clientid']);
+    $client->setClientSecret($tmp_token['google_clientsecret']);
+    $client->setDeveloperKey($DEV_KEY);
+    $client->setScopes('https: //www.googleapis.com/auth/youtube');
+    $client->setAccessToken($tmp_token);
+    if ($client->isAccessTokenExpired()) {
+      $client->refreshToken($tmp_token['refresh_token']);
+      $tmp_insert_token["token"]=$client->getAccessToken();
+      $tmp_insert_token["token"]['id']=$tmp_token['id'];
+      $tmp_insert_token["token"]['last_seen']=time();
+      session_to_database($database, $tmp_insert_token);
+    }
+    $_SESSION['token'] = $tmp_token;
+    $youtube = new Google_Service_YouTube($client);
+    
+    if ($tmp_token['channel_id']=="") {
+      if (!isset($token['channel_token'])) {
+        continue;
+      }
+    }
   }
-  
-  // Google Verbindung
-  $client = new Google_Client();
-  $client->setClientId($tmp_token['google_clientid']);
-  $client->setClientSecret($tmp_token['google_clientsecret']);
-  $client->setDeveloperKey($DEV_KEY);
-  $client->setScopes('https: //www.googleapis.com/auth/youtube');
-  $client->setAccessToken($tmp_token);
-  if ($client->isAccessTokenExpired()) {
-    $client->refreshToken($tmp_token['refresh_token']);
-    $tmp_insert_token["token"]=$client->getAccessToken();
-    $tmp_insert_token["token"]['id']=$tmp_token['id'];
-    $tmp_insert_token["token"]['last_seen']=time();
-    session_to_database($database, $tmp_insert_token);
-  }
-  $_SESSION['token'] = $tmp_token;
-  $youtube = new Google_Service_YouTube($client);
   
   foreach ($token as $tokenkey => $tokenvalue) {
     include("cronjob/".$tokenkey.".php");
     sleep(1);
   }
-  
-  
 }
+
+
 $Time['End']=time();
 echo '<br>';
 echo date("d.m.Y H:i:s",$Time['Start']);
@@ -114,33 +141,5 @@ echo ($Time['End']-$Time['Start']).' Sek.<br>';
 
 // Zur Einmaligen initalisierung
 // TODO: Das ist so noch nicht richtig...
-/*
-$tmp_token=$TmpToken['Bot'];
-$client = new Google_Client();
-$client->setClientId($tmp_token['google_clientid']);
-$client->setClientSecret($tmp_token['google_clientsecret']);
-$client->setDeveloperKey($DEV_KEY);
-$client->setScopes('https: //www.googleapis.com/auth/youtube');
-$client->setAccessToken($tmp_token);
-if ($client->isAccessTokenExpired()) {
-$client->refreshToken($tmp_token['refresh_token']);
-$tmp_insert_token["token"]=$client->getAccessToken();
-$tmp_insert_token["token"]['id']=$tmp_token['id'];
-$tmp_insert_token["token"]['last_seen']=time();
-session_to_database($database, $tmp_insert_token);
-}
-$_SESSION['token'] = $tmp_token;
-$youtube = new Google_Service_YouTube($client);
-include("cronjob/channel_token.php");
-include("cronjob/channels_contentDetails.php");
-include("cronjob/channels_statistics.php");
-include("cronjob/subscriptions_subscriberSnippet.php");
-include("cronjob/videos_snippet.php");
-include("cronjob/videos_statistics.php");
-include("cronjob/videos_status.php");
-//include("cronjob/videos_contentDetails.php");
-include("cronjob/channels_livestreamchat.php");
-include("cronjob/livestream_chat.php");
-//include("cronjob/videos_liveStreamingDetails.php");
-*/
+// Neue Dateien müssen einmalig selnst eingetragen werden
 ?>
