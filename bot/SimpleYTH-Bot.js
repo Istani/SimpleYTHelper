@@ -73,7 +73,7 @@ function Login() {
 }
 
 function LogMessage(service, host, room, id, time, user, message) {
-  time = moment(); // timestamp überschreiben mit aktuellen Timestamo... wahrscheinlich gar keine so gute Idee!
+  time =  Math.round(moment()/1000); // timestamp überschreiben mit aktuellen Timestamo... wahrscheinlich gar keine so gute Idee!
   // log Message to MySQL;
   var tmp_felder="service='" + service.replace("'","") + "',";
   tmp_felder+="host='" + host.replace("'","") + "',";
