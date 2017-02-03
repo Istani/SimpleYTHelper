@@ -20,7 +20,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
       $tmp_row4sql['message']="!report_user ".$user_name[0]['name']." : Zuviele Nachrichten in kurzer Zeit!";
       if ($user_name[0]['name']!="") {
         $tmp_row4sql['time']=0;
-        sql_insert_update("bot_chatlog", $tmp_row4sql);
+        $database->sql_insert_update("bot_chatlog", $tmp_row4sql);
       }
     }
   }
@@ -38,7 +38,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
           $tmp_row4sql['message']="!report_user ".$user_name[0]['name']." : Bad Word used!";
           if ($user_name[0]['name']!="") {
             $tmp_row4sql['time']=0;
-            sql_insert_update("bot_chatlog", $tmp_row4sql);
+            $database->sql_insert_update("bot_chatlog", $tmp_row4sql);
           }
         }
       }
