@@ -2,26 +2,54 @@
   <h3 class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">Helper</h3>
   <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
     <?php
-    // Überprüfen ob Token schon vorhanen!
-    if ($client->getAccessToken()) {
-      try {
-        
-      } catch (Google_Service_Exception $e) {
-        echo sprintf('<p>A service error occurred: <code>%s</code></p>', htmlspecialchars($e->getMessage()));
-      } catch (Google_Exception $e) {
-        echo sprintf('<p>An client error occurred: <code>%s</code></p>', htmlspecialchars($e->getMessage()));
-      }
-      $token_id=session_to_database($database, $_SESSION['token']);
-      $_tmp_tabellename="authtoken";
-      $tmp_yt_tokens=$database->sql_select($_tmp_tabellename,"*","id=".$token_id." LIMIT 1",true);
-      $_SESSION['token'] = $tmp_yt_tokens[0];
-    } else {
-      $state = mt_rand();
-      $client->setState($state);
-      $_SESSION['state'] = $state;
+    if (isset($_SESSION['user']['email'])) {
+      echo "<p><a href='index.php?site=my_accounts'>Meine Accounts</a></p>";
       
-      $authUrl = $client->createAuthUrl();
-      echo "<p><a href='" . $authUrl . "'>Google Konto verknüpfen</a></p>";
+      
+      echo "<p><a href='site/logout.php'>Logout</a></p>";
+    } else {
+      // Login
+      ?>
+      <form method="POST" action="index.php">
+        <table>
+          <tr>
+            <td>
+              E-Mail:
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="text" name="email">
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Passwort:
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="password" name="passwort">
+            </td>
+          </tr>
+          <tr>
+            <td>
+              &nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="submit" name="login" value="LOGIN">
+            </td>
+          </tr>
+          <tr>
+            <td>
+              &nbsp;
+            </td>
+          </tr>
+        </table>
+      </form>
+      <?php
     }
     ?>
   </div>

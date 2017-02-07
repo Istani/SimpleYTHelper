@@ -5,13 +5,28 @@ if (!isset($_GET['site'])) {
 }
 switch ($_GET['site']) {
   case 'info':
-    include("site/info.php");
-    break;
-  case 'Cronjob_Channels':
-    include("cronjob/load_channels.php");
-    break;
+  include("site/info.php");
+  break;
+  case 'New_Google_Auth':
+  include("inc/google_connect.php");
+  include("site/auth_google.php");
+  break;
+  case 'Google_Auth':
+  include("inc/google_connect.php");
+  ob_start();
+  include("cronjob/channel_token.php");
+  include("cronjob/channels_statistics.php");
+  ob_end_clean();
+  include("site/yt_channels.php");
+  break;
+  case 'my_accounts':
+  include("site/my_accounts.php");
+  break;
+  case 'yt_channels':
+  include("site/yt_channels.php");
+  break;
   default:
-    echo "Error";
-    break;  
-  }
+  echo "Error";
+  break;
+}
 ?>

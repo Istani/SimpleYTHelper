@@ -1,21 +1,5 @@
 <?php
 require_once 'inc/php_inc.php';
-require_once 'inc/google_connect.php';
-
-/*
-// Test weil ich mich offline nicht einloggen kann!
-require 'inc/php_inc.php';
-$accessToken = load_accesstoken($KANALID);
-
-// Google Verbindung
-$client = new Google_Client();
-$client->setClientId($OAUTH2_CLIENT_ID);
-$client->setClientSecret($OAUTH2_CLIENT_SECRET);
-$client->setDeveloperKey($DEV_KEY);
-$client->setScopes('https: //www.googleapis.com/auth/youtube');
-
-$client->setAccessToken($accessToken);
-*/
 ?>
 <!doctype html>
 <html>

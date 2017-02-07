@@ -37,14 +37,7 @@ $tmp_channel_data=$database->sql_select("channel_token","channel_id", "token_id=
 $TmpToken['Bot']['channel_id']=$tmp_channel_data[0]['channel_id'];
 
 // Function
-function init_token($name) {
-  $_tmp_token["id"]=$name;
-  $_tmp_token["token"]="null";
-  $_tmp_token["last_used"]=0;
-  $_tmp_token["cooldown"]=300;
-  $_tmp_token['yt_token']=0;
-  return $_tmp_token;
-}
+
 
 // While - Cronjob
 $Time['Start']=time();

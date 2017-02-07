@@ -41,7 +41,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $tt["cooldown"]="60";
 }
 // Save Token
-echo date("d.m.Y - H:i:s")." - ".$tmp_token['channel_id'].': '.$_tmp_tabellename." updated!<br>";
+echo date("d.m.Y - H:i:s").' : '.$_tmp_tabellename." updated!<br>";
 $tt["last_used"]=time();
 $tt["yt_token"]=$_SESSION['token']['id'];
 if($tt["token"]==""){$tt["token"]="null";}

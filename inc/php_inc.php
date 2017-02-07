@@ -16,24 +16,24 @@ $DEV_KEY = "";
 $OAUTH2_CLIENT_ID = '';
 $OAUTH2_CLIENT_SECRET = '';
 
+/* Noch wichtig für CRONJOB und BOT Commands */
 // Istani
 $KANALID = "UCoL8PZGa__nCk_OgZeenRtw";
-
 // Defender833
 $KANALID = "UC5DOhI70dI3PnLPMkUsosgw";
 
 
-require_once 'google_api/vendor/autoload.php';
+require_once 'API/google/vendor/autoload.php';
 
 /* eigene scripte */
 require_once 'functions/db.php';
 require_once 'functions/func_token.php';
 require_once 'functions/func_command.php';
-// load private settings
+// load private settings - Überschreibt die hier vorher definierten mysql und oauth vars
 include("private_settings.php");
 
 $database = new db("mysql", $mysql['host'], $mysql['user'], $mysql['pass']);
 $database->connect_db($mysql['base']);
-//$database=new db("sqlite","");
-//$database->connect_db("data/".$KANALID.".sqlite3");
+
+require_once 'inc/forms_check.php';
 ?>

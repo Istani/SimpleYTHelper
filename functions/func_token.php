@@ -1,5 +1,12 @@
 <?php
-
+function init_token($name) {
+  $_tmp_token["id"]=$name;
+  $_tmp_token["token"]="null";
+  $_tmp_token["last_used"]=0;
+  $_tmp_token["cooldown"]=300;
+  $_tmp_token['yt_token']=0;
+  return $_tmp_token;
+}
 function save_accesstoken($kanal, $token) {
   $file = "token/" . $kanal . ".access";
   $myfile = fopen($file, "w+") or die("Unable to set access token!");
