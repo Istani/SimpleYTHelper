@@ -16,6 +16,10 @@ $DEV_KEY = "";
 $OAUTH2_CLIENT_ID = '';
 $OAUTH2_CLIENT_SECRET = '';
 
+/* Discord Oauth API */
+$Discord_CLIENT_ID     = '';
+$Discord_CLIENT_SECRET = '';
+
 /* Noch wichtig für CRONJOB und BOT Commands */
 // Istani
 $KANALID = "UCoL8PZGa__nCk_OgZeenRtw";
@@ -24,6 +28,10 @@ $KANALID = "UC5DOhI70dI3PnLPMkUsosgw";
 
 
 require_once 'API/google/vendor/autoload.php';
+
+require_once 'API/OAuth2/src/OAuth2/Client.php';
+require_once 'API/OAuth2/src/OAuth2/GrantType/IGrantType.php';
+require_once 'API/OAuth2/src/OAuth2/GrantType/AuthorizationCode.php';
 
 /* eigene scripte */
 require_once 'functions/db.php';

@@ -6,6 +6,9 @@ $DEV_KEY="SERVER TOKEN";
 $OAUTH2_CLIENT_ID = 'TOKEN';
 $OAUTH2_CLIENT_SECRET = 'SECRET';
 
+$Discord_CLIENT_ID     = 'TOKEN';
+$Discord_CLIENT_SECRET = 'SECRET';
+
 // Mysql Settings
 $mysql['host'] = "127.0.0.1";
 $mysql['user'] = "";
