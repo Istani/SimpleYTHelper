@@ -14,9 +14,11 @@ else
 {
   $params = array('code' => $_GET['code'], 'redirect_uri' => $redirect);
   $response = $client->getAccessToken(TOKEN_ENDPOINT, 'authorization_code', $params);
-  parse_str($response['result'], $info);
+  var_dump($response);
+  $info=$response['result'];
+  echo '<hr>';
   $client->setAccessToken($info['access_token']);
-  $response = $client->fetch('https://discordapp.com/api/oauth2/applications/@me');
-  var_dump($response, $response['result']);
+  $response = $client->fetch('https://discordapp.com/api/users/@me');
+  var_dump($response);
 }
 ?>
