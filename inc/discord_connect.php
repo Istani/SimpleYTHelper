@@ -10,16 +10,17 @@ if (!isset($_GET['code']))
   $auth_url = $client->getAuthenticationUrl(AUTHORIZATION_ENDPOINT, $redirect, array("scope"=>"identify"));
   header('Location: ' . $auth_url);
   die('Redirect');
-}
-else
-{
+} else {
   $params = array('code' => $_GET['code'], 'redirect_uri' => $redirect);
   $response = $client->getAccessToken(TOKEN_ENDPOINT, 'authorization_code', $params);
-  var_dump($response);
   $info=$response['result'];
-  echo '<hr>';
   $client->setAccessToken($info['access_token']);
+  $client->setAccessTokenType(1); //ACCESS_TOKEN_BEARER
   $response = $client->fetch('https://discordapp.com/api/users/@me');
-  var_dump($response);
+  $_SESSION['user']['discord_user']=$response['result']['id'];
+  $database->sql_insert_update("user", $_SESSION['user']);
+  $redirect = filter_var('http://127.0.0.1/SimpleYTH/index.php?site=my_accounts', FILTER_SANITIZE_URL);
+  $redirect = filter_var('http://simpleyth.randompeople.de/index.php?site=my_accounts', FILTER_SANITIZE_URL);
+  header("Location: ".$redirect);
 }
 ?>

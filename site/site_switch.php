@@ -27,7 +27,6 @@ switch ($_GET['site']) {
   break;
   case 'Discord_Auth':
   include("inc/discord_connect.php");
-  
   break;
   // Sites
   case 'my_accounts':
