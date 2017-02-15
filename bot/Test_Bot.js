@@ -19,36 +19,39 @@ var mysql_connection = mysql.createConnection({
 var Discord = require("discord.js");
 var discord_bot = new Discord.Client();
 discord_bot.on("message", msg => {
+  console.log("Messge Income");
   var UserRoles=[];
+  //console.log(msg.guild);
   if (msg.guild.ownerID==msg.author.id) {
-    UserRoles.push("Owner-Admin");
+    UserRoles.push("Owner");
+    console.log("Owner");
   }
   msg.guild.member(msg.author).roles.forEach(function(element){
     UserRoles.push(element.name);
   });
-  UpdateHosts("Discord", msg.guild.id, msg.guild.name);
-  UpdateUser("Discord", msg.guild.id, msg.author.id, msg.author.username, UserRoles);
-  LogMessage("Discord", msg.guild.id, msg.channel.id, msg.id, msg.createdTimestamp, msg.author.id, msg.content);
+  console.log(UserRoles);
+  //console.log(msg.guild.roles);
+  //UpdateHosts("Discord", msg.guild.id, msg.guild.name);
+  //UpdateUser("Discord", msg.guild.id, msg.author.id, msg.author.username, "User");
+  //LogMessage("Discord", msg.guild.id, msg.channel.id, msg.id, msg.createdTimestamp, msg.author.id, msg.content);
 });
 
 discord_bot.on('ready', function () {
   //discord_bot.user.setStatus('online', 'http://simpleyth.randompeople.de');
-  discord_bot.user.setStatus('online', 'SimpleYTH');
+  //discord_bot.user.setStatus('online', 'SimpleYTH');
 });
 
 discord_bot.on('disconnect', function () {
-  process.exit();
+  //process.exit();
 });
 
 // Google - Settings
 var Google_Bot = require("./own_modules/Google_Bot");
 var google_bot = new Google_Bot(mysql_connection);
 google_bot.on("message", msg => {
-  var UserRoles=[];
-  UserRoles.push(msg.role);
-  UpdateHosts("YouTube",msg.host, "Youtube Gaming");
-  UpdateUser("YouTube", msg.host, msg.author, msg.authorname, UserRoles);
-  LogMessage("YouTube", msg.host, msg.room, msg.id, msg.createdTimestamp, msg.author, msg.content);
+  //UpdateHosts("YouTube",msg.host, "Youtube Gaming");
+  //UpdateUser("YouTube", msg.host, msg.author, msg.authorname, msg.role);
+  //LogMessage("YouTube", msg.host, msg.room, msg.id, msg.createdTimestamp, msg.author, msg.content);
 });
 
 // Whatever - Settings
@@ -115,12 +118,21 @@ function UpdateHosts(service, host, hostname) {
   });
 }
 
-function UpdateUser(service, host, userid, username, roles) {
+function UpdateUser(service, host, userid, username, role) {
+  // TODO: Was wenn ein User mehr als eine Rolle in Discord hat?
+  // Warscheinlich besser wenn es eine Zuordnung User, Role gibt und dann ne Tabelle Roles, Rechte... <- Ja Nein Vielleicht
+  // NOTE: Wenn es mehr als eine Role gibt, wie verhalten sich dann die Rechte?!?
+  // 0=no 1=yes und dann immer >
+  // TODO: Manuell verteilte Rechte?!? Wie? Nicht überschreiben! <- Eigentlich nur nötig für den Bot selbst!
+  // Und das auch nur bei bestimmten Sachen, vielleicht kann ich das irgendwie anders lösen?!?
+  // Oder aber in Discord falls jemand nicht die Rechte haben soll? Nein ich übernehm ja die rollen und nicht die rechte
+  // NOTE: Rechte je Command?!? Oder Command Gruppe? Spontan je Einzel Command
   var time = Date.now();
   var tmp_felder="service='" + service.replace("'","") + "',";
   tmp_felder+="host='" + host.replace("'","") + "',";
   tmp_felder+="user='"+userid.replace("'","")+"',";
   tmp_felder+="name='"+username.replace("'","")+"',";
+  tmp_felder+="role='"+role.replace("'","")+"',";
   tmp_felder+="last_seen='"+time+"'";
   var ADD_SQL="INSERT INTO bot_chatuser SET " + tmp_felder + " ON DUPLICATE KEY UPDATE " + tmp_felder;
   mysql_connection.query(ADD_SQL, function (err, rows) {
@@ -129,27 +141,7 @@ function UpdateUser(service, host, userid, username, roles) {
       return;
     }
   });
-  var DEL_SQL="DELETE FROM bot_chatuser_roles WHERE service='" + service.replace("'","") + "' AND host='"+host.replace("'","")+"' AND user='"+userid.replace("'","")+"'";
-  mysql_connection.query(DEL_SQL, function (err, rows) {
-    if (err != null) {
-      console.log("MySQL: " + err);
-    }
-  });
-  roles.forEach (function (r1) {
-    UpdateRoles(service, host, r1);
-    var tmp_felder="service='" + service.replace("'","") + "',";
-    tmp_felder+="host='" + host.replace("'","") + "',";
-    tmp_felder+="user='"+userid.replace("'","")+"',";
-    tmp_felder+="role='"+r1.replace("'","")+"'";
-    var ADD_SQL="INSERT INTO bot_chatuser_roles SET " + tmp_felder + " ON DUPLICATE KEY UPDATE " + tmp_felder;
-    mysql_connection.query(ADD_SQL, function (err, rows) {
-      if (err != null) {
-        console.log("MySQL: " + err);
-        return;
-      }
-    });
-  });
-  
+  UpdateRoles(service, host, role);
 }
 
 function UpdateRoles(service, host, role) {
