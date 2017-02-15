@@ -1,5 +1,5 @@
 var self = module.exports = {
-  execute: function (message_row, SendFunc, NewMessageFunc) { // TODO: NewMessageFunc sinnvoller einsatz
+  execute: function (message_row, SendFunc, NewMessageFunc) {
     var IstaniUserID='202892723420659714';
     if (message_row.user==IstaniUserID) { // TODO: Implement Permissions
       SendFunc("Shutdown - Trying Reboot!");

@@ -99,7 +99,6 @@ function CheckMessage(self) {
           console.log("MySQL: " + err);
           return;
         }
-        // NOTE: Add more information for Author Log (and more)
         var role="User";
         if (msg_line.ischatmoderator=="1") {
           role="Moderator";
@@ -111,7 +110,6 @@ function CheckMessage(self) {
           host:msg_line.channel_id,
           room: msg_line.livechatid,
           id: msg_line.id,
-          //TODO: createdTimestamp:msg_line.publishedat.toDate(),
           author:msg_line.authorchannelid,
           authorname:msg_line.displayname,
           content: msg_line.displaymessage,

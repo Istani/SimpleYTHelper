@@ -65,7 +65,6 @@ function Login() {
       return;
     }
     for (var i = 0; i < rows.length; i++) {
-      // TODO: Login wieder einfügen!
       discord_bot.login(rows[i].discrod_token);
       google_bot.login(rows[i].google_clientid,rows[i].google_clientsecret,rows[i].access_token);
     }

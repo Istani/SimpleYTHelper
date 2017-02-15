@@ -1,5 +1,6 @@
 <?php
 $redirect = filter_var('http://127.0.0.1/SimpleYTH/index.php?site=Discord_Auth', FILTER_SANITIZE_URL);
+$redirect = filter_var('http://simpleyth.randompeople.de/index.php?site=Discord_Auth', FILTER_SANITIZE_URL);
 const AUTHORIZATION_ENDPOINT = 'https://discordapp.com/api/oauth2/authorize';
 const TOKEN_ENDPOINT         = 'https://discordapp.com/api/oauth2/token';
 
