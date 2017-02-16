@@ -20,13 +20,10 @@ var Discord = require("discord.js");
 var discord_bot = new Discord.Client();
 discord_bot.on("message", msg => {
   var UserRoles=[];
-  if (msg.guild.ownerID==msg.author.id) {
-    UserRoles.push("Owner-Admin");
-  }
   msg.guild.member(msg.author).roles.forEach(function(element){
     UserRoles.push(element.name);
   });
-  UpdateHosts("Discord", msg.guild.id, msg.guild.name);
+  UpdateHosts("Discord", msg.guild.id, msg.guild.name, msg.guild.ownerID);
   UpdateUser("Discord", msg.guild.id, msg.author.id, msg.author.username, UserRoles);
   LogMessage("Discord", msg.guild.id, msg.channel.id, msg.id, msg.createdTimestamp, msg.author.id, msg.content);
 });
@@ -46,7 +43,7 @@ var google_bot = new Google_Bot(mysql_connection);
 google_bot.on("message", msg => {
   var UserRoles=[];
   UserRoles.push(msg.role);
-  UpdateHosts("YouTube",msg.host, "Youtube Gaming");
+  UpdateHosts("YouTube",msg.host, "Youtube Gaming", msg.host);
   UpdateUser("YouTube", msg.host, msg.author, msg.authorname, UserRoles);
   LogMessage("YouTube", msg.host, msg.room, msg.id, msg.createdTimestamp, msg.author, msg.content);
 });
@@ -99,12 +96,13 @@ function LogMessage(service, host, room, id, time, user, message) {
   });
 }
 
-function UpdateHosts(service, host, hostname) {
+function UpdateHosts(service, host, hostname, owner) {
   // Befehle per Host ein/aus schalten!?!
   var time = Date.now();
   var tmp_felder="service='" + service.replace("'","") + "',";
   tmp_felder+="host='" + host.replace("'","") + "',";
   tmp_felder+="name='" + hostname.replace("'","") + "',";
+  tmp_felder+="owner='" + owner.replace("'","") + "',";
   tmp_felder+="last_seen='"+time+"'";
   var ADD_SQL="INSERT INTO bot_chathosts SET " + tmp_felder + " ON DUPLICATE KEY UPDATE " + tmp_felder;
   mysql_connection.query(ADD_SQL, function (err, rows) {
