@@ -7,8 +7,11 @@ $client->setClientSecret($OAUTH2_CLIENT_SECRET);
 $client->setScopes('https://www.googleapis.com/auth/youtube');
 $redirect = filter_var('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'], FILTER_SANITIZE_URL);
 
-$redirect = filter_var('http://127.0.0.1/SimpleYTH/index.php?site=Google_Auth', FILTER_SANITIZE_URL);
-$redirect = filter_var('http://simpleyth.randompeople.de/index.php?site=Google_Auth', FILTER_SANITIZE_URL);
+if ($SimpleYTH_Developmentmode==true) {
+  $redirect = filter_var('http://127.0.0.1/SimpleYTH/index.php?site=Google_Auth', FILTER_SANITIZE_URL);
+} else {
+  $redirect = filter_var('http://simpleyth.randompeople.de/index.php?site=Google_Auth', FILTER_SANITIZE_URL);
+}
 $client->setRedirectUri($redirect);
 
 $client->setAccessType('offline');

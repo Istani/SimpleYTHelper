@@ -14,4 +14,7 @@ $mysql['host'] = "127.0.0.1";
 $mysql['user'] = "";
 $mysql['pass'] = "";
 $mysql['base'] = "";
+
+// Development
+$SimpleYTH_Developmentmode=false;
 ?>
