@@ -235,63 +235,63 @@ class db {
       $this->error("<b>Programmfehler:</b><i>ID:10-T Fehler</i><br>Falsche Werte für INSERT Befehl!<br><pre>" . var_dump($felder_werte_array) . "</pre>");
     }
     foreach ($felder_werte_array as $key => $value) {
-      /*if (get_magic_quotes_gpc()) {
-      $value = stripslashes($value);
-    }*/
-    $key=strtolower($key);
-    $value = str_replace("'", "", $value);
-    $value = utf8_encode($value);
-    if ($sql_felder == "") {
-      $sql_felder ="`".$key."`='" . $value . "'";
-      $felder_list="`".$key."`";
-      $value_list="'".$value."'";
-    } else {
-      $sql_felder.=", `".$key."`='" . $value . "'";
-      $felder_list.=", `".$key."`";
-      $value_list.=", '".$value."'";
-    }
-  }
-  if ($this->system == "mysql") {
-    $sql_string = "INSERT INTO " . $tabelle . " SET " . $sql_felder . " ON DUPLICATE KEY UPDATE " . $sql_felder;
-    if ($query = mysql_query($sql_string, $this->connection)) {
-      $return = true;
-    } else {
-      $this->error("<b>Abfrage:</b> <i>" . $sql_string . "</i><br>Konnte nicht ausgefuehrt werden!<br>" . mysql_error());
-    }
-  }
-  if ($this->system == "sqlite") {
-    
-    //get primary key
-    $pk="";
-    $sql_string = "PRAGMA table_info('".$tabelle."')";
-    $query=$this->database->query($sql_string);
-    while ($row=$query->fetchArray()) {
-      if ($row["pk"]=="1"){
-        $pk=$row["name"];
+      if (get_magic_quotes_gpc()) {
+        $value = stripslashes($value);
+      }
+      $key=strtolower($key);
+      $value = str_replace("'", "", $value);
+      $value = utf8_decode($value);
+      if ($sql_felder == "") {
+        $sql_felder ="`".$key."`='" . $value . "'";
+        $felder_list="`".$key."`";
+        $value_list="'".$value."'";
+      } else {
+        $sql_felder.=", `".$key."`='" . $value . "'";
+        $felder_list.=", `".$key."`";
+        $value_list.=", '".$value."'";
       }
     }
-    if ($pk==""){$this->error("no pk");}
-    
-    // pk check
-    if (!isset($felder_werte_array[$pk])) {$this->error("pk not in array");}
-    
-    // check exists
-    $pkcheck=$this->sql_select($tabelle, $pk, $pk."='".$felder_werte_array[$pk]."' LIMIT 1",true);
-    
-    if ($pkcheck[0][$pk]==""){
-      //insert
-      $sql_string="INSERT INTO ".$tabelle." (".$felder_list.") VALUES (".$value_list.")";
-    } else {
-      //update
-      $sql_string="UPDATE ".$tabelle." SET ".$sql_felder." WHERE ".$pk."='".$felder_werte_array[$pk]."'";
+    if ($this->system == "mysql") {
+      $sql_string = "INSERT INTO " . $tabelle . " SET " . $sql_felder . " ON DUPLICATE KEY UPDATE " . $sql_felder;
+      if ($query = mysql_query($sql_string, $this->connection)) {
+        $return = true;
+      } else {
+        $this->error("<b>Abfrage:</b> <i>" . $sql_string . "</i><br>Konnte nicht ausgefuehrt werden!<br>" . mysql_error());
+      }
     }
-    if (!$return=$this->database->exec($sql_string)) {
-      $this->error("<b>Abfrage:</b> <i>" . $sql_string . "</i><br>Konnte nicht ausgefuehrt werden!<br>SQLite wird noch nicht unterstützt!<br>");
+    if ($this->system == "sqlite") {
+      
+      //get primary key
+      $pk="";
+      $sql_string = "PRAGMA table_info('".$tabelle."')";
+      $query=$this->database->query($sql_string);
+      while ($row=$query->fetchArray()) {
+        if ($row["pk"]=="1"){
+          $pk=$row["name"];
+        }
+      }
+      if ($pk==""){$this->error("no pk");}
+      
+      // pk check
+      if (!isset($felder_werte_array[$pk])) {$this->error("pk not in array");}
+      
+      // check exists
+      $pkcheck=$this->sql_select($tabelle, $pk, $pk."='".$felder_werte_array[$pk]."' LIMIT 1",true);
+      
+      if ($pkcheck[0][$pk]==""){
+        //insert
+        $sql_string="INSERT INTO ".$tabelle." (".$felder_list.") VALUES (".$value_list.")";
+      } else {
+        //update
+        $sql_string="UPDATE ".$tabelle." SET ".$sql_felder." WHERE ".$pk."='".$felder_werte_array[$pk]."'";
+      }
+      if (!$return=$this->database->exec($sql_string)) {
+        $this->error("<b>Abfrage:</b> <i>" . $sql_string . "</i><br>Konnte nicht ausgefuehrt werden!<br>SQLite wird noch nicht unterstützt!<br>");
+      }
     }
+    return $return;
   }
-  return $return;
-}
-
+  
 }
 
 ?>
