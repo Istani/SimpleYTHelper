@@ -29,9 +29,11 @@ var self = module.exports = {
           console.log(GET_PERMISSION);
           console.log(err2);
         }
-        for (var i = 0; i<rows2.length;i++) {
-          if (rows2[i].recht_report_user==1) {
-            permissions=true;
+        if (typeof rows2!=="undefined") {
+          for (var i = 0; i<rows2.length;i++) {
+            if (rows2[i].recht_report_user==1) {
+              permissions=true;
+            }
           }
         }
         
