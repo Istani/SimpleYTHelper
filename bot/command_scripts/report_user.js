@@ -4,7 +4,6 @@ var self = module.exports = {
   },
   execute: function (message_row, SendFunc, NewMessageFunc) {
     time = moment();
-    console.log(message_row);
     var returnmsg="";
     var parts=message_row.message.split(" ");
     var user=message_row.message.split(" ").slice(1).join(" ").split(":")[0];

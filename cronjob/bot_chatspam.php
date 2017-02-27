@@ -18,7 +18,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
       if ($tmp_row4sql['Anzahl']>=5) {
         // Hier haben wir einen Gewinner!
         unset($tmp_row4sql['Anzahl']);
-        $user_name=$database->sql_select("bot_chatuser","name", "service='".$tmp_row4sql['service']."' AND host='".$tmp_row4sql['host']."' AND user='".$tmp_row4sql['user']."'", true);
+        $user_name=$database->sql_select("bot_chatuser","name", "service='".$tmp_row4sql['service']."' AND host='".$tmp_row4sql['host']."' AND user='".$tmp_row4sql['user']."' AND is_bot=0", true);
         $tmp_row4sql['message']="!report_user ".$user_name[0]['name']." : Zuviele Nachrichten in kurzer Zeit!";
         if ($user_name[0]['name']!="") {
           $tmp_row4sql['user']=-1;
