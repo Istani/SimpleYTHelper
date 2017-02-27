@@ -6,7 +6,7 @@ var self = module.exports = {
     var parts=message_row.message.split(" ");
     
     var channel="";
-    if (typof parts[2]!=="undefiend") {
+    if (typeof parts[2]!=="undefiend") {
       channel=parts[2].replace("<#","");
       channel=channel.replace(">","");
     }
