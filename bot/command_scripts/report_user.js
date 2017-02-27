@@ -28,7 +28,6 @@ var self = module.exports = {
         if (err2 != null) {
           console.log(GET_PERMISSION);
           console.log(err2);
-          return;
         }
         for (var i = 0; i<rows2.length;i++) {
           if (rows2[i].recht_report_user==1) {
