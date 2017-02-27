@@ -2,6 +2,16 @@ var self = module.exports = {
   init: function (MySQL) {
     mysql=MySQL;
   },
+  check_permission: function (message_row, SendFunc, NewMessageFunc) {
+    var permissions=false;
+    
+    if (permissions==false) {
+      SendFunc("Du hast keine Rechte den Befehl auszuführen");
+    } else {
+      self.execute(message_row, SendFunc, NewMessageFunc);
+    }
+    
+  },
   execute: function (message_row, SendFunc, NewMessageFunc) {
     time = moment();
     var returnmsg="";
@@ -77,7 +87,7 @@ var self = module.exports = {
                   user_mention="<@" + tmp_row.user +">";
                 }
                 //if (tmp_row.verwarnung<=1) {
-                SendFunc("VERWARNUNG: " + user_mention +"\r\n"+grund);
+                SendFunc("VERWARNUNG: " + user_mention +" (Score: "+(tmp_row.verwarnung+1)+")\r\n"+grund);
                 //} else {
                 //  SendFunc("Hier sollte ein Bann für eine gewisse Zeit passieren: " + user_mention +"\r\n"+grund);
                 //}

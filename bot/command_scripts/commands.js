@@ -36,10 +36,13 @@ var self = module.exports = {
   },
   use: function (command, message_row, SendFunc, NewMessageFunc) {
     if ((command in commands)) {
+      if (typeof commands[command].check_permission == 'function') {
+        commands[command].check_permission(message_row, SendFunc, NewMessageFunc);
+        return;
+      }
       if (typeof commands[command].execute == 'function') {
-        // TODO: Vielleicht hier Permissions Abfragen?!?
-        time = Date.now();
         commands[command].execute(message_row, SendFunc, NewMessageFunc);
+        return;
       }
     }
   },

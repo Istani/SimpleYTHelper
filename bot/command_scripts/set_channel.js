@@ -4,8 +4,13 @@ var self = module.exports = {
   },
   execute: function (message_row, SendFunc, NewMessageFunc) {
     var parts=message_row.message.split(" ");
-    var channel=parts[2].replace("<#","");
-    channel=channel.replace(">","");
+    
+    var channel="";
+    if (typof parts[2]!=="undefiend") {
+      channel=parts[2].replace("<#","");
+      channel=channel.replace(">","");
+    }
+    
     var SQL = "";
     var FELDER_WHERE="service='" + message_row.service + "' and host='" + message_row.host + "'";
     var FELDER_UPDATE="service='" + message_row.service + "', host='" + message_row.host + "'";

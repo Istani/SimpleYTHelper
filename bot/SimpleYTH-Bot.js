@@ -211,7 +211,7 @@ function GenerateAnwser(msg_row) {
         //while (text.length>0) {
         setTimeout(function () {
           // TODO: Text in 200 Zeichen Teile Trennen!
-          var SendText=text.substr(0,200);
+          var SendText=text.substr(sendcount*200,200);
           text=text.replace(SendText,"");
           var guilds = discord_bot.guilds;
           guilds.forEach(function (guild) {
