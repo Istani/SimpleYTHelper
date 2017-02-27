@@ -57,6 +57,37 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     }
   }
   
+  // Points Timeout
+  $time=time();
+  $minute=($time/60);
+  $stunde=($minute/60);
+  $tag=($stunde/24);
+  $start_tag=$tag-7;
+  $start_stunde=$start_tag*24;
+  $start_minute=$start_stunde*60;
+  $start_timestamp=$start_minute*60;
+  $user_name=$database->sql_select("bot_chatuser","*", "verwarnung>0 AND verwarnung_zeit<=".$start_timestamp, true);
+  for ($c=0;$c<count($user_name);$c++) {
+    if ($user_name[$c]['host']!="") {
+      $user_name[$c]['verwarnung_zeit']=$time;
+      $database->sql_insert_update("bot_chatuser", $user_name[$c]);
+      
+      // new message
+      $tmp_host=$database->sql_select("bot_chathosts", "*", "service='".$user_name[$c]['service']."' AND host='".$user_name[$c]['host']."'", true);
+      $new_msg['service']=$user_name[$c]['service'];
+      $new_msg['host']=$user_name[$c]['host'];
+      $new_msg['room']=$tmp_host[0]['channel_report'];
+      $new_msg['message']="!unreport_user ".$user_name[$c]['name']." : Zeit Abgelaufen eine Verwarnung entfernt!";
+      $new_msg['user']=-1;
+      $new_msg['time']=0;
+      $milliseconds = round(microtime(true) * 10000);
+      $new_msg['id']=$milliseconds;
+      $database->sql_insert_update("bot_chatlog", $new_msg);
+      unset($new_msg);
+    }
+  }
+  
+  
   $tt["cooldown"]="60";
   $tt["last_used"]=time();
 }

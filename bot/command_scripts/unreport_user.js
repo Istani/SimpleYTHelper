@@ -109,7 +109,7 @@ var self = module.exports = {
                 return;
               }
               
-              FELDER_UPDATE=FELDER_UPDATE+", verwarnung="+(tmp_row.verwarnung+1);
+              FELDER_UPDATE=FELDER_UPDATE+", verwarnung="+(tmp_row.verwarnung-1);
               FELDER_UPDATE=FELDER_UPDATE+", verwarnung_zeit="+time;
               
               SQL = "UPDATE bot_chatuser SET " + FELDER_UPDATE +" WHERE "+FELDER_WHERE + " LIMIT 1";
@@ -124,7 +124,7 @@ var self = module.exports = {
                   user_mention="<@" + tmp_row.user +">";
                 }
                 //if (tmp_row.verwarnung<=1) {
-                SendFunc("VERWARNUNG: " + user_mention +" (Score: "+(tmp_row.verwarnung+1)+")\r\n"+grund);
+                SendFunc("ENTWARNUNG: " + user_mention +" (Score: "+(tmp_row.verwarnung-1)+")\r\n"+grund);
                 //} else {
                 //  SendFunc("Hier sollte ein Bann für eine gewisse Zeit passieren: " + user_mention +"\r\n"+grund);
                 //}
