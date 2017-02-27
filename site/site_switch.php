@@ -32,6 +32,9 @@ switch ($_GET['site']) {
   case 'my_accounts':
   include("site/my_accounts.php");
   break;
+  case 'my_chats':
+  include("site/my_chats.php");
+  break;
   case 'yt_channels':
   include("site/yt_channels.php");
   break;

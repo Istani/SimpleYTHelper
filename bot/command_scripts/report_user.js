@@ -5,12 +5,44 @@ var self = module.exports = {
   check_permission: function (message_row, SendFunc, NewMessageFunc) {
     var permissions=false;
     
-    if (permissions==false) {
-      SendFunc("Du hast keine Rechte den Befehl auszuführen");
-    } else {
-      self.execute(message_row, SendFunc, NewMessageFunc);
+    if (message_row.user=="-1") {
+      permissions=true;
     }
-    
+    var GET_ROLES="SELECT * FROM bot_chatuser_roles WHERE service='"+message_row.service+"' AND host='"+message_row.host+"' AND user='"+message_row.user+"'";
+    mysql.query(GET_ROLES, function (err, rows) {
+      if (err != null) {
+        console.log(GET_ROLES);
+        console.log(err);
+        return;
+      }
+      var WHERE_ROLES="(service='"+message_row.service+"' AND host='"+message_row.host+"') AND (";
+      for (var i = 0; i<rows.length;i++) {
+        if (i>0) {
+          WHERE_ROLES=WHERE_ROLES+" OR ";
+        }
+        WHERE_ROLES=WHERE_ROLES+"role='"+rows[i].role+"'";
+      }
+      WHERE_ROLES=WHERE_ROLES+")";
+      var GET_PERMISSION="SELECT * FROM bot_chatroles WHERE "+WHERE_ROLES;
+      mysql.query(GET_PERMISSION, function (err2, rows2) {
+        if (err2 != null) {
+          console.log(GET_PERMISSION);
+          console.log(err2);
+          return;
+        }
+        for (var i = 0; i<rows2.length;i++) {
+          if (rows2[i].recht_report_user==1) {
+            permissions=true;
+          }
+        }
+        
+        if (permissions==false) {
+          SendFunc("Du hast keine Rechte den Befehl auszuführen");
+        } else {
+          self.execute(message_row, SendFunc, NewMessageFunc);
+        }
+      });
+    });
   },
   execute: function (message_row, SendFunc, NewMessageFunc) {
     time = moment();
