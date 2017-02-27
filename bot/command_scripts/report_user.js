@@ -41,25 +41,47 @@ var self = module.exports = {
             });
             return;
           } else {
-            FELDER_UPDATE=FELDER_UPDATE+", verwarnung="+(tmp_row.verwarnung+1);
-            FELDER_UPDATE=FELDER_UPDATE+", verwarnung_zeit="+time;
-            
-            SQL = "UPDATE bot_chatuser SET " + FELDER_UPDATE +" WHERE "+FELDER_WHERE + " LIMIT 1";
-            mysql.query(SQL, function (err2, rows2) {
-              if (err2 != null) {
-                console.log(SQL);
-                console.log(err2);
+            var Check_Channel="SELECT * FROM bot_chathosts WHERE service='"+message_row.service+"' AND host='"+message_row.host+"' LIMIT 1";
+            mysql.query(Check_Channel, function (err3, rows3) {
+              if (err3 != null) {
+                console.log(Check_Channel);
+                console.log(err3);
                 return;
               }
-              var user_mention=tmp_row.user;
-              if (message_row.service=="Discord") {
-                user_mention="<@" + tmp_row.user +">";
+              var msg_ok=false;
+              if (rows3[0].channel_report!="") {
+                if (rows3[0].channel_report==message_row.room) {
+                  msg_ok=true;
+                }
+              } else {
+                msg_ok=true;
               }
-              //if (tmp_row.verwarnung<=1) {
-              SendFunc("VERWARNUNG: " + user_mention +"\r\n"+grund);
-              //} else {
-              //  SendFunc("Hier sollte ein Bann für eine gewisse Zeit passieren: " + user_mention +"\r\n"+grund);
-              //}
+              
+              if (msg_ok==false) {
+                NewMessageFunc(message_row.service, message_row.host, rows3[0].channel_report, message_row.id+1, 0, "-1", message_row.message);
+                return;
+              }
+              
+              FELDER_UPDATE=FELDER_UPDATE+", verwarnung="+(tmp_row.verwarnung+1);
+              FELDER_UPDATE=FELDER_UPDATE+", verwarnung_zeit="+time;
+              
+              SQL = "UPDATE bot_chatuser SET " + FELDER_UPDATE +" WHERE "+FELDER_WHERE + " LIMIT 1";
+              mysql.query(SQL, function (err2, rows2) {
+                if (err2 != null) {
+                  console.log(SQL);
+                  console.log(err2);
+                  return;
+                }
+                var user_mention=tmp_row.user;
+                if (message_row.service=="Discord") {
+                  user_mention="<@" + tmp_row.user +">";
+                }
+                //if (tmp_row.verwarnung<=1) {
+                SendFunc("VERWARNUNG: " + user_mention +"\r\n"+grund);
+                //} else {
+                //  SendFunc("Hier sollte ein Bann für eine gewisse Zeit passieren: " + user_mention +"\r\n"+grund);
+                //}
+              });
             });
           }
         }

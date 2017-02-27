@@ -173,10 +173,10 @@ function ProcessMessage() {
     }
     for (var i = 0; i < rows.length; i++) {
       GenerateAnwser(rows[i]);
-      ProcessMessageUpdate(rows[i].service, rows[i].id)
+      ProcessMessageUpdate(rows[i].service, rows[i].id);
     }
   });
-  setTimeout(ProcessMessage, 100);
+  setTimeout(ProcessMessage, 200);
 }
 
 function ProcessMessageUpdate(service, id) {
