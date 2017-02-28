@@ -15,7 +15,8 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     
     $tmp_row4sql=$data4sql[$i];
     if (isset($tmp_row4sql['Anzahl'])) {
-      if ($tmp_row4sql['Anzahl']>=5) {
+      $tmp_row4sql['Anzahl']=$tmp_row4sql['Anzahl']/60*(time()-$tt["last_used"]);
+      if ($tmp_row4sql['Anzahl']>=10) {
         // Hier haben wir einen Gewinner!
         unset($tmp_row4sql['Anzahl']);
         $user_name=$database->sql_select("bot_chatuser","name", "service='".$tmp_row4sql['service']."' AND host='".$tmp_row4sql['host']."' AND user='".$tmp_row4sql['user']."' AND is_bot=0", true);
