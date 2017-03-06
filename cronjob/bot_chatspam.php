@@ -19,9 +19,21 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
       if ($tmp_row4sql['Anzahl']>=10) {
         // Hier haben wir einen Gewinner!
         unset($tmp_row4sql['Anzahl']);
+        $check_user=true;
         $user_name=$database->sql_select("bot_chatuser","name", "service='".$tmp_row4sql['service']."' AND host='".$tmp_row4sql['host']."' AND user='".$tmp_row4sql['user']."' AND is_bot=0", true);
+        $user_roles=$database->sql_select("bot_chatuser_roles","role", "service='".$tmp_row4sql['service']."' AND host='".$tmp_row4sql['host']."' AND user='".$tmp_row4sql['user']."'", true);
+        for ($j=0;$j<count($user_roles);$j++) {
+          if ($user_roles[$j]['role']!="") {
+            $role_check=$database->sql_select("bot_chatroles","check_spam", "service='".$tmp_row4sql['service']."' AND host='".$tmp_row4sql['host']."' AND role='".$user_roles[$j]['role']."'", true);
+            for ($k=0;$k<count($role_check);$k++) {
+              if ($role_check[$k]['check_spam']==0) {
+                $check_user=false;
+              }
+            }
+          }
+        }
         $tmp_row4sql['message']="!report_user ".$user_name[0]['name']." : Zuviele Nachrichten in kurzer Zeit!";
-        if ($user_name[0]['name']!="") {
+        if ($user_name[0]['name']!="" && $check_user==true) {
           $tmp_row4sql['user']=-1;
           $tmp_row4sql['time']=0;
           $milliseconds = round(microtime(true) * 10000);
@@ -43,9 +55,21 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
             echo $listMSG[$k]['message']. ' - '.$listWords[$j]['word']." - ".str_replace($listWords[$j]['word'],"",$listMSG[$k]['message']).'<br><br>';
             // Hier haben wir einen Gewinner!
             $tmp_row4sql=$listMSG[$k];
+            $check_user=true;
             $user_name=$database->sql_select("bot_chatuser","name", "service='".$tmp_row4sql['service']."' AND host='".$tmp_row4sql['host']."' AND user='".$tmp_row4sql['user']."'", true);
+            $user_roles=$database->sql_select("bot_chatuser_roles","role", "service='".$tmp_row4sql['service']."' AND host='".$tmp_row4sql['host']."' AND user='".$tmp_row4sql['user']."'", true);
+            for ($j=0;$j<count($user_roles);$j++) {
+              if ($user_roles[$j]['role']!="") {
+                $role_check=$database->sql_select("bot_chatroles","check_spam", "service='".$tmp_row4sql['service']."' AND host='".$tmp_row4sql['host']."' AND role='".$user_roles[$j]['role']."'", true);
+                for ($k=0;$k<count($role_check);$k++) {
+                  if ($role_check[$k]['check_spam']==0) {
+                    $check_user=false;
+                  }
+                }
+              }
+            }
             $tmp_row4sql['message']="!report_user ".$user_name[0]['name']." : Bad Word used!";
-            if ($user_name[0]['name']!="") {
+            if ($user_name[0]['name']!="" && $check_user==true) {
               $tmp_row4sql['user']=-1;
               $tmp_row4sql['time']=0;
               $milliseconds = round(microtime(true) * 10000);

@@ -58,7 +58,14 @@ for ($i=0;$i<count($chats);$i++) {
     foreach ($tmp_roles[$j] as $key=>$value) {
       if ($key!=str_replace("recht_", "", $key)) {
         echo '<td><b>';
-        echo str_replace("recht_", "", $key);
+        echo str_replace("recht_", "", $key)." Recht";
+        echo '</b></td>';
+      }
+    }
+    foreach ($tmp_roles[$j] as $key=>$value) {
+      if ($key!=str_replace("check_", "", $key)) {
+        echo '<td><b>';
+        echo str_replace("check_", "", $key)." Check";
         echo '</b></td>';
       }
     }
@@ -74,6 +81,21 @@ for ($i=0;$i<count($chats);$i++) {
       echo '</td>';
       foreach ($tmp_roles[$j] as $key=>$value) {
         if ($key!=str_replace("recht_", "", $key)) {
+          echo '<td>';
+          echo '<select name="'.$key.'">';
+          if ($value==0) {
+            echo '<option value="0" selected=selected>Nein</option>';
+            echo '<option value="1">Ja</option>';
+          } else {
+            echo '<option value="0">Nein</option>';
+            echo '<option value="1" selected=selected>Ja</option>';
+          }
+          echo '</select>';
+          echo '</td>';
+        }
+      }
+      foreach ($tmp_roles[$j] as $key=>$value) {
+        if ($key!=str_replace("check_", "", $key)) {
           echo '<td>';
           echo '<select name="'.$key.'">';
           if ($value==0) {
