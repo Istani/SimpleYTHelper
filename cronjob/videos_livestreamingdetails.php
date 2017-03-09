@@ -41,7 +41,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     
     $json=json_encode($row4sql);
     $tmp_row4sql = json_decode($json, true);
-    $tmp_row4sql["videoid"]= protected_settings($data4sql[$i]["videoId"]);
+    $tmp_row4sql["videoid"]= protected_settings($data4sql[$i]["videoid"]);
     $row4sql=null;
     $row4sql=$tmp_row4sql;
     
