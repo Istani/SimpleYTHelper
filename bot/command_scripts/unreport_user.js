@@ -108,7 +108,9 @@ var self = module.exports = {
                 NewMessageFunc(message_row.service, message_row.host, rows3[0].channel_report, message_row.id+1, 0, "-1", message_row.message);
                 return;
               }
-              
+              if (tmp_row.verwarnung<=0) {
+                tmp_row.verwarnung=1;
+              }
               FELDER_UPDATE=FELDER_UPDATE+", verwarnung="+(tmp_row.verwarnung-1);
               FELDER_UPDATE=FELDER_UPDATE+", verwarnung_zeit="+time;
               

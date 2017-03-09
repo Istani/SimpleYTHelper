@@ -12,10 +12,11 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $listRequests = $database->sql_select("bot_chatlog","service, host, room, user, count(message) as Anzahl", "`time` >=".($tt["last_used"]-1)." GROUP BY service, host, room, user", true);
   $data4sql= $listRequests; // Hier unnötig, aber dann ist es so wie überall anders!
   for($i=0;$i<count($data4sql);$i++) {
-    
+    $modifier=time()-($tt["last_used"]-1); // CheckGesamtZeit
+    $modifier=$modifier/60; // Anzahl Minuten GesamtZeit
     $tmp_row4sql=$data4sql[$i];
     if (isset($tmp_row4sql['Anzahl'])) {
-      $tmp_row4sql['Anzahl']=$tmp_row4sql['Anzahl']/60*(time()-$tt["last_used"]);
+      $tmp_row4sql['Anzahl']=$tmp_row4sql['Anzahl']/$modifier;
       if ($tmp_row4sql['Anzahl']>=10) {
         // Hier haben wir einen Gewinner!
         unset($tmp_row4sql['Anzahl']);
