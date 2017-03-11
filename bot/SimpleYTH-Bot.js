@@ -208,11 +208,19 @@ function GenerateAnwser(msg_row) {
       case 'Discord TTS':
       cmd.use(command, msg,function (text) {
         var sendcount=0;
-        //while (text.length>0) {
-        setTimeout(function () {
+        var max_length=200;
+        while (text.length>0) {
+          console.log("Text Length: " + text.length);
           // TODO: Text in 200 Zeichen Teile Trennen!
-          var SendText=text.substr(0,200);
+          if (text.length<max_length) {
+            max_length=text.length;
+          }
+          console.log("Text: " + text);
+          var SendText=text.substr(0,max_length);
           text=text.replace(SendText,"");
+          console.log("SendText: " + SendText);
+          console.log("RestText: " + text);
+          //setTimeout(function (SendText) {
           var guilds = discord_bot.guilds;
           guilds.forEach(function (guild) {
             if (guild.id==msg.host) {
@@ -225,13 +233,14 @@ function GenerateAnwser(msg_row) {
                   } else {
                     channel.sendMessage(SendText);
                   }
-                };
-              })
+                }
+              });
             }
           });
-        }, sendcount*100);
-        sendcount++;
-        //}
+          
+          //}, sendcount*100);
+          sendcount++;
+        }
       }, LogMessage);
       break;
       case 'YouTube':

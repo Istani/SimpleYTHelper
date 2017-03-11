@@ -26,10 +26,14 @@ var self = module.exports = {
           case 'shame':
           FELDER_UPDATE=FELDER_UPDATE+",channel_report='"+channel+"'";
           break;
+          case 'video':
+          FELDER_UPDATE=FELDER_UPDATE+",channel_video='"+channel+"'";
+          break;
           default:
           var output="Diese Channel Art gibt es nicht!\r\n";
           output=output+"Mögliche Channel:\r\n";
           output=output+"- shame\r\n";
+          output=output+"- video\r\n";
           SendFunc(output);
           return;
         }
