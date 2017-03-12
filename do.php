@@ -3,7 +3,7 @@
 // Benötigte Daten
 require_once 'inc/php_inc.php';
 
-$user=$database->sql_select("user","*","email=admin", true); // TODO: Was besseres ausdenken für StandartUser;
+$user=$database->sql_select("user","*","email='admin'", true); // TODO: Was besseres ausdenken für StandartUser;
 if (isset($_GET['host'])) {
   $host=$database->sql_select("bot_chathosts","*","host='".$_GET['host']."'", true);
   if ($host[0]['owner']==$_GET['user'] || $host[0]['community_type']==0 || $_GET['user']=="-1") {
