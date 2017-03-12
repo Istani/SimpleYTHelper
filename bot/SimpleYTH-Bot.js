@@ -71,7 +71,7 @@ function Login() {
       return;
     }
     for (var i = 0; i < rows.length; i++) {
-      discord_bot.login(private_settings.discrod_token);
+      discord_bot.login(private_settings.discord_token);
       google_bot.login(private_settings.google_clientid,private_settings.google_clientsecret,rows[i].access_token);
     }
   });

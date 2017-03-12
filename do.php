@@ -3,8 +3,8 @@
 // Benötigte Daten
 require_once 'inc/php_inc.php';
 
+$user=$database->sql_select("user","*","email=admin", true); // TODO: Was besseres ausdenken für StandartUser;
 if (isset($_GET['host'])) {
-  $user=$database->sql_select("user","*","email=admin", true); // TODO: Was besseres ausdenken für StandartUser;
   $host=$database->sql_select("bot_chathosts","*","host='".$_GET['host']."'", true);
   if ($host[0]['owner']==$_GET['user'] || $host[0]['community_type']==0 || $_GET['user']=="-1") {
     $user=$database->sql_select("user","*","youtube_user='".$host[0]['owner']."' OR discord_user='".$host[0]['owner']."'", true);
@@ -28,8 +28,8 @@ if (isset($_GET['host'])) {
       $user=$database->sql_select("user","*","youtube_user='".$host[0]['owner']."' OR discord_user='".$host[0]['owner']."'", true);
     }
   }
-  $_SESSION['user']=$user;
 }
+$_SESSION['user']=$user;
 
 if (!isset($_GET["command"]) OR $_GET["command"] == "" OR $_GET["command"] == "null") {
   echo "No Command given!
