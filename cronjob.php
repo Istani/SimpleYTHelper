@@ -40,7 +40,7 @@ $_SESSION['cronjob']="setup";
 $alledateien = scandir('cronjob');
 foreach ($alledateien as $datei) {
   if ($datei!=".." && $datei !=".") {
-    echo $datei."<br />";
+    //echo $datei."<br />";
     include ("cronjob/".$datei);
   }
 };

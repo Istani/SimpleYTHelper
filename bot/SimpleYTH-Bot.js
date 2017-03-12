@@ -63,7 +63,7 @@ cmd.init(mysql_connection);
 cmd.reload_commands();
 
 function Login() {
-  var LoadToken_String = "SELECT * FROM authtoken WHERE is_bot = '1' LIMIT 1";
+  var LoadToken_String = "SELECT * FROM authtoken WHERE user = 'SimpleYTH' AND service='YouTube' LIMIT 1";
   mysql_connection.query(LoadToken_String, function (err, rows) {
     if (err != null) {
       console.log("Token konnten nicht geladen werden!");
@@ -71,8 +71,8 @@ function Login() {
       return;
     }
     for (var i = 0; i < rows.length; i++) {
-      discord_bot.login(rows[i].discrod_token);
-      google_bot.login(rows[i].google_clientid,rows[i].google_clientsecret,rows[i].access_token);
+      discord_bot.login(private_settings.discrod_token);
+      google_bot.login(private_settings.google_clientid,private_settings.google_clientsecret,rows[i].access_token);
     }
   });
 }
@@ -210,16 +210,12 @@ function GenerateAnwser(msg_row) {
         var sendcount=0;
         var max_length=200;
         while (text.length>0) {
-          console.log("Text Length: " + text.length);
           // TODO: Text in 200 Zeichen Teile Trennen!
           if (text.length<max_length) {
             max_length=text.length;
           }
-          console.log("Text: " + text);
           var SendText=text.substr(0,max_length);
           text=text.replace(SendText,"");
-          console.log("SendText: " + SendText);
-          console.log("RestText: " + text);
           //setTimeout(function (SendText) {
           var guilds = discord_bot.guilds;
           guilds.forEach(function (guild) {

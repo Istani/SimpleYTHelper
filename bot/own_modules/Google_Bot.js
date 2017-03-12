@@ -15,8 +15,10 @@ var oauth2Client;
 
 
 // Constructor
-var Google_Bot = function(MySQL) {
+var Google_Bot = function(MySQL, GClientID, GClientSecret) {
   this.mysql=MySQL;
+  CLIENT_ID=GClientID;
+  CLIENT_SECRET=GClientSecret;
 };
 Google_Bot.prototype = new events.EventEmitter;
 
@@ -59,8 +61,8 @@ Google_Bot.prototype.sendMessage = function (room, text) {
 }
 
 function SetLogin(self, client_id, client_secret, access_token) {
-  CLIENT_ID=client_id;
-  CLIENT_SECRET=client_secret;
+  //CLIENT_ID=client_id;
+  //CLIENT_SECRET=client_secret;
   
   oauth2Client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
   oauth2Client.setCredentials({access_token: access_token});
@@ -72,14 +74,14 @@ function SetLogin(self, client_id, client_secret, access_token) {
 }
 
 function RefreshToken(self) {
-  var LoadToken_String = "SELECT * FROM authtoken WHERE is_bot = '1' LIMIT 1";
+  var LoadToken_String = "SELECT * FROM authtoken WHERE user = 'SimpleYTH' AND service='YouTube' LIMIT 1";
   self.mysql.query(LoadToken_String, function (err, rows) {
     if (err != null) {
       console.log("MySQL: " + err);
       return;
     }
     for (var i = 0; i < rows.length; i++) {
-      SetLogin(self, rows[i].google_clientid,rows[i].google_clientsecret,rows[i].access_token);
+      SetLogin(self, CLIENT_ID,CLIENT_SECRET,rows[i].access_token);
     }
   });
 }

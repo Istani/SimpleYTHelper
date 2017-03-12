@@ -13,7 +13,7 @@ $check_table=$database->show_tables();
 
 $_tmp_tabellename=strtolower("subscriptions_subscriberSnippet");
 if(in_array($_tmp_tabellename, $check_table) AND ($_GET["param"]!="")) {
-	$db_subs = $database->sql_select($_tmp_tabellename, "*", "token_id='".$_SESSION['token']['id']."' AND title LIKE '".$_GET["param"]."%' ORDER BY first_seen DESC LIMIT 1",true);
+	$db_subs = $database->sql_select($_tmp_tabellename, "*", "user='".$_SESSION['user']['email']."' AND title LIKE '".$_GET["param"]."%' ORDER BY first_seen DESC LIMIT 1",true);
 	if ($db_subs[0]["title"]==""){
 		$subname="Nicht gefunden!";
 		$subtext="\n\rGesucht: ".$_GET["param"];
