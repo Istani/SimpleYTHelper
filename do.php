@@ -29,7 +29,7 @@ if (isset($_GET['host'])) {
     }
   }
 }
-$_SESSION['user']=$user;
+$_SESSION['user']=$user[0];
 
 if (!isset($_GET["command"]) OR $_GET["command"] == "" OR $_GET["command"] == "null") {
   echo "No Command given!
