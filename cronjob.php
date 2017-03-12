@@ -94,25 +94,37 @@ while (time()-$Time['Start']<=45) {
     }
     
     $client = new Google_Client();
-    if ($TmpToken['User']['client_id']!="") {
-      $client->setClientId($TmpToken['User']['client_id']);
-      $client->setClientSecret($TmpToken['User']['client_secret']);
-    }
+    //if ($TmpToken['User']['client_id']!="") {
+    //  $client->setClientId($TmpToken['User']['client_id']);
+    //  $client->setClientSecret($TmpToken['User']['client_secret']);
+    //} else {
+    $client->setClientId($OAUTH2_CLIENT_ID);
+    $client->setClientSecret($OAUTH2_CLIENT_SECRET);
+    //}
     $client->setDeveloperKey($DEV_KEY);
     $client->setScopes('https: //www.googleapis.com/auth/youtube');
+    $client->setAccessType('offline');
     $client->setAccessToken($tmp_token);
+    //debug_log($tmp_token);
     if ($client->isAccessTokenExpired()) {
-      $client->refreshToken($tmp_token['refresh_token']);
-      $tmp_insert_token["token"]=$client->getAccessToken();
-      foreach ($tmp_insert_token["token"] as $key => $value) {
-        $tmp_token[$key]=$value;
+      if ($tmp_token['refresh_token']!="") {
+        $client->refreshToken($tmp_token['refresh_token']);
+        
+        $tmp_insert_token["token"]=$client->getAccessToken();
+        foreach ($tmp_insert_token["token"] as $key => $value) {
+          $tmp_token[$key]=$value;
+        }
+        $tmp_channel=$tmp_token['channel_id'];
+        //$tmp_clientid=$tmp_token['client_id'];
+        //$tmp_clientsecret=$tmp_token['client_secret'];
+        unset($tmp_token['channel_id']);
+        if ($tmp_token['user']!="") {
+          authtoken_save($database, $tmp_token);
+        }
+        $tmp_token['channel_id']=$tmp_channel;
+        //$tmp_token['client_id']=$tmp_clientid;
+        //$tmp_token['client_secret']=$tmp_clientsecret;
       }
-      $tmp_channel=$tmp_token['channel_id'];
-      unset($tmp_token['channel_id']);
-      if ($tmp_token['user']!="") {
-        authtoken_save($database, $tmp_token);
-      }
-      $tmp_token['channel_id']=$tmp_channel;
     }
     $youtube = new Google_Service_YouTube($client);
     
