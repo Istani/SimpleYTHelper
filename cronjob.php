@@ -107,7 +107,9 @@ while (time()-$Time['Start']<=45) {
       }
       $tmp_channel=$tmp_token['channel_id'];
       unset($tmp_token['channel_id']);
-      authtoken_save($database, $tmp_token);
+      if ($tmp_token['user']!="") {
+        authtoken_save($database, $tmp_token);
+      }
       $tmp_token['channel_id']=$tmp_channel;
     }
     $youtube = new Google_Service_YouTube($client);
