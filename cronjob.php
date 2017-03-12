@@ -94,8 +94,10 @@ while (time()-$Time['Start']<=45) {
     }
     
     $client = new Google_Client();
-    $client->setClientId($OAUTH2_CLIENT_ID);
-    $client->setClientSecret($OAUTH2_CLIENT_SECRET);
+    if ($TmpToken['User']['client_id']!="") {
+      $client->setClientId($TmpToken['User']['client_id']);
+      $client->setClientSecret($TmpToken['User']['client_secret']);
+    }
     $client->setDeveloperKey($DEV_KEY);
     $client->setScopes('https: //www.googleapis.com/auth/youtube');
     $client->setAccessToken($tmp_token);
