@@ -1,13 +1,23 @@
 <?php
-// Cronjob Channel Statistics
-$_tmp_tabellename=strtolower("livestream_chat");
+$cronjob_id=basename(__FILE__, '.php');
+$do_job=check_settings($database, $cronjob_id);
+
+if ($do_job==false) {
+	return;
+	die();
+} else {
+	$token[$cronjob_id]=load_cronjobtoken($database, $cronjob_id, $_SESSION['user']['email']);
+}
+$_tmp_tabellename=strtolower($cronjob_id);
+
+
 if (!isset($token[$_tmp_tabellename])) {
 	$token[$_tmp_tabellename] = init_token($_tmp_tabellename);
 }
 $tt=$token[$_tmp_tabellename];
 if ($tt["last_used"]+$tt["cooldown"]<time()) {
 	$load_tabellename="channels_liveStreamChat";
-	$db_stats = $database->sql_select($load_tabellename, "*", "channel_id='".$_SESSION['token']['channel_id']."'", true);
+	$db_stats = $database->sql_select($load_tabellename, "*", "channel_id='".$_SESSION['user']['youtube_user']."'", true);
 	
 	$BroadcastId=$db_stats[0]["broadcastid"];
 	$ChatId=$db_stats[0]["chatid"];
@@ -63,7 +73,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 	// Save Token
 	echo date("d.m.Y - H:i:s")." - ".$tmp_token['channel_id'].': '.$_tmp_tabellename." updated!<br>";
 	$tt["last_used"]=time();
-	$tt["yt_token"]=$_SESSION['token']['id'];
+	$tt["user"]=$_SESSION['user']['email'];
 	if($tt["token"]==""){$tt["token"]="null";}
 	$database->sql_insert_update("bot_token",$tt);
 	unset($tt);

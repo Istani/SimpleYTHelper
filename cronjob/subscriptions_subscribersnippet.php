@@ -1,6 +1,16 @@
 <?php
-// Cronjob Subscriptions subscriberSnippet
-$_tmp_tabellename=strtolower("subscriptions_subscribersnippet");
+$cronjob_id=basename(__FILE__, '.php');
+$do_job=check_settings($database, $cronjob_id);
+
+if ($do_job==false) {
+	return;
+	die();
+} else {
+	$token[$cronjob_id]=load_cronjobtoken($database, $cronjob_id, $_SESSION['user']['email']);
+}
+$_tmp_tabellename=strtolower($cronjob_id);
+
+
 if (!isset($token[$_tmp_tabellename])) {
 	$token[$_tmp_tabellename] = init_token($_tmp_tabellename);
 }
@@ -44,13 +54,13 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 			unset($new_feld);
 			$newData[$key]=$value;
 		}
-		$newData["token_id"]=$_SESSION['token']['id'];
+		$newData["user"]=$_SESSION['user']['email'];
 		$newData["last_seen"]=time();
 		$database->sql_insert_update($_tmp_tabellename, $newData);
 		unset($newData);
 	}
 	// Update
-	$empty_data=$database->sql_select($_tmp_tabellename, "channelid, token_id","first_seen IS NULL", false);
+	$empty_data=$database->sql_select($_tmp_tabellename, "channelid, user","first_seen IS NULL", false);
 	foreach ($empty_data as $k=>$v){
 		$newData=$v;
 		$newData["first_seen"]=time();
@@ -58,11 +68,12 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 		$database->sql_insert_update($_tmp_tabellename, $newData);
 	}
 	unset($newData);
+	$tt["cooldown"]=300;
 }
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$tmp_token['channel_id'].': '.$_tmp_tabellename." updated!<br>";
 $tt["last_used"]=time();
-$tt["yt_token"]=$_SESSION['token']['id'];
+$tt["user"]=$_SESSION['user']['email'];
 if($tt["token"]==""){$tt["token"]="null";}
 $database->sql_insert_update("bot_token",$tt);
 unset($tt);

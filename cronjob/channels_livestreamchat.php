@@ -1,6 +1,16 @@
 <?php
-// Cronjob Channel Statistics
-$_tmp_tabellename=strtolower("channels_liveStreamChat");
+$cronjob_id=basename(__FILE__, '.php');
+$do_job=check_settings($database, $cronjob_id);
+
+if ($do_job==false) {
+  return;
+  die();
+} else {
+  $token[$cronjob_id]=load_cronjobtoken($database, $cronjob_id, $_SESSION['user']['email']);
+}
+$_tmp_tabellename=strtolower($cronjob_id);
+
+
 if (!isset($token[$_tmp_tabellename])) {
   $token[$_tmp_tabellename] = init_token($_tmp_tabellename);
 }
@@ -22,9 +32,9 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   
   // Youtube Channel Statistics
   if ($tt["token"] == "null") {
-    $listResponse = $youtube-> search->listSearch('id', array('channelId'=>$_SESSION['token']['channel_id'], 'eventType'=>'live', 'type'=>'video'));
+    $listResponse = $youtube-> search->listSearch('id', array('channelId'=>$_SESSION['user']['youtube_user'], 'eventType'=>'live', 'type'=>'video'));
   } else {
-    $listResponse = $youtube-> search->listSearch('id', array('channelId'=>$_SESSION['token']['channel_id'], 'eventType'=>'live', 'type'=>'video', "pageToken" => $tt["token"] ));
+    $listResponse = $youtube-> search->listSearch('id', array('channelId'=>$_SESSION['user']['youtube_user'], 'eventType'=>'live', 'type'=>'video', "pageToken" => $tt["token"] ));
   }
   $tt["token"]=$listResponse["nextPageToken"];
   if (isset($listResponse["items"][0])) {
@@ -40,17 +50,18 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $database->add_columns($_tmp_tabellename, $new_feld);
   unset($new_feld);
   
-  $newData["channel_id"]=$_SESSION['token']['channel_id'];
+  $newData["channel_id"]=$_SESSION['user']['youtube_user'];
   $newData["last_seen"]=time();
   $newData["broadcastId"]=$BroadcastId;
   $newData["chatId"]=$ChatId;
   $database->sql_insert_update($_tmp_tabellename, $newData);
   unset($newData);
+  $tt["cooldown"]=60;
 }
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$tmp_token['channel_id'].': '.$_tmp_tabellename." updated!<br>";
 $tt["last_used"]=time();
-$tt["yt_token"]=$_SESSION['token']['id'];
+$tt["user"]=$_SESSION['user']['email'];
 if($tt["token"]==""){$tt["token"]="null";}
 $database->sql_insert_update("bot_token",$tt);
 unset($tt);

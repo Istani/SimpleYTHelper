@@ -4,7 +4,7 @@ function init_token($name) {
   $_tmp_token["token"]="null";
   $_tmp_token["last_used"]=0;
   $_tmp_token["cooldown"]=300;
-  $_tmp_token['yt_token']=0;
+  $_tmp_token['user']="";
   return $_tmp_token;
 }
 function save_accesstoken($kanal, $token) {
@@ -87,4 +87,29 @@ function session_to_database($database, $data4sql) {
   return $return_id;
 }
 
+function authtoken_save($database, $data4sql) {
+  $_tmp_tabellename="authtoken";
+  
+  // check tabelle schon vorhanden
+  $check_table=$database->show_tables();
+  if(!in_array($_tmp_tabellename, $check_table)) {
+    $felder=null;
+    $felder["service"]="VARCHAR(255)";
+    $felder["user"]="VARCHAR(255)";
+    $database->create_table($_tmp_tabellename, $felder, "service, user");
+    unset($felder);
+  }
+  
+  // felder hinzufügen, falls fehlen!
+  $database->sql_select($_tmp_tabellename, "*", "service='-1' LIMIT 1", true);
+  foreach ($data4sql as $key=>$value){
+    $new_feld[$key]="TEXT";
+    $database->add_columns($_tmp_tabellename, $new_feld);
+    unset($new_feld);
+    $newData[$key]=$value;
+  }
+  
+  // insert or update
+  $database->sql_insert_update($_tmp_tabellename, $newData);
+}
 ?>

@@ -1,6 +1,16 @@
 <?php
-// Cronjob
-$_tmp_tabellename=strtolower("videos_statistics");
+$cronjob_id=basename(__FILE__, '.php');
+$do_job=check_settings($database, $cronjob_id);
+
+if ($do_job==false) {
+  return;
+  die();
+} else {
+  $token[$cronjob_id]=load_cronjobtoken($database, $cronjob_id, $_SESSION['user']['email']);
+}
+$_tmp_tabellename=strtolower($cronjob_id);
+
+
 if (!isset($token[$_tmp_tabellename])) {
   $token[$_tmp_tabellename] = init_token($_tmp_tabellename);
 }
@@ -10,10 +20,10 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $req_count=50;
   if ($tt["token"] == "null") {
     //$listResponse = $youtube->playlistItems->listPlaylistItems("snippet", array('playlistId' => $uploadsListId, "maxResults" => $req_count));
-    $listRequests = $database->sql_select("videos_snippet","videoid", "`channelid`='".$_SESSION['token']['channel_id']."' AND `ignore`=0 ORDER BY last_statisticsupdate LIMIT ".$req_count, true);
+    $listRequests = $database->sql_select("videos_snippet","videoid", "`channelid`='".$_SESSION['user']['youtube_user']."' AND `ignore`=0 ORDER BY last_statisticsupdate LIMIT ".$req_count, true);
   } else {
     //$listResponse = $youtube->playlistItems->listPlaylistItems("snippet", array('playlistId' => $uploadsListId, "maxResults" => $req_count, "pageToken" => $tt["token"]));
-    $listRequests = $database->sql_select("videos_snippet","videoid", "`channelid`='".$_SESSION['token']['channel_id']."' AND `ignore`=0 ORDER BY last_statisticsupdate LIMIT ".$req_count, true);
+    $listRequests = $database->sql_select("videos_snippet","videoid", "`channelid`='".$_SESSION['user']['youtube_user']."' AND `ignore`=0 ORDER BY last_statisticsupdate LIMIT ".$req_count, true);
   }
   
   //$data4sql= $listResponse["items"];
@@ -70,11 +80,12 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     $database->sql_insert_update($_tmp_tabellename, $newData);
   }
   unset($newData);
+  $tt["cooldown"]=300;
 }
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$tmp_token['channel_id'].': '.$_tmp_tabellename." updated!<br>";
 $tt["last_used"]=time();
-$tt["yt_token"]=$_SESSION['token']['id'];
+$tt["user"]=$_SESSION['user']['email'];
 if($tt["token"]==""){$tt["token"]="null";}
 $database->sql_insert_update("bot_token",$tt);
 unset($tt);

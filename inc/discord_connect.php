@@ -16,8 +16,12 @@ if (!isset($_GET['code']))
 } else {
   $params = array('code' => $_GET['code'], 'redirect_uri' => $redirect);
   $response = $client->getAccessToken(TOKEN_ENDPOINT, 'authorization_code', $params);
-  $info=$response['result'];
-  $client->setAccessToken($info['access_token']);
+  $response=$response['result'];
+  $response['user']=$_SESSION['user']['email'];
+  $response['service']="Discord";
+  authtoken_save($database, $response);
+  
+  $client->setAccessToken($response['access_token']);
   $client->setAccessTokenType(1); //ACCESS_TOKEN_BEARER
   $response = $client->fetch('https://discordapp.com/api/users/@me');
   $_SESSION['user']['discord_user']=$response['result']['id'];

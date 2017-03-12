@@ -1,4 +1,4 @@
-<?
+<?php
 $state = mt_rand();
 $client->setState($state);
 $_SESSION['state'] = $state;

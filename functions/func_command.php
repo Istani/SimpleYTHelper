@@ -1,5 +1,50 @@
 <?php
 
+function check_settings($database, $cronjob_id) {
+  $return_value=true;
+  if (isset($_SESSION['cronjob'])) {
+    if ($_SESSION['cronjob']=="setup") {
+      // Get service
+      switch ($cronjob_id) {
+        case 'bot_chat_stats':
+        case 'bot_chatspam':
+        $serivce="SimpleYTH";
+        $user_where="status=1";
+        break;
+        default:
+        $serivce="YouTube";
+        $user_where="youtube_user is not null AND youtube_user not like ''";
+        break;
+      }
+      // Get Users
+      $users=$database->sql_select("user", "*", $user_where, true);
+      if (isset($newData)) {
+        unset($newData);
+      }
+      for ($i=0;$i<count($users);$i++) {
+        if ($users[$i]['email']!="") {
+          $newData['service']=$serivce;
+          $newData['user']=$users[$i]['email'];
+          $newData['id']=$cronjob_id;
+          $database->sql_insert_update("bot_token", $newData);
+          unset($newData);
+        }
+      }
+      $return_value=false;
+    }
+  }
+  return $return_value;
+}
+
+function load_cronjobtoken($database, $cronjob_id, $user) {
+  $return_value=init_token($cronjob_id);
+  $tmp_token=$database->sql_select("bot_token", "*","id='".$cronjob_id."' and user='".$user."'", true);
+  if ($tmp_token[0]['id']==$cronjob_id) {
+    $return_value=$tmp_token[0];
+  }
+  return $return_value;
+}
+
 function execute_command($command) {
   $result = "";
   ob_start();
@@ -41,11 +86,11 @@ function debug_log($var) {
 }
 
 function protected_settings($thing){
-	ob_start();
-	echo $thing;
-	$result = ob_get_contents();
- ob_end_clean();
- return $result;
+  ob_start();
+  echo $thing;
+  $result = ob_get_contents();
+  ob_end_clean();
+  return $result;
 }
 
 ?>
