@@ -20,6 +20,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     unset($data4sql);
   }
   // Mehr als 3 Nachrichten in der Minute
+  // TODO: Die Berechnung stimmt noch nicht^^
   $listRequests = $database->sql_select("bot_chatlog","service, host, room, user, count(message) as Anzahl", "`time` >=".($tt["last_used"]-1)." GROUP BY service, host, room, user", true);
   $data4sql= $listRequests; // Hier unnötig, aber dann ist es so wie überall anders!
   for($i=0;$i<count($data4sql);$i++) {
@@ -103,6 +104,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $start_stunde=$start_tag*24;
   $start_minute=$start_stunde*60;
   $start_timestamp=$start_minute*60;
+  $start_timestamp=$start_timestamp*1000; // Weil mit MS sekunden gespeichter^^ Hoffentlich XD
   $user_name=$database->sql_select("bot_chatuser","*", "verwarnung>0 AND verwarnung_zeit<=".$start_timestamp, true);
   for ($c=0;$c<count($user_name);$c++) {
     if ($user_name[$c]['host']!="") {

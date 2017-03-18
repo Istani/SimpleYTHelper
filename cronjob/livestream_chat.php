@@ -57,18 +57,20 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 				$database->create_table($_tmp_tabellename, $felder, "id");
 				unset($felder);
 			}
-			$database->sql_select($_tmp_tabellename, "*", "channel_id='".$_SESSION['token']['channel_id']."' LIMIT 1", true);
+			$database->sql_select($_tmp_tabellename, "*", "channel_id='".$_SESSION['user']['youtube_user']."' LIMIT 1", true);
 			foreach ($row4sql as $key=>$value){
 				$new_feld[$key]="TEXT";
 				$database->add_columns($_tmp_tabellename, $new_feld);
 				unset($new_feld);
 				$newData[$key]=$value;
 			}
-			$newData["channel_id"]=$_SESSION['token']['channel_id'];
+			$newData["channel_id"]=$_SESSION['user']['youtube_user'];
 			$newData["last_seen"]=time();
 			$database->sql_insert_update($_tmp_tabellename, $newData);
 			unset($newData);
 		}
+	} else {
+		$tt["token"]="null"; // Vielleicht muss der Token irgendwann irgendwie auch wieder zur+ck gesetzt werden?
 	}
 	// Save Token
 	echo date("d.m.Y - H:i:s")." - ".$tmp_token['channel_id'].': '.$_tmp_tabellename." updated!<br>";

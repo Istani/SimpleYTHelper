@@ -23,7 +23,14 @@ for ($i=0;$i<count($chats);$i++) {
     echo '<h3>'.$chats[$i]['name'].'</h3>';
     echo '<div>';
     
-    // Übersicht
+    echo '<div id="tabs_'.$chats[$i]['host'].'">';
+    echo '<ul>';
+    echo '<li><a href="#tabs_'.$chats[$i]['host'].'-1">Einstellungen/Übersicht</a></li>';
+    echo '<li><a href="#tabs_'.$chats[$i]['host'].'-2">Rechte</a></li>';
+    echo '<li><a href="#tabs_'.$chats[$i]['host'].'-3">Bad Word List</a></li>';
+    echo '</ul>';
+    echo '<div id="tabs_'.$chats[$i]['host'].'-1">';
+    
     echo '<table>';
     echo '<tr>';
     echo '<td>';
@@ -47,6 +54,30 @@ for ($i=0;$i<count($chats);$i++) {
     echo '</tr>';
     echo '</table>';
     echo '<br>';
+    
+    // NOTE: Alle Rollen & User Azeigen, dammit der Übersichtsblock der "größte" wird? Bzw die Größe Vorgibt
+    // (Wie mit der breite, noch nicht ganz sicher)
+    echo '<table>';
+    echo '<tr>';
+    echo '<td>UserName</td>';
+    echo '<td>Verwarnung</td>';
+    echo '</tr>';
+    for ($u=0;$u<count($tmp_users);$u++) {
+      echo '<tr>';
+      echo '<td>';
+      echo $tmp_users[$u]['name'];
+      echo '</td>';
+      echo '<td>';
+      if ($tmp_users[$u]['verwarnung']>0) {
+        echo $tmp_users[$u]['verwarnung'].' ('.date("d.m.Y H:i:s", (int)($tmp_users[$u]['verwarnung_zeit']/1000)).')';
+      }
+      echo '</td>';
+      echo '</tr>';
+    }
+    echo '</table>';
+    
+    echo '</div>';
+    echo '<div id="tabs_'.$chats[$i]['host'].'-2">';
     
     // Rechte
     echo '<table>';
@@ -116,6 +147,21 @@ for ($i=0;$i<count($chats);$i++) {
       echo '</form>';
     }
     echo '</table>';
+    
+    echo '</div>';
+    echo '<div id="tabs_'.$chats[$i]['host'].'-3">';
+    
+    echo '</div>';
+    echo '</div>';
+    ?>
+    <script>
+    $( function() {
+      $( "#<?php echo 'tabs_'.$chats[$i]['host']; ?>" ).tabs();
+    } );
+    </script>
+    <?php
+    
+    
     echo '</div>';
   }
 }

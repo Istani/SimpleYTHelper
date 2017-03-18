@@ -11,6 +11,12 @@ function check_settings($database, $cronjob_id) {
         $serivce="SimpleYTH";
         $user_where="status=1";
         break;
+        case 'post_new_videos':
+        $serivce="SimpleYTH";
+        $user_where="true"; // ??? Eigentlich nur wo Videos geladen werden könnten...
+        // NOTE: Muss später dann erweitert werden, wenn mehr dienste vorhanden sind
+        $user_where="youtube_user is not null AND youtube_user not like ''";
+        break;
         default:
         $serivce="YouTube";
         $user_where="youtube_user is not null AND youtube_user not like ''";
