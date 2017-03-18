@@ -57,7 +57,7 @@ for ($i=0;$i<count($chats);$i++) {
     
     // NOTE: Alle Rollen & User Azeigen, dammit der Übersichtsblock der "größte" wird? Bzw die Größe Vorgibt
     // (Wie mit der breite, noch nicht ganz sicher)
-    echo '<table>';
+    echo '<table class="with_borders">';
     echo '<tr>';
     echo '<td>UserName</td>';
     echo '<td>Verwarnung</td>';
@@ -80,7 +80,7 @@ for ($i=0;$i<count($chats);$i++) {
     echo '<div id="tabs_'.$chats[$i]['host'].'-2">';
     
     // Rechte
-    echo '<table>';
+    echo '<table class="with_borders">';
     $j=0;
     echo '<tr>';
     echo '<td>';

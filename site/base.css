@@ -6,3 +6,8 @@
 .content_page a{
   
 }
+
+.with_borders, .with_borders tr, .with_borders tr td {
+  border-collapse: collapse;
+  border: 1px solid black;
+}

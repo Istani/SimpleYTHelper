@@ -2,8 +2,8 @@
 require 'inc/php_inc.php';
 
 // default
-$vidtitle = 0;
-$vidlink = "Nobody";
+$vidtitle = "Kein Video gefunden!";
+$vidlink = "";
 
 $check_table=$database->show_tables();
 
