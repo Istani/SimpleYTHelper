@@ -13,7 +13,7 @@ if (isset($_GET['host'])) {
       // Joa darfst du vielleicht Videos Posten?
       $user_permission=false;
       $user_roles=$database->sql_select("bot_chatuser_roles","*","host='".$_GET['host']."' AND user='".$_GET['user']."'",true);
-      for ($i=0;count($user_roles);$i++) {
+      for ($i=0;$i<count($user_roles);$i++) {
         $role=$database->sql_select("bot_chatroles","*","host='".$_GET['host']."' AND role='".$user_roles[$i]['role']."'",true);
         if ($role[0]['recht_own_videos']>0) {
           $user_permission=true;
