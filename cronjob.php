@@ -130,7 +130,7 @@ while (time()-$Time['Start']<=45) {
     
     default:
     include("cronjob/".$TmpNextJob[0]['id'].".php");
-    die();
+    //die();
     sleep(1);
     break;
   }
