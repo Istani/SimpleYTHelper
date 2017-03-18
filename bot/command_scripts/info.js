@@ -7,6 +7,9 @@ var self = module.exports = {
     string=string+"Homepage: http://simpleyth.randompeople.de\n\r";
     SendFunc(string);
     string="";
+    string=string+"Discord Server zum Bot: https://discord.gg/BtKf23Q\n\r";
+    SendFunc(string);
+    string="";
     string=string+"Invite: https://discordapp.com/oauth2/authorize?client_id=225365144497029125&scope=bot&permissions=-1\n\r";
     SendFunc(string);
     string="";

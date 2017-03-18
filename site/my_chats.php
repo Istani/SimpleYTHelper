@@ -31,37 +31,46 @@ for ($i=0;$i<count($chats);$i++) {
     echo '</ul>';
     echo '<div id="tabs_'.$chats[$i]['host'].'-1">';
     
-    echo '<table>';
+    echo '<table class="info with_borders">';
+    echo '<thead>';
+    echo '<tr>';
+    echo '<th>';
+    echo 'System:';
+    echo '</th>';
+    echo '<th>';
+    echo 'User:';
+    echo '</th>';
+    echo '<th>';
+    echo 'Roles:';
+    echo '</th>';
+    echo '</tr>';
+    echo '</thead>';
+    echo '<tbody>';
     echo '<tr>';
     echo '<td>';
-    echo 'System:';
-    echo '</td>';
-    echo '<td>';
     echo $chats[$i]['service'];
-    echo '</td>';
-    echo '<td>';
-    echo 'User:';
     echo '</td>';
     echo '<td>';
     echo count($tmp_users);
     echo '</td>';
     echo '<td>';
-    echo 'Roles:';
-    echo '</td>';
-    echo '<td>';
     echo count($tmp_roles);
     echo '</td>';
     echo '</tr>';
+    echo '</tbody>';
     echo '</table>';
     echo '<br>';
     
     // NOTE: Alle Rollen & User Azeigen, dammit der Übersichtsblock der "größte" wird? Bzw die Größe Vorgibt
     // (Wie mit der breite, noch nicht ganz sicher)
-    echo '<table class="with_borders">';
+    echo '<table class="users with_borders">';
+    echo '<thead>';
     echo '<tr>';
-    echo '<td>UserName</td>';
-    echo '<td>Verwarnung</td>';
+    echo '<th>UserName</th>';
+    echo '<th>Verwarnung</th>';
     echo '</tr>';
+    echo '</thead>';
+    echo '<tbody>';
     for ($u=0;$u<count($tmp_users);$u++) {
       echo '<tr>';
       echo '<td>';
@@ -74,33 +83,40 @@ for ($i=0;$i<count($chats);$i++) {
       echo '</td>';
       echo '</tr>';
     }
+    echo '</tbody>';
     echo '</table>';
     
     echo '</div>';
     echo '<div id="tabs_'.$chats[$i]['host'].'-2">';
     
     // Rechte
-    echo '<table class="with_borders">';
+    echo '<table class="roles with_borders">';
     $j=0;
+    echo '<thead>';
     echo '<tr>';
-    echo '<td>';
+    echo '<th>';
     echo '<b>Rolle</b>';
-    echo '</td>';
+    echo '</th>';
     foreach ($tmp_roles[$j] as $key=>$value) {
       if ($key!=str_replace("recht_", "", $key)) {
-        echo '<td><b>';
+        echo '<th><b>';
         echo str_replace("recht_", "", $key)." Recht";
-        echo '</b></td>';
+        echo '</b></th>';
       }
     }
     foreach ($tmp_roles[$j] as $key=>$value) {
       if ($key!=str_replace("check_", "", $key)) {
-        echo '<td><b>';
+        echo '<th><b>';
         echo str_replace("check_", "", $key)." Check";
-        echo '</b></td>';
+        echo '</b></th>';
       }
     }
+    echo '<th>';
+    echo '&nbsp;';
+    echo '</th>';
     echo '</tr>';
+    echo '</thead>';
+    echo '<tbody>';
     for ($j=0; $j<count($tmp_roles);$j++) {
       echo '<form method="POST" action="index.php?site=my_chats">';
       echo '<input type="hidden" name="service" value="'.$tmp_roles[$j]['service'].'">';
@@ -146,6 +162,7 @@ for ($i=0;$i<count($chats);$i++) {
       echo '</tr>';
       echo '</form>';
     }
+    echo '</tbody>';
     echo '</table>';
     
     echo '</div>';
@@ -168,7 +185,27 @@ for ($i=0;$i<count($chats);$i++) {
 echo '</div>';
 ?>
 <script>
-$( function() {
+$( document ).ready(function() {
+  
+  
+  $('.info').DataTable({
+    "paging":   false,
+    "ordering": false,
+    "info":     false,
+    "searching": false
+  });
+  
+  $('.users').DataTable({
+    "paging":   false,
+    "info":     false
+  });
+  
+  $('.roles').DataTable({
+    "paging":   false,
+    "ordering": false,
+    "info":     false
+  });
+  
   $( "#rooms" ).accordion();
 } );
 </script>
