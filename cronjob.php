@@ -60,6 +60,7 @@ while (time()-$Time['Start']<=45) {
       return;
     }
     $TmpNextJob[0]=$TmpNextJob[$i_s];
+    unset($TmpNextJob[$i_s]);
   }
   foreach ($TmpNextJob as $tmp_key => $tmp_value)  {
     foreach($tmp_value as $t2key => $t2value) {

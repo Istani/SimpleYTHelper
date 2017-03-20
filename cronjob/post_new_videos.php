@@ -34,15 +34,17 @@ for ($v=0;$v<count($videos_yt);$v++) {
   unset($tmp_newvideo);
 }
 
-
-for ($v=0;$v<count($video_list);$v++) {
-  echo $v.'.';
-  debug_log($video_list[$v]);
-  echo '<br>';
+if (isset($video_list)) {
+  for ($v=0;$v<count($video_list);$v++) {
+    echo $v.'.';
+    debug_log($video_list[$v]);
+    echo '<br>';
+  }
 }
 
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$_SESSION['user']['email'].': '.$cronjob_id." updated!<br>";
+$tt["cooldown"]=1*60*60; // Test
 $tt["last_used"]=time();
 $tt["user"]=$_SESSION['user']['email'];
 if($tt["token"]==""){$tt["token"]="null";}

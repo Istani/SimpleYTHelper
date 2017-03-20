@@ -62,7 +62,9 @@ echo date("d.m.Y - H:i:s")." - ".$_tmp_tabellename." updated!<br>";
 $tt["last_used"]=time();
 $tt["user"]=$_SESSION['user']['email'];
 if($tt["token"]==""){$tt["token"]="null";}
-$database->sql_insert_update("bot_token",$tt);
+if ($_SESSION['user']['email']!="") {
+  $database->sql_insert_update("bot_token",$tt);
+}
 $token[strtolower("bot_chatspam")]=$tt;
 unset($tt);
 ?>
