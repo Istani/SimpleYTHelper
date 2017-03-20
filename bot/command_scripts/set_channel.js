@@ -44,7 +44,7 @@ var self = module.exports = {
             console.log(err);
             return;
           }
-          SendFunc(parts[1] + " channel wurde bearteitet");
+          SendFunc(parts[1] + " channel wurde bearbeitet");
           return;
         });
       } else {

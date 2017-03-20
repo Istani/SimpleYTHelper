@@ -77,7 +77,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
         unset($new_feld);
         $newData[$key]=$value;
       }
-      $newData['first_seen']=strtotime($row4sql["publishedat"]); // Naja ist nicht wirklcih First_seen, aber ist besser so
+      $newData['first_seen']=strtotime($newData["publishedat"]); // Naja ist nicht wirklcih First_seen, aber ist besser so
       $newData["last_seen"]=time();
       $database->sql_insert_update($_tmp_tabellename, $newData);
       unset($newData);
