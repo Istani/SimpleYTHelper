@@ -53,6 +53,14 @@ while (time()-$Time['Start']<=45) {
     sleep(1);
     continue;
   }
+  $i_s=0;
+  while ($TmpNextJob[0]['service']=="") {
+    $i_s++;
+    if ($i_s>count($TmpNextJob)) {
+      return;
+    }
+    $TmpNextJob[0]=$TmpNextJob[$i_s];
+  }
   foreach ($TmpNextJob as $tmp_key => $tmp_value)  {
     foreach($tmp_value as $t2key => $t2value) {
       $token[$tmp_value["id"]][$t2key] = $t2value;

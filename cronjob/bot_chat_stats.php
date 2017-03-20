@@ -56,11 +56,10 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     $database->sql_insert_update("bot_chatuser", $sql_user[$i]);
   }
   $tt["cooldown"]="1";
-  $tt["last_used"]=time();
 }
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$_tmp_tabellename." updated!<br>";
-
+$tt["last_used"]=time();
 $tt["user"]=$_SESSION['user']['email'];
 if($tt["token"]==""){$tt["token"]="null";}
 $database->sql_insert_update("bot_token",$tt);
