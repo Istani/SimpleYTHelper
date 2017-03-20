@@ -43,7 +43,6 @@ for ($v=0;$v<count($video_list);$v++) {
 
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$_SESSION['user']['email'].': '.$cronjob_id." updated!<br>";
-return;
 $tt["last_used"]=time();
 $tt["user"]=$_SESSION['user']['email'];
 if($tt["token"]==""){$tt["token"]="null";}
