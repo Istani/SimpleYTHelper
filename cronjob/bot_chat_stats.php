@@ -55,7 +55,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     $sql_user[$i]['msg_avg']=$sql_msg_avg[0]['AVG'];
     $database->sql_insert_update("bot_chatuser", $sql_user[$i]);
   }
-  $tt["cooldown"]="1";
+  $tt["cooldown"]=1*60*60; // Einmal die Stunde reicht locker!
 }
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$_tmp_tabellename." updated!<br>";
