@@ -71,11 +71,11 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
             $check_user=true;
             $user_name=$database->sql_select("bot_chatuser","name", "service='".$tmp_row4sql['service']."' AND host='".$tmp_row4sql['host']."' AND user='".$tmp_row4sql['user']."'", true);
             $user_roles=$database->sql_select("bot_chatuser_roles","role", "service='".$tmp_row4sql['service']."' AND host='".$tmp_row4sql['host']."' AND user='".$tmp_row4sql['user']."'", true);
-            for ($j=0;$j<count($user_roles);$j++) {
-              if ($user_roles[$j]['role']!="") {
-                $role_check=$database->sql_select("bot_chatroles","check_spam", "service='".$tmp_row4sql['service']."' AND host='".$tmp_row4sql['host']."' AND role='".$user_roles[$j]['role']."'", true);
-                for ($k=0;$k<count($role_check);$k++) {
-                  if ($role_check[$k]['check_spam']==0) {
+            for ($n=0;$n<count($user_roles);$n++) {
+              if ($user_roles[$n]['role']!="") {
+                $role_check=$database->sql_select("bot_chatroles","check_spam", "service='".$tmp_row4sql['service']."' AND host='".$tmp_row4sql['host']."' AND role='".$user_roles[$n]['role']."'", true);
+                for ($m=0;$m<count($role_check);$m++) {
+                  if ($role_check[$m]['check_spam']==0) {
                     $check_user=false;
                   }
                 }
