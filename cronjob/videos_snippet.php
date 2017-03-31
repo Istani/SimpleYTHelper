@@ -77,10 +77,14 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
         unset($new_feld);
         $newData[$key]=$value;
       }
-      $newData['first_seen']=strtotime($newData["publishedat"]); // Naja ist nicht wirklcih First_seen, aber ist besser so
+      //$newData['first_seen']=strtotime($newData["publishedat"]); // Naja ist nicht wirklcih First_seen, aber ist besser so
       $newData["last_seen"]=time();
       $database->sql_insert_update($_tmp_tabellename, $newData);
+      $old=$database->sql_select($_tmp_tabellename,"*","videod='".$newData["videoId"]."'",true);
+      $old[0]['first_seen']=strtotime($old[0]["publishedat"]);
+      $database->sql_insert_update($_tmp_tabellename, $old);
       unset($newData);
+      unset($old);
     }
     $tt["cooldown"]=300;
   }
