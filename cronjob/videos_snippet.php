@@ -82,7 +82,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
       $database->sql_insert_update($_tmp_tabellename, $newData);
       $old=$database->sql_select($_tmp_tabellename,"*","videoid='".$newData["videoId"]."'",true);
       $old[0]['first_seen']=strtotime($old[0]["publishedat"]);
-      $database->sql_insert_update($_tmp_tabellename, $old);
+      $database->sql_insert_update($_tmp_tabellename, $old[0]);
       unset($newData);
       unset($old);
     }
