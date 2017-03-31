@@ -42,6 +42,9 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     
     $listResponse = $youtube->liveBroadcasts->listLiveBroadcasts('snippet',array('id'=>$BroadcastId));
     $ChatId=$listResponse["items"][0]["snippet"]["liveChatId"];
+  } else {
+    $BroadcastId="";
+    $ChatId="";
   }
   $new_feld["broadcastId"]="TEXT";
   $database->add_columns($_tmp_tabellename, $new_feld);
