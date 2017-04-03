@@ -72,21 +72,20 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
       unset($row4sql["position"]);
       
       $tags4video= $row4sql["tags"];
-      if(in_array("videos_snippet_tags", $check_table)) {
-        
+      if(!in_array("videos_snippet_tags", $check_table)) {
         $tagstab=null;
         $tagstab["videoid"]="VARCHAR(50)";
         $tagstab["tag"]="VARCHAR(255)";
         $database->create_table("videos_snippet_tags", $tagstab, "videoid, tag");
-        unset($tagstab);
-        $database->sql_delete("videos_snippet_tags", "videoid='".$row4sql["videoId"]."'");
-        foreach ($tags4video as $tkey => $tvalue) {
-          $tag_data=null;
-          $tag_data['videoid']=$row4sql["videoId"];
-          $tag_data['tag']=$tvalue;
-          $database->sql_insert_update("videos_snippet_tags", $tag_data);
-          unset($tag_data);
-        }
+      }
+      unset($tagstab);
+      $database->sql_delete("videos_snippet_tags", "videoid='".$row4sql["videoId"]."'");
+      foreach ($tags4video as $tkey => $tvalue) {
+        $tag_data=null;
+        $tag_data['videoid']=$row4sql["videoId"];
+        $tag_data['tag']=$tvalue;
+        $database->sql_insert_update("videos_snippet_tags", $tag_data);
+        unset($tag_data);
       }
       
       foreach ($row4sql as $key=>$value){
