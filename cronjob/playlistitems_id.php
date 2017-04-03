@@ -37,7 +37,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
         'maxResults' => $req_count
       ));
     } else {
-      $listResponse = $youtube->$youtube->playlistItems->listPlaylistItems('snippet', array(
+      $listResponse = $youtube->playlistItems->listPlaylistItems('snippet', array(
         'playlistId' => $data4sql[$i]['paylistid'],
         'maxResults' => $req_count,
         'pageToken' => $data4sql[$i]['last_token']
