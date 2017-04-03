@@ -81,10 +81,10 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
       }
       unset($tagstab);
       $database->sql_delete("videos_snippet_tags", "videoid='".$row4sql["videoId"]."'");
-      foreach ($tags4video as $tkey => $tvalue) {
+      for($count_tags=0;$count_tags<count($tags4video);$count_tags++) {
         $tag_data=null;
         $tag_data['videoid']=$row4sql["videoId"];
-        $tag_data['tag']=$tvalue;
+        $tag_data['tag']=$tags4video[$count_tags];
         $database->sql_insert_update("videos_snippet_tags", $tag_data);
         unset($tag_data);
       }
