@@ -49,7 +49,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     $data4sql[$i]['last_cronjob']=time();
     $database->sql_insert_update("playlists_snippet", $data4sql[$i]);
     for($j=0;$j<count($rows4sql);$j++) {
-      $row4sql=$rows4sql[$i]['snippet'];
+      $row4sql=$rows4sql[$j]['snippet'];
       $newData=null;
       $newData['playlistid']=$row4sql['playlistId'];
       $newData['videoid']=$row4sql['resourceId']['videoId'];
