@@ -36,6 +36,9 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     $felder["paylistid"]="VARCHAR(50)";
     $felder["last_seen"]="INT(20)";
     $felder["first_seen"]="INT(20)";
+    $felder["last_cronjob"]="INT(20)";
+    $felder["last_token"]="INT(20)";
+    $felder["ignore"]="INT(1)";
     $database->create_table($_tmp_tabellename, $felder, "channelid, paylistid");
     unset($felder);
   }
@@ -49,12 +52,16 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     $row4sql=null;
     $row4sql=$tmp_row4sql;
     
+    unset($row4sql["channelTitle"]);
+    unset($row4sql["defaultlanguage"]);
+    
     foreach ($row4sql as $key=>$value){
       $new_feld[$key]="TEXT";
       $database->add_columns($_tmp_tabellename, $new_feld);
       unset($new_feld);
       $newData[$key]=$value;
     }
+    
     //$newData['first_seen']=strtotime($newData["publishedat"]); // Naja ist nicht wirklcih First_seen, aber ist besser so
     $newData["last_seen"]=time();
     $database->sql_insert_update($_tmp_tabellename, $newData);
