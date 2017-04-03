@@ -60,7 +60,10 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     
     for($i=0;$i<count($data4sql);$i++) {
       $row4sql= $data4sql[$i]["snippet"];
+      debug_log($row4sql);
       $tags4video= $row4sql["tags"];
+      debug_log($tags4video);
+      die();
       $json=json_encode($row4sql);
       $tmp_row4sql = json_decode($json, true);
       $tmp_row4sql["thumbnail"]= protected_settings( $row4sql["modelData"]["thumbnails"]["default"]["url"]);
