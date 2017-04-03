@@ -60,6 +60,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     
     for($i=0;$i<count($data4sql);$i++) {
       $row4sql= $data4sql[$i]["snippet"];
+      $tags4video= $row4sql["tags"];
       $json=json_encode($row4sql);
       $tmp_row4sql = json_decode($json, true);
       $tmp_row4sql["thumbnail"]= protected_settings( $row4sql["modelData"]["thumbnails"]["default"]["url"]);
@@ -71,7 +72,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
       unset($row4sql["playlistId"]);
       unset($row4sql["position"]);
       
-      $tags4video= $row4sql["tags"];
+      
       if(!in_array("videos_snippet_tags", $check_table)) {
         $tagstab=null;
         $tagstab["videoid"]="VARCHAR(50)";
