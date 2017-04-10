@@ -43,22 +43,23 @@ if (isset($video_list)) {
 }
 
 // Do Magic 2
+/*
 $wpadress = "http://127.0.0.1/wordpress/xmlrpc.php";
 $rpc = new xmlrpc_client($wpadress, true);
 $resp = $client->call('system.listMethods', array());
 debug_log($resp);
 $params = array(
-  1,
-  'admin',
-  'P@ssW0rd',
-  10
+1,
+'admin',
+'P@ssW0rd',
+10
 );
 $resp = $rpc->call(
-  'wp.getPages',
-  $params
+'wp.getPages',
+$params
 );
 debug_log($resp);
-
+*/
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$_SESSION['user']['email'].': '.$cronjob_id." updated!<br>";
 $tt["cooldown"]=1*60*60; // Test
