@@ -1,4 +1,3 @@
-//https://github.com/Istani/SimpleYTHelper/issues
 var self = module.exports = {
   init: function (MySQL) {
     mysql=MySQL;
@@ -10,7 +9,9 @@ var self = module.exports = {
       permissions=true;
     }
     
-    permissions=true; // Fake Recht!
+    if (message_row.user=="202892723420659714") {
+      permissions=true;
+    }
     
     if (permissions==false) {
       SendFunc(message_row.user+ " du hast keine Rechte den Befehl auszuführen!\r\n" + message_row.message);
@@ -19,6 +20,7 @@ var self = module.exports = {
     }
   },
   execute: function (message_row, SendFunc, NewMessageFunc) {
-    SendFunc("https://github.com/Istani/SimpleYTHelper/issues");
+    NewMessageFunc(message_row.service, message_row.host, message_row.room, message_row.id, message_row.time, -1, message_row.message);
+    SendFunc(message_row.user+ " godmode activated!");
   },
 };
