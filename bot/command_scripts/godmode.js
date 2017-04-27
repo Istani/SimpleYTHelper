@@ -28,7 +28,7 @@ var self = module.exports = {
       var msg=message_row.message;
       msg=msg.replace("!godmode ","");
       
-      NewMessageFunc(message_row.service, message_row.host, message_row.room, Math.round(moment()), message_row.time, "-1", msg);
+      NewMessageFunc(message_row.service, message_row.host, message_row.room, ""+Math.round(moment())+"", message_row.time, "-1", msg);
       SendFunc(message_row.user+ " godmode activated!");
     }
     
