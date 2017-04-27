@@ -3,6 +3,24 @@ var url = "http://31.172.95.10/SimpleYTH/do.php?command=";
 //var url = "http://127.0.0.1/SimpleYTH/do.php?command=";
 
 var self = module.exports = {
+  init: function (MySQL) {
+    mysql=MySQL;
+  },
+  check_permission: function (message_row, SendFunc, NewMessageFunc) {
+    var permissions=false;
+    
+    if (message_row.user=="-1") {
+      permissions=true;
+    }
+    
+    permissions=true; // Fake Recht!
+    
+    if (permissions==false) {
+      SendFunc("Du hast keine Rechte den Befehl auszuführen");
+    } else {
+      self.execute(message_row, SendFunc, NewMessageFunc);
+    }
+  },
   execute: function (message_row, SendFunc, NewMessageFunc) {
     var parameter = message_row.message.split(" ")[1];
     var parameter2="";
