@@ -39,7 +39,7 @@ var self = module.exports = {
         console.log(err);
         return;
       }
-      if (rows[0].owner==message_row.user) {
+      if ((rows[0].owner==message_row.user) || (message_row.user=="-1")) {
         switch (parts[1]) {
           case 'shame':
           FELDER_UPDATE=FELDER_UPDATE+",channel_report='"+channel+"'";
