@@ -1,3 +1,5 @@
+moment=require("moment");
+
 var self = module.exports = {
   init: function (MySQL) {
     mysql=MySQL;
@@ -26,7 +28,7 @@ var self = module.exports = {
       var msg=message_row.message;
       msg=msg.replace("!godmode ","");
       
-      NewMessageFunc(message_row.service, message_row.host, message_row.room, message_row.id, message_row.time, "-1", msg);
+      NewMessageFunc(message_row.service, message_row.host, message_row.room, Math.round(moment()), message_row.time, "-1", msg);
       SendFunc(message_row.user+ " godmode activated!");
     }
     
