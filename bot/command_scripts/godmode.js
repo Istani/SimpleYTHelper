@@ -20,7 +20,15 @@ var self = module.exports = {
     }
   },
   execute: function (message_row, SendFunc, NewMessageFunc) {
-    NewMessageFunc(message_row.service, message_row.host, message_row.room, message_row.id, message_row.time, "-1", message_row.message);
-    SendFunc(message_row.user+ " godmode activated!");
+    if (message_row.user=="-1") {
+      SendFunc("Why do a God need Godmode?");
+    } else {
+      var msg=message_row.message;
+      msg=msg.replace("!godmode ","");
+      
+      NewMessageFunc(message_row.service, message_row.host, message_row.room, message_row.id, message_row.time, "-1", msg);
+      SendFunc(message_row.user+ " godmode activated!");
+    }
+    
   },
 };
