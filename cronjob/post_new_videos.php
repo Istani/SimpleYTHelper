@@ -46,7 +46,7 @@ if (isset($video_list)) {
 //require_once '../API/wordpress/xmlrpc.php';
 $wpadress = "http://www.defender833.de/xmlrpc.php";
 $wpadress = "http://31.172.95.10/wordpress/xmlrpc.php";
-$rpc = new xmlrpc_client($wpadress, false);
+//$rpc = new xmlrpc_client($wpadress, false);
 /*
 $params = array(
 1,
@@ -68,5 +68,5 @@ $tt["user"]=$_SESSION['user']['email'];
 if($tt["token"]==""){$tt["token"]="null";}
 //$database->sql_insert_update("bot_token",$tt);
 unset($tt);
-die();
+//die();
 ?>
