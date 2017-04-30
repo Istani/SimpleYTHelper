@@ -23,7 +23,7 @@ var self = module.exports = {
   },
   execute: function (message_row, SendFunc, NewMessageFunc) {
     if (message_row.user=="-1") {
-      SendFunc("Why do a God need Godmode?");
+      SendFunc("Why does a God need Godmode?");
     } else {
       var msg=message_row.message;
       msg=msg.replace("!godmode ","");

@@ -43,11 +43,11 @@ if (isset($video_list)) {
 }
 
 // Do Magic 2
+//require_once '../API/wordpress/xmlrpc.php';
+$wpadress = "http://www.defender833.de/xmlrpc.php";
+$wpadress = "http://31.172.95.10/wordpress/xmlrpc.php";
+$rpc = new xmlrpc_client($wpadress, false);
 /*
-$wpadress = "http://127.0.0.1/wordpress/xmlrpc.php";
-$rpc = new xmlrpc_client($wpadress, true);
-$resp = $client->call('system.listMethods', array());
-debug_log($resp);
 $params = array(
 1,
 'admin',
@@ -66,6 +66,7 @@ $tt["cooldown"]=1*60*60; // Test
 $tt["last_used"]=time();
 $tt["user"]=$_SESSION['user']['email'];
 if($tt["token"]==""){$tt["token"]="null";}
-$database->sql_insert_update("bot_token",$tt);
+//$database->sql_insert_update("bot_token",$tt);
 unset($tt);
+die();
 ?>

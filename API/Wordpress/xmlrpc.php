@@ -12,7 +12,7 @@ class xmlrpc_client {
 	}
 	public function call($method, $params = null) {
 		$post = xmlrpc_encode_request($method, $params);
-		return xmlrpc_decode($this->connection->post($this->url, $post));
+		//return xmlrpc_decode($this->connection->post($this->url, $post));
 	}
 }
 ?>
