@@ -34,7 +34,7 @@ require_once 'API/OAuth2/src/OAuth2/Client.php';
 require_once 'API/OAuth2/src/OAuth2/GrantType/IGrantType.php';
 require_once 'API/OAuth2/src/OAuth2/GrantType/AuthorizationCode.php';
 
-require_once 'API/wordpress/xmlrpc.php';
+require_once 'API/Wordpress/xmlrpc.php';
 
 /* eigene scripte */
 require_once 'functions/db.php';
