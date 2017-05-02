@@ -43,23 +43,29 @@ if (isset($video_list)) {
 }
 
 // Do Magic 2
-//require_once '../API/wordpress/xmlrpc.php';
+//require_once '../API/wordpress/class-IXR.php';
 $wpadress = "http://www.defender833.de/xmlrpc.php";
 $wpadress = "http://31.172.95.10/wordpress/xmlrpc.php";
-//$rpc = new xmlrpc_client($wpadress, false);
-/*
+$rpc = new IXR_Client($wpadress);
 $params = array(
-1,
-'admin',
-'P@ssW0rd',
-10
+  1,
+  'sascha.u.kaufmann@googlemail.com',
+  '1234',
+  10
 );
-$resp = $rpc->call(
-'wp.getPages',
-$params
+
+$result = $rpc->query(
+  'system.listMethods',
+  $params
 );
-debug_log($resp);
-*/
+if ($result) {
+  // Jo alles gut
+  debug_log($rpc->getResponse());
+} else {
+  echo 'Error [' . $rpc->getErrorCode() . ']: ' . $rpc->getErrorMessage();
+  exit();
+}
+
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$_SESSION['user']['email'].': '.$cronjob_id." updated!<br>";
 $tt["cooldown"]=1*60*60; // Test
