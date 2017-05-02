@@ -66,7 +66,7 @@ $tt["cooldown"]=1*60*60; // Test
 $tt["last_used"]=time();
 $tt["user"]=$_SESSION['user']['email'];
 if($tt["token"]==""){$tt["token"]="null";}
-//$database->sql_insert_update("bot_token",$tt);
+$database->sql_insert_update("bot_token",$tt);
 unset($tt);
 //die();
 ?>
