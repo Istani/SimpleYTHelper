@@ -63,7 +63,6 @@ if ($result) {
   debug_log($rpc->getResponse());
 } else {
   echo 'Error [' . $rpc->getErrorCode() . ']: ' . $rpc->getErrorMessage();
-  exit();
 }
 
 // Save Token
