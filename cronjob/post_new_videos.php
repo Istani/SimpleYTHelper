@@ -17,14 +17,14 @@ if ($tt["token"]=="null" or is_null($tt['token'])) {
 if (isset($video_list)) {
   unset($video_list);
 }
-$videos_yt=$database->sql_select("videos_snippet", "*", "channelid='".$_SESSION['user']['youtube_user']."' AND first_seen>".$tt['token']." ORDER BY first_seen",true);
+$videos_yt=$database->sql_select("videos_snippet", "*", "channelid='".$_SESSION['user']['youtube_user']."' AND publishedat>".$tt['token']." ORDER BY publishedat",true);
 for ($v=0;$v<count($videos_yt);$v++) {
   $tmp_newvideo['link']="https://www.youtube.com/watch?v=".$videos_yt[$v]["videoid"];
   $tmp_newvideo['title']=$videos_yt[$v]["title"];
   $tmp_newvideo['description']=$videos_yt[$v]["description"];
   $tmp_newvideo['publishedat']=strtotime($videos_yt[$v]["publishedat"]);
   $tmp_newvideo['thumbnail']=$videos_yt[$v]['thumbnail'];
-  // Was braaucht man noch?
+  // Was braucht man noch?
   
   $videos_status=$database->sql_select("videos_status", "*", "videoid='".$videos_yt[$v]["videoid"]."' LIMIT 1",true);
   if ($videos_status[0]['privacystatus']=="public") {
@@ -47,22 +47,36 @@ if (isset($video_list)) {
 $wpadress = "http://www.defender833.de/xmlrpc.php";
 $wpadress = "http://31.172.95.10/wordpress/xmlrpc.php";
 $rpc = new IXR_Client($wpadress);
+/* Get Methods */
+$result = $rpc->query('system.listMethods');
+if ($result) {
+  debug_log($rpc->getResponse());
+} else {
+  echo 'Error [' . $rpc->getErrorCode() . ']: ' . $rpc->getErrorMessage().'<br>';
+}
+
+/* Do a Posting */
+$content = array(
+  'post_type' => 'post',
+  'post_status' => 'pending',
+  'post_title' => $video_list[0]['title'],
+  'post_content' => $video_list[0]['description'],
+  'terms' => array('category' => array( 0 ) ),
+  'comment_status' => 'closed',
+);
 $params = array(
   1,
   'sascha.u.kaufmann@googlemail.com',
   '1234',
-  10
+  $content
 );
+$result = $rpc->query('wp.newPost', $params);
 
-$result = $rpc->query(
-  'system.listMethods',
-  $params
-);
 if ($result) {
   // Jo alles gut
   debug_log($rpc->getResponse());
 } else {
-  echo 'Error [' . $rpc->getErrorCode() . ']: ' . $rpc->getErrorMessage();
+  echo 'Error [' . $rpc->getErrorCode() . ']: ' . $rpc->getErrorMessage().'<br>';
 }
 
 // Save Token
