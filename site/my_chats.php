@@ -167,7 +167,10 @@ for ($i=0;$i<count($chats);$i++) {
     
     echo '</div>';
     echo '<div id="tabs_'.$chats[$i]['host'].'-3">';
-    
+    $tmp_badwords=$database->sql_select("bot_chatbadword","*","service='".$chats[$i]['service']."' AND host='".$chats[$i]['host']."'");
+    for ($j=0; $j<count($tmp_badwords);$j++) {
+      echo $tmp_badwords[$j]['word'].'<br>';
+    }
     echo '</div>';
     echo '</div>';
     ?>

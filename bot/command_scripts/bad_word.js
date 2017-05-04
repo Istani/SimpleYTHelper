@@ -28,6 +28,24 @@ var self = module.exports = {
       case 'delete':
       SQL = "DELETE FROM bot_chatbadword WHERE service='" + message_row.service + "' and host='" + message_row.host + "' and word='" + parts[2] +"'";
       break;
+      case 'list':
+      SQL = "SELECT * FROM bot_chatbadword WHERE service='" + message_row.service + "' and host='" + message_row.host + "'";
+      returnmsg="List of Bad Words:\r\n";
+      mysql.query(SQL, function (err, rows) {
+        if (err != null) {
+          console.log(SQL);
+          console.log(err);
+          return;
+        }
+        for (var i = 0; i < rows.length; i++) {
+          returnmsg=returnmsg+rows[i]+'\r\n';
+        }
+      });
+      SendFunc(returnmsg);
+      SQL="";
+      return;
+      break;
+      break;
       default:
       returnmsg="wrong usage!";
       SendFunc(returnmsg);

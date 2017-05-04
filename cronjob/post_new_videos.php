@@ -64,20 +64,22 @@ $content = array(
   'terms' => array('category' => array( 0 ) ),
   'comment_status' => 'closed',
 );
+/*
 $params = array(
-  1,
-  'sascha.u.kaufmann@googlemail.com',
-  '1234',
-  $content
+1,
+'sascha.u.kaufmann@googlemail.com',
+'1234',
+$content
 );
 $result = $rpc->query('wp.newPost', $params);
 
 if ($result) {
-  // Jo alles gut
-  debug_log($rpc->getResponse());
+// Jo alles gut
+debug_log($rpc->getResponse());
 } else {
-  echo 'Error [' . $rpc->getErrorCode() . ']: ' . $rpc->getErrorMessage().'<br>';
+echo 'Error [' . $rpc->getErrorCode() . ']: ' . $rpc->getErrorMessage().'<br>';
 }
+*/
 
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$_SESSION['user']['email'].': '.$cronjob_id." updated!<br>";
