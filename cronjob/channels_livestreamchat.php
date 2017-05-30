@@ -30,6 +30,11 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     unset($felder);
   }
   
+  $tab_name_livestream="channels_liveStreamChat";
+  $db_stats = $database->sql_select($tab_name_livestream, "*", "channel_id='".$_SESSION['user']['youtube_user']."'", true);
+  $BroadcastId_old=$db_stats[0]["broadcastid"];
+  $ChatId_old=$db_stats[0]["chatid"];
+  
   // Youtube Channel Statistics
   if ($tt["token"] == "null") {
     $listResponse = $youtube-> search->listSearch('id', array('channelId'=>$_SESSION['user']['youtube_user'], 'eventType'=>'live', 'type'=>'video'));

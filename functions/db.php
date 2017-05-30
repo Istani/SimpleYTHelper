@@ -6,6 +6,10 @@ class db {
   var $database;
   var $system;
   
+  function __destruct() {
+    $this->close();
+  }
+  
   function error($meldung) {
     echo $meldung;
     die();

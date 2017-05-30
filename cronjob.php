@@ -144,6 +144,7 @@ while (time()-$Time['Start']<=45) {
     break;
   }
 }
+$database->close();
 
 
 $Time['End']=time();

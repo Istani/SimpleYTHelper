@@ -1,6 +1,6 @@
 <?php
 
-echo "!defender commands:
+echo "!yt commands:
 ";
 $commands = return_commands_array();
 foreach ($commands as $command) {
