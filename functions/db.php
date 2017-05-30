@@ -36,6 +36,12 @@ class db {
     }
   }
   
+  function close() {
+    if ($this->system == "mysql") {
+      mysql_close($this->connection);
+    }
+  }
+  
   function show_tables() {
     $return_array = array();
     if ($this->system == "mysql") {
