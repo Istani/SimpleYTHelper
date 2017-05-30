@@ -25,7 +25,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   
   $sql_user=$database->sql_select("bot_chatuser","*", "is_bot=0", true);
   for($i=0;$i<count($sql_user);$i++) {
-    $start_tag=$tag-31;
+    $start_tag=$tag-2;
     // Berechnung der Nachtichten
     while($start_tag<$tag) {
       $start_stunde=$start_tag*24;
