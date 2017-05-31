@@ -12,7 +12,17 @@ for ($i=0;$i<count($chats_temp);$i++) {
 
 if (isset($_POST['save_roles'])) {
   unset($_POST['save_roles']);
-  $database->sql_insert_update("bot_chatroles", $_POST);
+  for ($inc_roles=0;$inc_roles<count($_POST['role']);$inc_roles++) {
+    $this_role['service']=$_POST['service'];
+    $this_role['host']=$_POST['host'];
+    $this_role['role']=$_POST['role'][$inc_roles];
+    $this_role['recht_report_user']=$_POST['recht_report_user'][$inc_roles];
+    $this_role['recht_own_videos']=$_POST['recht_own_videos'][$inc_roles];
+    $this_role['check_spam']=$_POST['check_spam'][$inc_roles];
+    // TODO: Überlegen wie man das so Automatisch machen kann wie bei der Auflistung
+    $database->sql_insert_update("bot_chatroles", $this_role);
+    unset($this_role);
+  }
 }
 
 echo '<div id="rooms">';
@@ -90,12 +100,12 @@ for ($i=0;$i<count($chats);$i++) {
     echo '<div id="tabs_'.$chats[$i]['host'].'-2">';
     
     // Rechte
+    $j=0;
     echo '<form method="POST" action="index.php?site=my_chats">';
     echo '<input type="hidden" name="service" value="'.$tmp_roles[$j]['service'].'">';
     echo '<input type="hidden" name="host" value="'.$tmp_roles[$j]['host'].'">';
     
     echo '<table class="roles with_borders">';
-    $j=0;
     echo '<thead>';
     echo '<tr>';
     echo '<th>';
@@ -122,9 +132,9 @@ for ($i=0;$i<count($chats);$i++) {
     echo '</thead>';
     echo '<tbody>';
     for ($j=0; $j<count($tmp_roles);$j++) {
-      echo '<input type="hidden" name="role[]" value="'.$tmp_roles[$j]['role'].'">';
       echo '<tr>';
       echo '<td>';
+      echo '<input type="hidden" name="role[]" value="'.$tmp_roles[$j]['role'].'">';
       echo $tmp_roles[$j]['role'];
       echo '</td>';
       foreach ($tmp_roles[$j] as $key=>$value) {
