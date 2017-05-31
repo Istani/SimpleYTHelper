@@ -90,6 +90,10 @@ for ($i=0;$i<count($chats);$i++) {
     echo '<div id="tabs_'.$chats[$i]['host'].'-2">';
     
     // Rechte
+    echo '<form method="POST" action="index.php?site=my_chats">';
+    echo '<input type="hidden" name="service" value="'.$tmp_roles[$j]['service'].'">';
+    echo '<input type="hidden" name="host" value="'.$tmp_roles[$j]['host'].'">';
+    
     echo '<table class="roles with_borders">';
     $j=0;
     echo '<thead>';
@@ -118,10 +122,7 @@ for ($i=0;$i<count($chats);$i++) {
     echo '</thead>';
     echo '<tbody>';
     for ($j=0; $j<count($tmp_roles);$j++) {
-      echo '<form method="POST" action="index.php?site=my_chats">';
-      echo '<input type="hidden" name="service" value="'.$tmp_roles[$j]['service'].'">';
-      echo '<input type="hidden" name="host" value="'.$tmp_roles[$j]['host'].'">';
-      echo '<input type="hidden" name="role" value="'.$tmp_roles[$j]['role'].'">';
+      echo '<input type="hidden" name="role[]" value="'.$tmp_roles[$j]['role'].'">';
       echo '<tr>';
       echo '<td>';
       echo $tmp_roles[$j]['role'];
@@ -129,7 +130,7 @@ for ($i=0;$i<count($chats);$i++) {
       foreach ($tmp_roles[$j] as $key=>$value) {
         if ($key!=str_replace("recht_", "", $key)) {
           echo '<td>';
-          echo '<select name="'.$key.'">';
+          echo '<select name="'.$key.'[]">';
           if ($value==0) {
             echo '<option value="0" selected=selected>Nein</option>';
             echo '<option value="1">Ja</option>';
@@ -144,7 +145,7 @@ for ($i=0;$i<count($chats);$i++) {
       foreach ($tmp_roles[$j] as $key=>$value) {
         if ($key!=str_replace("check_", "", $key)) {
           echo '<td>';
-          echo '<select name="'.$key.'">';
+          echo '<select name="'.$key.'[]">';
           if ($value==0) {
             echo '<option value="0" selected=selected>Nein</option>';
             echo '<option value="1">Ja</option>';
@@ -157,13 +158,14 @@ for ($i=0;$i<count($chats);$i++) {
         }
       }
       echo '<td>';
-      echo '<input type="submit" name="save_roles" value="Speichern">';
+      
       echo '</td>';
       echo '</tr>';
-      echo '</form>';
     }
     echo '</tbody>';
     echo '</table>';
+    echo '<input type="submit" name="save_roles" value="Speichern">';
+    echo '</form>';
     
     echo '</div>';
     echo '<div id="tabs_'.$chats[$i]['host'].'-3">';
