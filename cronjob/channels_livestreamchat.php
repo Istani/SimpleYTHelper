@@ -70,7 +70,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
               $add_post['user']=$t_user;
               $add_post['message']="!yt livestream";
               $add_post['process']=0;
-              $database->sql_insert_update("bot_chatlog", $newData);
+              $database->sql_insert_update("bot_chatlog", $add_post);
               unset($add_post);
             }
           }
