@@ -47,6 +47,36 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     
     $listResponse = $youtube->liveBroadcasts->listLiveBroadcasts('snippet',array('id'=>$BroadcastId));
     $ChatId=$listResponse["items"][0]["snippet"]["liveChatId"];
+    
+    if ($ChatId!=$ChatId_old && $ChatId!="") {
+      // Ein neuer Livestream!
+      $my_rechte=$SYTHS->may_post_videos_on($_SESSION['user']['email']);
+      foreach ($my_rechte as $t_service => $the_hosts) {
+        foreach ($the_hosts as $t_host => $t_channel) {
+          if ($t_channel!="0") {
+            // Posten versuchen
+            $t_user="";
+            if ($t_service=="Discord") {
+              $t_user=$_SESSION['user']['discord_user'];
+            }
+            
+            // Poste
+            if ($t_user!="") {
+              $add_post['service']=$t_service;
+              $add_post['host']=$t_host;
+              $add_post['room']=$t_channel;
+              $add_post['id']=time();
+              $add_post['time']=time();
+              $add_post['user']=$t_user;
+              $add_post['message']="!yt livestream";
+              $add_post['process']=0;
+              $database->sql_insert_update("bot_chatlog", $newData);
+              unset($add_post);
+            }
+          }
+        }
+      }
+    }
   } else {
     $BroadcastId="";
     $ChatId="";

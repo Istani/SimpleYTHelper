@@ -19,6 +19,7 @@ if (isset($video_list)) {
 }
 $videos_yt=$database->sql_select("videos_snippet", "*", "channelid='".$_SESSION['user']['youtube_user']."' AND publishedat>".$tt['token']." ORDER BY publishedat",true);
 for ($v=0;$v<count($videos_yt);$v++) {
+  $tmp_newvideo['id']=$videos_yt[$v]["videoid"];
   $tmp_newvideo['link']="https://www.youtube.com/watch?v=".$videos_yt[$v]["videoid"];
   $tmp_newvideo['title']=$videos_yt[$v]["title"];
   $tmp_newvideo['description']=$videos_yt[$v]["description"];
@@ -80,6 +81,33 @@ debug_log($rpc->getResponse());
 echo 'Error [' . $rpc->getErrorCode() . ']: ' . $rpc->getErrorMessage().'<br>';
 }
 */
+
+$my_rechte=$SYTHS->may_post_videos_on($_SESSION['user']['email']);
+foreach ($my_rechte as $t_service => $the_hosts) {
+  foreach ($the_hosts as $t_host => $t_channel) {
+    if ($t_channel!="0") {
+      // Posten versuchen
+      $t_user="";
+      if ($t_service=="Discord") {
+        $t_user=$_SESSION['user']['discord_user'];
+      }
+      
+      // Poste
+      if ($t_user!="") {
+        $add_post['service']=$t_service;
+        $add_post['host']=$t_host;
+        $add_post['room']=$t_channel;
+        $add_post['id']=time();
+        $add_post['time']=time();
+        $add_post['user']=$t_user;
+        $add_post['message']="!yt video ".$video_list[0]['id'];
+        $add_post['process']=0;
+        $database->sql_insert_update("bot_chatlog", $newData);
+        unset($add_post);
+      }
+    }
+  }
+}
 
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$_SESSION['user']['email'].': '.$cronjob_id." updated!<br>";

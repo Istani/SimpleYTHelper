@@ -7,6 +7,9 @@ switch ($_GET['site']) {
   case 'info':
   include("site/info.php");
   break;
+  case 'debug':
+  include("site/debug.php");
+  break;
   // Google Auth
   case 'New_Google_Auth':
   include("inc/google_connect.php");

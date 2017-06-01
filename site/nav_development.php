@@ -3,5 +3,6 @@
   <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
     <a href="index.php?site=info">Info</a><br>
     <a href="cronjob.php">Cronjob</a><br>
+    <a href="index.php?site=debug">Debug</a><br>
   </div>
 </div>

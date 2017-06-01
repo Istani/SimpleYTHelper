@@ -40,11 +40,13 @@ require_once 'API/Wordpress/class-IXR.php';
 require_once 'functions/db.php';
 require_once 'functions/func_token.php';
 require_once 'functions/func_command.php';
+require_once 'functions/db_simpleyth_shortcuts.php';
 // load private settings - Überschreibt die hier vorher definierten mysql und oauth vars
 include("private_settings.php");
 
 $database = new db("mysql", $mysql['host'], $mysql['user'], $mysql['pass']);
 $database->connect_db($mysql['base']);
+$SYTHS=new SimpleYTH_Shortcuts($database);
 
 require_once 'inc/forms_check.php';
 ?>
