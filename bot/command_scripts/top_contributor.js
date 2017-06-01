@@ -34,13 +34,13 @@ var self = module.exports = {
         SendFunc("Noch keine Statsitk erstellt. Versuch es morgen nochmal");
       } else {
         for (var i = 0; i < rows.length; i++) {
-          string+=i+". ";
-          string+=rows[i].name;
-          string+="  AVG:";
-          string+=rows[i].msg_avg;
-          string+="  SUM:";
-          string+=rows[i].msg_sum;
-          string+="\r\n";
+          string=string+i+". ";
+          string=string+rows[i].name;
+          string=string+"  AVG:";
+          string=string+rows[i].msg_avg;
+          string=string+"  SUM:";
+          string=string+rows[i].msg_sum;
+          string=string+"\r\n";
         }
         SendFunc(string);
       }
