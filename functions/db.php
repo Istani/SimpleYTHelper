@@ -42,7 +42,7 @@ class db {
   
   function close() {
     if ($this->system == "mysql") {
-      mysql_close($this->connection);
+      //mysql_close($this->connection);
     }
   }
   
