@@ -44,6 +44,6 @@ var self = module.exports = {
         }
         SendFunc(string);
       }
-    }
+    })
   },
 };
