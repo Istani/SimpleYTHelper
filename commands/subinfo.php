@@ -20,7 +20,7 @@ if(in_array($_tmp_tabellename, $check_table) AND ($_GET["param"]!="")) {
 	} else {
 		$subname=$db_subs[0]["title"];
 		$subtext="\n\rEntdeckt: ".date("d.m.Y h:i:s",(int)$db_subs[0]["first_seen"]);
-		$subtext.="\n\rAktualisiert: ".date("d.m.Y h:i:s",(int)$db_subs[0]["last_seen"]);
+		//$subtext.="\n\rAktualisiert: ".date("d.m.Y h:i:s",(int)$db_subs[0]["last_seen"]);
 		$subtext.="\n\rThumbnail: ".$db_subs[0]["thumbnail"];
 		
 	}
