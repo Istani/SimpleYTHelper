@@ -34,7 +34,7 @@ var self = module.exports = {
         SendFunc("Noch keine Statsitk erstellt. Versuch es morgen nochmal");
       } else {
         for (var i = 0; i < rows.length; i++) {
-          string=string+i+". ";
+          string=string+(i+1)+". ";
           string=string+rows[i].name;
           string=string+"  AVG:";
           string=string+rows[i].msg_avg;
