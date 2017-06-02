@@ -9,7 +9,7 @@ $BroadcastId=$db_stats[0]["broadcastid"];
 $ChatId=$db_stats[0]["chatid"];
 
 if ($BroadcastId!="null" && $BroadcastId!="") {
-  echo "http://gaming.youtube.com/c/".$_SESSION['user']['youtube_user']."/live";
+  echo "http://gaming.youtube.com/channel/".$_SESSION['user']['youtube_user']."/live";
 } else {
   echo "Kein Livestream gefunden!";
 }
