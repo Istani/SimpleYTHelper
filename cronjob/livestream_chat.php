@@ -21,9 +21,13 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 	
 	$BroadcastId=$db_stats[0]["broadcastid"];
 	$ChatId=$db_stats[0]["chatid"];
+	$Last=$db_stats[0]["last_seen"];
+	
+	if ($Last<=$tt["last_used"]-600) {	//Wenn 10 Minuten das andere nicht ausgeführt worden ist, dann mach hier auch nichts mehr... Sonst bleibt das hier mit Fehlermeldung für immer stehen!
+		$BroadcastId="null";
+	}
 	
 	if ($BroadcastId!="null" && $BroadcastId!="") {
-		
 		if ($tt["token"] == "null") {
 			$listResponse = $youtube->liveChatMessages->listLiveChatMessages($ChatId,'snippet, authorDetails' , array("maxResults"=>2000));
 		} else{
