@@ -2,9 +2,6 @@ var self = module.exports = {
   init: function (MySQL) {
     mysql=MySQL;
   },
-  init: function (MySQL) {
-    mysql=MySQL;
-  },
   check_permission: function (message_row, SendFunc, NewMessageFunc) {
     var permissions=false;
     
@@ -47,7 +44,7 @@ var self = module.exports = {
           case 'video':
           FELDER_UPDATE=FELDER_UPDATE+",channel_video='"+channel+"'";
           break;
-          case 'rpgmain':
+          case 'rpg':
           FELDER_UPDATE=FELDER_UPDATE+",channel_rpgmain='"+channel+"'";
           break;
           default:
