@@ -29,6 +29,14 @@ var self = module.exports = {
       params[1]=="start";
     }
     
+    switch (params[1]) {
+      case 'settings':
+      SendFunc(settings['money_per_day']);
+      break;
+      default:
+      
+    }
+    
   }
 };
 var settings;
@@ -43,7 +51,7 @@ function Load_RPG_Settings() {
       return;
     }
     for (var i = 0; i<rows.length;i++) {
-      //settings[rows[i].name]=rows[i].value;
+      settings[rows[i].name]=rows[i].value;
     }
   });
 };
