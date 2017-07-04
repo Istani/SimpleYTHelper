@@ -61,7 +61,13 @@ function Check_Settings(settings_name) {
   if (typeof settings[settings_name]=="undefined") {
     settings[settings_name]="";
     var SQL = "INSERT INTO rpg_settings SET name='" + settings_name + "', value=''";
-    mysql.execute(SQL);
+    mysql.query(SQL, function (err, rows) {
+      if (err != null) {
+        console.log(SQL);
+        console.log(err);
+        return;
+      }
+    });
   }
   return_value=settings[settings_name];
   return return_value;
