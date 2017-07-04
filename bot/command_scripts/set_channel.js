@@ -47,6 +47,9 @@ var self = module.exports = {
           case 'video':
           FELDER_UPDATE=FELDER_UPDATE+",channel_video='"+channel+"'";
           break;
+          case 'rpgmain':
+          FELDER_UPDATE=FELDER_UPDATE+",channel_rpgmain='"+channel+"'";
+          break;
           default:
           var output="Diese Channel Art gibt es nicht!\r\n";
           output=output+"Mögliche Channel:\r\n";

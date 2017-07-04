@@ -6,6 +6,10 @@ function check_settings($database, $cronjob_id) {
     if ($_SESSION['cronjob']=="setup") {
       // Get service
       switch ($cronjob_id) {
+        case 'sk_special_deflike':
+        $serivce="YouTube";
+        $user_where="email like 'sascha.u.kaufmann@googlemail.com'";
+        break;
         case 'bot_chat_stats':
         case 'bot_chatspam':
         $serivce="SimpleYTH";
