@@ -31,7 +31,7 @@ var self = module.exports = {
     
     switch (params[1]) {
       case 'settings':
-      SendFunc(settings.money_per_day);
+      SendFunc(Check_Settings(params[2]));
       break;
       default:
       
@@ -43,7 +43,7 @@ var settings= {};
 var mysql=null;
 
 function Load_RPG_Settings() {
-  var SQL = "SELECT * FROM rpg_settings LIMIT 1";
+  var SQL = "SELECT * FROM rpg_settings";
   mysql.query(SQL, function (err, rows) {
     if (err != null) {
       console.log(SQL);
@@ -55,3 +55,14 @@ function Load_RPG_Settings() {
     }
   });
 };
+
+function Check_Settings(settings_name) {
+  var return_value="";
+  if (typeof settings[settings_name]=="undefined") {
+    settings[settings_name]="";
+    var SQL = "INSERT INTO rpg_settings SET name='" + settings_name + "', value=''";
+    mysql.execute(SQL);
+  }
+  return_value=settings[settings_name];
+  return return_value;
+}
