@@ -76,6 +76,29 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
           }
         }
       }
+      
+      // NOTE: Starts a new RPG-Zone Maybee?
+      if ($_SESSION['user']['email']=='Admin') {
+        $add_post['id']=time();
+        $add_post['time']=time();
+        $add_post['user']='-1';
+        $add_post['message']="!secrect start"; // TODO: Muss später geändert werden
+        $add_post['process']=0;
+        
+        $add_post['service']='YouTube';
+        $add_post['host']=$_SESSION['user']['youtube_user'];
+        $add_post['room']=$ChatId;
+        $database->sql_insert_update("bot_chatlog", $add_post);
+        
+        $discord_server=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['discord_user']."'",true);
+        $add_post['service']='Discord';
+        $add_post['host']=$discord_server[0]['host'];
+        $add_post['room']=$discord_server[0]['channel_rpgmain'];
+        $database->sql_insert_update("bot_chatlog", $add_post);
+        
+        
+        unset($add_post);
+      }
     }
   } else {
     $BroadcastId="";

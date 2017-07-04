@@ -6,11 +6,11 @@ var self = module.exports = {
   check_permission: function (message_row, SendFunc, NewMessageFunc) {
     var permissions=false;
     
-    if (message_row.user=="181794097726619648") {
+    if (message_row.user=="-1") {
       permissions=true;
     }
     
-    if (message_row.user=="202892723420659714") {
+    if (message_row.user=="181794097726619648") { // Defender
       permissions=true;
     }
     
@@ -24,6 +24,7 @@ var self = module.exports = {
   execute: function (message_row, SendFunc, NewMessageFunc) {
     var amount=0;
     var params=message_row.message.split(" ");
+    var permissions=false;
     
     if (typeof params[1]=="undefined") { // 0 ist der befehl selbst!
       params[1]=="start";
@@ -31,7 +32,19 @@ var self = module.exports = {
     
     switch (params[1]) {
       case 'settings':
-      SendFunc(Check_Settings(params[2]));
+      /* Aktuell noch doppelt gemoppelt */
+      if ((message_row.user=="181794097726619648") || (message_row.user=="-1")) {
+        SendFunc(Check_Settings(params[2]));
+      }
+      case 'start':
+      SendFunc('Test');
+      return;
+      if ((message_row.user=="181794097726619648") || (message_row.user=="-1")) {
+        StartNewIfNotExists(SendFunc);
+      } else {
+        CheckExists(SendFunc);
+      }
+      
       break;
       default:
       
@@ -72,3 +85,6 @@ function Check_Settings(settings_name) {
   return_value=settings[settings_name];
   return return_value;
 }
+
+function StartNewIfNotExists(SendFunc) {};
+function CheckExists(SendFunc) {};

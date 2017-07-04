@@ -69,6 +69,5 @@ class SimpleYTH_Shortcuts {
     }
     return $return;
   }
-  
 }
 ?>
