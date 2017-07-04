@@ -39,7 +39,7 @@ var self = module.exports = {
     
   }
 };
-var settings;
+var settings= {};
 var mysql=null;
 
 function Load_RPG_Settings() {
@@ -51,7 +51,7 @@ function Load_RPG_Settings() {
       return;
     }
     for (var i = 0; i<rows.length;i++) {
-      settings.set(rows[i].name],rows[i].value);
+      settings[rows[i].name]]=rows[i].value);
     }
   });
 };
