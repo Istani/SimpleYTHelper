@@ -27,7 +27,7 @@ var self = module.exports = {
     var permissions=false;
     
     if (typeof params[1]=="undefined") { // 0 ist der befehl selbst!
-      params[1]=="start";
+      params[1]="start";
     }
     
     switch (params[1]) {
@@ -38,7 +38,6 @@ var self = module.exports = {
       }
       case 'start':
       SendFunc('Test');
-      return;
       if ((message_row.user=="181794097726619648") || (message_row.user=="-1")) {
         StartNewIfNotExists(SendFunc);
       } else {
