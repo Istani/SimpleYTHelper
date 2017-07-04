@@ -51,7 +51,7 @@ function Load_RPG_Settings() {
       return;
     }
     for (var i = 0; i<rows.length;i++) {
-      settings[rows[i].name]]=rows[i].value);
+      settings[rows[i].name]=rows[i].value);
     }
   });
 };
