@@ -34,7 +34,7 @@ var self = module.exports = {
             return;
           }
           for (var j = 0; j<rows2.length;j++) {
-            if (rows[i].count==2) {
+            if (rows2[j].count==2) {
               var SQL3 = "UPDATE user_ads SET count=count+1 WHERE link='"+rows2[j].link+"'";
             } else {
               var SQL3 = "UPDATE user_ads SET count=0 WHERE owner='"+rows2[j].owner+"'";
