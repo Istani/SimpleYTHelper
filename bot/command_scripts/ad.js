@@ -27,7 +27,7 @@ var self = module.exports = {
         return;
       }
       for (var i = 0; i<rows.length;i++) {
-        var SQL2 = "SELECT * FROM user_ads WHERE count='"+rows[i].count+"' AND link NOT LIKE '' AND owner='"+My_Owner+"' ORDER BY Rand() LIMIT 1";
+        var SQL2 = "SELECT * FROM user_ads WHERE count='"+rows[i].count+"' AND type NOT LIKE 'Link' AND link NOT LIKE '' AND owner='"+My_Owner+"' ORDER BY Rand() LIMIT 1";
         mysql.query(SQL2, function (err2, rows2) {
           if (err2 != null) {
             console.log(SQL2);

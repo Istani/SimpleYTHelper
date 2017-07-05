@@ -5,6 +5,7 @@
     if (isset($_SESSION['user']['email'])) {
       echo "<p><a href='index.php?site=my_accounts'>Meine Accounts</a></p>";
       echo "<p><a href='index.php?site=my_chats'>Meine Chat Hosts</a></p>";
+      echo "<p><a href='index.php?site=my_link'>Meine Links</a></p>";
       echo "<p><a href='index.php?site=my_equip'>Meine Equipment</a></p>";
       echo "<p><a href='index.php?site=my_ads'>Meine Werbelinks</a></p>";
       

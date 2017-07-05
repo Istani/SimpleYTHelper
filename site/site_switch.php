@@ -44,6 +44,9 @@ switch ($_GET['site']) {
   case 'my_ads':
   include("site\my_ads.php");
   break;
+  case 'my_link':
+  include("site\my_link.php");
+  break;
   
   case 'yt_channels':
   include("site/yt_channels.php");
