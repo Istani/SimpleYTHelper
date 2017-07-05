@@ -18,7 +18,7 @@ var self = module.exports = {
     }
   },
   execute: function (message_row, SendFunc, NewMessageFunc) {
-    var My_Owner="Admin";
+    var My_Owner="admin";
     var SQL = "SELECT * FROM user_ads WHERE owner='"+My_Owner+"' ORDER BY count LIMIT 1";
     mysql.query(SQL, function (err, rows) {
       if (err != null) {
