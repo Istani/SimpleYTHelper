@@ -18,7 +18,8 @@ var self = module.exports = {
     }
   },
   execute: function (message_row, SendFunc, NewMessageFunc) {
-    var SQL = "SELECT * FROM user_ads ORDER BY count LIMIT 1";
+    var My_Owner="Admin";
+    var SQL = "SELECT * FROM user_ads WHERE owner='"+My_Owner+"' ORDER BY count LIMIT 1";
     mysql.query(SQL, function (err, rows) {
       if (err != null) {
         console.log(SQL);
@@ -26,7 +27,7 @@ var self = module.exports = {
         return;
       }
       for (var i = 0; i<rows.length;i++) {
-        var SQL2 = "SELECT * FROM user_ads WHERE count='"+rows[i].count+"' AND link NOT LIKE '' ORDER BY Rand() LIMIT 1";
+        var SQL2 = "SELECT * FROM user_ads WHERE count='"+rows[i].count+"' AND link NOT LIKE '' AND owner='"+My_Owner+"' ORDER BY Rand() LIMIT 1";
         mysql.query(SQL2, function (err2, rows2) {
           if (err2 != null) {
             console.log(SQL2);

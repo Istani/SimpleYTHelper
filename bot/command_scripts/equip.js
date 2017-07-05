@@ -18,7 +18,8 @@ var self = module.exports = {
     }
   },
   execute: function (message_row, SendFunc, NewMessageFunc) {
-    var SQL = "SELECT * FROM user_ads WHERE type NOT LIKE 'AD' AND link NOT LIKE ''";
+    var My_Owner="Admin";
+    var SQL = "SELECT * FROM user_ads WHERE type NOT LIKE 'AD' AND link NOT LIKE '' AND owner='"+My_Owner+"'";
     mysql.query(SQL, function (err, rows) {
       if (err != null) {
         console.log(SQL);
@@ -38,6 +39,15 @@ var self = module.exports = {
             ReturnString="";
           }
           ReturnString+=RowString;
+          
+          var SQL4 = "UPDATE user_ads SET count=count+1 WHERE link='"+rows[i].link+"'";
+          mysql.query(SQL4, function (err4, rows4) {
+            if (err4 != null) {
+              console.log(SQL4);
+              console.log(err4);
+              return;
+            }
+          });
         }
       }
       if (ReturnString.length>7) {
