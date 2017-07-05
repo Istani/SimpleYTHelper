@@ -18,25 +18,13 @@ var self = module.exports = {
     }
   },
   execute: function (message_row, SendFunc, NewMessageFunc) {
-    var SQL = "SELECT * FROM user_ads ORDER BY count LIMIT 1";
+    var SQL = "SELECT * FROM user_ads WHERE type NOT LIKE 'AD'";
     mysql.query(SQL, function (err, rows) {
       if (err != null) {
         console.log(SQL);
         console.log(err);
         return;
       }
-      for (var i = 0; i<rows.length;i++) {
-        var SQL2 = "SELECT * FROM user_ads WHERE count='"++"' ORDER BY Rand() LIMIT 1";
-        mysql.query(SQL2, function (err2, rows2) {
-          if (err != null) {
-            console.log(SQL2);
-            console.log(err);
-            return;
-          }
-          
-        });
-      }
-      
       var ReturnString="(AD)\r\n";
       for (var i = 0; i<rows.length;i++) {
         var RowString="";
