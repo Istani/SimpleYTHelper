@@ -27,26 +27,23 @@ var self = module.exports = {
       }
       var ReturnString="(AD)\r\n";
       for (var i = 0; i<rows.length;i++) {
-        var RowString="";
-        RowString=rows[i].title;
-        RowString+=": ";
-        RowString+=rows[i].link;
-        RowString+="\r\n";
-        if (ReturnString.length+RowString.length>=200) {
-          SendFunc(ReturnString);
-          ReturnString="";
+        if (rows[i].link!="") {
+          var RowString="";
+          RowString=rows[i].type;
+          RowString+=": ";
+          RowString+=rows[i].link;
+          RowString+="\r\n";
+          if (ReturnString.length+RowString.length>=200) {
+            SendFunc(ReturnString);
+            ReturnString="";
+          }
+          ReturnString+=RowString;
         }
-        /*
-        if (ReturnString.length==0) {
-        ReturnString="(AD)\r\n";
       }
-      */
-      ReturnString+=RowString;
-    }
-    if (ReturnString.length>0) {
-      SendFunc(ReturnString);
-      ReturnString="";
-    }
-  });
-}
+      if (ReturnString.length>7) {
+        SendFunc(ReturnString);
+        ReturnString="";
+      }
+    });
+  }
 };
