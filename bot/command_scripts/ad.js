@@ -34,19 +34,26 @@ var self = module.exports = {
             return;
           }
           for (var j = 0; j<rows2.length;j++) {
-            if (rows2[j].count<=2) {
-              var SQL3 = "UPDATE user_ads SET count=count+1 WHERE link='"+rows2[j].link+"'";
-            } else {
+            if (rows2[j].count>=2) {
               var SQL3 = "UPDATE user_ads SET count=0 WHERE owner='"+rows2[j].owner+"'";
+              mysql.query(SQL3, function (err3, rows3) {
+                if (err3 != null) {
+                  console.log(SQL3);
+                  console.log(err3);
+                  return;
+                }
+              });
             }
-            
-            mysql.query(SQL3, function (err3, rows3) {
-              if (err3 != null) {
-                console.log(SQL3);
-                console.log(err3);
+            var SQL4 = "UPDATE user_ads SET count=count+1 WHERE link='"+rows2[j].link+"'";
+            mysql.query(SQL4, function (err4, rows4) {
+              if (err4 != null) {
+                console.log(SQL4);
+                console.log(err4);
                 return;
               }
             });
+            
+            
             var ReturnString="(AD) ";
             var RowString="";
             RowString=rows2[j].title;
