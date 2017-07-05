@@ -18,7 +18,7 @@ var self = module.exports = {
     }
   },
   execute: function (message_row, SendFunc, NewMessageFunc) {
-    var SQL = "SELECT * FROM user_ads WHERE type NOT LIKE 'AD'";
+    var SQL = "SELECT * FROM user_ads WHERE type NOT LIKE 'AD' AND link NOT LIKE ''";
     mysql.query(SQL, function (err, rows) {
       if (err != null) {
         console.log(SQL);

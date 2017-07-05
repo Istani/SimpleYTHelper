@@ -26,7 +26,7 @@ var self = module.exports = {
         return;
       }
       for (var i = 0; i<rows.length;i++) {
-        var SQL2 = "SELECT * FROM user_ads WHERE count='"+rows[i].count+"' ORDER BY Rand() LIMIT 1";
+        var SQL2 = "SELECT * FROM user_ads WHERE count='"+rows[i].count+"' AND link NOT LIKE '' ORDER BY Rand() LIMIT 1";
         mysql.query(SQL2, function (err2, rows2) {
           if (err2 != null) {
             console.log(SQL2);
@@ -34,7 +34,12 @@ var self = module.exports = {
             return;
           }
           for (var j = 0; j<rows2.length;j++) {
-            var SQL3 = "UPDATE user_ads SET count=count+1 WHERE link='"+rows2[j].link+"'";
+            if (rows[i].count==2) {
+              var SQL3 = "UPDATE user_ads SET count=count+1 WHERE link='"+rows2[j].link+"'";
+            } else {
+              var SQL3 = "UPDATE user_ads SET count=0 WHERE owner='"+rows2[j].owner+"'";
+            }
+            
             mysql.query(SQL3, function (err3, rows3) {
               if (err3 != null) {
                 console.log(SQL3);
