@@ -18,7 +18,31 @@ var self = module.exports = {
     }
   },
   execute: function (message_row, SendFunc, NewMessageFunc) {
-    SendFunc("(AD) https://www.amazon.de/gp/search?ie=UTF8&tag=istani0815-21&linkCode=ur2&linkId=a3e8f2d829517c2a3e066eb65aa5cd5c&camp=1638&creative=6742&index=computers&keywords=Gaming");
-    
+    var SQL = "SELECT * FROM user_ads WHERE type NOT LIKE 'AD'";
+    mysql.query(SQL, function (err, rows) {
+      if (err != null) {
+        console.log(SQL);
+        console.log(err);
+        return;
+      }
+      var ReturnString="";
+      for (var i = 0; i<rows.length;i++) {
+        var RowString="";
+        RowString=rows[i].title;
+        RowString+=": ";
+        RowString+=rows[i].title;
+        RowString+="\n\r";
+        if (ReturnString.length+RowString.length>=200) {
+          SendFunc(ReturnString);
+          ReturnString="";
+        }
+        if (ReturnString.length==0) {
+          ReturnString="(AD)\r\n";
+        }
+        ReturnString+=RowString;
+      }
+      SendFunc(ReturnString);
+      ReturnString="";
+    });
   }
 };
