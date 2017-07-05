@@ -49,32 +49,10 @@ var self = module.exports = {
             RowString+=rows2[j].link;
             RowString+="\r\n";
             ReturnString+=RowString;
+            SendFunc(ReturnString);
           }
         });
       }
-      
-      var ReturnString="(AD)\r\n";
-      for (var i = 0; i<rows.length;i++) {
-        var RowString="";
-        RowString=rows[i].title;
-        RowString+=": ";
-        RowString+=rows[i].link;
-        RowString+="\r\n";
-        if (ReturnString.length+RowString.length>=200) {
-          SendFunc(ReturnString);
-          ReturnString="";
-        }
-        /*
-        if (ReturnString.length==0) {
-        ReturnString="(AD)\r\n";
-      }
-      */
-      ReturnString+=RowString;
-    }
-    if (ReturnString.length>0) {
-      SendFunc(ReturnString);
-      ReturnString="";
-    }
-  });
-}
+    });
+  }
 };
