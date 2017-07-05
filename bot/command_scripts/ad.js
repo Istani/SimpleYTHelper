@@ -30,8 +30,8 @@ var self = module.exports = {
         var RowString="";
         RowString=rows[i].title;
         RowString+=": ";
-        RowString+=rows[i].title;
-        RowString+="\n\r";
+        RowString+=rows[i].link;
+        RowString+="\r\n";
         if (ReturnString.length+RowString.length>=200) {
           SendFunc(ReturnString);
           ReturnString="";
