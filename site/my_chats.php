@@ -211,7 +211,9 @@ $( document ).ready(function() {
   });
   
   $('.users').DataTable({
-    "paging":   false,
+    "paging":   true,
+    "pagingType": "full_numbers",
+    "pageLength": 10,
     "info":     false
   });
   
