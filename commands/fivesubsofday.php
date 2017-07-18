@@ -46,11 +46,11 @@ if(in_array($_tmp_tabellename, $check_table)) {
   }
   unset($newData);
   
-  $db_subs = $database->sql_select($_tmp_tabellename, "*", "user='".$_SESSION['user']['email']."' AND `ignore`=0 AND bot_five_subs='".$output[0]."' ORDER BY title LIMIT 5",true);
+  $db_subs = $database->sql_select($_tmp_tabellename, "*", "user='".$_SESSION['user']['email']."' AND `ignore`=0 AND bot_five_subs='".$output[0]."' ORDER BY title",true);
   
 }
 
-for ($i = 1; $i <= 5; $i++) {
+for ($i = 0; $i <= 5; $i++) {
   if (isset($db_subs[$i])) {
     $output[$i]=$db_subs[$i]["title"];
     echo $output[$i] . ", ";
