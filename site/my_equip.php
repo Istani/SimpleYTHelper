@@ -26,8 +26,8 @@ if (isset($_POST['equip_save'])) {
   }
 }
 //
-$all_equip=$database->sql_select($_tmp_tabellename, "type", "type NOT LIKE 'AD' GROUP BY type",true);
-$equip_temp=$database->sql_select($_tmp_tabellename, "*", "owner='".$_SESSION['user']['email']."' AND type NOT LIKE 'AD'",false);
+$all_equip=$database->sql_select($_tmp_tabellename, "type", "type NOT LIKE 'AD' AND type NOT LIKE 'Link' GROUP BY type",true);
+$equip_temp=$database->sql_select($_tmp_tabellename, "*", "owner='".$_SESSION['user']['email']."' AND type NOT LIKE 'AD' AND type NOT LIKE 'Link' ",false);
 for ($i=0;$i<count($all_equip);$i++) {
   $user_equipment[$all_equip[$i]['type']]['link']="";
   $user_equipment[$all_equip[$i]['type']]['title']="";
