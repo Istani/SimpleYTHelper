@@ -14,6 +14,10 @@ var self = module.exports = {
       permissions=true;
     }
     
+    if (message_row.user=="202892723420659714") { // Istani
+      permissions=true;
+    }
+    
     if (permissions==false) {
       SendFunc(message_row.user+ " du hast keine Rechte den Befehl auszuführen!\r\n" + message_row.message);
     } else {
