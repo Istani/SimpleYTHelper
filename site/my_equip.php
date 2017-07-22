@@ -13,6 +13,15 @@ if(!in_array($_tmp_tabellename, $check_table)) {
   $database->create_table($_tmp_tabellename, $felder, "owner, link");
   unset($felder);
 }
+
+if (isset($newCols)) {
+  unset($newCols);
+}
+$newCols['isPremium']="INT DEFAULT 0";
+$newCols['premCount']="INT DEFAULT -1";
+$database->add_columns($_tmp_tabellename, $newCols);
+unset($newCols);
+
 //
 if (isset($_POST['equip_save'])) {
   unset($_POST['equip_save']);
