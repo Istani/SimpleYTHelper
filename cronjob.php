@@ -46,7 +46,7 @@ foreach ($alledateien as $datei) {
 };
 unset($_SESSION['cronjob']);
 
-while (time()-$Time['Start']<=45) {
+while (time()-$Time['Start']<=55) {
   // Getting Next Job
   $TmpNextJob=$database->sql_select("bot_token","*","service not like '' AND last_used+cooldown <= ".time()." ORDER BY last_used+cooldown",false);
   if(!isset($TmpNextJob[0]['service'])) {
@@ -59,8 +59,10 @@ while (time()-$Time['Start']<=45) {
     if ($i_s>count($TmpNextJob)) {
       return;
     }
-    $TmpNextJob[0]=$TmpNextJob[$i_s];
-    unset($TmpNextJob[$i_s]);
+    if (isset($TmpNextJob[$i_s]['service'])) {
+      $TmpNextJob[0]=$TmpNextJob[$i_s];
+    }
+    @unset($TmpNextJob[$i_s]);
   }
   foreach ($TmpNextJob as $tmp_key => $tmp_value)  {
     foreach($tmp_value as $t2key => $t2value) {
@@ -154,8 +156,4 @@ echo ' - ';
 echo date("d.m.Y H:i:s",$Time['End']);
 echo '<br>';
 echo ($Time['End']-$Time['Start']).' Sek.<br>';
-
-// Zur Einmaligen initalisierung
-// TODO: Das ist so noch nicht richtig...
-// Neue Dateien müssen einmalig selnst eingetragen werden
 ?>
