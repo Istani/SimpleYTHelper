@@ -30,6 +30,13 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     unset($felder);
   }
   
+  if (isset($newCols)) {
+    unset($newCols);
+  }
+  $newCols['last_ad']="TEXT";
+  $database->add_columns($_tmp_tabellename, $newCols);
+  unset($newCols);
+  
   $tab_name_livestream="channels_liveStreamChat";
   $db_stats = $database->sql_select($tab_name_livestream, "*", "channel_id='".$_SESSION['user']['youtube_user']."'", true);
   $BroadcastId_old=$db_stats[0]["broadcastid"];
@@ -47,8 +54,11 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     
     $listResponse = $youtube->liveBroadcasts->listLiveBroadcasts('snippet',array('id'=>$BroadcastId));
     $ChatId=$listResponse["items"][0]["snippet"]["liveChatId"];
-    
+    if (isset($Start_Time)) {
+      unset ($Start_Time);
+    }
     if ($ChatId!=$ChatId_old && $ChatId!="") {
+      $Start_Time=time();
       // Ein neuer Livestream!
       $my_rechte=$SYTHS->may_post_videos_on($_SESSION['user']['email']);
       foreach ($my_rechte as $t_service => $the_hosts) {
@@ -77,12 +87,31 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
         }
       }
       
+      $add_post['id']=time()+1;
+      $add_post['time']=time()+1;
+      $add_post['user']='-1';
+      $add_post['message']="!ad";
+      $add_post['process']=0;
+      
+      $add_post['service']='YouTube';
+      $add_post['host']=$_SESSION['user']['youtube_user'];
+      $add_post['room']=$ChatId;
+      $database->sql_insert_update("bot_chatlog", $add_post);
+      
+      $discord_server=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['discord_user']."'",true);
+      $add_post['service']='Discord';
+      $add_post['host']=$discord_server[0]['host'];
+      $add_post['room']=$discord_server[0]['channel_rpgmain'];
+      $database->sql_insert_update("bot_chatlog", $add_post);
+      
+      unset($add_post);
+      
       // NOTE: Starts a new RPG-Zone Maybee?
-      if ($_SESSION['user']['email']=='Admin') {
-        $add_post['id']=time();
-        $add_post['time']=time();
+      if ($_SESSION['user']['email']=='admin') {
+        $add_post['id']=time()+2;
+        $add_post['time']=time()+2;
         $add_post['user']='-1';
-        $add_post['message']="!secrect start"; // TODO: Muss später geändert werden
+        $add_post['message']="!secret start"; // TODO: Muss später geändert werden
         $add_post['process']=0;
         
         $add_post['service']='YouTube';
@@ -115,6 +144,9 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $newData["last_seen"]=time();
   $newData["broadcastId"]=$BroadcastId;
   $newData["chatId"]=$ChatId;
+  if (isset($Start_Time)) {
+    $newData["last_ad"]=$Start_Time;
+  }
   $database->sql_insert_update($_tmp_tabellename, $newData);
   unset($newData);
   $tt["cooldown"]=60;
