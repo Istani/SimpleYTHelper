@@ -62,7 +62,7 @@ while (time()-$Time['Start']<=55) {
     if (isset($TmpNextJob[$i_s]['service'])) {
       $TmpNextJob[0]=$TmpNextJob[$i_s];
     }
-    @unset($TmpNextJob[$i_s]);
+    unset($TmpNextJob[$i_s]);
   }
   foreach ($TmpNextJob as $tmp_key => $tmp_value)  {
     foreach($tmp_value as $t2key => $t2value) {
