@@ -2,30 +2,21 @@
 
 // Benötigte Daten
 require_once 'inc/php_inc.php';
+// http://127.0.0.1/SimpleYTH/rpg_hud.php?game=21232f297a57a5a743894a0e4a801fc3
 
-$user=$database->sql_select("user","*","email='admin'", true); // TODO: Was besseres ausdenken für StandartUser;
-if (isset($_GET['host'])) {
-  $host=$database->sql_select("bot_chathosts","*","host='".$_GET['host']."'", true);
-  if ($host[0]['owner']==$_GET['user'] || $_GET['user']=="-1") {
-    $user=$database->sql_select("user","*","youtube_user='".$host[0]['owner']."' OR discord_user='".$host[0]['owner']."'", true);
-  } else {
-    // Joa darfst du vielleicht Videos Posten?
-    $user_permission=false;
-    $user_roles=$database->sql_select("bot_chatuser_roles","*","host='".$_GET['host']."' AND user='".$_GET['user']."'",true);
-    for ($i=0;$i<count($user_roles);$i++) {
-      $role=$database->sql_select("bot_chatroles","*","host='".$_GET['host']."' AND role='".$user_roles[$i]['role']."'",true);
-      if ($role[0]['recht_own_videos']>0) {
-        $user_permission=true;
-      }
-    }
-    if ($user_permission==false) {
-      $user=$database->sql_select("user","*","youtube_user='".$host[0]['owner']."' OR discord_user='".$host[0]['owner']."'", true);
-    } else {
-      $user=$database->sql_select("user","*","youtube_user='".$_GET['user']."' OR discord_user='".$_GET['user']."'", true);
-    }
-  }
+if (!isset($_GET['game'])) {
+  $_GET['game']="";
 }
-$_SESSION['user']=$user[0];
+$user=$database->sql_select("user","*","MD5(email)='".$_GET['game']."'", false); // TODO: Was besseres ausdenken für StandartUser;
+if (isset($user[0]['email'])) {
+  $_SESSION['user']=$user[0];
+} else {
+  die('ERROR');
+}
 
 // Do the Magic!
+echo md5('admin');
+
+
+unset($_SESSION);
 ?>
