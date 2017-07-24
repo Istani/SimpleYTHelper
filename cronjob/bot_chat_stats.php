@@ -37,7 +37,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
       $ende_minute=$ende_stunde*60;
       $ende_timestamp=$ende_minute*60;
       // Für jeden User die Nachricten Abfragen
-      $sql_msg_count=$database->sql_select("bot_chatlog", "count(message) as Anzahl","service='".$sql_user[$i]['service']."' AND host='".$sql_user[$i]['host']."' AND user='".$sql_user[$i]['user']."' AND time>".$start_timestamp." AND time<".$ende_timestamp ,true);
+      $sql_msg_count=$database->sql_select("bot_chatlog", "count(message) as Anzahl","service='".$sql_user[$i]['service']."' AND host='".$sql_user[$i]['host']."' AND user='".$sql_user[$i]['user']."' AND time>=".$start_timestamp." AND time<".$ende_timestamp ,true);
       if ($sql_msg_count[0]['Anzahl']=="") {$sql_msg_count[0]['Anzahl']=0;}
       // Write start
       if (isset($new_data)) {unset($new_data);}
