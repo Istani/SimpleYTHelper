@@ -10,6 +10,43 @@ class SimpleYTH_Shortcuts {
     $this->db = $datenbank;
   }
   
+  function get_timestamp($type='sekunde',$get_as_seconds=false, $addvalue=0,$returnvalue=-1) {
+    if ($returnvalue==-1) {
+      $returnvalue=time();
+    }
+    $time['sekunde']=$returnvalue;
+    $time['minute']=(int)($time['sekunde']/60);
+    $time['stunde']=(int)($time['minute']/60);
+    $time['tag']=(int)($time['stunde']/24);
+    
+    if (isset($time[$type])) {
+      $returnvalue=$time[$type];
+    }
+    $returnvalue+=$addvalue;
+    
+    if ($get_as_seconds==true) {
+      while ($type!='sekunde') {
+        switch ($type) {
+          case 'tag':
+          $returnvalue=$returnvalue*24;
+          $type='stunde';
+          break;
+          case 'stunde':
+          $returnvalue=$returnvalue*60;
+          $type='minute';
+          break;
+          case 'minute':
+          $returnvalue=$returnvalue*60;
+          $type='sekunde';
+          break;
+          default:
+          return $returnvalue;
+        }
+      }
+    }
+    return $returnvalue;
+  }
+  
   function get_rights($simple_yth_user) {
     $return = null;
     $activity_check=time()-(1*24*60*60);
