@@ -20,6 +20,8 @@ var self = module.exports = {
     }
   },
   execute: function (message_row, SendFunc, NewMessageFunc) {
+    SendFunc (" Klappt Leider noch nicht! ");
+    return;
     var query=message_row.message.split(" ").slice(1).join(" ");
     googleapis.discover('customsearch', 'v1').execute(function(err, client) {
       client.search.cse.list({ q: query }).execute(console.log);
