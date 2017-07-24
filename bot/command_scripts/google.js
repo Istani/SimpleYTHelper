@@ -1,4 +1,4 @@
-var google = require('googleapis');
+
 
 var self = module.exports = {
   init: function (MySQL) {
@@ -26,3 +26,6 @@ var self = module.exports = {
     });
   }
 };
+
+var mysql=null;
+var googleapis = require('googleapis');
