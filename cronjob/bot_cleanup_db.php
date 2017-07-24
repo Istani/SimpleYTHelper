@@ -19,10 +19,12 @@ $tt=$token[strtolower($_tmp_tabellename)];
 if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $oldest_date=$SYTHS->get_timestamp('tag',true, -32);
   // DELETE FROM `bot_chatlog` WHERE `time`<1 AND `process`=1
-  $database->sql_delete("bot_chatlog", "`time`<".$oldest_date." AND `process`=1");
+  //$database->sql_delete("bot_chatlog", "`time`<".$oldest_date." AND `process`=1");
   $database->sql_delete("bot_chat_stats", "`date`<".$oldest_date."");
   $database->sql_delete("livestream_chat", "`last_seen`<".$oldest_date."");
   $database->sql_delete("subscriptions_subscribersnippet", "`last_seen`<".$oldest_date."");
+  
+  // NOTE: User, Server und so kommt vielleicht noch irgendwann, muss ich mir noch überlegen...
   $tt["cooldown"]=1*60*60;
 }
 // Save Token
