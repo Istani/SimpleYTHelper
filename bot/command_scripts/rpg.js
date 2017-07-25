@@ -10,13 +10,7 @@ var self = module.exports = {
       permissions=true;
     }
     
-    if (message_row.user=="181794097726619648") { // Defender
-      permissions=true;
-    }
-    
-    if (message_row.user=="202892723420659714") { // Istani
-      permissions=true;
-    }
+    permissions=true; // Fake Permission
     
     if (permissions==false) {
       SendFunc(message_row.user+ " du hast keine Rechte den Befehl auszuführen!\r\n" + message_row.message);
@@ -34,26 +28,50 @@ var self = module.exports = {
       params[1]="start";
     }
     
-    switch (params[1]) {
-      case 'settings':
-      /* Aktuell noch doppelt gemoppelt */
-      if ((message_row.user=="181794097726619648") || (message_row.user=="-1")) {
-        SendFunc(Check_Settings(params[2], params[3]));
+    // Get Owner
+    var SQL_GET_OWNER="SELECT owner FROM bot_chathosts WHERE servie='"+message_row.service+"' AND host='"+message_row.host+"'";
+    mysql.query(SQL_GET_OWNER, function (err, rows) {
+      if (err != null) {
+        console.log(SQL_GET_OWNER);
+        console.log(err);
+        return;
       }
-      break;
-      case 'start':
-      SendFunc('Test');
-      if ((message_row.user=="181794097726619648") || (message_row.user=="-1")) {
-        StartNewIfNotExists(SendFunc);
-      } else {
-        CheckExists(SendFunc);
+      for (var i = 0; i < rows.length; i++) {
+        var HOST_OWNER=rows[i].owner;
       }
-      
-      break;
-      default:
-      
-    }
-    
+      // Get SimpleYTH User Hash
+      var SQL_GET_USER="SELECT *, MD5(email) as hash FROM user WHERE youtube_user='"+HOST_OWNER+"' OR discord_user='"+HOST_OWNER+"'";
+      mysql.query(SQL_GET_USER, function (err2, rows2) {
+        if (err != null) {
+          console.log(SQL_GET_USER);
+          console.log(err);
+          return;
+        }
+        for (var i = 0; i < rows.length; i++) {
+          var HOST_USER=rows2[i];
+        }
+        // Do Magic
+        switch (params[1]) {
+          case 'settings':
+          /* Aktuell noch doppelt gemoppelt */
+          if ((message_row.user==HOST_OWNER) || (message_row.user=="-1")) {
+            SendFunc(Check_Settings(params[2], params[3]));
+          }
+          break;
+          case 'start':
+          if ((message_row.user==HOST_OWNER) || (message_row.user=="-1")) {
+            SendFunc('Hier würde eine neue RPG-Zone Starten - Gibt es noch nicht!');
+            StartNewIfNotExists(SendFunc);
+          } else {
+            SendFunc('Hier würde der Info Text der RPG-Zone Stehen - Gibt es noch nicht!');
+            CheckExists(SendFunc);
+          }
+          
+          break;
+          default:
+        }
+      });
+    });
   }
 };
 var settings= {};
