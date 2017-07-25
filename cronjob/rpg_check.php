@@ -43,13 +43,14 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 			// Calculate Values for this RPG
 			$temp_avg=0;
 			$temp_count=0;
-			$game_data=$database->sql_select("bot_chatuser INNER JOIN bot_chathosts ON bot_chatuser.service=bot_chathosts.service AND bot_chatuser.host=bot_chathosts.host", "bot_chatuser.*", "bot_chathosts.owner='".$_SESSION['user']['youtube_user']."' or bot_chathosts.owner='".$_SESSION['user']['discord_user']."'", false);
+			$game_data=$database->sql_select("bot_chatuser INNER JOIN bot_chathosts ON bot_chatuser.service=bot_chathosts.service AND bot_chatuser.host=bot_chathosts.host", "bot_chatuser.*", "bot_chathosts.owner='".$_SESSION['user']['youtube_user']."' or bot_chathosts.owner='".$_SESSION['user']['discord_user']."' ORDER BY msg_avg DESC LIMIT 5,5", false);
 			for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
 				$this_user=$game_data[$count_game_data];
-				$temp_avg=$this_user['msg_avg'];
-				$temp_count++;
+				if ($this_user['msg_avg']>0) {
+					$temp_avg=$temp_avg+$this_user['msg_avg'];
+					$temp_count++;
+				}
 			}
-			$temp_avg=$temp_avg/$temp_count;
 			$this_game['calculate_avg']=$temp_avg;
 			
 			break;
