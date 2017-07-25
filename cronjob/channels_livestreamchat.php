@@ -111,7 +111,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
         $add_post['id']=time()+1;
         $add_post['time']=time()+1;
         $add_post['user']='-1';
-        $add_post['message']="!secret start"; // TODO: Muss später geändert werden
+        $add_post['message']="!rpg start"; // TODO: Muss später geändert werden
         $add_post['process']=0;
         
         /* - Discord ist für mich leichter zu testen, deswegen erstmal nicht in YT
