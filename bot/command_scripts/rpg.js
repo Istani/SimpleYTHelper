@@ -38,8 +38,9 @@ var self = module.exports = {
       case 'settings':
       /* Aktuell noch doppelt gemoppelt */
       if ((message_row.user=="181794097726619648") || (message_row.user=="-1")) {
-        SendFunc(Check_Settings(params[2]));
+        SendFunc(Check_Settings(params[2], params[3]));
       }
+      break;
       case 'start':
       SendFunc('Test');
       if ((message_row.user=="181794097726619648") || (message_row.user=="-1")) {
@@ -72,20 +73,24 @@ function Load_RPG_Settings() {
   });
 };
 
-function Check_Settings(settings_name) {
+function Check_Settings(settings_name, setting_value) {
   var return_value="";
+  if (typeof setting_value == "undefined") {
+    setting_value="";
+  }
   if (typeof settings[settings_name]=="undefined") {
-    settings[settings_name]="";
-    var SQL = "INSERT INTO rpg_settings SET name='" + settings_name + "', value=''";
+    settings[settings_name]=setting_value;
+    var SQL = "INSERT INTO rpg_settings SET name='" + settings_name + "', value='"+setting_value+"'";
     mysql.query(SQL, function (err, rows) {
       if (err != null) {
         console.log(SQL);
         console.log(err);
         return;
       }
+      Load_RPG_Settings();
     });
   }
-  return_value=settings[settings_name];
+  return_value=settings_name + ": "+settings[settings_name];
   return return_value;
 }
 
