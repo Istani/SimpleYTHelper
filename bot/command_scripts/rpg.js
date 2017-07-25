@@ -116,10 +116,10 @@ function StartNew(SendFunc, GameID) {
   SendFunc('START New RPG');
   var ADD_GAME="REPLACE INTO rpg_check SET " +
   "game_id='"+GameID+"', " +
-  "state=0";
+  "game_state=0";
   mysql.query(ADD_GAME, function (err, check_monster_rows) {
     if (err != null) {
-      console.log(CHECK_MONSTER);
+      console.log(ADD_GAME);
       console.log(err);
       return;
     }
