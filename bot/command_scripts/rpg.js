@@ -124,7 +124,6 @@ function StartNew(SendFunc, GameID) {
       return;
     }
   });
-  console.log(Hash);
 };
 function CheckExists(SendFunc, GameID) {
   SendFunc('CHECK RPG! - Coming soon!');
