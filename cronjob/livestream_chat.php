@@ -87,13 +87,13 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 				$add_post['host']=$_SESSION['user']['youtube_user'];
 				$add_post['room']=$ChatId;
 				$database->sql_insert_update("bot_chatlog", $add_post);
-				
+				/*
 				$discord_server=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['discord_user']."'",true);
 				$add_post['service']='Discord';
 				$add_post['host']=$discord_server[0]['host'];
 				$add_post['room']=$discord_server[0]['channel_video'];
 				$database->sql_insert_update("bot_chatlog", $add_post);
-				
+				*/
 				unset($add_post);
 				
 				$db_stats[0]["last_ad"]=time();
