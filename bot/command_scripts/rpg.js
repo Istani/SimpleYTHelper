@@ -134,10 +134,10 @@ function SpawnMonster(SendFunc,GameID, Rounds) {
   }
   // Find Data for New Monster?!?
   
-  var ADD_MONSTER="UPDATE rpg_check SET state=2 WHERE game_id='"+GameID+"' AND state=1";
+  var ADD_MONSTER="UPDATE rpg_check SET game_state=2 WHERE game_id='"+GameID+"' AND game_state=1";
   mysql.query(ADD_MONSTER, function (err, check_monster_rows) {
     if (err != null) {
-      console.log(CHECK_MONSTER);
+      console.log(ADD_MONSTER);
       console.log(err);
       return;
     }
