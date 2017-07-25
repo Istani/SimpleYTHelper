@@ -14,6 +14,30 @@ if (isset($user[0]['email'])) {
   die('ERROR');
 }
 
+
+?>
+<!doctype html>
+<html>
+<head>
+  <title>SimpleYTH - RPG HUD</title>
+  <?php require_once 'inc/html_inc.php'; ?>
+</head>
+<body>
+  <p>TestCounter:<span id="counter">0</span></p>
+  <script>
+  function EditCounter() {
+    var counter = parseInt(document.getElementById('counter').innerHTML);
+    counter=counter+1;
+    document.getElementById('counter').innerHTML=counter;
+    setTimeout(EditCounter, 1000);
+  }
+  $( document ).ready(function() {
+    EditCounter();
+  });
+  </script>
+</body>
+</html>
+<?php
 // Do the Magic!
 echo md5('admin');
 
