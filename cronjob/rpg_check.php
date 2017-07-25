@@ -24,7 +24,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 		$database->create_table($cronjob_id, $felder, "game_id");
 		unset($felder);
 	}
-	die("RPG CHECK");
+	//die("RPG CHECK");
 	// Additional Later Added Cols
 	
 	// Do Magic!
