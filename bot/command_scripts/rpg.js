@@ -112,7 +112,7 @@ function Check_Settings(settings_name, setting_value) {
   return return_value;
 }
 
-function StartNew(SendFunc, Hash) {
+function StartNew(SendFunc, GameID) {
   SendFunc('START New RPG');
   var ADD_GAME="REPLACE INTO rpg_check SET " +
   "game_id='"+GameID+"', " +
