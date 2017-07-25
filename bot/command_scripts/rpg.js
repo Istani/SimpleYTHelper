@@ -29,7 +29,7 @@ var self = module.exports = {
     }
     
     // Get Owner
-    var SQL_GET_OWNER="SELECT owner FROM bot_chathosts WHERE servie='"+message_row.service+"' AND host='"+message_row.host+"'";
+    var SQL_GET_OWNER="SELECT owner FROM bot_chathosts WHERE service='"+message_row.service+"' AND host='"+message_row.host+"'";
     mysql.query(SQL_GET_OWNER, function (err, rows) {
       if (err != null) {
         console.log(SQL_GET_OWNER);
