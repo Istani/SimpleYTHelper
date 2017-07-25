@@ -16,6 +16,10 @@ function check_settings($database, $cronjob_id) {
         $serivce="SimpleYTH";
         $user_where="status=1";
         break;
+        case 'rpg_check':
+        $serivce="SimpleYTH";
+        $user_where="true"; // ??? Eigentlich nur wo Videos geladen werden könnten...
+        break;
         case 'post_new_videos':
         $serivce="SimpleYTH";
         $user_where="true"; // ??? Eigentlich nur wo Videos geladen werden könnten...
