@@ -64,7 +64,7 @@ var self = module.exports = {
           }
           case 'spawn':
           if ((message_row.user==HOST_OWNER) || (message_row.user=="-1")) {
-            SpawnMonster(SendFunc,HOST_USER.hash, param[2]);
+            SpawnMonster(SendFunc,HOST_USER.hash, params[2]);
             break;
           }
           default:
