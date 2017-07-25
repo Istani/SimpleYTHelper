@@ -38,9 +38,5 @@ if (isset($user[0]['email'])) {
 </body>
 </html>
 <?php
-// Do the Magic!
-echo md5('admin');
-
-
 unset($_SESSION);
 ?>
