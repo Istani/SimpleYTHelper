@@ -55,22 +55,18 @@ var self = module.exports = {
           case 'settings':
           if ((message_row.user==HOST_OWNER) || (message_row.user=="-1")) {
             SendFunc(Check_Settings(params[2], params[3]));
+            break;
           }
-          break;
           case 'start':
           if ((message_row.user==HOST_OWNER) || (message_row.user=="-1")) {
             StartNew(SendFunc, HOST_USER.hash);
-          } else {
-            NewMessageFunc(message_row.service, message_row.host, message_row.room, message_row.id, message_row.time, message_row.user, "!rpg info");
+            break;
           }
-          break;
           case 'spawn':
           if ((message_row.user==HOST_OWNER) || (message_row.user=="-1")) {
             SpawnMonster(SendFunc,HOST_USER.hash, param[2]);
-          } else {
-            NewMessageFunc(message_row.service, message_row.host, message_row.room, message_row.id, message_row.time, message_row.user, "!rpg info");
+            break;
           }
-          break;
           default:
           CheckExists(SendFunc, HOST_USER.hash);
         }
@@ -117,7 +113,7 @@ function Check_Settings(settings_name, setting_value) {
 }
 
 function StartNew(SendFunc, Hash) {
-  //SendFunc('Hier würde eine neue RPG-Zone Starten - Gibt es noch nicht!');
+  SendFunc('START New RPG');
   var ADD_GAME="REPLACE INTO rpg_check SET " +
   "game_id='"+GameID+"', " +
   "state=0";
@@ -131,7 +127,7 @@ function StartNew(SendFunc, Hash) {
   console.log(Hash);
 };
 function CheckExists(SendFunc, GameID) {
-  //SendFunc('Hier würde der Info Text vom RPG stehen - Gibt es noch nicht!');
+  SendFunc('CHECK RPG! - Coming soon!');
 };
 function SpawnMonster(SendFunc,GameID, Rounds) {
   if (typeof Rounds=="undefined") {
@@ -148,6 +144,8 @@ function SpawnMonster(SendFunc,GameID, Rounds) {
     }
     if (check_monster_rows.length==0) {
       SendFunc("RGP-State Wrong! - Start it again!");
+    } else {
+      SendFunc('Spawn Monster - Coming soon!');
     }
   });
 }
