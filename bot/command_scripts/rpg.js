@@ -67,6 +67,21 @@ var self = module.exports = {
             SpawnMonster(SendFunc,HOST_USER.hash, params[2]);
             break;
           }
+          case 'anmeldung':
+          SendFunc("Defender Army - Anwesenheitskontrolle!\r\nGebt ein: !rpg register\r\nUm euch für unseren Kampf zu regestrieren!");
+          break;
+          case 'howto':
+          SendFunc("Ihr habt einen Angriff pro Runde!\r\nEure Stärke basiert auf eure Aktivität in der Army!\r\nEntweder ihr besiegt das Monster oder es schafft die Flucht!\r\n!rpg attack - Um das Monster Anzugreifen!");
+          break;
+          case 'register':
+          CheckRegister(SendFunc, HOST_USER.hash, message_row.user);
+          break;
+          case 'round':
+          CheckRound(SendFunc, HOST_USER.hash);
+          break;
+          case 'attack':
+          CheckAttack(SendFunc, HOST_USER.hash, message_row.user);
+          break;
           default:
           CheckExists(SendFunc, HOST_USER.hash);
         }
@@ -113,7 +128,7 @@ function Check_Settings(settings_name, setting_value) {
 }
 
 function StartNew(SendFunc, GameID) {
-  SendFunc('START New RPG');
+  //SendFunc('START New RPG');
   var ADD_GAME="REPLACE INTO rpg_check SET " +
   "game_id='"+GameID+"', " +
   "game_state=0";
@@ -126,25 +141,113 @@ function StartNew(SendFunc, GameID) {
   });
 };
 function CheckExists(SendFunc, GameID) {
-  SendFunc('CHECK RPG! - Coming soon!');
+  SendFunc('Coming soon! - Need right Parameter at the Moment');
 };
 function SpawnMonster(SendFunc,GameID, Rounds) {
   if (typeof Rounds=="undefined") {
     Rounds=Check_Settings('default_rounds', 0);
   }
-  // Find Data for New Monster?!?
-  
-  var ADD_MONSTER="UPDATE rpg_check SET game_state=2 WHERE game_id='"+GameID+"' AND game_state=1";
-  mysql.query(ADD_MONSTER, function (err, check_monster_rows) {
+  var CHECK_STATE="SELECT * FROM rpg_check WHERE game_id='"+GameID+"'";
+  mysql.query(CHECK_STATE, function (err, check_state_rows) {
     if (err != null) {
-      console.log(ADD_MONSTER);
+      console.log(CHECK_STATE);
       console.log(err);
       return;
     }
-    if (check_monster_rows.length==0) {
-      SendFunc("RGP-State Wrong! - Start it again!");
+    if (check_state_rows.length>=1) {
+      if (check_state_rows[0].game_state==1) {
+        var ADD_MONSTER="UPDATE rpg_check SET game_state=2, rounds_max="+Rounds+" WHERE game_id='"+GameID+"'";
+        mysql.query(ADD_MONSTER, function (err, check_monster_rows) {
+          if (err != null) {
+            console.log(ADD_MONSTER);
+            console.log(err);
+            return;
+          }
+        });
+      } else {
+        SendFunc("Wrong Game State ("+check_state_rows[0].game_state+")! - !rpg start - To Restart the Game");
+      }
     } else {
-      SendFunc('Spawn Monster - Coming soon!');
+      SendFunc('No Game found!');
+    }
+  });
+}
+CheckRegister(SendFunc, GameID, UserID) {
+  var CHECK_STATE="SELECT * FROM rpg_check WHERE game_id='"+GameID+"'";
+  mysql.query(CHECK_STATE, function (err, check_state_rows) {
+    if (err != null) {
+      console.log(CHECK_STATE);
+      console.log(err);
+      return;
+    }
+    if (check_state_rows.length>=1) {
+      if (check_state_rows[0].game_state==2) {
+        var ADD_PLAYER="INSERT INTO rpg_player SET game_id='"+GameID+"', user_id='"+UserID+"'";
+        mysql.query(ADD_PLAYER, function (err, check_monster_rows) {
+          if (err != null) {
+            console.log(ADD_PLAYER);
+            console.log(err);
+            return;
+          }
+        });
+      } else {
+        if (check_state_rows[0].game_state>=3) {
+          SendFunc(UserID +": Rekrut ihr seid zu spät zur Anmeldung!");
+        } else {
+          SendFunc("Keine Anmeldung möglich!");
+        }
+      }
+    } else {
+      SendFunc('No Game found!');
+    }
+  });
+}
+CheckRound(SendFunc, GameID) {
+  var CHECK_STATE="SELECT * FROM rpg_check WHERE game_id='"+GameID+"'";
+  mysql.query(CHECK_STATE, function (err, check_state_rows) {
+    if (err != null) {
+      console.log(CHECK_STATE);
+      console.log(err);
+      return;
+    }
+    if (check_state_rows.length>=1) {
+      if (check_state_rows[0].game_state==4) {
+        SendFunc("Runde: "+check_state_rows[0].rounds_current+"/"+check_state_rows[0].rounds_max+" - "+check_state_rows[0].mosnter_id+" ("+check_state_rows[0].monster_hp_current+"/"+check_state_rows[0].monster_hp_max+")");
+      } else {
+        SendFunc("Es findet zur Zeit kein Kampf statt!");
+      }
+    } else {
+      SendFunc('No Game found!');
+    }
+  });
+}
+CheckAttack(SendFunc, GameID, UserID) {
+  var CHECK_STATE="SELECT * FROM rpg_check WHERE game_id='"+GameID+"'";
+  mysql.query(CHECK_STATE, function (err, check_state_rows) {
+    if (err != null) {
+      console.log(CHECK_STATE);
+      console.log(err);
+      return;
+    }
+    if (check_state_rows.length>=1) {
+      if (check_state_rows[0].game_state==4) {
+        var ADD_PLAYER="INSERT INTO rpg_player_attack SET game_id='"+GameID+"', user_id='"+UserID+"'";
+        mysql.query(ADD_PLAYER, function (err, check_monster_rows) {
+          if (err != null) {
+            console.log(ADD_PLAYER);
+            console.log(err);
+            return;
+          }
+        });
+      } else {
+        if (check_state_rows[0].game_state>=5) {
+          SendFunc("Der Kampf ist vorbei!");
+        } else {
+          SendFunc("Der Kampf hat noch nicht begonnen!");
+        }
+      }
+    } else {
+      SendFunc('No Game found!');
     }
   });
 }

@@ -176,7 +176,7 @@ function ProcessMessage() {
       ProcessMessageUpdate(rows[i].service, rows[i].id);
     }
   });
-  setTimeout(ProcessMessage, 200);
+  setTimeout(ProcessMessage, 100);
 }
 
 function ProcessMessageUpdate(service, id) {
