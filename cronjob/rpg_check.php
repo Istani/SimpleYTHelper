@@ -143,7 +143,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 			// Generate Monster Stats
 			$this_monster['factor']=0;
 			while ($this_monster['factor']==0) {
-				$game_data=$database->sql_select("rpg_monster", "*", "true ODER BY RAND() LIMIT 1", false);
+				$game_data=$database->sql_select("rpg_monster", "*", "true ORDER BY RAND() LIMIT 1", false);
 				if (count($game_data)==1) {
 					$this_monster=$game_data[0];
 				} else {
