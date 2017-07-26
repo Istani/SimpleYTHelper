@@ -90,8 +90,8 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 			case 0:
 			$this_game['game_state']++;
 			// Drop old Data
-			$database->sql_delete("rpg_player", "`game_id`=".$this_game['game_id']."");
-			$database->sql_delete("rpg_player_attack", "`game_id`=".$this_game['game_id']."");
+			$database->sql_delete("rpg_player", "`game_id`='".$this_game['game_id']."'");
+			$database->sql_delete("rpg_player_attack", "`game_id`='".$this_game['game_id']."'");
 			
 			// Calculate Values for this RPG
 			$temp_avg=0;
@@ -133,7 +133,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 			$tt["cooldown"]=1;
 			$this_game['game_state']++;
 			// Generate Player Stats
-			$game_data=$database->sql_select("rpg_player", "*", "`game_id`=".$this_game['game_id']."", false);
+			$game_data=$database->sql_select("rpg_player", "*", "`game_id`='".$this_game['game_id']."'", false);
 			$this_game['player_count']=count($game_data);
 			if ($this_game['player_count']==0) {
 				$this_game['player_count']=1;
@@ -186,7 +186,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 			if ($this_game['monster_hp_current']<=0) {
 				$this_game['rounds_current']=$this_game['rounds_max'];
 			}
-			$database->sql_delete("rpg_player_attack", "`game_id`=".$this_game['game_id']."");
+			$database->sql_delete("rpg_player_attack", "`game_id`='".$this_game['game_id']."'");
 			// Checking Round Counter!
 			$this_game['rounds_current']++;
 			if ($this_game['rounds_current']>$this_game['rounds_max']) {
