@@ -218,8 +218,8 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 						$database->sql_insert_update("bot_chatlog", $add_post);
 					}
 				}
+				break;
 			}
-			break;
 			case 5:	// Ende
 			$tt["cooldown"]=1;
 			$this_game['game_state']++;

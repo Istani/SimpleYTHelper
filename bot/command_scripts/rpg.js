@@ -83,7 +83,7 @@ var self = module.exports = {
           SendFunc("Ihr habt einen Angriff pro Runde!\r\nEure Stärke basiert auf eure Aktivität in der Army!\r\nEntweder ihr besiegt das Monster oder es schafft die Flucht!\r\n!rpg attack - Um das Monster Anzugreifen!");
           break;
           case 'register':
-          CheckRegister(SendFunc, HOST_USER.hash, message_row.user);
+          CheckRegister(SendFunc, HOST_USER.hash, message_row);
           break;
           case 'round':
           CheckRound(SendFunc, HOST_USER.hash);
@@ -181,7 +181,8 @@ function SpawnMonster(SendFunc,GameID, Rounds) {
     }
   });
 }
-function CheckRegister(SendFunc, GameID, UserID) {
+function CheckRegister(SendFunc, GameID, message_row) {
+  var UserID=message_row.user;
   var CHECK_STATE="SELECT * FROM rpg_check WHERE game_id='"+GameID+"'";
   mysql.query(CHECK_STATE, function (err, check_state_rows) {
     if (err != null) {
@@ -191,13 +192,25 @@ function CheckRegister(SendFunc, GameID, UserID) {
     }
     if (check_state_rows.length>=1) {
       if (check_state_rows[0].game_state==3) {
-        var ADD_PLAYER="INSERT INTO rpg_player SET game_id='"+GameID+"', user_id='"+UserID+"'";
-        mysql.query(ADD_PLAYER, function (err, check_monster_rows) {
+        // Check Player Werte...
+        
+        var FELDER_WHERE2="service='" + message_row.service + "' and host='" + message_row.host + "' and user='"+message_row.user+"'";
+        var CHECK_USER = "SELECT * FROM bot_chatuser WHERE "+FELDER_WHERE2 + " LIMIT 1";
+        mysql.query(CHECK_USER, function (err, check_monster_rows) {
           if (err != null) {
-            console.log(ADD_PLAYER);
+            console.log(CHECK_USER);
             console.log(err);
             return;
           }
+          var USER_AVG=rowsnew[0].msg_avg;
+          var ADD_PLAYER="INSERT INTO rpg_player SET game_id='"+GameID+"', user_id='"+UserID+"', 	calculate_avg='"+(USER_AVG+5)+"'";
+          mysql.query(ADD_PLAYER, function (err, check_monster_rows) {
+            if (err != null) {
+              console.log(ADD_PLAYER);
+              console.log(err);
+              return;
+            }
+          });
         });
       } else {
         if (check_state_rows[0].game_state>=4) {
