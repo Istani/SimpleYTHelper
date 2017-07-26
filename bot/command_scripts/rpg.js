@@ -172,7 +172,7 @@ function SpawnMonster(SendFunc,GameID, Rounds) {
     }
   });
 }
-CheckRegister(SendFunc, GameID, UserID) {
+function CheckRegister(SendFunc, GameID, UserID) {
   var CHECK_STATE="SELECT * FROM rpg_check WHERE game_id='"+GameID+"'";
   mysql.query(CHECK_STATE, function (err, check_state_rows) {
     if (err != null) {
@@ -202,7 +202,7 @@ CheckRegister(SendFunc, GameID, UserID) {
     }
   });
 }
-CheckRound(SendFunc, GameID) {
+function CheckRound(SendFunc, GameID) {
   var CHECK_STATE="SELECT * FROM rpg_check WHERE game_id='"+GameID+"'";
   mysql.query(CHECK_STATE, function (err, check_state_rows) {
     if (err != null) {
@@ -221,7 +221,7 @@ CheckRound(SendFunc, GameID) {
     }
   });
 }
-CheckAttack(SendFunc, GameID, UserID) {
+function CheckAttack(SendFunc, GameID, UserID) {
   var CHECK_STATE="SELECT * FROM rpg_check WHERE game_id='"+GameID+"'";
   mysql.query(CHECK_STATE, function (err, check_state_rows) {
     if (err != null) {
