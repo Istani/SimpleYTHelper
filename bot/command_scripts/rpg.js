@@ -196,13 +196,13 @@ function CheckRegister(SendFunc, GameID, message_row) {
         
         var FELDER_WHERE2="service='" + message_row.service + "' and host='" + message_row.host + "' and user='"+message_row.user+"'";
         var CHECK_USER = "SELECT * FROM bot_chatuser WHERE "+FELDER_WHERE2 + " LIMIT 1";
-        mysql.query(CHECK_USER, function (err, check_monster_rows) {
+        mysql.query(CHECK_USER, function (err, check_player_row) {
           if (err != null) {
             console.log(CHECK_USER);
             console.log(err);
             return;
           }
-          var USER_AVG=rowsnew[0].msg_avg;
+          var USER_AVG=check_player_row[0].msg_avg;
           var ADD_PLAYER="INSERT INTO rpg_player SET game_id='"+GameID+"', user_id='"+UserID+"', 	calculate_avg='"+(USER_AVG+5)+"'";
           mysql.query(ADD_PLAYER, function (err, check_monster_rows) {
             if (err != null) {
