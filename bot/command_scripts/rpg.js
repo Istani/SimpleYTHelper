@@ -181,7 +181,7 @@ function CheckRegister(SendFunc, GameID, UserID) {
       return;
     }
     if (check_state_rows.length>=1) {
-      if (check_state_rows[0].game_state==2) {
+      if (check_state_rows[0].game_state==3) {
         var ADD_PLAYER="INSERT INTO rpg_player SET game_id='"+GameID+"', user_id='"+UserID+"'";
         mysql.query(ADD_PLAYER, function (err, check_monster_rows) {
           if (err != null) {
@@ -191,7 +191,7 @@ function CheckRegister(SendFunc, GameID, UserID) {
           }
         });
       } else {
-        if (check_state_rows[0].game_state>=3) {
+        if (check_state_rows[0].game_state>=4) {
           SendFunc(UserID +": Rekrut ihr seid zu spät zur Anmeldung!");
         } else {
           SendFunc("Keine Anmeldung möglich!");
@@ -211,7 +211,7 @@ function CheckRound(SendFunc, GameID) {
       return;
     }
     if (check_state_rows.length>=1) {
-      if (check_state_rows[0].game_state==4) {
+      if (check_state_rows[0].game_state==5) {
         SendFunc("Runde: "+check_state_rows[0].rounds_current+"/"+check_state_rows[0].rounds_max+" - "+check_state_rows[0].mosnter_id+" ("+check_state_rows[0].monster_hp_current+"/"+check_state_rows[0].monster_hp_max+")");
       } else {
         SendFunc("Es findet zur Zeit kein Kampf statt!");
@@ -230,7 +230,7 @@ function CheckAttack(SendFunc, GameID, UserID) {
       return;
     }
     if (check_state_rows.length>=1) {
-      if (check_state_rows[0].game_state==4) {
+      if (check_state_rows[0].game_state==5) {
         var ADD_PLAYER="INSERT INTO rpg_player_attack SET game_id='"+GameID+"', user_id='"+UserID+"'";
         mysql.query(ADD_PLAYER, function (err, check_monster_rows) {
           if (err != null) {
@@ -240,7 +240,7 @@ function CheckAttack(SendFunc, GameID, UserID) {
           }
         });
       } else {
-        if (check_state_rows[0].game_state>=5) {
+        if (check_state_rows[0].game_state>=6) {
           SendFunc("Der Kampf ist vorbei!");
         } else {
           SendFunc("Der Kampf hat noch nicht begonnen!");
