@@ -28,7 +28,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 	}
 	
 	// Additional Later Added Cols
-	$new_feld["monster_id"]="INT DEFAULT 1";
+	$new_feld["monster_id"]="VARCHAR(50)";
 	$new_feld["monster_factor"]="INT DEFAULT 100";
 	$new_feld["calculate_avg"]="INT DEFAULT 1";
 	$new_feld["player_count"]="INT DEFAULT 1";
@@ -45,7 +45,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 		$felder["game_id"]="VARCHAR(50)";
 		$felder["user_id"]="VARCHAR(50)";
 		$felder["calculate_avg"]="INT DEFAULT 5";
-		$felder["sum_dmg"]="INT DEFAULT 5";
+		$felder["sum_dmg"]="INT DEFAULT 0";
 		$database->create_table("rpg_player", $felder, "game_id, user_id");
 		unset($felder);
 	}
@@ -115,9 +115,10 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 			$game_data=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);
 			for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
 				$this_channel=$game_data[$count_game_data];
+				$add_post['room']="";
 				$add_post['service']=$this_channel['service'];
 				$add_post['host']=$this_channel['host'];
-				if ($this_channel['service']=="Youtube") {
+				if ($this_channel['service']=="YouTube") {
 					$add_post['room']=$LiveStream_Room;
 				}
 				if ($this_channel['service']=="Discord") {
@@ -135,7 +136,6 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 			$game_data=$database->sql_select("rpg_player", "*", "`game_id`='".$this_game['game_id']."'", false);
 			$this_game['player_count']=count($game_data);
 			if ($this_game['player_count']==0) {
-				$this_game['player_count']=1;
 				$this_game['rounds_current']=$this_game['rounds_max'];
 			}
 			
@@ -159,27 +159,38 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 			$this_game["monster_hp_current"]=$this_game["monster_hp_max"];
 			
 			// Message to Start!
-			$add_post['message']="!rpg howto";
-			$game_data=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);
-			for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
-				$this_channel=$game_data[$count_game_data];
-				$add_post['service']=$this_channel['service'];
-				$add_post['host']=$this_channel['host'];
-				if ($this_channel['service']=="Youtube") {
-					$add_post['room']=$LiveStream_Room;
-				}
-				if ($this_channel['service']=="Discord") {
-					$add_post['room']=$this_channel['channel_rpgmain'];
-				}
-				if ($add_post['room']!="") {
-					$database->sql_insert_update("bot_chatlog", $add_post);
+			if ($this_game['player_count']>0) {
+				$add_post['message']="!rpg howto";
+				$game_data=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);
+				for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
+					$this_channel=$game_data[$count_game_data];
+					$add_post['room']="";
+					$add_post['service']=$this_channel['service'];
+					$add_post['host']=$this_channel['host'];
+					if ($this_channel['service']=="YouTube") {
+						$add_post['room']=$LiveStream_Room;
+					}
+					if ($this_channel['service']=="Discord") {
+						$add_post['room']=$this_channel['channel_rpgmain'];
+					}
+					if ($add_post['room']!="") {
+						$database->sql_insert_update("bot_chatlog", $add_post);
+					}
 				}
 			}
-			break;
+			$add_post['id']++;
+			$add_post['time']++;
+			//break;	// Damit der bei State 4 Direkt mit dem Kampf beginnt
 			case 4:  // Kampf Start!
 			$tt["cooldown"]=60;
 			// Calculate DMG and so...
-			
+			$game_data=$database->sql_select("rpg_player INNER JOIN rpg_player_attack ON rpg_player.user_id=rpg_player_attack.user_id AND rpg_player.game_id=rpg_player_attack.game_id", "rpg_player.*", "rpg_player.game_id='".$this_game['game_id']."'", false);
+			for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
+				$this_player=$game_data[$count_game_data];
+				$this_game['monster_hp_current']-=$this_player['calculate_avg'];
+				$this_player['sum_dmg']+=$this_player['calculate_avg'];
+				$database->sql_insert_update("rpg_player", $this_player);
+			}
 			
 			if ($this_game['monster_hp_current']<=0) {
 				$this_game['rounds_current']=$this_game['rounds_max'];
@@ -194,9 +205,10 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 				$game_data=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);
 				for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
 					$this_channel=$game_data[$count_game_data];
+					$add_post['room']="";
 					$add_post['service']=$this_channel['service'];
 					$add_post['host']=$this_channel['host'];
-					if ($this_channel['service']=="Youtube") {
+					if ($this_channel['service']=="YouTube") {
 						$add_post['room']=$LiveStream_Room;
 					}
 					if ($this_channel['service']=="Discord") {
@@ -209,7 +221,25 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 			}
 			break;
 			case 5:	// Ende
-			// Irgendwas machen
+			$tt["cooldown"]=1;
+			$this_game['game_state']++;
+			$add_post['message']="!rpg result";
+			$game_data=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);
+			for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
+				$this_channel=$game_data[$count_game_data];
+				$add_post['room']="";
+				$add_post['service']=$this_channel['service'];
+				$add_post['host']=$this_channel['host'];
+				if ($this_channel['service']=="YouTube") {
+					$add_post['room']=$LiveStream_Room;
+				}
+				if ($this_channel['service']=="Discord") {
+					$add_post['room']=$this_channel['channel_rpgmain'];
+				}
+				if ($add_post['room']!="") {
+					$database->sql_insert_update("bot_chatlog", $add_post);
+				}
+			}
 			break;
 			default:
 			$change_me=false;

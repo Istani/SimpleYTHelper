@@ -68,8 +68,17 @@ var self = module.exports = {
             break;
           }
           case 'anmeldung':
-          SendFunc("Defender Army - Anwesenheitskontrolle!\r\nGebt ein: !rpg register\r\nUm euch für unseren Kampf zu regestrieren!");
+          if ((message_row.user=="-1")) {
+            SendFunc("Defender Army - Anwesenheitskontrolle!\r\nGebt ein: !rpg register\r\nUm euch für unseren Kampf zu regestrieren!");
+            break;
+          }
+          case 'result':
+          if ((message_row.user=="-1")) {
+            SendFunc("Kampf zuende, hier muss noch irgednwas passieren...!");
+            break;
+          }
           break;
+          
           case 'howto':
           SendFunc("Ihr habt einen Angriff pro Runde!\r\nEure Stärke basiert auf eure Aktivität in der Army!\r\nEntweder ihr besiegt das Monster oder es schafft die Flucht!\r\n!rpg attack - Um das Monster Anzugreifen!");
           break;
@@ -212,7 +221,7 @@ function CheckRound(SendFunc, GameID) {
     }
     if (check_state_rows.length>=1) {
       if (check_state_rows[0].game_state==4) {
-        SendFunc("Runde: "+check_state_rows[0].rounds_current+"/"+check_state_rows[0].rounds_max+" - "+check_state_rows[0].mosnter_id+" ("+check_state_rows[0].monster_hp_current+"/"+check_state_rows[0].monster_hp_max+")");
+        SendFunc("Runde: "+check_state_rows[0].rounds_current+"/"+check_state_rows[0].rounds_max+" - "+check_state_rows[0].monster_id+" ("+check_state_rows[0].monster_hp_current+"/"+check_state_rows[0].monster_hp_max+")");
       } else {
         SendFunc("Es findet zur Zeit kein Kampf statt!");
       }
