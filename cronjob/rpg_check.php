@@ -226,7 +226,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 		
 	}
 	
-	die("RPG CHECK");
+	//die("RPG CHECK");
 	// Save Token
 	echo date("d.m.Y - H:i:s")." - ".$_SESSION['user']['email'].': '.$cronjob_id." updated!<br>";
 	$tt["last_used"]=time();
