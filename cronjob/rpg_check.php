@@ -112,7 +112,6 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 			$this_game['game_state']++;
 			
 			$add_post['message']="!rpg anmeldung";
-			$database->sql_insert_update($load_tabellename, $db_stats[0]);
 			$game_data=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);
 			for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
 				$this_channel=$game_data[$count_game_data];
@@ -161,7 +160,6 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 			
 			// Message to Start!
 			$add_post['message']="!rpg howto";
-			$database->sql_insert_update($load_tabellename, $db_stats[0]);
 			$game_data=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);
 			for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
 				$this_channel=$game_data[$count_game_data];
@@ -193,7 +191,6 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 				$this_game['game_state']++;
 			} else {
 				$add_post['message']="!rpg round";
-				$database->sql_insert_update($load_tabellename, $db_stats[0]);
 				$game_data=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);
 				for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
 					$this_channel=$game_data[$count_game_data];
