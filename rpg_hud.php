@@ -51,8 +51,9 @@ $this_game=$game_data[0];
   </div>
   <script>
   var old_state = new Object;
+  var GET_STRING="<?php echo $get_string ?>";
   function ReloadState() {
-    $('#check_gamestate').load('<?php echo $this_adresse; ?>rpg_hud/check_state.php?<?php echo $get_string ?>');
+    $('#check_gamestate').load('<?php echo $this_adresse; ?>rpg_hud/check_state.php?'+GET_STRING);
     var new_state = new Object;
     // Hierfür muss noch irgendeine Besser Idee finden...
     new_state.game_id=document.getElementById('game_id').value;
@@ -70,10 +71,39 @@ $this_game=$game_data[0];
     new_state.animation_state=document.getElementById('animation_state').value;
     
     if (new_state.game_state!=old_state.game_state) {
-      console.log(new_state.game_state);
+      ReloadPic();
+      ReloadHP();
+      ReloadRound();
+    }
+    if (new_state.monster_id!=old_state.monster_id) {
+      ReloadPic();
+    }
+    if (new_state.monster_hp_current!=old_state.monster_hp_current) {
+      ReloadHP();
+    }
+    if (new_state.rounds_current!=old_state.rounds_current) {
+      ReloadRound();
+    }
+    if (new_state.animation_type!=old_state.animation_type) {
+      ReloadPic();
+    }
+    if (new_state.animation_state!=old_state.animation_state) {
+      ReloadPic();
     }
     old_state=new_state;
     setTimeout(ReloadState, 1000);
+  }
+  
+  function ReloadRound() {
+    
+  }
+  
+  function ReloadPic() {
+    
+  }
+  
+  function ReloadHP() {
+    
   }
   
   $(document).ready(function() {
