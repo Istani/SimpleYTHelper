@@ -69,12 +69,12 @@ var self = module.exports = {
           }
           case 'anmeldung':
           if ((message_row.user=="-1")) {
-            SendFunc("Defender Army - Anwesenheitskontrolle!\r\nGebt ein: !rpg register\r\nUm euch für unseren Kampf zu regestrieren!");
+            SendFunc("Defender Army - Anwesenheitskontrolle!\r\nGebt ein: !rpg register\r\nUm euch für unseren Kampf zu registrieren!");
             break;
           }
           case 'result':
           if ((message_row.user=="-1")) {
-            SendFunc("Kampf zuende, hier muss noch irgednwas passieren...!");
+            CheckResult(SendFunc,HOST_USER.hash);
             break;
           }
           break;
@@ -148,6 +148,7 @@ function StartNew(SendFunc, GameID) {
       return;
     }
   });
+  SendFunc('Ein neuer Tag beginnt und nichts hat sich geändert!');
 };
 function CheckExists(SendFunc, GameID) {
   SendFunc('Coming soon! - Need right Parameter at the Moment');
@@ -203,7 +204,8 @@ function CheckRegister(SendFunc, GameID, message_row) {
             return;
           }
           var USER_AVG=check_player_row[0].msg_avg;
-          var ADD_PLAYER="INSERT INTO rpg_player SET game_id='"+GameID+"', user_id='"+UserID+"', 	calculate_avg='"+(USER_AVG+5)+"'";
+          var USER_NAME=check_player_row[0].name;
+          var ADD_PLAYER="INSERT INTO rpg_player SET game_id='"+GameID+"', user_id='"+UserID+"', user_name='"+USER_NAME+"', calculate_avg='"+(USER_AVG+5)+"'";
           mysql.query(ADD_PLAYER, function (err, check_monster_rows) {
             if (err != null) {
               console.log(ADD_PLAYER);
@@ -240,6 +242,44 @@ function CheckRound(SendFunc, GameID) {
       }
     } else {
       SendFunc('No Game found!');
+    }
+  });
+}
+function CheckResult(SendFunc,GameID) {
+  var CHECK_STATE="SELECT * FROM rpg_check WHERE game_id='"+GameID+"'";
+  mysql.query(CHECK_STATE, function (err, check_state_rows) {
+    if (err != null) {
+      console.log(CHECK_STATE);
+      console.log(err);
+      return;
+    }
+    var CHECK_DMG="SELECT * FROM rpg_player WHERE game_id='"+GameID+"' ORDER BY sum_dmg DESC LIMIT 5";
+    mysql.query(CHECK_DMG, function (err, list_player_dmg) {
+      if (err != null) {
+        console.log(CHECK_STATE);
+        console.log(err);
+        return;
+      }
+      var ReturnString="Top Schaden:\r\n";
+      for (var i = 0; i<list_player_dmg.length;i++) {
+        var RowString="";
+        RowString+=list_player_dmg.user_name+": "+list_player_dmg.sum_dmg;
+        RowString+="\r\n";
+        if (ReturnString.length+RowString.length>=200) {
+          SendFunc(ReturnString);
+          ReturnString="";
+        }
+        ReturnString+=RowString;
+      }
+      if (ReturnString.length>7) {
+        SendFunc(ReturnString);
+        ReturnString="";
+      }
+    });
+    if (check_state_rows[0].monster_hp_current) {
+      SendFunc("Ihr habt das Monster besiegt! Das nächste mal wird es sich besser vorbereiten!");
+    } else {
+      SendFunc("Ihr habt zugelassen das des Monster weiterzeiht! Das nächste mal sieht es euch weniger als Bedrohung!");
     }
   });
 }

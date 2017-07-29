@@ -44,6 +44,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 		$felder=null;
 		$felder["game_id"]="VARCHAR(50)";
 		$felder["user_id"]="VARCHAR(50)";
+		$felder["user_name"]="VARCHAR(255)";
 		$felder["calculate_avg"]="INT DEFAULT 5";
 		$felder["sum_dmg"]="INT DEFAULT 0";
 		$database->create_table("rpg_player", $felder, "game_id, user_id");
@@ -246,6 +247,16 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 				$database->sql_insert_update("bot_chatlog", $add_post);
 			}
 		}
+		$game_data=$database->sql_select("rpg_monster", "*", "monster_id='".$this_game['monster_id']."'", false);
+		$this_monster=$game_data[0];
+		if ($this_game['player_count']>0) {
+			if ($this_game['monster_hp_current']<=0) {
+				$this_monster['factor']=($this_monster['factor']*1.25);
+			} else {
+				$this_monster['factor']=($this_monster['factor']*0.80);
+			}
+		}
+		$database->sql_insert_update("rpg_monster", $this_monster);
 		break;
 		default:
 		$change_me=false;

@@ -81,7 +81,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
                 }
               }
             }
-            $tmp_row4sql['message']="!report_user ".$user_name[0]['name']." : Bad Word used!";
+            $tmp_row4sql['message']="!report_user ".$user_name[0]['name']." : Wort aus dem Spamfilter verwendet!";
             if ($user_name[0]['name']!="" && $check_user==true) {
               $tmp_row4sql['user']=-1;
               $tmp_row4sql['time']=0;
@@ -94,6 +94,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
       }
     }
   }
+  // Check Inaktiv?!?
   
   // Points Timeout
   $time=time();
@@ -105,7 +106,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $start_minute=$start_stunde*60;
   $start_timestamp=$start_minute*60;
   $start_timestamp=$start_timestamp*1000; // Weil mit MS sekunden gespeichter^^ Hoffentlich XD
-  $user_name=$database->sql_select("bot_chatuser","*", "verwarnung>0 AND verwarnung_zeit<=".$start_timestamp, true);
+  $user_name=$database->sql_select("bot_chatuser","*", "verwarnung>0 AND last_seen>=verwarnung_zeit AND verwarnung_zeit<=".$start_timestamp, true);
   for ($c=0;$c<count($user_name);$c++) {
     if ($user_name[$c]['host']!="") {
       $user_name[$c]['verwarnung_zeit']=$time;
