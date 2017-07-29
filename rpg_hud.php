@@ -44,30 +44,44 @@ $this_game=$game_data[0];
     $get_string.=$feld."=".$wert."&";
   }
   ?>
+  <div id="check_gamestate"></div>
   
   <div class="<?php echo $_GET['task']; ?>_pic with_borders" style="width:400px;height:213px;">
     <img src="rpg_hud/img/Alpha_Monster_Idle0.png">
   </div>
-  <?php
-  if ( $_GET['task']=="monster") {
-    ?>
-    <script>
+  <script>
+  var old_state = new Object;
+  function ReloadState() {
+    $('#check_gamestate').load('<?php echo $this_adresse; ?>rpg_hud/check_state.php?<?php echo $get_string ?>');
+    var new_state = new Object;
+    // Hierfür muss noch irgendeine Besser Idee finden...
+    new_state.game_id=document.getElementById('game_id').value;
+    new_state.game_state=document.getElementById('game_state').value;
+    new_state.calculate_avg=document.getElementById('calculate_avg').value;
+    new_state.factor=document.getElementById('factor').value;
+    new_state.monster_id=document.getElementById('monster_id').value;
+    new_state.monster_factor=document.getElementById('monster_factor').value;
+    new_state.player_count=document.getElementById('player_count').value;
+    new_state.monster_hp_max=document.getElementById('monster_hp_max').value;
+    new_state.monster_hp_current=document.getElementById('monster_hp_current').value;
+    new_state.rounds_max=document.getElementById('rounds_max').value;
+    new_state.rounds_current=document.getElementById('rounds_current').value;
+    new_state.animation_type=document.getElementById('animation_type').value;
+    new_state.animation_state=document.getElementById('animation_state').value;
     
-    function ReloadMonster() {
-      $('.<?php echo $_GET['task']; ?>_pic').load('<?php echo $this_adresse; ?>rpg_hud/monster_pic.php?<?php echo $get_string ?>');
-      console.log('<?php echo $this_adresse; ?>rpg_hud/monster_pic.php?<?php echo $get_string ?>');
-      setTimeout(ReloadMonster, 2000);
+    if (new_state.game_state!=old_state.game_state) {
+      console.log(new_state.game_state);
     }
-    function ReloadPage() {
-      location.reload();
-    }
-    $(document).ready(function() {
-      ReloadMonster();
-    });
-    </script>
-    <?php
+    old_state=new_state;
+    setTimeout(ReloadState, 1000);
   }
-  ?>
+  
+  $(document).ready(function() {
+    ReloadState();
+  });
+  
+  </script>
+  
 </body>
 </html>
 <?php
