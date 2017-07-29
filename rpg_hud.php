@@ -32,6 +32,7 @@ $this_game=$game_data[0];
   <?php
   $this_game['animation_type']='Spawn';
   $this_game['animation_state']=0;
+  $this_game['animation_attack']=0;
   if (isset($_GET['animation_state'])) {
     $this_game['animation_state']=$_GET['animation_state']+1;
   }
@@ -40,7 +41,8 @@ $this_game=$game_data[0];
   }
   $get_string="";
   foreach ($this_game as $feld => $wert) {
-    echo $feld.': <input type="text" id="'.$feld.'" name="'.$feld.'" value="'.$wert.'"><br>';
+    //echo $feld.': <input type="text" id="'.$feld.'" name="'.$feld.'" value="'.$wert.'"><br>';
+    echo '<input type="hidden" id="'.$feld.'" name="'.$feld.'" value="'.$wert.'">';
     $get_string.=$feld."=".$wert."&";
   }
   ?>
@@ -60,8 +62,24 @@ $this_game=$game_data[0];
   <script>
   var old_state = new Object;
   var GET_STRING="<?php echo $get_string ?>";
+  
+  function MakeGETString(new_state) {
+    GET_STRING="";
+    GET_STRING+="game_id="+new_state.game_id+"&";
+    GET_STRING+="game_state="+new_state.game_state+"&";
+    GET_STRING+="calculate_avg="+new_state.calculate_avg+"&";
+    GET_STRING+="factor="+new_state.factor+"&";
+    GET_STRING+="monster_id="+new_state.monster_id+"&";
+    GET_STRING+="monster_factor="+new_state.monster_factor+"&";
+    GET_STRING+="player_count="+new_state.player_count+"&";
+    GET_STRING+="monster_hp_max="+new_state.monster_hp_max+"&";
+    GET_STRING+="monster_hp_current="+new_state.monster_hp_current+"&";
+    GET_STRING+="rounds_max="+new_state.rounds_max+"&";
+    GET_STRING+="rounds_current="+new_state.rounds_current+"&";
+    GET_STRING+="animation_type="+new_state.animation_type+"&";
+    GET_STRING+="animation_state="+new_state.animation_state+"";
+  }
   function ReloadState() {
-    $('#check_gamestate').load('<?php echo $this_adresse; ?>rpg_hud/check_state.php?'+GET_STRING);
     var new_state = new Object;
     // Hierfür muss noch irgendeine Besser Idee finden...
     new_state.game_id=document.getElementById('game_id').value;
@@ -77,43 +95,58 @@ $this_game=$game_data[0];
     new_state.rounds_current=document.getElementById('rounds_current').value;
     new_state.animation_type=document.getElementById('animation_type').value;
     new_state.animation_state=document.getElementById('animation_state').value;
-    GET_STRING="";
-    GET_STRING+="game_id="+new_state.game_id+"&";
-    GET_STRING+="game_state="+new_state.game_state+"&";
-    GET_STRING+="calculate_avg="+new_state.calculate_avg+"&";
-    GET_STRING+="factor="+new_state.factor+"&";
-    GET_STRING+="monster_id="+new_state.monster_id+"&";
-    GET_STRING+="monster_factor="+new_state.monster_factor+"&";
-    GET_STRING+="player_count="+new_state.player_count+"&";
-    GET_STRING+="monster_hp_max="+new_state.monster_hp_max+"&";
-    GET_STRING+="monster_hp_current="+new_state.monster_hp_current+"&";
-    GET_STRING+="rounds_max="+new_state.rounds_max+"&";
-    GET_STRING+="rounds_current="+new_state.rounds_current+"&";
-    GET_STRING+="animation_type="+new_state.animation_type+"&";
-    GET_STRING+="animation_state="+new_state.animation_state+"";
+    new_state.animation_attack=document.getElementById('animation_attack').value;
     
+    MakeGETString(new_state);
+    $('#check_gamestate').load('<?php echo $this_adresse; ?>rpg_hud/check_state.php?'+GET_STRING);
+    
+    
+    var reload_pic=false;
+    var reload_hp=false;
+    var reload_round=false;
     if (new_state.game_state!=old_state.game_state) {
-      ReloadPic();
-      ReloadHP();
-      ReloadRound();
+      reload_pic=true;
+      Rreload_hp=true;
+      reload_round=true;
     }
     if (new_state.monster_id!=old_state.monster_id) {
-      ReloadPic();
+      reload_pic=true;
     }
     if (new_state.monster_hp_current!=old_state.monster_hp_current) {
-      ReloadHP();
+      reload_hp=true;
+      if (new_state.game_state>3) {
+        document.getElementById('animation_type').value="Attack";
+        if (new_state.animation_attack==0) {
+          document.getElementById('animation_attack').value=1;
+        } else {
+          document.getElementById('animation_attack').value=0;
+        }
+        document.getElementById('animation_state').value=new_state.animation_attack;
+      }
     }
     if (new_state.rounds_current!=old_state.rounds_current) {
-      ReloadRound();
+      reload_round=true;
     }
     if (new_state.animation_type!=old_state.animation_type) {
-      ReloadPic();
+      reload_pic=true;
     }
     if (new_state.animation_state!=old_state.animation_state) {
-      ReloadPic();
+      reload_pic=true;
     }
+    
+    MakeGETString(new_state);
+    
+    if (reload_pic==true) {
+      ReloadPic();
+    };
+    if (reload_hp==true) {
+      ReloadHP();
+    };
+    if (reload_round==true) {
+      ReloadRound();
+    };
     old_state=new_state;
-    setTimeout(ReloadState, 1000);
+    setTimeout(ReloadState, 2000);
   }
   
   function ReloadRound() {

@@ -1,28 +1,31 @@
 <?php
-
-// Benötigte Daten
-
-chdir('..');
-require_once 'inc/php_inc.php';
-// http://127.0.0.1/SimpleYTH/rpg_hud.php?game=21232f297a57a5a743894a0e4a801fc3
-
-if (!isset($_GET['game_id'])) {
-  $_GET['game_id']="";
+if ($_GET['game_state']<2) {
+  echo '<img src="rpg_hud/img/Rpg_Anmeldung.png">';
+  die();
 }
-if (isset($_GET['game_id'])) {
-  $_GET['game']=$_GET['game_id'];
+$file_url="img/".$_GET['monster_id']."_".$_GET['animation_type'].$_GET['animation_state'].".png";
+if (file_exists($file_url)) {
+  if ($_GET['animation_type']=="Attack") {
+    $_GET['animation_type']="Idle";
+    echo '<script>document.getElementById("animation_type").value="'.$_GET['animation_type'].'";</script>';
+    $_GET['animation_state']=-1;
+  }
+  if ($_GET['animation_type']=="Dead") {
+    $_GET['animation_state']=-1;
+  }
+  echo '<img src="rpg_hud/'.$file_url.'">';
+  
+  $file_next="img/".$_GET['monster_id']."_".$_GET['animation_type'].($_GET['animation_state']+1).".png";
+  if (!file_exists($file_next)) {
+    $_GET['animation_state']=-1;
+    $file_next="img/".$_GET['monster_id']."_".$_GET['animation_type'].($_GET['animation_state']+1).".png";
+    
+  }
+  echo $file_next;
+  
+  echo '<script>document.getElementById("animation_state").value="'.($_GET['animation_state']+1).'";</script>';
+  
+  die();
 }
-$user=$database->sql_select("user","*","MD5(email)='".$_GET['game']."'", false); // TODO: Was besseres ausdenken für StandartUser;
-if (isset($user[0]['email'])) {
-  $_SESSION['user']=$user[0];
-} else {
-  die('ERROR');
-}
-
-$this_adresse= "http://".$_SERVER['HTTP_HOST']."/SimpleYTH/";
-$game_data=$database->sql_select("rpg_check", "*", "game_id='".$_GET['game_id']."'", false);
-$this_game=$game_data[0];
-
-echo debug_log($_GET);
-
+die('<center><span style="background-color:#FFFFFF">&nbsp;</span></center>');
 ?>

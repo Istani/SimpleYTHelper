@@ -20,8 +20,6 @@ $this_adresse= "http://".$_SERVER['HTTP_HOST']."/SimpleYTH/";
 $game_data=$database->sql_select("rpg_check", "*", "game_id='".$_GET['game_id']."'", false);
 $this_game=$game_data[0];
 
-die();
-
 foreach ($this_game as $key => $value) {
   ?>
   <script>
