@@ -46,8 +46,16 @@ $this_game=$game_data[0];
   ?>
   <div id="check_gamestate"></div>
   
-  <div class="<?php echo $_GET['task']; ?>_pic with_borders" style="width:400px;height:213px;">
-    <img src="rpg_hud/img/Alpha_Monster_Idle0.png">
+  <div class="round_counter with_borders" style="width:400px;">
+    &nbsp;
+  </div>
+  
+  <div class="monster_pic with_borders" style="width:400px;height:213px;">
+    
+  </div>
+  
+  <div class="hp_meter with_borders" style="width:400px;">
+    &nbsp;
   </div>
   <script>
   var old_state = new Object;
@@ -69,6 +77,20 @@ $this_game=$game_data[0];
     new_state.rounds_current=document.getElementById('rounds_current').value;
     new_state.animation_type=document.getElementById('animation_type').value;
     new_state.animation_state=document.getElementById('animation_state').value;
+    GET_STRING="";
+    GET_STRING+="game_id="+new_state.game_id+"&";
+    GET_STRING+="game_state="+new_state.game_state+"&";
+    GET_STRING+="calculate_avg="+new_state.calculate_avg+"&";
+    GET_STRING+="factor="+new_state.factor+"&";
+    GET_STRING+="monster_id="+new_state.monster_id+"&";
+    GET_STRING+="monster_factor="+new_state.monster_factor+"&";
+    GET_STRING+="player_count="+new_state.player_count+"&";
+    GET_STRING+="monster_hp_max="+new_state.monster_hp_max+"&";
+    GET_STRING+="monster_hp_current="+new_state.monster_hp_current+"&";
+    GET_STRING+="rounds_max="+new_state.rounds_max+"&";
+    GET_STRING+="rounds_current="+new_state.rounds_current+"&";
+    GET_STRING+="animation_type="+new_state.animation_type+"&";
+    GET_STRING+="animation_state="+new_state.animation_state+"";
     
     if (new_state.game_state!=old_state.game_state) {
       ReloadPic();
@@ -95,15 +117,15 @@ $this_game=$game_data[0];
   }
   
   function ReloadRound() {
-    
+    $('.round_counter').load('<?php echo $this_adresse; ?>rpg_hud/round_counter.php?'+GET_STRING);
   }
   
   function ReloadPic() {
-    
+    $('.monster_pic').load('<?php echo $this_adresse; ?>rpg_hud/monster_pic.php?'+GET_STRING);
   }
   
   function ReloadHP() {
-    
+    $('.hp_meter').load('<?php echo $this_adresse; ?>rpg_hud/hp_meter.php?'+GET_STRING);
   }
   
   $(document).ready(function() {
