@@ -75,9 +75,6 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 	$yt_livestream_data = $database->sql_select("channels_liveStreamChat", "*", "channel_id='".$_SESSION['user']['youtube_user']."'", true);
 	$LiveStream_Room=$yt_livestream_data[0]["chatid"];
 	
-	// NOTE: Testweise noch nicht auf YT
-	$LiveStream_Room="";
-	
 	$add_post['id']=time();
 	$add_post['time']=time();
 	$add_post['user']='-1';

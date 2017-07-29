@@ -260,10 +260,10 @@ function CheckResult(SendFunc,GameID) {
         console.log(err);
         return;
       }
-      var ReturnString="Top Schaden:\r\n";
+      var ReturnString="Top 5 - Schaden:\r\n";
       for (var i = 0; i<list_player_dmg.length;i++) {
         var RowString="";
-        RowString+=list_player_dmg.user_name+": "+list_player_dmg.sum_dmg;
+        RowString+=list_player_dmg[i].user_name+": "+list_player_dmg[i].sum_dmg;
         RowString+="\r\n";
         if (ReturnString.length+RowString.length>=200) {
           SendFunc(ReturnString);
@@ -276,10 +276,10 @@ function CheckResult(SendFunc,GameID) {
         ReturnString="";
       }
     });
-    if (check_state_rows[0].monster_hp_current) {
+    if (check_state_rows[0].monster_hp_current<=0) {
       SendFunc("Ihr habt das Monster besiegt! Das nächste mal wird es sich besser vorbereiten!");
     } else {
-      SendFunc("Ihr habt zugelassen das des Monster weiterzeiht! Das nächste mal sieht es euch weniger als Bedrohung!");
+      SendFunc("Ihr habt zugelassen das des Monster weiterzieht! Das nächste mal sieht es euch weniger als Bedrohung!");
     }
   });
 }
