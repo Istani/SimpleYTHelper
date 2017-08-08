@@ -16,7 +16,7 @@ $link=$links[0];
 //$url = "http://simpleyth.randompeople.de/l.php?l=".$link['hash'];
 //md5(concat(owner,link)) AS hash
 
-die($link['link']);
+//die($link['link']);
 header("HTTP/1.1 301 Moved Permanently");
 header("Location: " . $link['link']);
 ?>
