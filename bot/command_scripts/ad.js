@@ -40,7 +40,9 @@ var self = module.exports = {
                 return;
               }
               for (var i = 0; i<rows.length;i++) {
-                var SQL2 = "SELECT * FROM user_ads WHERE count='"+rows[i].count+"' AND type NOT LIKE 'Link' AND link NOT LIKE '' AND owner='"+My_Owner+"' ORDER BY Rand() LIMIT 1";
+                var SQL2 = "SELECT *, md5(concat(owner,link)) AS hash FROM user_ads WHERE count='"+rows[i].count+"' AND type NOT LIKE 'Link' AND link NOT LIKE '' AND owner='"+My_Owner+"' ORDER BY Rand() LIMIT 1";
+                //$url = "http://simpleyth.randompeople.de/l.php?l=".$link['hash'];
+                //md5(concat(owner,link)) AS hash
                 mysql.query(SQL2, function (err2, rows2) {
                   if (err2 != null) {
                     console.log(SQL2);
@@ -71,7 +73,7 @@ var self = module.exports = {
                     var RowString="";
                     RowString=rows2[j].title;
                     RowString+=": ";
-                    RowString+=rows2[j].link;
+                    RowString+="http://simpleyth.randompeople.de/l.php?l="+rows2[j].hash;
                     RowString+="\r\n";
                     ReturnString+=RowString;
                     SendFunc(ReturnString);
