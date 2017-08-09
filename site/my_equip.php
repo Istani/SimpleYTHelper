@@ -2,25 +2,6 @@
 echo "My Equipment<br><br>";
 
 $_tmp_tabellename="user_ads";
-$check_table=$database->show_tables();
-if(!in_array($_tmp_tabellename, $check_table)) {
-  $felder=null;
-  $felder["owner"]="VARCHAR(255)";
-  $felder["type"]="VARCHAR(255)";
-  $felder["title"]="VARCHAR(255)";
-  $felder["link"]="VARCHAR(255)";
-  $felder["count"]="INT";
-  $database->create_table($_tmp_tabellename, $felder, "owner, link");
-  unset($felder);
-}
-
-if (isset($newCols)) {
-  unset($newCols);
-}
-$newCols['isPremium']="INT DEFAULT 0";
-$newCols['premCount']="INT DEFAULT -1";
-$database->add_columns($_tmp_tabellename, $newCols);
-unset($newCols);
 
 //
 if (isset($_POST['equip_save'])) {
