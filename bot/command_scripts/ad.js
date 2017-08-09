@@ -73,7 +73,9 @@ var self = module.exports = {
                     var RowString="";
                     RowString=rows2[j].title;
                     RowString+=": ";
-                    RowString+="http://simpleyth.randompeople.de/l.php?l="+rows2[j].hash;
+                    //RowString+="http://simpleyth.randompeople.de/l.php?l=";
+                    RowString+="http://s.defender833.de/l.php?l=";
+                    RowString+=rows2[j].hash;
                     RowString+="\r\n";
                     ReturnString+=RowString;
                     SendFunc(ReturnString);
