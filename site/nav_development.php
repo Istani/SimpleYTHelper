@@ -1,3 +1,8 @@
+<?php
+if ($_SESSION['user']['status']!=1) {
+  return;
+}
+?>
 <div id="helper_nav" class="ui-accordion ui-widget ui-helper-reset">
   <h3 class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">Development</h3>
   <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">

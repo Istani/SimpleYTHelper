@@ -9,6 +9,7 @@
       echo "<p><a href='index.php?site=my_equip'>Meine Equipment</a></p>";
       echo "<p><a href='index.php?site=my_ads'>Meine Werbelinks</a></p>";
       
+      echo "<p><a href='index.php?site=youtube_videos'>Youtube Videos</a></p>";
       
       echo "<p><a href='site/logout.php'>Logout</a></p>";
     } else {

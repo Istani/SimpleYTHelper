@@ -48,6 +48,10 @@ switch ($_GET['site']) {
   include("site/my_link.php");
   break;
   
+  case 'youtube_videos':
+  include("site/youtube_videos.php");
+  break;
+  
   case 'yt_channels':
   include("site/yt_channels.php");
   break;
