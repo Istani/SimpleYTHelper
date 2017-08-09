@@ -3,8 +3,11 @@ if (isset($_POST['login'])) {
   if ($_POST['email']!="" && $_POST['passwort']!="") {
     // lgoin Check
     // TODO: Password Hashen
-    $user_rows=$database->sql_select("user", "*", "email='".$_POST['email']."' AND password='".$_POST['passwort']."'",true);
+    $user_rows=$database->sql_select("user", "*", "email='".$_POST['email']."'",true);
     if ($user_rows[0]['email']==$_POST['email']) {
+      if ($user_rows[0]['password']!=$_POST['passwort']) {
+        die("Falsches Passwort!");
+      }
       if (isset($new_data)) {
         unset($new_data);
       }
