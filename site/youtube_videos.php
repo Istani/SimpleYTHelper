@@ -1,5 +1,5 @@
 <?php
-$videos=$database->sql_select("videos_snippet LEFT JOIN videos_statistics ON videos_snippet.videoid=videos_statistics.videoid", "videos_snippet.*, videos_statistics.viewcount, videos_statistics.likecount", "channelid='".$_SESSION['user']['youtube_user']."' ORDER BY first_seen",true);
+$videos=$database->sql_select("videos_snippet LEFT JOIN videos_statistics ON videos_snippet.videoid=videos_statistics.videoid", "videos_snippet.*, videos_statistics.viewcount, videos_statistics.likecount", "channelid='".$_SESSION['user']['youtube_user']."' ORDER BY first_seen",false);
 
 echo '<table class="videos with_borders">';
 echo '<thead>';
