@@ -14,7 +14,7 @@ var mysql_connection = mysql.createConnection({
 });
 
 // Discord - Settings
-// https://discordapp.com/oauth2/authorize?client_id=275587526457294848&scope=bot // Dev Shame Bot Add
+// https://discordapp.com/oauth2/authorize?client_id=277072358483951618&scope=bot&permissions=-1 // Dev Shame Bot Add
 
 var Discord = require("discord.js");
 var discord_bot = new Discord.Client();
@@ -60,6 +60,8 @@ function StartBot() {
 var command_prefix = "!";
 var cmd=require("./command_scripts/commands.js");
 cmd.init(mysql_connection);
+cmd.init_chatcheck(UpdateHosts, UpdateUser);
+cmd.init_discord(discord_bot);
 cmd.reload_commands();
 
 function Login() {

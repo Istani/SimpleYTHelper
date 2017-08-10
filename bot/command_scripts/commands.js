@@ -2,6 +2,13 @@ var self = module.exports = {
   init: function (MySQL) {
     mysql=MySQL;
   },
+  init_discord: function (DBot) {
+    discord=DBot;
+  },
+  init_chatcheck: function(AddHosts, AddUser) {
+    UpdateHosts=AddHosts;
+    UpdateUser=AddUser;
+  },
   check_permission: function (message_row, SendFunc, NewMessageFunc) {
     var permissions=false;
     
@@ -46,6 +53,12 @@ var self = module.exports = {
       if (typeof commands[cmd_name].init == 'function') {
         commands[cmd_name].init(mysql);
       }
+      if (typeof commands[cmd_name].init_chatcheck == 'function') {
+        commands[cmd_name].init_chatcheck(UpdateHosts, UpdateUser);
+      }
+      if (typeof commands[cmd_name].init_discord == 'function') {
+        commands[cmd_name].init_discord(discord);
+      }
     }
     return commands;
   },
@@ -72,4 +85,7 @@ var self = module.exports = {
   }
 };
 var mysql=null;
+var discord=null;
 var commands={};
+var UpdateHosts;
+var UpdateUser;
