@@ -23,6 +23,8 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $database->sql_delete("livestream_chat", "`last_seen`<".$oldest_date." or `ignore`='1'");
   //$database->sql_delete("subscriptions_subscribersnippet", "`last_seen`<".$oldest_date."");
   
+  $database->sql_delete("bot_chathosts", "`last_seen`<".$oldest_date."");
+  $database->sql_delete("bot_chatuser", "`last_seen`<".$oldest_date."");
   // NOTE: User, Server und so kommt vielleicht noch irgendwann, muss ich mir noch überlegen...
   $tt["cooldown"]=1*60*60;
 }
