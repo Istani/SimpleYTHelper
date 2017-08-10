@@ -29,8 +29,12 @@ var self = module.exports = {
     var count_server=0;
     var count_user=0;
     var guilds =discord.guilds;
+    var msg_guild=null;
     for (var [key, guild] of guilds) {
       count_server++;
+      if (guild.id==message_row.host) {
+        msg_guild=guild;
+      }
       UpdateHosts("Discord", guild.id, guild.name, guild.ownerID);
       var members =guild.members;
       for (var [key, member] of members) {
@@ -43,7 +47,9 @@ var self = module.exports = {
       }
     }
     SendFunc("Discord: "+count_server+" Server with "+count_user+" User");
-    
+    if (msg_guild.id!=null) {
+      msg_guild.pruneMembers(30).then(pruned => SendFunc("I just pruned "+pruned+" people!")).catch(console.error);
+    }
   },
 };
 var mysql=null;
