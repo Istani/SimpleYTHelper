@@ -30,27 +30,30 @@ var self = module.exports = {
     var count_user=0;
     var guilds =discord.guilds;
     var msg_guild=null;
-    for (var [key, guild] of guilds) {
-      count_server++;
-      if (guild.id==message_row.host) {
-        msg_guild=guild;
-      }
-      UpdateHosts("Discord", guild.id, guild.name, guild.ownerID);
-      var members =guild.members;
-      for (var [key, member] of members) {
-        count_user++;
-        var UserRoles=[];
-        guild.member(member.user).roles.forEach(function(element){
-          UserRoles.push(element.name);
-        });
-        UpdateUser("Discord", guild.id, member.user.id, member.user.username, UserRoles);
-      }
+    /*if (message_row.service!="Discord") {
+    SendFunc("Diese Funktion macht nur im Discord Sinn!");
+  }*/
+  for (var [key, guild] of guilds) {
+    count_server++;
+    if (guild.id==message_row.host) {
+      msg_guild=guild;
     }
-    SendFunc("Discord: "+count_server+" Server with "+count_user+" User");
-    if (msg_guild.id!=null) && (message_row.user==guild.ownerID || message_row.user==-1) {
-      msg_guild.pruneMembers(30).then(pruned => SendFunc("I just pruned "+pruned+" people!")).catch(console.error);
+    UpdateHosts("Discord", guild.id, guild.name, guild.ownerID);
+    var members =guild.members;
+    for (var [key, member] of members) {
+      count_user++;
+      var UserRoles=[];
+      guild.member(member.user).roles.forEach(function(element){
+        UserRoles.push(element.name);
+      });
+      UpdateUser("Discord", guild.id, member.user.id, member.user.username, UserRoles);
     }
-  },
+  }
+  SendFunc("Discord: "+count_server+" Server with "+count_user+" User");
+  if ((msg_guild.id!=null) && (message_row.user==guild.ownerID || message_row.user==-1)) {
+    msg_guild.pruneMembers(30).then(pruned => SendFunc("I just pruned "+pruned+" people!")).catch(console.error);
+  }
+},
 };
 var mysql=null;
 var discord=null;
