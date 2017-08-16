@@ -13,6 +13,7 @@ function check_settings($database, $cronjob_id) {
         case 'bot_chat_stats':
         case 'bot_chatspam':
         case 'bot_cleanup_db':
+        case 'rss_news':
         $serivce="SimpleYTH";
         $user_where="status=1";
         break;
