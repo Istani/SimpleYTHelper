@@ -51,7 +51,45 @@ var self = module.exports = {
     });
   },
   execute: function (message_row, SendFunc, NewMessageFunc) {
-    // DO Magic - Ausgabe RSS
+    var parts=message_row.message.split(" ");
+    // The Magic
+    if (message_row.user != "-1") {
+      // Add
+      // TODO: REMOVE
+      var ADD_RSS="REPLACE INTO rss_news_source SET service='"+message_row.service+"', host='"+message_row.host+"', src='"+parts[1]+"'";
+      mysql.query(ADD_RSS, function (err, check_monster_rows) {
+        if (err != null) {
+          console.log(ADD_RSS);
+          console.log(err);
+          return;
+        }
+        SendFunc(parts[1] + " wurde hinzugefügt!");
+      });
+    } else {
+      // Ausgabe
+      var SELECT_RSS="SELECT rss_news.* FROM "+
+      "rss_news INNER JOIN rss_news_source ON rss_news.source=rss_news_source.src "+
+      "INNER JOIN bot_chathosts ON rss_news_source.service=bot_chathosts.service AND rss_news_source.host=bot_chathosts.host "+
+      "WHERE rss_post<rss_news.time ORDER BY rss_news.time LIMIT 1";
+      mysql.query(SELECT_RSS, function (err, check_monster_rows) {
+        if (err != null) {
+          console.log(SELECT_RSS);
+          console.log(err);
+          return;
+        }
+        for (var i = 0; i<check_monster_rows.length;i++) {
+          SendFunc(check_monster_rows[i].title + "\r\n" + check_monster_rows[i].link);
+          var UPDATE_HOST="UPDATE bot_chathosts SET rss_post="+check_monster_rows[i].time+" WHERE service='"+message_row.service+"' AND host='"+message_row.host+"'";
+          mysql.query(UPDATE_HOST, function (err2, x) {
+            if (err2 != null) {
+              console.log(UPDATE_HOST);
+              console.log(err2);
+              return;
+            }
+          });
+        }
+      });
+    }
   },
 };
 
