@@ -70,7 +70,7 @@ var self = module.exports = {
       var SELECT_RSS="SELECT rss_news.* FROM "+
       "rss_news INNER JOIN rss_news_source ON rss_news.source=rss_news_source.src "+
       "INNER JOIN bot_chathosts ON rss_news_source.service=bot_chathosts.service AND rss_news_source.host=bot_chathosts.host "+
-      "WHERE rss_post<rss_news.time AND service='"+message_row.service+"' AND host='"+message_row.host+"' ORDER BY rss_news.time LIMIT 1";
+      "WHERE rss_post<rss_news.time AND rss_news_source.service='"+message_row.service+"' AND rss_news_source.host='"+message_row.host+"' ORDER BY rss_news.time LIMIT 1";
       mysql.query(SELECT_RSS, function (err, check_monster_rows) {
         if (err != null) {
           console.log(SELECT_RSS);
