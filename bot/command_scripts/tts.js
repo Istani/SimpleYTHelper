@@ -9,7 +9,7 @@ var self = module.exports = {
       permissions=true;
     }
     
-    permissions=true; // Fake Recht!
+//    permissions=true; // Fake Recht!
     
     if (permissions==false) {
       SendFunc(message_row.user+ " du hast keine Rechte den Befehl auszuführen!\r\n" + message_row.message);
