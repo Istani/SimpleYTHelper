@@ -171,16 +171,18 @@ var fetch = require('node-fetch');
 function Cron_Livestream() {
   var cron_url = "http://31.172.95.10/SimpleYTH/cronjob.php?job_type=livestream_chat";
   fetch(cron_url).then(function (response) {
-    // Do Nothing
+    return response.text();
   }).then( function (text) {
+    console.log(text);
     setTimeout(Cron_Livestream, 100);
   });
 }
 function Cron_PHPHAck() {
   var cron_url = "http://31.172.95.10/SimpleYTH/cronjob.php?job_type=php_hack";
   fetch(cron_url).then(function (response) {
-    
+    return response.text();
   }).then( function (text) {
+    console.log(text);
     setTimeout(Cron_PHPHAck, 100);
   });
 }
