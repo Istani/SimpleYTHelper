@@ -158,7 +158,7 @@ class db {
       } else {
         $sql_string = "SELECT " . $sql_felder . " FROM " . $tabelle;
       }
-      echo $sql_string.'<br>';
+      //echo $sql_string.'<br>';
       if ($query = mysql_query($sql_string, $this->connection)) {
         if (mysql_num_rows($query) > 0) {
           while ($row = mysql_fetch_assoc($query)) {
