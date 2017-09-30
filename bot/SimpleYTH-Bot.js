@@ -182,7 +182,7 @@ function Cron_PHPHAck() {
   fetch(cron_url).then(function (response) {
     return response.text();
   }).then( function (text) {
-    console.log(text);
+    console.log(text  );
     setTimeout(Cron_PHPHAck, 100);
   });
 }
@@ -200,7 +200,7 @@ function ProcessMessage() {
       ProcessMessageUpdate(rows[i].service, rows[i].id);
     }
   });
-  setTimeout(ProcessMessage, 100);
+  setTimeout(ProcessMessage, 10);
 }
 
 function ProcessMessageUpdate(service, id) {
