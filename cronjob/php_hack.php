@@ -34,6 +34,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $all_messages = $database->sql_select("bot_chatlog", "*", "php_process=0 AND process=1 ORDER BY time LIMIT 1", false);
   for ($m_count=0;$m_count<count($all_messages);$m_count++) {
     $this_msg=$all_messages[$m_count];
+    $command_file="";
     
     if ($prefix==substr($this_msg['message'], 0,1)) {
       $parts=explode(" ", $this_msg['message'],2);
