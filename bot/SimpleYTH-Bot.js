@@ -169,8 +169,7 @@ function UpdateRoles(service, host, role) {
 }
 var fetch = require('node-fetch');
 function Cron_Livestream() {
-  var cron_url = "http://31.172.95.10/SimpleYTH/cornjob.php?job_type=livestream_chat";
-  // import new Message (Youtube Gaming)
+  var cron_url = "http://31.172.95.10/SimpleYTH/cronjob.php?job_type=livestream_chat";
   fetch(cron_url).then(function (response) {
     // Do Nothing
   }).then( function (text) {
@@ -178,8 +177,7 @@ function Cron_Livestream() {
   });
 }
 function Cron_PHPHAck() {
-  var cron_url = "http://31.172.95.10/SimpleYTH/cornjob.php?job_type=php_hack";
-  // import new Message (Youtube Gaming)
+  var cron_url = "http://31.172.95.10/SimpleYTH/cronjob.php?job_type=php_hack";
   fetch(cron_url).then(function (response) {
     
   }).then( function (text) {
