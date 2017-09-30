@@ -59,6 +59,11 @@ function load_cronjobtoken($database, $cronjob_id, $user) {
   if ($tmp_token[0]['id']==$cronjob_id) {
     $return_value=$tmp_token[0];
   }
+  if (isset($_GET['job_type'])) {
+    if ($_GET['job_type']==$cronjob_id) {
+      $return_value["cooldown"]=0;
+    }
+  }
   return $return_value;
 }
 

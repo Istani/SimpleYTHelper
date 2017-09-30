@@ -14,7 +14,7 @@ $_tmp_tabellename=strtolower($cronjob_id);
 if (!isset($token[$_tmp_tabellename])) {
   $token[$_tmp_tabellename] = init_token($_tmp_tabellename);
 }
-$tt=$token[strtolower($_tmp_tabellename)];
+$tt=$token[$_tmp_tabellename];
 
 $new_feld['php_process']="INT(1) NOT NULL DEFAULT  '0'";
 $database->add_columns("bot_chatlog", $new_feld);
