@@ -14,6 +14,7 @@ function check_settings($database, $cronjob_id) {
         case 'bot_chatspam':
         case 'bot_cleanup_db':
         case 'rss_news':
+        case 'php_hack':
         $serivce="SimpleYTH";
         $user_where="status=1";
         break;

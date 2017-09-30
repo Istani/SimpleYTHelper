@@ -165,8 +165,25 @@ function UpdateRoles(service, host, role) {
     }
   });
 }
+var fetch = require('node-fetch');
+var cron_url = "http://31.172.95.10/SimpleYTH/cornjob.php?job_type=livestream_chat";
+var cron_url2 = "http://31.172.95.10/SimpleYTH/cornjob.php?job_type=php_hack";
+
 
 function ProcessMessage() {
+  // import new Message (Youtube Gaming)
+  fetch(cron_url).then(function (response) {
+    // Do Nothing
+  }).then( function (text) {
+    // Do Nothing
+  });
+  fetch(cron_url2).then(function (response) {
+    // Do Nothing
+  }).then( function (text) {
+    // Do Nothing
+  });
+  
+  // Bearbeite bisherige nachrichten!
   var LOAD_MESSAGE="SELECT * FROM `bot_chatlog` WHERE `process`=0 ORDER BY `time` LIMIT 1";
   mysql_connection.query(LOAD_MESSAGE, function (err, rows) {
     if (err != null) {

@@ -48,7 +48,12 @@ unset($_SESSION['cronjob']);
 
 while (time()-$Time['Start']<=55) {
   // Getting Next Job
-  $TmpNextJob=$database->sql_select("bot_token","*","service not like '' AND last_used+cooldown <= ".time()." ORDER BY last_used+cooldown",false);
+  if (isset($_GET['job_type'])) {
+    $TmpNextJob=$database->sql_select("bot_token","*","service not like '' AND last_used+cooldown <= ".time()." and id='".$_GET['job_type']."' ORDER BY last_used+cooldown",false);  
+  } else {
+    $TmpNextJob=$database->sql_select("bot_token","*","service not like '' AND last_used+cooldown <= ".time()." ORDER BY last_used+cooldown",false);
+  }
+  
   if(!isset($TmpNextJob[0]['service'])) {
     sleep(1);
     continue;
