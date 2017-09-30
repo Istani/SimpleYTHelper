@@ -112,7 +112,7 @@ class db {
       return false;
     }
     $tabelle=strtolower($tabelle);
-    $isFelder=$this->sql_select($tabelle, "*", "", true);
+    $isFelder=$this->sql_select($tabelle, "*", "true LIMIT 1", true);
     
     foreach ($felder as $key=>$value){
       $key=strtolower($key);
