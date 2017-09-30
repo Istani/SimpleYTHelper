@@ -55,6 +55,8 @@ google_bot.on("message", msg => {
 // Bot Control
 function StartBot() {
   Login();
+  Cron_Livestream();
+  Cron_PHPHAck();
   setTimeout(ProcessMessage,5000); // TODO: Statt Timeout, warten das alles initalisiert ist...?
 }
 var command_prefix = "!";
@@ -166,23 +168,26 @@ function UpdateRoles(service, host, role) {
   });
 }
 var fetch = require('node-fetch');
-var cron_url = "http://31.172.95.10/SimpleYTH/cornjob.php?job_type=livestream_chat";
-var cron_url2 = "http://31.172.95.10/SimpleYTH/cornjob.php?job_type=php_hack";
-
-
-function ProcessMessage() {
+function Cron_Livestream() {
+  var cron_url = "http://31.172.95.10/SimpleYTH/cornjob.php?job_type=livestream_chat";
   // import new Message (Youtube Gaming)
   fetch(cron_url).then(function (response) {
     // Do Nothing
   }).then( function (text) {
-    // Do Nothing
+    setTimeout(Cron_Livestream, 100);
   });
-  fetch(cron_url2).then(function (response) {
-    // Do Nothing
+}
+function Cron_PHPHAck() {
+  var cron_url = "http://31.172.95.10/SimpleYTH/cornjob.php?job_type=php_hack";
+  // import new Message (Youtube Gaming)
+  fetch(cron_url).then(function (response) {
+    
   }).then( function (text) {
-    // Do Nothing
+    setTimeout(Cron_PHPHAck, 100);
   });
-  
+}
+
+function ProcessMessage() {
   // Bearbeite bisherige nachrichten!
   var LOAD_MESSAGE="SELECT * FROM `bot_chatlog` WHERE `process`=0 ORDER BY `time` LIMIT 1";
   mysql_connection.query(LOAD_MESSAGE, function (err, rows) {
