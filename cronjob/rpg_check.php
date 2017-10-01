@@ -36,6 +36,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 	$new_feld["monster_hp_current"]="INT DEFAULT 1";
 	$new_feld["rounds_max"]="INT DEFAULT 1";
 	$new_feld["rounds_current"]="INT DEFAULT 0";
+	$new_feld["start_time"]="VARCHAR(50)";
 	$database->add_columns($cronjob_id, $new_feld);
 	unset($new_feld);
 	
@@ -46,7 +47,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 		$felder["user_id"]="VARCHAR(50)";
 		$felder["user_name"]="VARCHAR(255)";
 		$felder["calculate_avg"]="INT DEFAULT 5";
-		$felder["sum_dmg"]="INT DEFAULT 0";
+		$felder["sum_dmg"]="VARCHAR(50)";
 		$database->create_table("rpg_player", $felder, "game_id, user_id");
 		unset($felder);
 	}
@@ -87,6 +88,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 		switch ($this_game['game_state']) {
 			case 0:
 			$this_game['game_state']++;
+			$this_gmae['start_time']=time();
 			// Drop old Data
 			$database->sql_delete("rpg_player", "`game_id`='".$this_game['game_id']."'");
 			$database->sql_delete("rpg_player_attack", "`game_id`='".$this_game['game_id']."'");
@@ -106,7 +108,21 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 	$this_game['calculate_avg']=$temp_avg;
 	*/
 	break;
-	// case 1: Wait for Spawn
+	case 1: //Wait for Spawn
+	// Wenn genug Nachrichten da sind, dann starte doch vielleicht einfach XD
+	$tmp_msgcount=0;
+	$var_msgFactor=10;
+	
+	$game_hosts=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);
+	for ($num_host=0;$num_host<count($game_hosts);$num_hosts++) {
+		$this_host=$game_hosts[$num_host];
+		$game_message=$database->sql_select("bot_chatlog", "count(id) as anzahl", "service='".$this_host['service']."' AND host='".$this_host['host']."' AND time>=".$this_gmae['start_time']."", false);
+		$tmp_msgcount=$tmp_msgcount+$game_message[0]['anzahl'];
+	}
+	echo '<br>'.$tmp_msgcount.' Message<br>';
+	
+	
+	break;
 	case 2:
 	$tt["cooldown"]=120;
 	$this_game['game_state']++;
