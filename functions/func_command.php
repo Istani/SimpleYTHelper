@@ -97,6 +97,7 @@ function replace_html2markdown($string) {
   $string = str_replace("<b>", "**", $string);
   $string = str_replace("</b>", "**", $string);
   
+  $string = str_replace("<br>", "\r\n", $string);
   
   return $string;
 }
