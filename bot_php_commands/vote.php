@@ -21,10 +21,13 @@ $mysqli_base = $mysql['base'];
 
 $link_db = mysqli_connect($mysqli_host,$mysqli_user,$mysqli_pass, $mysqli_base);
 
-$result = mysqli_query($link_db, "select * from Umfragen");
+$result = mysqli_query($link_db, "select * from Umfragen where aktiv = 1 limit 1");
 $vote_array = explode(" ",$this_msg['message']);
 // input string zerlegen
-	
+
+if(mysqli_num_rows($result)== 0)
+{echo "Zur Zeit gibt es keine Umfragen!";}
+
 while($line = mysqli_fetch_assoc($result))
 {
 	if(!isset($vote_array[1]))
@@ -55,7 +58,8 @@ while($line = mysqli_fetch_assoc($result))
 if(($vote_array[1] == "ende") && ($this_msg['user'] == "UC5DOhI70dI3PnLPMkUsosgw"))
 {
 		$result_2 = mysqli_query($link_db, "select * from Ergebnisse where Umfrage_ID = ".$line["Vote_ID"]." order by Anzahl_Votes desc");
-	
+	mysqli_query($link_db, "update Umfragen set aktiv = 0 where Vote_ID = ".$line["Vote_ID"]);
+	// setzt die umfrage auf inaktiv
 	while($line_2 = mysqli_fetch_assoc($result_2))
 	{
 		echo $line_2["Auswahl_ID"].":".$line_2["Text"]." ".$line_2["Anzahl_Votes"]."<br>";	
