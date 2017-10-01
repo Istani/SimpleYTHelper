@@ -19,7 +19,7 @@ while($line = mysqli_fetch_assoc($result))
 		echo $line_2["Auswahl_ID"].":".$line_2["Text"]."<br>";	
 	}
 
-$vote_array = explode(" ",$this_message['message']);
+$vote_array = explode(" ".$this_msg['message']);
 // input string zerlegen
 
 $write = mysqli_query($link_db, "update Ergebnisse set Anzahl_Votes = Anzahl_Votes +1 where Umfrage_ID = ".$line["Vote_ID"]." and Auswahl_ID = ".$vote_array[1]);
