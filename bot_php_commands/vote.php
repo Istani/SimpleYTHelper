@@ -43,7 +43,7 @@ while($line = mysqli_fetch_assoc($result))
 	
 	if(mysqli_num_rows($voted)== 0)
 	{
-		//echo "ich komm zum schreiben!";
+		echo "Du hast gevoted!";
 		$write = mysqli_query($link_db, "update Ergebnisse set Anzahl_Votes = Anzahl_Votes +1 where Umfrage_ID = ".$line["Vote_ID"]." and Auswahl_ID = ".$vote_array[1]);		
 		// der jeweiligen Auswahl_ID einen Punkt gutschreiben
 		$write = mysqli_query($link_db, "insert into user_voted set Umfrage_ID = ".$line["Vote_ID"]." , User_ID ='".$this_msg['user']."'");		
