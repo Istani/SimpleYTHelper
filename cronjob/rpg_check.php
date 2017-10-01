@@ -112,7 +112,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 	
 	// Wenn genug Nachrichten da sind, dann starte doch vielleicht einfach XD
 	$tmp_msgcount=0;
-	$var_msgFactor=10;
+	$var_msgFactor=2;
 	
 	//echo "owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'<br>";
 	$game_hosts=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);
