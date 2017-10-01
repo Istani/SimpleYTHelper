@@ -21,30 +21,56 @@ var self = module.exports = {
   execute: function (message_row, SendFunc, NewMessageFunc) {
     var all_guilds=discord.guilds;
     var this_guild=null;
+    var user=message_row.message.split(" ").slice(1).join(" ").split(":")[0];
+    var role=message_row.message.split(":").slice(1).join(" ");
     
+    // Zum Test;
+    role="RPG_MVP";
+    
+    if (message_row.service!="Discord") {
+      SendFunc("Leider nur fuer Discord Verfügbar!")
+    }
+    // Suche Gilde
     for (var [key, guild] of all_guilds) {
       if (guild.id==message_row.host) {
         this_guild=guild;
       }
     }
     if (this_guild==null) {
+      SendFunc("Gilde nicht gefunden!");
       return;
     }
     
+    // Suche Role
     var all_roles=this_guild.roles;
+    var the_role=null;
     for (var [key, role] of all_roles) {
-      console.log(role);
+      if (role.name==role) {
+        the_role=role;
+      }
+    }
+    if (the_role==null) {
+      SendFunc("Rolle: "+role+" nicht gefunden!");
       return;
     }
     
-    var members =guild.members;
+    // Suche User
+    var all_member=this_guild.members;
+    var this_member=null;
     for (var [key, member] of members) {
-      count_user++;
-      var UserRoles=[];
-      guild.member(member.user).roles.forEach(function(element){
-        UserRoles.push(element.name);
-      });
+      if (member.name==user) {
+        this_member=member;
+      }
     }
+    if (this_member==null) {
+      SendFunc("User: "+user+" nicht gefunden!");
+      return;
+    }
+    
+    this_member.addRole(the_role).catch(console.error);
+    SendFunc("User: "+user+" wurde zum "+role+"!");
+    
+    
   }
 };
 var mysql=null;
