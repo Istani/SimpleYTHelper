@@ -59,8 +59,8 @@ var self = module.exports = {
     var all_member=this_guild.members;
     var this_member=null;
     for (var [key, member] of all_member) {
-      var member_name=member.name;
-      console.log(member);
+      var member_name=member.user.username;
+      //console.log(member);
       if (typeof member_name == "undefined") {
         member_name="";
       }
