@@ -22,9 +22,13 @@ $mysqli_base = $mysql['base'];
 $link_db = mysqli_connect($mysqli_host,$mysqli_user,$mysqli_pass, $mysqli_base);
 
 $result = mysqli_query($link_db, "select * from Umfragen");
-
+$vote_array = explode(" ",$this_msg['message']);
+// input string zerlegen
+	
 while($line = mysqli_fetch_assoc($result))
 {
+	if(!isset($vote_array[1]))
+	{
 	echo $line["Umfragetext"]."<br>";
 	$result_2 = mysqli_query($link_db, "select * from Ergebnisse where Umfrage_ID = ".$line["Vote_ID"]);
 	
@@ -32,14 +36,12 @@ while($line = mysqli_fetch_assoc($result))
 	{
 		echo $line_2["Auswahl_ID"].":".$line_2["Text"]."<br>";	
 	}
-
+	} 
+	else
+	{
 	$voted = mysqli_query($link_db, "select * from user_voted where Umfrage_ID = ".$line["Vote_ID"]." and User_ID ='".$this_msg['user']."'");
 	
 	if(mysqli_num_rows($voted)== 0)
-	{
-		$vote_array = explode(" ",$this_msg['message']);
-	// input string zerlegen
-	if(isset($vote_array[1]))
 	{
 		//echo "ich komm zum schreiben!";
 		$write = mysqli_query($link_db, "update Ergebnisse set Anzahl_Votes = Anzahl_Votes +1 where Umfrage_ID = ".$line["Vote_ID"]." and Auswahl_ID = ".$vote_array[1]);		
@@ -47,8 +49,9 @@ while($line = mysqli_fetch_assoc($result))
 		$write = mysqli_query($link_db, "insert into user_voted set Umfrage_ID = ".$line["Vote_ID"]." , User_ID ='".$this_msg['user']."'");		
 		// setze user in base auf die wählerliste
 	}
-	
+	else{echo "Du hast schon gevoted!";}
 	}
+	
 	
 	
 }
