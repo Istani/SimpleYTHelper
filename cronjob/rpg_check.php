@@ -88,7 +88,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 		switch ($this_game['game_state']) {
 			case 0:
 			$this_game['game_state']++;
-			$this_gmae['start_time']=time();
+			$this_game['start_time']=time();
 			// Drop old Data
 			$database->sql_delete("rpg_player", "`game_id`='".$this_game['game_id']."'");
 			$database->sql_delete("rpg_player_attack", "`game_id`='".$this_game['game_id']."'");
