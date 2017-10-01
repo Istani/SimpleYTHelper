@@ -49,7 +49,7 @@ while($line = mysqli_fetch_assoc($result))
 		$write = mysqli_query($link_db, "insert into user_voted set Umfrage_ID = ".$line["Vote_ID"]." , User_ID ='".$this_msg['user']."'");		
 		// setze user in base auf die wählerliste
 	}
-	else{echo "Du hast schon gevoted!";}
+	elseif{$vote_array[1] != "ende"}{echo "Du hast schon gevoted!";}
 	}
 
 if(($vote_array[1] == "ende") && ($this_msg['user'] == "UC5DOhI70dI3PnLPMkUsosgw"))
