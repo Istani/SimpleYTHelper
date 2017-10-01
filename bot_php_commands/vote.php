@@ -21,12 +21,10 @@ while($line = mysqli_fetch_assoc($result))
 
 $vote_array = explode(" ",$this_msg['message']);
 // input string zerlegen
-
-$write = mysqli_query($link_db, "update Ergebnisse set Anzahl_Votes = Anzahl_Votes +1 where Umfrage_ID = ".$line["Vote_ID"]." and Auswahl_ID = ".$vote_array[1]);
-// der jeweiligen Auswahl_ID einen Punkt gutschreiben
-	
+if(isset($vote_array[1]))
+{
+$write = mysqli_query($link_db, "update Ergebnisse set Anzahl_Votes = Anzahl_Votes +1 where Umfrage_ID = ".$line["Vote_ID"]." and Auswahl_ID = ".$vote_array[1]);		
 }
-
-
-
+// der jeweiligen Auswahl_ID einen Punkt gutschreiben
+}
 ?>
