@@ -74,7 +74,7 @@ var self = module.exports = {
     }
     
     this_member.addRole(the_role).catch(console.error);
-    SendFunc("User: "+user+" wurde zum "+role+"!");
+    SendFunc("User: "+this_member.user+" wurde zum "+the_role+"!");
     
     
   }
