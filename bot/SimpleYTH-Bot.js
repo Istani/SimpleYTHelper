@@ -173,7 +173,7 @@ function Cron_Livestream() {
   fetch(cron_url).then(function (response) {
     return response.text();
   }).then( function (text) {
-    console.log(text);
+    //console.log(text);
     setTimeout(Cron_Livestream, 100);
   });
 }
@@ -182,7 +182,7 @@ function Cron_PHPHAck() {
   fetch(cron_url).then(function (response) {
     return response.text();
   }).then( function (text) {
-    console.log(text);
+    //console.log(text);
     setTimeout(Cron_PHPHAck, 100);
   });
 }

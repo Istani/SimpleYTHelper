@@ -23,7 +23,6 @@ var self = module.exports = {
     var this_guild=null;
     
     for (var [key, guild] of all_guilds) {
-      count_server++;
       if (guild.id==message_row.host) {
         this_guild=guild;
       }
