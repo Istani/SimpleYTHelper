@@ -59,7 +59,7 @@ var self = module.exports = {
     var all_member=this_guild.members;
     var this_member=null;
     for (var [key, member] of all_member) {
-      if (member.name==user) {
+      if (member.name.toLowerCase()==user.toLowerCase()) {
         this_member=member;
       }
     }
