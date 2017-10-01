@@ -107,144 +107,34 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 	}
 	$this_game['calculate_avg']=$temp_avg;
 	*/
-	break;/*
+	break;
 	case 1: //Wait for Spawn
 	
 	// Wenn genug Nachrichten da sind, dann starte doch vielleicht einfach XD
 	$tmp_msgcount=0;
 	$var_msgFactor=10;
 	
+	//echo "owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'<br>";
 	$game_hosts=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);
-	for ($num_host=0;$num_host<count($game_hosts);$num_hosts++) {
-	$this_host=$game_hosts[$num_host];
-	$game_message=$database->sql_select("bot_chatlog", "count(id) as anzahl", "service='".$this_host['service']."' AND host='".$this_host['host']."' AND time>=".$this_game['start_time']."", false);
-	$tmp_msgcount=$tmp_msgcount+$game_message[0]['anzahl'];
-}
-echo '<br>'.$tmp_msgcount.' Message<br>';
-
-
-break; */
-case 2:
-$tt["cooldown"]=120;
-$this_game['game_state']++;
-
-$add_post['message']="!rpg anmeldung";
-$game_data=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);
-for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
-	$this_channel=$game_data[$count_game_data];
-	$add_post['room']="";
-	$add_post['service']=$this_channel['service'];
-	$add_post['host']=$this_channel['host'];
-	if ($this_channel['service']=="YouTube") {
-		$add_post['room']=$LiveStream_Room;
+	for ($num_host=0;$num_host<count($game_hosts);$num_host++) {
+		$this_host=$game_hosts[$num_host];
+		$game_message=$database->sql_select("bot_chatlog", "count(id) as anzahl", "service='".$this_host['service']."' AND host='".$this_host['host']."' AND time>=".$this_game['start_time']."", false);
+		$tmp_msgcount=$tmp_msgcount+$game_message[0]['anzahl'];
+		//echo "service='".$this_host['service']."' AND host='".$this_host['host']."' AND time>=".$this_game['start_time']."<br>";
 	}
-	if ($this_channel['service']=="Discord") {
-		$add_post['room']=$this_channel['channel_rpgmain'];
-	}
-	if ($add_post['room']!="") {
-		$database->sql_insert_update("bot_chatlog", $add_post);
-	}
-}
-break;
-case 3:	// Anmeldung Vorbei! - Generate Monster & Player!
-$tt["cooldown"]=1;
-$this_game['game_state']++;
-// Generate Player Stats
-$game_data=$database->sql_select("rpg_player", "*", "`game_id`='".$this_game['game_id']."'", false);
-$this_game['player_count']=count($game_data);
-if ($this_game['player_count']==0) {
-	$this_game['rounds_current']=$this_game['rounds_max'];
-}
-for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
-	$this_player=$game_data[$count_game_data];
-	$this_game['calculate_avg']+=($this_player['calculate_avg']-5);
-}
-
-// Generate Monster Stats
-$this_monster['factor']=0;
-while ($this_monster['factor']==0) {
-	$game_data=$database->sql_select("rpg_monster", "*", "true ORDER BY RAND() LIMIT 1", false);
-	if (count($game_data)==1) {
-		$this_monster=$game_data[0];
-	} else {
-		// NOTE: Create Monster, because none exists on first run!
-		$addMon['monster_id']="Alpha_Monster";
-		$addMon['factor']=100;
-		$database->sql_insert_update("rpg_monster", $addMon);
-	}
-}
-$this_game['monster_id']=$this_monster['monster_id'];
-$this_game['monster_factor']=$this_monster['factor'];
-// Calculate HP
-$this_game["monster_hp_max"]=($this_game['monster_factor']/100)*(/*$this_game['player_count']**/$this_game['calculate_avg']*$this_game['rounds_max']);
-	$this_game["monster_hp_current"]=$this_game["monster_hp_max"];
-	
-	// Message to Start!
-	if ($this_game['player_count']>0) {
-		$add_post['message']="!rpg howto";
-		$game_data=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);
-		for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
-			$this_channel=$game_data[$count_game_data];
-			$add_post['room']="";
-			$add_post['service']=$this_channel['service'];
-			$add_post['host']=$this_channel['host'];
-			if ($this_channel['service']=="YouTube") {
-				$add_post['room']=$LiveStream_Room;
-			}
-			if ($this_channel['service']=="Discord") {
-				$add_post['room']=$this_channel['channel_rpgmain'];
-			}
-			if ($add_post['room']!="") {
-				$database->sql_insert_update("bot_chatlog", $add_post);
-			}
-		}
-	}
-	$add_post['id']++;
-	$add_post['time']++;
-	//break;	// Damit der bei State 4 Direkt mit dem Kampf beginnt
-	case 4:  // Kampf Start!
-	$tt["cooldown"]=60;
-	// Calculate DMG and so...
-	$game_data=$database->sql_select("rpg_player INNER JOIN rpg_player_attack ON rpg_player.user_id=rpg_player_attack.user_id AND rpg_player.game_id=rpg_player_attack.game_id", "rpg_player.*", "rpg_player.game_id='".$this_game['game_id']."'", false);
-	for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
-		$this_player=$game_data[$count_game_data];
-		$this_game['monster_hp_current']-=$this_player['calculate_avg'];
-		$this_player['sum_dmg']+=$this_player['calculate_avg'];
-		$database->sql_insert_update("rpg_player", $this_player);
-	}
-	
-	if ($this_game['monster_hp_current']<=0) {
-		$this_game['rounds_current']=$this_game['rounds_max'];
-	}
-	$database->sql_delete("rpg_player_attack", "`game_id`='".$this_game['game_id']."'");
-	// Checking Round Counter!
-	$this_game['rounds_current']++;
-	if ($this_game['rounds_current']>$this_game['rounds_max']) {
+	$tmp_chance=(int)($tmp_msgcount/$var_msgFactor);
+	$rand=rand(0,101);
+	if ($tmp_chance>$rand) {
 		$this_game['game_state']++;
-	} else {
-		$add_post['message']="!rpg round";
-		$game_data=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);
-		for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
-			$this_channel=$game_data[$count_game_data];
-			$add_post['room']="";
-			$add_post['service']=$this_channel['service'];
-			$add_post['host']=$this_channel['host'];
-			if ($this_channel['service']=="YouTube") {
-				$add_post['room']=$LiveStream_Room;
-			}
-			if ($this_channel['service']=="Discord") {
-				$add_post['room']=$this_channel['channel_rpgmain'];
-			}
-			if ($add_post['room']!="") {
-				$database->sql_insert_update("bot_chatlog", $add_post);
-			}
-		}
-		break;
+		$this_game['rounds_max']=rand(5,15);
 	}
-	case 5:	// Ende
-	$tt["cooldown"]=1;
+	
+	break;
+	case 2:
+	$tt["cooldown"]=120;
 	$this_game['game_state']++;
-	$add_post['message']="!rpg result";
+	
+	$add_post['message']="!rpg anmeldung";
 	$game_data=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);
 	for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
 		$this_channel=$game_data[$count_game_data];
@@ -261,27 +151,143 @@ $this_game["monster_hp_max"]=($this_game['monster_factor']/100)*(/*$this_game['p
 			$database->sql_insert_update("bot_chatlog", $add_post);
 		}
 	}
-	$game_data=$database->sql_select("rpg_monster", "*", "monster_id='".$this_game['monster_id']."'", false);
-	$this_monster=$game_data[0];
-	if ($this_game['player_count']>0) {
-		if ($this_game['monster_hp_current']<=0) {
-			$this_monster['factor']=($this_monster['factor']*1.25);
+	break;
+	case 3:	// Anmeldung Vorbei! - Generate Monster & Player!
+	$tt["cooldown"]=1;
+	$this_game['game_state']++;
+	// Generate Player Stats
+	$game_data=$database->sql_select("rpg_player", "*", "`game_id`='".$this_game['game_id']."'", false);
+	$this_game['player_count']=count($game_data);
+	if ($this_game['player_count']==0) {
+		$this_game['rounds_current']=$this_game['rounds_max'];
+	}
+	for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
+		$this_player=$game_data[$count_game_data];
+		$this_game['calculate_avg']+=($this_player['calculate_avg']-5);
+	}
+	
+	// Generate Monster Stats
+	$this_monster['factor']=0;
+	while ($this_monster['factor']==0) {
+		$game_data=$database->sql_select("rpg_monster", "*", "true ORDER BY RAND() LIMIT 1", false);
+		if (count($game_data)==1) {
+			$this_monster=$game_data[0];
 		} else {
-			$this_monster['factor']=($this_monster['factor']*0.80);
+			// NOTE: Create Monster, because none exists on first run!
+			$addMon['monster_id']="Alpha_Monster";
+			$addMon['factor']=100;
+			$database->sql_insert_update("rpg_monster", $addMon);
 		}
 	}
-	$database->sql_insert_update("rpg_monster", $this_monster);
-	break;
-	default:
-	$change_me=false;
-}
-unset($add_post);
-if ($change_me) {
-	$database->sql_insert_update($cronjob_id,$this_game);
-}
-$rundendauer=1; // Ich nehme an das 60 Sekunden zu kurz sind, deswegen hier ein Faktor!
-$tt["cooldown"]=$tt["cooldown"]*$rundendauer;
-
+	$this_game['monster_id']=$this_monster['monster_id'];
+	$this_game['monster_factor']=$this_monster['factor'];
+	// Calculate HP
+	$this_game["monster_hp_max"]=($this_game['monster_factor']/100)*(/*$this_game['player_count']**/$this_game['calculate_avg']*$this_game['rounds_max']);
+		$this_game["monster_hp_current"]=$this_game["monster_hp_max"];
+		
+		// Message to Start!
+		if ($this_game['player_count']>0) {
+			$add_post['message']="!rpg howto";
+			$game_data=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);
+			for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
+				$this_channel=$game_data[$count_game_data];
+				$add_post['room']="";
+				$add_post['service']=$this_channel['service'];
+				$add_post['host']=$this_channel['host'];
+				if ($this_channel['service']=="YouTube") {
+					$add_post['room']=$LiveStream_Room;
+				}
+				if ($this_channel['service']=="Discord") {
+					$add_post['room']=$this_channel['channel_rpgmain'];
+				}
+				if ($add_post['room']!="") {
+					$database->sql_insert_update("bot_chatlog", $add_post);
+				}
+			}
+		}
+		$add_post['id']++;
+		$add_post['time']++;
+		//break;	// Damit der bei State 4 Direkt mit dem Kampf beginnt
+		case 4:  // Kampf Start!
+		$tt["cooldown"]=60;
+		// Calculate DMG and so...
+		$game_data=$database->sql_select("rpg_player INNER JOIN rpg_player_attack ON rpg_player.user_id=rpg_player_attack.user_id AND rpg_player.game_id=rpg_player_attack.game_id", "rpg_player.*", "rpg_player.game_id='".$this_game['game_id']."'", false);
+		for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
+			$this_player=$game_data[$count_game_data];
+			$this_game['monster_hp_current']-=$this_player['calculate_avg'];
+			$this_player['sum_dmg']+=$this_player['calculate_avg'];
+			$database->sql_insert_update("rpg_player", $this_player);
+		}
+		
+		if ($this_game['monster_hp_current']<=0) {
+			$this_game['rounds_current']=$this_game['rounds_max'];
+		}
+		$database->sql_delete("rpg_player_attack", "`game_id`='".$this_game['game_id']."'");
+		// Checking Round Counter!
+		$this_game['rounds_current']++;
+		if ($this_game['rounds_current']>$this_game['rounds_max']) {
+			$this_game['game_state']++;
+		} else {
+			$add_post['message']="!rpg round";
+			$game_data=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);
+			for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
+				$this_channel=$game_data[$count_game_data];
+				$add_post['room']="";
+				$add_post['service']=$this_channel['service'];
+				$add_post['host']=$this_channel['host'];
+				if ($this_channel['service']=="YouTube") {
+					$add_post['room']=$LiveStream_Room;
+				}
+				if ($this_channel['service']=="Discord") {
+					$add_post['room']=$this_channel['channel_rpgmain'];
+				}
+				if ($add_post['room']!="") {
+					$database->sql_insert_update("bot_chatlog", $add_post);
+				}
+			}
+			break;
+		}
+		case 5:	// Ende
+		$tt["cooldown"]=1;
+		$this_game['game_state']++;
+		$add_post['message']="!rpg result";
+		$game_data=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);
+		for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
+			$this_channel=$game_data[$count_game_data];
+			$add_post['room']="";
+			$add_post['service']=$this_channel['service'];
+			$add_post['host']=$this_channel['host'];
+			if ($this_channel['service']=="YouTube") {
+				$add_post['room']=$LiveStream_Room;
+			}
+			if ($this_channel['service']=="Discord") {
+				$add_post['room']=$this_channel['channel_rpgmain'];
+			}
+			if ($add_post['room']!="") {
+				$database->sql_insert_update("bot_chatlog", $add_post);
+			}
+		}
+		$game_data=$database->sql_select("rpg_monster", "*", "monster_id='".$this_game['monster_id']."'", false);
+		$this_monster=$game_data[0];
+		if ($this_game['player_count']>0) {
+			if ($this_game['monster_hp_current']<=0) {
+				$this_monster['factor']=($this_monster['factor']*1.25);
+			} else {
+				$this_monster['factor']=($this_monster['factor']*0.80);
+			}
+		}
+		$database->sql_insert_update("rpg_monster", $this_monster);
+		break;
+		default:
+		$change_me=false;
+	}
+	unset($add_post);
+	if ($change_me) {
+		$database->sql_insert_update($cronjob_id,$this_game);
+	}
+	$rundendauer=1; // Ich nehme an das 60 Sekunden zu kurz sind, deswegen hier ein Faktor!
+	$tt["cooldown"]=$tt["cooldown"]*$rundendauer;
+	
 }
 
 //die("RPG CHECK");
