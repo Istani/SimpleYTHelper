@@ -116,7 +116,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 	$game_hosts=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);
 	for ($num_host=0;$num_host<count($game_hosts);$num_hosts++) {
 		$this_host=$game_hosts[$num_host];
-		$game_message=$database->sql_select("bot_chatlog", "count(id) as anzahl", "service='".$this_host['service']."' AND host='".$this_host['host']."' AND time>=".$this_gmae['start_time']."", false);
+		$game_message=$database->sql_select("bot_chatlog", "count(id) as anzahl", "service='".$this_host['service']."' AND host='".$this_host['host']."' AND time>=".$this_game['start_time']."", false);
 		$tmp_msgcount=$tmp_msgcount+$game_message[0]['anzahl'];
 	}
 	echo '<br>'.$tmp_msgcount.' Message<br>';
