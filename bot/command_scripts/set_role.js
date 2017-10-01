@@ -24,8 +24,9 @@ var self = module.exports = {
     var user=message_row.message.split(" ").slice(1).join(" ").split(":")[0];
     var lookup_role=message_row.message.split(":").slice(1).join(" ");
     
-    // Zum Test;
-    lookup_role="RPG_MVP";
+    if (lookup_role=="") {
+      lookup_role="RPG-MVP";
+    }
     
     if (message_row.service!="Discord") {
       SendFunc("Leider nur fuer Discord Verfügbar!")
@@ -57,7 +58,7 @@ var self = module.exports = {
     // Suche User
     var all_member=this_guild.members;
     var this_member=null;
-    for (var [key, member] of members) {
+    for (var [key, member] of all_member) {
       if (member.name==user) {
         this_member=member;
       }
