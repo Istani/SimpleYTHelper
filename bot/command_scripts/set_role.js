@@ -60,6 +60,7 @@ var self = module.exports = {
     var this_member=null;
     for (var [key, member] of all_member) {
       var member_name=member.name;
+      console.log(member.name);
       if (typeof member_name == "undefined") {
         member_name="";
       }
