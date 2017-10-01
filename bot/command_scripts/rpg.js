@@ -273,7 +273,7 @@ function CheckResult(SendFunc,GameID, NewMessageFunc, old_message) {
         
         if ((i==0) && (list_player_dmg[i].user_name!="")) {
           old_message.content="!set_role "+list_player_dmg[i].user_name;
-          old_message.id=old_message.id*10;
+          old_message.id=old_message.id+'0';
           old_message.user="-1";
           NewMessageFunc(old_message.service, old_message.host, old_message.room, old_message.id, old_message.time, old_message.user, old_message.content);
         }
