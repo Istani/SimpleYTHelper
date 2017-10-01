@@ -22,10 +22,10 @@ var self = module.exports = {
     var all_guilds=discord.guilds;
     var this_guild=null;
     var user=message_row.message.split(" ").slice(1).join(" ").split(":")[0];
-    var role=message_row.message.split(":").slice(1).join(" ");
+    var lookup_role=message_row.message.split(":").slice(1).join(" ");
     
     // Zum Test;
-    role="RPG_MVP";
+    lookup_role="RPG_MVP";
     
     if (message_row.service!="Discord") {
       SendFunc("Leider nur fuer Discord Verfügbar!")
@@ -45,12 +45,12 @@ var self = module.exports = {
     var all_roles=this_guild.roles;
     var the_role=null;
     for (var [key, role] of all_roles) {
-      if (role.name==role) {
+      if (role.name==lookup_role) {
         the_role=role;
       }
     }
     if (the_role==null) {
-      SendFunc("Rolle: "+role+" nicht gefunden!");
+      SendFunc("Rolle: "+lookup_role+" nicht gefunden!");
       return;
     }
     
