@@ -50,7 +50,7 @@ while($line = mysqli_fetch_assoc($result))
 		// setze user in base auf die wählerliste
 	}
 	elseif($vote_array[1] != "ende"){echo "Du hast schon gevoted!";}
-	}
+	
 
 if(($vote_array[1] == "ende") && ($this_msg['user'] == "UC5DOhI70dI3PnLPMkUsosgw"))
 {
@@ -62,7 +62,7 @@ if(($vote_array[1] == "ende") && ($this_msg['user'] == "UC5DOhI70dI3PnLPMkUsosgw
 	}
 	
 }	
-	
+	}
 	
 }
 ?>
