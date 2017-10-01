@@ -51,7 +51,17 @@ while($line = mysqli_fetch_assoc($result))
 	}
 	else{echo "Du hast schon gevoted!";}
 	}
+
+if(($vote_array[1] == "ende") && ($this_msg['user'] == "UC5DOhI70dI3PnLPMkUsosgw"))
+{
+		$result_2 = mysqli_query($link_db, "select * from Ergebnisse where Umfrage_ID = ".$line["Vote_ID"]." order by Anzahl_Votes desc");
 	
+	while($line_2 = mysqli_fetch_assoc($result_2))
+	{
+		echo $line_2["Auswahl_ID"].":".$line_2["Text"]." ".$line_2["Anzahl_Votes"]."<br>";	
+	}
+	
+}	
 	
 	
 }
