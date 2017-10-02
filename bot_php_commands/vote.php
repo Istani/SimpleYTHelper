@@ -23,8 +23,9 @@ $result = mysqli_query($link_db, "select * from Umfragen where aktiv = 1 limit 1
 $vote_array = explode(" ",$this_msg['message']);
 // input string zerlegen
 
-if(mysqli_num_rows($result)== 0)
-{echo "Zur Zeit gibt es keine Umfragen!";}
+if(mysqli_num_rows($result)== 0){
+	echo "Zur Zeit gibt es keine Umfragen!";
+}
 
 while($line = mysqli_fetch_assoc($result))
 {
@@ -46,9 +47,9 @@ while($line = mysqli_fetch_assoc($result))
 		if(mysqli_num_rows($voted)== 0)
 		{
 			echo "Du hast gevoted!";
-			$write = mysqli_query($link_db, "update Ergebnisse set Anzahl_Votes = Anzahl_Votes +1 where Umfrage_ID = ".$line["Vote_ID"]." and Auswahl_ID = ".$vote_array[1]);
+			mysqli_query($link_db, "update Ergebnisse set Anzahl_Votes = Anzahl_Votes +1 where Umfrage_ID = ".$line["Vote_ID"]." and Auswahl_ID = ".$vote_array[1]);
 			// der jeweiligen Auswahl_ID einen Punkt gutschreiben
-			$write = mysqli_query($link_db, "insert into user_voted set Umfrage_ID = ".$line["Vote_ID"]." , User_ID ='".$this_msg['user']."'");
+			mysqli_query($link_db, "insert into user_voted set Umfrage_ID = ".$line["Vote_ID"]." , User_ID ='".$this_msg['user']."'");
 			// setze user in base auf die wählerliste
 		}
 		elseif($vote_array[1] != "ende"){echo "Du hast schon gevoted!";}
