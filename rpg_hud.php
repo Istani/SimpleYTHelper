@@ -48,15 +48,15 @@ $this_game=$game_data[0];
   ?>
   <div id="check_gamestate"></div>
   
-  <div class="round_counter with_borders" style="width:400px;">
+  <div class="round_counter" style="width:400px;">
     &nbsp;
   </div>
   
-  <div class="monster_pic with_borders" style="width:400px;height:213px;">
+  <div class="monster_pic" style="width:400px;height:213px;">
     
   </div>
   
-  <div class="hp_meter with_borders" style="width:400px;">
+  <div class="hp_meter" style="width:400px;">
     &nbsp;
   </div>
   <script>
