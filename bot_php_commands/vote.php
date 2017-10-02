@@ -9,6 +9,8 @@ $this_msg['time'] = time();
 $this_msg['user'] = "Defender833";
 $this_msg['message'] = "!vote 2";
 
+//$this_user
+
 $mysql['host'] = "127.0.0.1";
 $mysql['user'] = "root";
 $mysql['pass'] = "";
@@ -66,4 +68,5 @@ while($line = mysqli_fetch_assoc($result))
 	}
 	
 }
+echo debug_log($this_user);
 ?>

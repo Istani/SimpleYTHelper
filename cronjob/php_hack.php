@@ -36,6 +36,13 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     $this_msg=$all_messages[$m_count];
     $command_file="";
     
+    // Vars übergeben an PHP Script
+    $temp_users=$database->sql_select("bot_chatuser","*", "service='".$this_msg['service']."' AND host='".$this_msg['host']."' AND user='".$this_msg['user']."'", false);
+    $this_user=$temp_users[0];
+    $temp_user_roles=$database->sql_select("bot_chatuser_roles INNER JOIN bot_chatroles ON (bot_chatuser_roles.service=bot_chatroles.service AND bot_chatuser_roles.host=bot_chatroles.role AND bot_chatuser_roles.host=bot_chatroles.role)","bot_chatroles.*","service='".$this_msg['service']."' AND host='".$this_msg['host']."' AND user='".$this_msg['user']."'",false);
+    for ($count_user=0;$count_user<count($temp_user_roles);$count_user++) {
+      $this_user['Roles'][]=$temp_user_roles[$count_user];
+    }
     if ($prefix==substr($this_msg['message'], 0,1)) {
       $parts=explode(" ", $this_msg['message'],2);
       $command_file="bot_php_commands/".substr($parts[0], 1).".php";
