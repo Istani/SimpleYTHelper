@@ -1,5 +1,5 @@
 <?php
-/**/
+/*
 //fake input
 $this_msg['service'] = "Discord";
 $this_msg['host'] = "1234";
@@ -13,7 +13,7 @@ $mysql['host'] = "127.0.0.1";
 $mysql['user'] = "root";
 $mysql['pass'] = "";
 $mysql['base']	= "simpleyth";
-
+*/
 
 $link_db = mysqli_connect($mysql['host'],$mysql['user'],$mysql['pass'], $mysql['base']);
 
