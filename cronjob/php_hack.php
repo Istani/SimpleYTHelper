@@ -39,7 +39,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     // Vars übergeben an PHP Script
     $temp_users=$database->sql_select("bot_chatuser","*", "service='".$this_msg['service']."' AND host='".$this_msg['host']."' AND user='".$this_msg['user']."'", false);
     $this_user=$temp_users[0];
-    $temp_user_roles=$database->sql_select("bot_chatuser_roles INNER JOIN bot_chatroles ON (bot_chatuser_roles.service=bot_chatroles.service AND bot_chatuser_roles.host=bot_chatroles.role AND bot_chatuser_roles.host=bot_chatroles.role)","bot_chatroles.*","service='".$this_msg['service']."' AND host='".$this_msg['host']."' AND user='".$this_msg['user']."'",false);
+    $temp_user_roles=$database->sql_select("bot_chatuser_roles INNER JOIN bot_chatroles ON ( bot_chatuser_roles.service = bot_chatroles.service AND bot_chatuser_roles.host = bot_chatroles.host AND bot_chatuser_roles.role = bot_chatroles.role ) ","bot_chatroles.*","bot_chatroles.service='".$this_msg['service']."' AND bot_chatroles.host='".$this_msg['host']."' AND user='".$this_msg['user']."'",false);
     for ($count_user=0;$count_user<count($temp_user_roles);$count_user++) {
       $this_user['Roles'][]=$temp_user_roles[$count_user];
     }
