@@ -21,7 +21,7 @@ if (file_exists($file_url)) {
     $file_next="img/".$_GET['monster_id']."_".$_GET['animation_type'].($_GET['animation_state']+1).".png";
     
   }
-  echo $file_next;
+  //echo $file_next;
   
   echo '<script>document.getElementById("animation_state").value="'.($_GET['animation_state']+1).'";</script>';
   
