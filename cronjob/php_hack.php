@@ -43,6 +43,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     for ($count_user=0;$count_user<count($temp_user_roles);$count_user++) {
       $this_user['Roles'][]=$temp_user_roles[$count_user];
     }
+    
     if ($prefix==substr($this_msg['message'], 0,1)) {
       $parts=explode(" ", $this_msg['message'],2);
       $command_file="bot_php_commands/".substr($parts[0], 1).".php";
