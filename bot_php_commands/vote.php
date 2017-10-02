@@ -27,6 +27,15 @@ if(mysqli_num_rows($result)== 0){
 	echo "Zur Zeit gibt es keine Umfragen!";
 }
 
+// Voting "Gewicht"
+$vote_gewicht=1;
+for ($tmp_count=0;$tmp_count<count($this_user['roles'])) {
+	$this_role=$this_user['roles'][$tmp_count];
+	if ($this_role['vote_factor']>$vote_gewicht) {
+		$vote_gewicht=$this_role['vote_factor'];
+	}
+}
+
 while($line = mysqli_fetch_assoc($result))
 {
 	if(!isset($vote_array[1]))
@@ -47,7 +56,7 @@ while($line = mysqli_fetch_assoc($result))
 		if(mysqli_num_rows($voted)== 0)
 		{
 			echo "Du hast gevoted!";
-			mysqli_query($link_db, "update Ergebnisse set Anzahl_Votes = Anzahl_Votes +1 where Umfrage_ID = ".$line["Vote_ID"]." and Auswahl_ID = ".$vote_array[1]);
+			mysqli_query($link_db, "update Ergebnisse set Anzahl_Votes=Anzahl_Votes+".$vote_gewicht." where Umfrage_ID = ".$line["Vote_ID"]." and Auswahl_ID = ".$vote_array[1]);
 			// der jeweiligen Auswahl_ID einen Punkt gutschreiben
 			mysqli_query($link_db, "insert into user_voted set Umfrage_ID = ".$line["Vote_ID"]." , User_ID ='".$this_msg['user']."'");
 			// setze user in base auf die wählerliste
