@@ -78,5 +78,5 @@ while($line = mysqli_fetch_assoc($result))
 	}
 	
 }
-echo debug_log($this_user);
+//echo debug_log($this_user);
 ?>
