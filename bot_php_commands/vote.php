@@ -29,7 +29,7 @@ if(mysqli_num_rows($result)== 0){
 
 // Voting "Gewicht"
 $vote_gewicht=1;
-for ($tmp_count=0;$tmp_count<count($this_user['roles'])) {
+for ($tmp_count=0;$tmp_count<count($this_user['roles']);$tmp_count++) {
 	$this_role=$this_user['roles'][$tmp_count];
 	if ($this_role['vote_factor']>$vote_gewicht) {
 		$vote_gewicht=$this_role['vote_factor'];
