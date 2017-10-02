@@ -29,7 +29,8 @@ var self = module.exports = {
     }
     
     if (message_row.service!="Discord") {
-      SendFunc("Leider nur fuer Discord Verfügbar!")
+      SendFunc("Leider nur fuer Discord Verfügbar!");
+      return;
     }
     // Suche Gilde
     for (var [key, guild] of all_guilds) {
