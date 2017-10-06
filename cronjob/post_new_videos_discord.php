@@ -23,7 +23,7 @@ for ($v=0;$v<count($videos_yt);$v++) {
   $tmp_newvideo['link']="https://www.youtube.com/watch?v=".$videos_yt[$v]["videoid"];
   $tmp_newvideo['title']=$videos_yt[$v]["title"];
   $tmp_newvideo['description']=$videos_yt[$v]["description"];
-  $tmp_newvideo['first_seen']=strtotime($videos_yt[$v]["first_seen"]);
+  $tmp_newvideo['first_seen']=$videos_yt[$v]["first_seen"];
   $tmp_newvideo['thumbnail']=$videos_yt[$v]['thumbnail'];
   // Was braucht man noch?
   
