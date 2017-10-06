@@ -54,6 +54,8 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     $new_feld["last_liveStreamingDetailsupdate"]="TEXT";
     $new_feld["last_contentDetailsupdate"]="TEXT";
     
+    $new_feld["publishedat_int"]="INT(20)";
+    
     $new_feld["ignore"]="TEXT";
     $database->add_columns($_tmp_tabellename, $new_feld);
     unset($new_feld);
@@ -72,7 +74,6 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
       unset($row4sql["channelTitle"]);
       unset($row4sql["playlistId"]);
       unset($row4sql["position"]);
-      
       
       if(!in_array("videos_snippet_tags", $check_table)) {
         $tagstab=null;

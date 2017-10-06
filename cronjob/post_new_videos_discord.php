@@ -17,13 +17,13 @@ if ($tt["token"]=="null" or is_null($tt['token'])) {
 if (isset($video_list)) {
   unset($video_list);
 }
-$videos_yt=$database->sql_select("videos_snippet", "*", "channelid='".$_SESSION['user']['youtube_user']."' AND publishedat>".$tt['token']." ORDER BY publishedat",true);
+$videos_yt=$database->sql_select("videos_snippet", "*", "channelid='".$_SESSION['user']['youtube_user']."' AND first_seen>".$tt['token']." ORDER BY first_seen",true);
 for ($v=0;$v<count($videos_yt);$v++) {
   $tmp_newvideo['id']=$videos_yt[$v]["videoid"];
   $tmp_newvideo['link']="https://www.youtube.com/watch?v=".$videos_yt[$v]["videoid"];
   $tmp_newvideo['title']=$videos_yt[$v]["title"];
   $tmp_newvideo['description']=$videos_yt[$v]["description"];
-  $tmp_newvideo['publishedat']=strtotime($videos_yt[$v]["publishedat"]);
+  $tmp_newvideo['first_seen']=strtotime($videos_yt[$v]["first_seen"]);
   $tmp_newvideo['thumbnail']=$videos_yt[$v]['thumbnail'];
   // Was braucht man noch?
   
@@ -65,7 +65,7 @@ foreach ($my_rechte as $t_service => $the_hosts) {
         //$database->sql_insert_update("bot_chatlog", $add_post);
         unset($add_post);
         
-        //$tt['token']=$video_list[0]['publishedat'];
+        $tt['token']=$video_list[0]['first_seen'];
       }
     }
   }
