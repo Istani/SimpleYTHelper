@@ -73,7 +73,8 @@ foreach ($my_rechte as $t_service => $the_hosts) {
 
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$_SESSION['user']['email'].': '.$cronjob_id." updated!<br>";
-$tt["cooldown"]=1*60*60; // Test
+//$tt["cooldown"]=1*60*60; // Test
+$tt["cooldown"]=60; // Test
 $tt["last_used"]=time();
 $tt["user"]=$_SESSION['user']['email'];
 if($tt["token"]==""){$tt["token"]="null";}
