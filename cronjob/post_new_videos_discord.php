@@ -37,50 +37,39 @@ for ($v=0;$v<count($videos_yt);$v++) {
 
 if (isset($video_list)) {
   for ($v=0;$v<count($video_list);$v++) {
-    echo $v.'.';
-    debug_log($video_list[$v]);
-    echo '<br>';
+    // Falls irgendwann mehrere video quellen verwendet werden
   }
 }
 
 // Do Magic 2
-//require_once '../API/wordpress/class-IXR.php';
-$wpadress = "http://www.defender833.de/xmlrpc.php";
-$wpadress = "http://31.172.95.10/wordpress/xmlrpc.php";
-$rpc = new IXR_Client($wpadress);
-/* Get Methods */
-$result = $rpc->query('system.listMethods');
-if ($result) {
-  debug_log($rpc->getResponse());
-} else {
-  echo 'Error [' . $rpc->getErrorCode() . ']: ' . $rpc->getErrorMessage().'<br>';
+$my_rechte=$SYTHS->may_post_videos_on($_SESSION['user']['email']);
+foreach ($my_rechte as $t_service => $the_hosts) {
+  foreach ($the_hosts as $t_host => $t_channel) {
+    if ($t_channel!="0") {
+      // Posten versuchen
+      $t_user="";
+      if ($t_service=="Discord") {
+        $t_user=$_SESSION['user']['discord_user'];
+      }
+      
+      // Poste
+      if ($t_user!="") {
+        $add_post['service']=$t_service;
+        $add_post['host']=$t_host;
+        $add_post['room']=$t_channel;
+        $add_post['id']=time();
+        $add_post['time']=time();
+        $add_post['user']=$t_user;
+        $add_post['message']="!yt video ".$video_list[0]['id'];
+        $add_post['process']=0;
+        $database->sql_insert_update("bot_chatlog", $add_post);
+        unset($add_post);
+        
+        $tt['token']=$video_list[0]['publishedat'];
+      }
+    }
+  }
 }
-
-/* Do a Posting */
-$content = array(
-  'post_type' => 'post',
-  'post_status' => 'pending',
-  'post_title' => $video_list[0]['title'],
-  'post_content' => $video_list[0]['description'],
-  'terms' => array('category' => array( 0 ) ),
-  'comment_status' => 'closed',
-);
-/*
-$params = array(
-1,
-'sascha.u.kaufmann@googlemail.com',
-'1234',
-$content
-);
-$result = $rpc->query('wp.newPost', $params);
-
-if ($result) {
-// Jo alles gut
-debug_log($rpc->getResponse());
-} else {
-echo 'Error [' . $rpc->getErrorCode() . ']: ' . $rpc->getErrorMessage().'<br>';
-}
-*/
 
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$_SESSION['user']['email'].': '.$cronjob_id." updated!<br>";
