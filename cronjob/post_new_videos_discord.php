@@ -62,10 +62,10 @@ foreach ($my_rechte as $t_service => $the_hosts) {
         $add_post['user']=$t_user;
         $add_post['message']="!yt video ".$video_list[0]['id'];
         $add_post['process']=0;
-        //$database->sql_insert_update("bot_chatlog", $add_post);
+        $database->sql_insert_update("bot_chatlog", $add_post);
         unset($add_post);
         
-        //$tt['token']=$video_list[0]['first_seen'];
+        $tt['token']=$video_list[0]['first_seen'];
       }
     }
   }
