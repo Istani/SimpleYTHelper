@@ -33,7 +33,7 @@ var self = module.exports = {
           RowString=rows[i].type;
           RowString+=": ";
           RowString+="http://s.defender833.de/l.php?l=";
-          RowString+=rows2[j].hash;
+          RowString+=rows[i].hash;
           RowString+="\r\n";
           if (ReturnString.length+RowString.length>=200) {
             SendFunc(ReturnString);
