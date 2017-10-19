@@ -54,6 +54,7 @@ google_bot.on("message", msg => {
 
 // Bot Control
 function StartBot() {
+  console.log("Starte Bot");
   Login();
   Cron_Livestream();
   Cron_PHPHAck();
