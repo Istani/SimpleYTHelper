@@ -43,7 +43,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     $database->sql_insert_update($_tmp_tabellename, $this_sponsor);
     unset($this_sponsor);
   }
-  $tt["cooldown"]=60;
+  $tt["cooldown"]=60*60;
 }
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$tmp_token['channel_id'].': '.$_tmp_tabellename." updated!<br>";
