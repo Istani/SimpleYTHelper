@@ -53,6 +53,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     $new_feld["last_statusupdate"]="TEXT";
     $new_feld["last_liveStreamingDetailsupdate"]="TEXT";
     $new_feld["last_contentDetailsupdate"]="TEXT";
+    $new_feld["last_tagsupdate"]="TEXT";
     
     $new_feld["publishedat_int"]="INT(20)";
     
