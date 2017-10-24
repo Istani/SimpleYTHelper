@@ -89,9 +89,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   
   unset($tmp_video_details);
   unset($tmp_video_tags);
-  //echo 'Hello World!';
-  die();
-  $tt["cooldown"]=60*60;
+  $tt["cooldown"]=60;
 }
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$tmp_token['channel_id'].': '.$_tmp_tabellename." updated!<br>";
