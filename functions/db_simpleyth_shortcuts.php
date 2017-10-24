@@ -106,5 +106,29 @@ class SimpleYTH_Shortcuts {
     }
     return $return;
   }
+  
+  function multiarray2array($array, $last_key="") {
+    //$return_array=array();
+    
+    foreach ($array as $key => $value) {
+      if (is_array($value)) {
+        $temp_array=$this->multiarray2array($value, $key);
+        foreach ($temp_array as $tkey => $tvalue) {
+          if ($last_key!="") {
+            $return_array[$last_key.'_'.$tkey]=$tvalue;
+          } else {
+            $return_array[$tkey]=$tvalue;
+          }
+        }
+      } else {
+        if ($last_key!="") {
+          $return_array[$last_key.'_'.$key]=$value;
+        } else {
+          $return_array[$key]=$value;
+        }
+      }
+    }
+    return $return_array;
+  }
 }
 ?>

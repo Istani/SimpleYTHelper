@@ -89,8 +89,10 @@ class db {
         $sql_felder.=', ' . "`".strtolower($key)."` ".$value;
         
       }
-      if ($key==$pkfeld){
-        $sql_felder.=" PRIMARY KEY";
+      if ($this->system!="mysql") {
+        if ($key==$pkfeld){
+          $sql_felder.=" PRIMARY KEY";
+        }
       }
       
     }
@@ -98,6 +100,8 @@ class db {
     $sql_string=" CREATE TABLE ".strtolower($table)." (".$sql_felder.")";
     if ($this->system=="mysql") {
       $return_status=mysql_query($sql_string, $this->connection);
+      $sql_string2="ALTER TABLE `".strtolower($table)."` ADD PRIMARY KEY(".$pkfeld.");";
+      $return_status=mysql_query($sql_string2, $this->connection);
     } else if ($this->system=="sqlite"){
       $return_status=$this->database->exec($sql_string);
     }
