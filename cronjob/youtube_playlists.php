@@ -40,81 +40,101 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   
   $part="id, contentDetails, snippet, status";
   //$params = array('part' => $part, 'id'=> "rdoyNKvhSOM");
-  $params = array('part' => $part, 'mine'=> "true", 'maxResults'=>$req_max);
+  if($tt['token']=="Upload") {
+    $db_stats = $database->sql_select("youtube_channels", "*", "youtube_id='".$_SESSION['user']['youtube_user']."'", true);
+    $uploadsListId=$db_stats[0]["youtube_contentdetails_relatedplaylists_uploads"];
+    $params = array('part' => $part, 'id'=> $uploadsListId, 'maxResults'=>$req_max);
+  } elseif ($tt['token']!="" && $tt['token']!=null && $tt['token']!='null') {
+    $params = array('part' => $part, 'mine'=> "true", 'maxResults'=>$req_max, 'pageToken'=>$tt['token']);
+  } else {
+    $params = array('part' => $part, 'mine'=> "true", 'maxResults'=>$req_max);
+  }
   $response = $client->fetch('https://www.googleapis.com/youtube/v3/playlists', $params);
-  $tt["token"]=$response['result']['nextPageToken'];
+  if (isset($response['result']['nextPageToken'])) {
+    $tt["token"]=$response['result']['nextPageToken'];
+  } elseif($tt['token']=="Upload") {
+    $tt['token']="";
+  } else {
+    $tt["token"]="Upload";
+  }
   
-  $playlists_max=count($response['result']['items']);
-  for ($cnt_playlist=0;$cnt_playlist<$playlists_max;$cnt_playlist++) {
-    $tmp_details=$response['result']['items'][$cnt_playlist];
-    
-    unset($tmp_details['kind']);
-    unset($tmp_details['etag']);
-    unset($tmp_details['snippet']['thumbnails']['medium']);
-    unset($tmp_details['snippet']['thumbnails']['high']);
-    unset($tmp_details['snippet']['thumbnails']['standard']);
-    unset($tmp_details['snippet']['thumbnails']['maxres']);
-    unset($tmp_details['snippet']['channelTitle']);
-    unset($tmp_details['snippet']['localized']);
-    $tmp_details=$SYTHS->multiarray2array($tmp_details, "youtube");
-    
-    // Load "old" Playlist for Paging
-    $old_playlist=$database->sql_select($_tmp_tabellename,"*","youtube_id='".$tmp_details["youtube_id"]."'",true);
-    if (!isset($old_playlist[0]['import_pageToken'])) {
-      $old_playlist[0]['import_pageToken']="";
-    }
-    $old_playlist=$old_playlist[0];
-    
-    $part2="snippet";
-    if ($old_playlist['import_pageToken']!="" && $old_playlist['import_pageToken']!=null) {
-      $params2 = array('part' => $part2, 'playlistId'=> $tmp_details["youtube_id"], 'maxResults'=>$req_max, 'pageToken'=>$old_playlist['import_pageToken']);
-    } else {
-      $params2 = array('part' => $part2, 'playlistId'=> $tmp_details["youtube_id"], 'maxResults'=>$req_max);
-    }
-    $response2 = $client->fetch('https://www.googleapis.com/youtube/v3/playlistItems', $params2);
-    $tmp_details['import_pageToken']=$response2['result']['nextPageToken'];
-    
-    $playlistsitems_max=count($response2['result']['items']);
-    for ($cnt_playlistitems=0;$cnt_playlistitems<$playlistsitems_max;$cnt_playlistitems++) {
-      $tmp_items=$response2['result']['items'][$cnt_playlistitems];
+  if (isset($response['result']['items'])) {
+    $playlists_max=count($response['result']['items']);
+    for ($cnt_playlist=0;$cnt_playlist<$playlists_max;$cnt_playlist++) {
+      $tmp_details=$response['result']['items'][$cnt_playlist];
       
-      unset($tmp_items['id']);
-      unset($tmp_items['kind']);
-      unset($tmp_items['etag']);
-      unset($tmp_items['snippet']['thumbnails']);
-      unset($tmp_items['snippet']['channelTitle']);
-      unset($tmp_items['snippet']['localized']);
-      unset($tmp_items['snippet']['publishedAt']);
-      unset($tmp_items['snippet']['channelId']);
-      unset($tmp_items['snippet']['title']);
-      unset($tmp_items['snippet']['description']);
-      unset($tmp_items['snippet']['resourceId']['kind']);
+      unset($tmp_details['kind']);
+      unset($tmp_details['etag']);
+      unset($tmp_details['snippet']['thumbnails']['medium']);
+      unset($tmp_details['snippet']['thumbnails']['high']);
+      unset($tmp_details['snippet']['thumbnails']['standard']);
+      unset($tmp_details['snippet']['thumbnails']['maxres']);
+      unset($tmp_details['snippet']['channelTitle']);
+      unset($tmp_details['snippet']['localized']);
+      $tmp_details=$SYTHS->multiarray2array($tmp_details, "youtube");
       
-      $tmp_items=$SYTHS->multiarray2array($tmp_items, "youtube");
+      // Load "old" Playlist for Paging
+      $old_playlist=$database->sql_select($_tmp_tabellename,"*","youtube_id='".$tmp_details["youtube_id"]."'",true);
+      if (!isset($old_playlist[0]['import_pageToken'])) {
+        $old_playlist[0]['import_pageToken']="";
+      }
+      $old_playlist=$old_playlist[0];
       
-      foreach ($tmp_items as $key=>$value){
+      $part2="snippet";
+      if ($old_playlist['import_pageToken']!="" && $old_playlist['import_pageToken']!=null) {
+        $params2 = array('part' => $part2, 'playlistId'=> $tmp_details["youtube_id"], 'maxResults'=>$req_max, 'pageToken'=>$old_playlist['import_pageToken']);
+      } else {
+        $params2 = array('part' => $part2, 'playlistId'=> $tmp_details["youtube_id"], 'maxResults'=>$req_max);
+      }
+      $response2 = $client->fetch('https://www.googleapis.com/youtube/v3/playlistItems', $params2);
+      if (isset($response2['result']['nextPageToken'])) {
+        $tmp_details['import_pageToken']=$response2['result']['nextPageToken'];
+      } else {
+        $tmp_details['import_pageToken']="";
+      }
+      
+      
+      $playlistsitems_max=count($response2['result']['items']);
+      for ($cnt_playlistitems=0;$cnt_playlistitems<$playlistsitems_max;$cnt_playlistitems++) {
+        $tmp_items=$response2['result']['items'][$cnt_playlistitems];
+        
+        unset($tmp_items['id']);
+        unset($tmp_items['kind']);
+        unset($tmp_items['etag']);
+        unset($tmp_items['snippet']['thumbnails']);
+        unset($tmp_items['snippet']['channelTitle']);
+        unset($tmp_items['snippet']['localized']);
+        unset($tmp_items['snippet']['publishedAt']);
+        unset($tmp_items['snippet']['channelId']);
+        unset($tmp_items['snippet']['title']);
+        unset($tmp_items['snippet']['description']);
+        unset($tmp_items['snippet']['resourceId']['kind']);
+        
+        $tmp_items=$SYTHS->multiarray2array($tmp_items, "youtube");
+        
+        foreach ($tmp_items as $key=>$value){
+          $new_feld[$key]="TEXT";
+          $database->add_columns($_tmp_tabellename."_items", $new_feld);
+          unset($new_feld);
+          $newData[$key]=$value;
+        }
+        $database->sql_insert_update($_tmp_tabellename."_items", $newData);
+        unset($newData);
+        debug_log($tmp_items);
+      }
+      
+      foreach ($tmp_details as $key=>$value){
         $new_feld[$key]="TEXT";
-        $database->add_columns($_tmp_tabellename."_items", $new_feld);
+        $database->add_columns($_tmp_tabellename, $new_feld);
         unset($new_feld);
         $newData[$key]=$value;
       }
-      $database->sql_insert_update($_tmp_tabellename."_items", $newData);
+      $database->sql_insert_update($_tmp_tabellename, $newData);
       unset($newData);
-      debug_log($tmp_items);
+      debug_log($tmp_details);
     }
-    
-    foreach ($tmp_details as $key=>$value){
-      $new_feld[$key]="TEXT";
-      $database->add_columns($_tmp_tabellename, $new_feld);
-      unset($new_feld);
-      $newData[$key]=$value;
-    }
-    $database->sql_insert_update($_tmp_tabellename, $newData);
-    unset($newData);
-    debug_log($tmp_details);
   }
-  
-  $tt["cooldown"]=60;
+  $tt["cooldown"]=60*5;
 }
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$tmp_token['channel_id'].': '.$_tmp_tabellename." updated!<br>";

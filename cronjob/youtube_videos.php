@@ -28,75 +28,118 @@ if(!in_array($_tmp_tabellename.'_tags', $check_table)) {
   $database->create_table($_tmp_tabellename.'_tags', $tagstab, "youtube_id, tag");
 }
 
-$db_stats = $database->sql_select("channels_contentdetails", "*", "channel_id='".$_SESSION['user']['youtube_user']."'", true);
-$uploadsListId=$db_stats[0]["uploads"];
-
 $tt=$token[$_tmp_tabellename];
 if ($tt["last_used"]+$tt["cooldown"]<time()) {
   
-  $client = new OAuth2\Client($OAUTH2_CLIENT_ID, $OAUTH2_CLIENT_SECRET);
-  $params = array('part' => "snippet");
-  $client->setAccessToken($tmp_token['access_token']);
-  $client->setAccessTokenType(1); //ACCESS_TOKEN_BEARER
-  //contentDetails
-  //player
-  //topicDetails
-  //fileDetails
-  //processingDetails
-  //suggestions
-  //localizations
-  $part="id, liveStreamingDetails, snippet, statistics, status";
-  //$params = array('part' => $part, 'id'=> "rdoyNKvhSOM");
-  $params = array('part' => $part, 'id'=> $tt["token"]);
-  $response = $client->fetch('https://www.googleapis.com/youtube/v3/videos', $params);
+  $max_req=50;
   
-  
-  
-  $tmp_video_details=$response['result']['items'][0];
-  debug_log($response);
-  die();
-  unset($tmp_video_details['kind']);
-  unset($tmp_video_details['etag']);
-  unset($tmp_video_details['snippet']['thumbnails']['medium']);
-  unset($tmp_video_details['snippet']['thumbnails']['high']);
-  unset($tmp_video_details['snippet']['thumbnails']['standard']);
-  unset($tmp_video_details['snippet']['thumbnails']['maxres']);
-  unset($tmp_video_details['snippet']['channelTitle']);
-  $tmp_video_tags=$tmp_video_details['snippet']['tags'];
-  unset($tmp_video_details['snippet']['tags']);
-  unset($tmp_video_details['snippet']['localized']);
-  $tmp_video_details=$SYTHS->multiarray2array($tmp_video_details, "youtube");
-  
-  
-  
-  debug_log($tmp_video_details);
-  foreach ($tmp_video_details as $key=>$value){
-    $new_feld[$key]="TEXT";
-    $database->add_columns($_tmp_tabellename, $new_feld);
-    unset($new_feld);
-    $newData[$key]=$value;
-  }
-  $database->sql_insert_update($_tmp_tabellename, $newData);
-  unset($newData);
-  
-  for($count_tags=0;$count_tags<count($tmp_video_tags);$count_tags++) {
-    $tag_data=null;
-    $tag_data['youtube_id']=$tmp_video_details["youtube_id"];
-    $tag_data['tag']=$tmp_video_tags[$count_tags];
-    $database->sql_insert_update($_tmp_tabellename.'_tags', $tag_data);
-    unset($tag_data);
-  }
-  
-  unset($tmp_video_details);
-  unset($tmp_video_tags);
-  $tt["cooldown"]=60;
-}
-// Save Token
-echo date("d.m.Y - H:i:s")." - ".$tmp_token['channel_id'].': '.$_tmp_tabellename." updated!<br>";
-$tt["last_used"]=time();
-$tt["user"]=$_SESSION['user']['email'];
-if (!isset($tt["token"])) {$tt["token"]="";}
-if($tt["token"]==""){$tt["token"]="null";}
-$database->sql_insert_update("bot_token",$tt);
-unset($tt);
-?>
+  $update_temp=$database->sql_select(
+    "(youtube_playlists INNER JOIN youtube_playlists_items ON
+    youtube_playlists.youtube_id = youtube_playlists_items.youtube_snippet_playlistid)
+    LEFT JOIN youtube_videos ON youtube_playlists_items.youtube_snippet_resourceid_videoid = youtube_videos.youtube_id",
+    "youtube_playlists_items.youtube_snippet_resourceid_videoid",
+    "youtube_playlists.youtube_snippet_channelid='".$_SESSION['user']['youtube_user']."' AND
+    youtube_videos.youtube_id IS NULL
+    GROUP BY youtube_playlists_items.youtube_snippet_resourceid_videoid
+    ORDER BY youtube_playlists.youtube_snippet_publishedat DESC
+    LIMIT ".($max_req-(int)($max_req/3)), false);
+    
+    $max_temp=count($update_temp);
+    for ($cnt_temp=0;$cnt_temp<$max_temp;$cnt_temp++) {
+      $update_list[]=$update_temp[$cnt_temp]['youtube_snippet_resourceid_videoid'];
+    }
+    unset($update_temp);
+    
+    $update_temp=$database->sql_select(
+      "youtube_videos",
+      "youtube_videos.youtube_id",
+      "youtube_snippet_channelid='".$_SESSION['user']['youtube_user']."' AND youtube_status_privacystatus='unlisted'
+      ORDER BY simple_lastUpdate, youtube_snippet_publishedat DESC
+      LIMIT ".(($max_req-$max_temp)-(int)($max_req/3)),false);
+      $max_temp=count($update_temp);
+      for ($cnt_temp=0;$cnt_temp<$max_temp;$cnt_temp++) {
+        $update_list[]=$update_temp[$cnt_temp]['youtube_id'];
+      }
+      unset($update_temp);
+      
+      $update_temp=$database->sql_select(
+        "youtube_videos",
+        "youtube_videos.youtube_id",
+        "youtube_snippet_channelid='".$_SESSION['user']['youtube_user']."' AND youtube_status_privacystatus!='unlisted'
+        ORDER BY simple_lastUpdate, youtube_snippet_publishedat DESC
+        LIMIT ".(($max_req-count($update_list))),false);
+        $max_temp=count($update_temp);
+        for ($cnt_temp=0;$cnt_temp<$max_temp;$cnt_temp++) {
+          $update_list[]=$update_temp[$cnt_temp]['youtube_id'];
+        }
+        unset($update_temp);
+        
+        $client = new OAuth2\Client($OAUTH2_CLIENT_ID, $OAUTH2_CLIENT_SECRET);
+        
+        $client->setAccessToken($tmp_token['access_token']);
+        $client->setAccessTokenType(1); //ACCESS_TOKEN_BEARER
+        
+        $max_request=count($update_list);
+        for ($cnt_req=0;$cnt_req<$max_request;$cnt_req++) {
+          //contentDetails
+          //player
+          //topicDetails
+          //fileDetails
+          //processingDetails
+          //suggestions
+          //localizations
+          $part="id, liveStreamingDetails, snippet, statistics, status";
+          //$params = array('part' => $part, 'id'=> "rdoyNKvhSOM");
+          $params = array('part' => $part, 'id'=> $update_list[$cnt_req]);
+          $response = $client->fetch('https://www.googleapis.com/youtube/v3/videos', $params);
+          
+          
+          if (isset($response['result']['items'][0])) {
+            $tmp_video_details=$response['result']['items'][0];
+            unset($tmp_video_details['kind']);
+            unset($tmp_video_details['etag']);
+            unset($tmp_video_details['snippet']['thumbnails']['medium']);
+            unset($tmp_video_details['snippet']['thumbnails']['high']);
+            unset($tmp_video_details['snippet']['thumbnails']['standard']);
+            unset($tmp_video_details['snippet']['thumbnails']['maxres']);
+            unset($tmp_video_details['snippet']['channelTitle']);
+            $tmp_video_tags=$tmp_video_details['snippet']['tags'];
+            unset($tmp_video_details['snippet']['tags']);
+            unset($tmp_video_details['snippet']['localized']);
+            $tmp_video_details=$SYTHS->multiarray2array($tmp_video_details, "youtube");
+            
+            $tmp_video_details['simple_lastUpdate']=time();
+            
+            debug_log($tmp_video_details);
+            foreach ($tmp_video_details as $key=>$value){
+              $new_feld[$key]="TEXT";
+              $database->add_columns($_tmp_tabellename, $new_feld);
+              unset($new_feld);
+              $newData[$key]=$value;
+            }
+            $database->sql_insert_update($_tmp_tabellename, $newData);
+            unset($newData);
+            
+            for($count_tags=0;$count_tags<count($tmp_video_tags);$count_tags++) {
+              $tag_data=null;
+              $tag_data['youtube_id']=$tmp_video_details["youtube_id"];
+              $tag_data['tag']=$tmp_video_tags[$count_tags];
+              $database->sql_insert_update($_tmp_tabellename.'_tags', $tag_data);
+              unset($tag_data);
+            }
+            
+            unset($tmp_video_details);
+            unset($tmp_video_tags);
+          }
+        }
+        $tt["cooldown"]=60*5;
+      }
+      // Save Token
+      echo date("d.m.Y - H:i:s")." - ".$tmp_token['channel_id'].': '.$_tmp_tabellename." updated!<br>";
+      $tt["last_used"]=time();
+      $tt["user"]=$_SESSION['user']['email'];
+      if (!isset($tt["token"])) {$tt["token"]="";}
+      if($tt["token"]==""){$tt["token"]="null";}
+      $database->sql_insert_update("bot_token",$tt);
+      unset($tt);
+      ?>
