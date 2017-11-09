@@ -20,14 +20,6 @@ if(!in_array($_tmp_tabellename, $check_table)) {
   $database->create_table($_tmp_tabellename, $felder, "youtube_id");
   unset($felder);
 }
-/*
-if(!in_array($_tmp_tabellename.'_tags', $check_table)) {
-$tagstab=null;
-$tagstab["youtube_id"]="VARCHAR(50)";
-$tagstab["tag"]="VARCHAR(255)";
-$database->create_table($_tmp_tabellename.'_tags', $tagstab, "youtube_id, tag");
-}
-*/
 
 $tt=$token[$_tmp_tabellename];
 if ($tt["last_used"]+$tt["cooldown"]<time()) {
@@ -82,6 +74,11 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   }
   $database->sql_insert_update($_tmp_tabellename, $newData);
   unset($newData);
+  
+  if ($_SESSION['user']['youtube_user']=="") {
+    $_SESSION['user']['youtube_user']=$newData['channel_id'];
+    $database->sql_insert_update("user", $_SESSION['user']);
+  }
   
   unset($tmp_channel_details);
   $tt["cooldown"]=60*60;
