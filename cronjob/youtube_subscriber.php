@@ -80,7 +80,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     unset($newData);
     debug_log($tmp_details);
   }
-  $tt["cooldown"]=1;//60*10;
+  $tt["cooldown"]=60*10;
 }
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$tmp_token['channel_id'].': '.$_tmp_tabellename." updated!<br>";

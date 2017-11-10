@@ -26,6 +26,8 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $database->sql_delete("bot_chathosts", "`last_seen`<".$oldest_date."000");
   $database->sql_delete("bot_chatuser", "`last_seen`<".$oldest_date."000");
   // NOTE: User, Server und so kommt vielleicht noch irgendwann, muss ich mir noch überlegen...
+  
+  $database->sql_delete("rss_news", "`time`<".$oldest_date."");
   $tt["cooldown"]=1*60*60;
 }
 // Save Token

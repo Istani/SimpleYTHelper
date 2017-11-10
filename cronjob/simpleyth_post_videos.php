@@ -17,18 +17,17 @@ if ($tt["token"]=="null" or is_null($tt['token'])) {
 if (isset($video_list)) {
   unset($video_list);
 }
-$videos_yt=$database->sql_select("videos_snippet", "*", "channelid='".$_SESSION['user']['youtube_user']."' AND first_seen>".$tt['token']." ORDER BY first_seen",true);
+$videos_yt=$database->sql_select("youtube_videos", "*", "youtube_snippet_channelid='".$_SESSION['user']['youtube_user']."' AND CAST(simple_publishtimestamp AS UNSIGNED)>".$tt['token']." ORDER BY youtube_snippet_publishedat",true);
 for ($v=0;$v<count($videos_yt);$v++) {
-  $tmp_newvideo['id']=$videos_yt[$v]["videoid"];
-  $tmp_newvideo['link']="https://www.youtube.com/watch?v=".$videos_yt[$v]["videoid"];
-  $tmp_newvideo['title']=$videos_yt[$v]["title"];
-  $tmp_newvideo['description']=$videos_yt[$v]["description"];
-  $tmp_newvideo['first_seen']=$videos_yt[$v]["first_seen"];
-  $tmp_newvideo['thumbnail']=$videos_yt[$v]['thumbnail'];
+  $tmp_newvideo['id']=$videos_yt[$v]["youtube_id"];
+  $tmp_newvideo['link']="https://www.youtube.com/watch?v=".$videos_yt[$v]["youtube_id"];
+  $tmp_newvideo['title']=$videos_yt[$v]["youtube_snippet_title"];
+  $tmp_newvideo['description']=$videos_yt[$v]["youtube_snippet_description"];
+  $tmp_newvideo['first_seen']=$videos_yt[$v]["simple_publishtimestamp"];
+  $tmp_newvideo['thumbnail']=$videos_yt[$v]['youtube_snippet_thumbnails_default_url'];
   // Was braucht man noch?
   
-  $videos_status=$database->sql_select("videos_status", "*", "videoid='".$videos_yt[$v]["videoid"]."' LIMIT 1",true);
-  if ($videos_status[0]['privacystatus']=="public") {
+  if ($videos_yt[$v]['youtube_status_privacystatus']=="public") {
     $video_list[]=$tmp_newvideo;
     break;
   }
@@ -38,8 +37,8 @@ for ($v=0;$v<count($videos_yt);$v++) {
 if (isset($video_list)) {
   for ($v=0;$v<count($video_list);$v++) {
     // Falls irgendwann mehrere video quellen verwendet werden
+    // NOTE: Sortieren
   }
-  
   
   // Do Magic 2
   $my_rechte=$SYTHS->may_post_videos_on($_SESSION['user']['email']);
@@ -63,6 +62,8 @@ if (isset($video_list)) {
           $add_post['message']="!yt video ".$video_list[0]['id'];
           $add_post['process']=0;
           $database->sql_insert_update("bot_chatlog", $add_post);
+          
+          debug_log($add_post);
           unset($add_post);
           
           $tt['token']=$video_list[0]['first_seen'];

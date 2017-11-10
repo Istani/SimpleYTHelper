@@ -145,10 +145,9 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   }
   */
 }
-die();
 //$my_rechte=$SYTHS->may_post_videos_on($_SESSION['user']['email']);
 
-$tt["cooldown"]=1;//300;
+$tt["cooldown"]=300;
 }
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$_SESSION['user']['email'].': '.$_tmp_tabellename." updated!<br>";
