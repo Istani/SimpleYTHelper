@@ -122,7 +122,7 @@ function Check_Settings(settings_name, setting_value) {
   }
   if (typeof settings[settings_name]=="undefined") {
     settings[settings_name]=setting_value;
-    var SQL = "INSERT INTO rpg_settings SET name='" + settings_name + "', value='"+setting_value+"'";
+    var SQL = "INSERT INTO simpleyth_rpg_settings SET name='" + settings_name + "', value='"+setting_value+"'";
     mysql.query(SQL, function (err, rows) {
       if (err != null) {
         console.log(SQL);
@@ -138,7 +138,7 @@ function Check_Settings(settings_name, setting_value) {
 
 function StartNew(SendFunc, GameID) {
   //SendFunc('START New RPG');
-  var ADD_GAME="REPLACE INTO rpg_check SET " +
+  var ADD_GAME="REPLACE INTO simpleyth_rpg SET " +
   "game_id='"+GameID+"', " +
   "game_state=0";
   mysql.query(ADD_GAME, function (err, check_monster_rows) {
@@ -157,7 +157,7 @@ function SpawnMonster(SendFunc,GameID, Rounds) {
   if (typeof Rounds=="undefined") {
     Rounds=Check_Settings('default_rounds', 0);
   }
-  var CHECK_STATE="SELECT * FROM rpg_check WHERE game_id='"+GameID+"'";
+  var CHECK_STATE="SELECT * FROM simpleyth_rpg WHERE game_id='"+GameID+"'";
   mysql.query(CHECK_STATE, function (err, check_state_rows) {
     if (err != null) {
       console.log(CHECK_STATE);
@@ -166,7 +166,7 @@ function SpawnMonster(SendFunc,GameID, Rounds) {
     }
     if (check_state_rows.length>=1) {
       if (check_state_rows[0].game_state==1) {
-        var ADD_MONSTER="UPDATE rpg_check SET game_state=2, rounds_max="+Rounds+" WHERE game_id='"+GameID+"'";
+        var ADD_MONSTER="UPDATE simpleyth_rpg SET game_state=2, rounds_max="+Rounds+" WHERE game_id='"+GameID+"'";
         mysql.query(ADD_MONSTER, function (err, check_monster_rows) {
           if (err != null) {
             console.log(ADD_MONSTER);
@@ -184,7 +184,7 @@ function SpawnMonster(SendFunc,GameID, Rounds) {
 }
 function CheckRegister(SendFunc, GameID, message_row) {
   var UserID=message_row.user;
-  var CHECK_STATE="SELECT * FROM rpg_check WHERE game_id='"+GameID+"'";
+  var CHECK_STATE="SELECT * FROM simpleyth_rpg WHERE game_id='"+GameID+"'";
   mysql.query(CHECK_STATE, function (err, check_state_rows) {
     if (err != null) {
       console.log(CHECK_STATE);
@@ -205,7 +205,7 @@ function CheckRegister(SendFunc, GameID, message_row) {
           }
           var USER_AVG=check_player_row[0].msg_avg;
           var USER_NAME=check_player_row[0].name;
-          var ADD_PLAYER="INSERT INTO rpg_player SET game_id='"+GameID+"', user_id='"+UserID+"', user_name='"+USER_NAME+"', calculate_avg='"+(USER_AVG+5)+"'";
+          var ADD_PLAYER="INSERT INTO simpleyth_rpg_player SET game_id='"+GameID+"', user_id='"+UserID+"', user_name='"+USER_NAME+"', calculate_avg='"+(USER_AVG+5)+"'";
           mysql.query(ADD_PLAYER, function (err, check_monster_rows) {
             if (err != null) {
               console.log(ADD_PLAYER);
@@ -227,7 +227,7 @@ function CheckRegister(SendFunc, GameID, message_row) {
   });
 }
 function CheckRound(SendFunc, GameID) {
-  var CHECK_STATE="SELECT * FROM rpg_check WHERE game_id='"+GameID+"'";
+  var CHECK_STATE="SELECT * FROM simpleyth_rpg WHERE game_id='"+GameID+"'";
   mysql.query(CHECK_STATE, function (err, check_state_rows) {
     if (err != null) {
       console.log(CHECK_STATE);
@@ -246,14 +246,14 @@ function CheckRound(SendFunc, GameID) {
   });
 }
 function CheckResult(SendFunc,GameID, NewMessageFunc, old_message) {
-  var CHECK_STATE="SELECT * FROM rpg_check WHERE game_id='"+GameID+"'";
+  var CHECK_STATE="SELECT * FROM simpleyth_rpg WHERE game_id='"+GameID+"'";
   mysql.query(CHECK_STATE, function (err, check_state_rows) {
     if (err != null) {
       console.log(CHECK_STATE);
       console.log(err);
       return;
     }
-    var CHECK_DMG="SELECT * FROM rpg_player WHERE game_id='"+GameID+"' ORDER BY sum_dmg DESC LIMIT 5";
+    var CHECK_DMG="SELECT * FROM simpleyth_rpg_player WHERE game_id='"+GameID+"' ORDER BY sum_dmg DESC LIMIT 5";
     mysql.query(CHECK_DMG, function (err, list_player_dmg) {
       if (err != null) {
         console.log(CHECK_STATE);
@@ -293,7 +293,7 @@ function CheckResult(SendFunc,GameID, NewMessageFunc, old_message) {
   });
 }
 function CheckAttack(SendFunc, GameID, UserID) {
-  var CHECK_STATE="SELECT * FROM rpg_check WHERE game_id='"+GameID+"'";
+  var CHECK_STATE="SELECT * FROM simpleyth_rpg WHERE game_id='"+GameID+"'";
   mysql.query(CHECK_STATE, function (err, check_state_rows) {
     if (err != null) {
       console.log(CHECK_STATE);
@@ -302,7 +302,7 @@ function CheckAttack(SendFunc, GameID, UserID) {
     }
     if (check_state_rows.length>=1) {
       if (check_state_rows[0].game_state==4) {
-        var ADD_PLAYER="INSERT INTO rpg_player_attack SET game_id='"+GameID+"', user_id='"+UserID+"'";
+        var ADD_PLAYER="INSERT INTO simpleyth_rpg_player_attack SET game_id='"+GameID+"', user_id='"+UserID+"'";
         mysql.query(ADD_PLAYER, function (err, check_monster_rows) {
           if (err != null) {
             console.log(ADD_PLAYER);

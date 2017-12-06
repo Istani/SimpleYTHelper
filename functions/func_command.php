@@ -5,33 +5,17 @@ function check_settings($database, $cronjob_id) {
   if (isset($_SESSION['cronjob'])) {
     if ($_SESSION['cronjob']=="setup") {
       // Get service
-      switch ($cronjob_id) {
-        case 'sk_special_deflike':
-        $serivce="YouTube";
-        $user_where="email like 'sascha.u.kaufmann@googlemail.com'";
-        break;
-        case 'bot_chat_stats':
-        case 'bot_chatspam':
-        case 'bot_cleanup_db':
-        case 'rss_news':
-        case 'php_hack':
+      if ($cronjob_id!=str_replace("bot_","",$cronjob_id)) {
         $serivce="SimpleYTH";
         $user_where="status=1";
-        break;
-        case 'rpg_check':
-        $serivce="SimpleYTH";
-        $user_where="true"; // ??? Eigentlich nur wo Videos geladen werden könnten...
-        break;
-        case 'post_new_videos':
-        $serivce="SimpleYTH";
-        $user_where="true"; // ??? Eigentlich nur wo Videos geladen werden könnten...
-        // NOTE: Muss später dann erweitert werden, wenn mehr dienste vorhanden sind
+      }
+      if ($cronjob_id!=str_replace("simpleyth_","",$cronjob_id)) {
+        $serivce="Bot";
+        $user_where="true";
+      }
+      if ($cronjob_id!=str_replace("youtube_","",$cronjob_id)) {
+        $serivce="Bot";
         $user_where="youtube_user is not null AND youtube_user not like ''";
-        break;
-        default:
-        $serivce="YouTube";
-        $user_where="youtube_user is not null AND youtube_user not like ''";
-        break;
       }
       // Get Users
       $users=$database->sql_select("user", "*", $user_where, true);
