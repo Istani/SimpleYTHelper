@@ -18,7 +18,12 @@ $videos_yt=$database->sql_select("youtube_livestream", "*", "youtube_snippet_cha
 if (count($videos_yt)==0) {
   $tt['token']="";
 } else {
-  if ($tt['token']!="" && $tt['token']!=null && $tt['token']!='null') {
+  if ($videos_yt[0]["simple_lastupdate"]<time()-30*60) {
+    $videos_yt[0]['youtube_snippet_actualendtime']="ERROR";
+    $database->sql_insert_update("youtube_livestream", $videos_yt[0]);
+    $tt['token']="ERROR";
+  }
+  if ($tt['token']=='null') {
     // Do Magic 2
     $my_rechte=$SYTHS->may_post_videos_on($_SESSION['user']['email']);
     foreach ($my_rechte as $t_service => $the_hosts) {

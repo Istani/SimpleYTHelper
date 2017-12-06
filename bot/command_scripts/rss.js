@@ -51,12 +51,14 @@ var self = module.exports = {
     });
   },
   execute: function (message_row, SendFunc, NewMessageFunc) {
+    SendFunc("Befehl wird gerade ueberarbeitet!");
+    return;
     var parts=message_row.message.split(" ");
     // The Magic
     if (message_row.user != "-1") {
       // Add
       // TODO: REMOVE
-      var ADD_RSS="REPLACE INTO rss_news_source SET service='"+message_row.service+"', host='"+message_row.host+"', src='"+parts[1]+"'";
+      var ADD_RSS="REPLACE INTO simpleyth_rss_source SET src'"+parts[1]+"'";
       mysql.query(ADD_RSS, function (err, check_monster_rows) {
         if (err != null) {
           console.log(ADD_RSS);

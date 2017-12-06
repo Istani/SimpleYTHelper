@@ -6,25 +6,22 @@ $vidtitle = "";
 $vidlink = "";
 
 if ($_GET["param"]=="") {
-  echo "Es wird eine Video ID als Parameter erwartet!\n\r";
   include("lastvideo.php");
 } else {
-  
   $check_table=$database->show_tables();
   
-  $check_table=$database->show_tables();
-  
-  $_tmp_tabellename="videos_snippet";
+  $_tmp_tabellename="youtube_videos";
   if(in_array($_tmp_tabellename, $check_table)) {
-    $db_stats = $database->sql_select("videos_snippet", "*", "videos_snippet.ignore='0' AND videoid='".$_GET['param']."' ORDER BY publishedat DESC LIMIT 1", false);
+    $db_stats = $database->sql_select($_tmp_tabellename, "*", "youtube_id='".$_GET['param']."' ORDER BY youtube_snippet_publishedat DESC LIMIT 1", false);
     if (isset($db_stats[0])) {
-      $vidtitle=$db_stats[0]["title"];
-      $vidlink="https://www.youtube.com/watch?v=".$db_stats[0]["videoid"];
+      $vidtitle=$db_stats[0]["youtube_snippet_title"];
+      $vidlink="https://www.youtube.com/watch?v=".$db_stats[0]["youtube_id"];
+      echo $vidtitle . "\n\r" . $vidlink;
     } else {
-      $vidtitle="Video mit dieser ID nicht gefunden!";
-      $vidlink="https://www.youtube.com/watch?v=".$_GET["param"];
+      echo "Video mit dieser ID nicht gefunden!\n\r";
+      //$vidlink="https://www.youtube.com/watch?v=".$_GET["param"];
+      include("lastvideo.php");
     }
   }
-  echo $vidtitle . "\n\r" . $vidlink;
 }
 ?>

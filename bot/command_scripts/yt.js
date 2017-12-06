@@ -1,6 +1,6 @@
 var fetch = require('node-fetch');
-var url = "http://31.172.95.10/SimpleYTH/do.php?command=";
-//var url = "http://127.0.0.1/SimpleYTH/do.php?command=";
+//var url = "http://31.172.95.10/SimpleYTH/do.php?command=";
+var url = "http://127.0.0.1/SimpleYTH/do.php?command=";
 
 var self = module.exports = {
   init: function (MySQL) {
