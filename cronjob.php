@@ -145,7 +145,11 @@ while (time()-$Time['Start']<=55) {
     $youtube = new Google_Service_YouTube($client);
     
     default:
-    include("cronjob/".$TmpNextJob[0]['id'].".php");
+    if (file_exists("cronjob/".$TmpNextJob[0]['id'].".php")) {
+      include("cronjob/".$TmpNextJob[0]['id'].".php");
+    } else {
+      $database->sql_delete("bot_token", "id='".$TmpNextJob[0]['id']."'");
+    }
     //die();
     sleep(1);
     if (isset($_GET['job_type'])) {
