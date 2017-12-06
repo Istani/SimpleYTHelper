@@ -87,7 +87,7 @@ function RefreshToken(self) {
 }
 
 function CheckMessage(self) {
-  var SQL_STRING = "SELECT * FROM livestream_chat WHERE `ignore` = '0' ORDER BY publishedAt LIMIT 1";
+  var SQL_STRING = "SELECT * FROM youtube_livestream_chat WHERE `simpleyth_ignore`='0' ORDER BY youtube_snippet_publishedat LIMIT 1";
   self.mysql.query(SQL_STRING, function (err, rows) {
     if (err != null) {
       console.log("MySQL: " + err);
@@ -95,26 +95,29 @@ function CheckMessage(self) {
     }
     for (var i = 0; i < rows.length; i++) {
       var msg_line = rows[i];
-      var SQL_UPDATE ="UPDATE livestream_chat SET `ignore`='1' WHERE id='" + msg_line.id + "'";
+      var SQL_UPDATE ="UPDATE youtube_livestream_chat SET `simpleyth_ignore`='1' WHERE youtube_id='" + msg_line.youtube_id + "'";
       self.mysql.query(SQL_UPDATE, function (err, rows) {
         if (err != null) {
           console.log("MySQL: " + err);
           return;
         }
         var role="User";
-        if (msg_line.ischatmoderator=="1") {
+        if (msg_line.youtube_authordetails_ischatsponsor=="1") {
+          role="VIP";
+        }
+        if (msg_line.youtube_authordetails_ischatmoderator=="1") {
           role="Moderator";
         }
-        if (msg_line.ischatowner=="1") {
+        if (msg_line.youtube_authordetails_ischatowner=="1") {
           role="Admin";
         }
         var msg = {
-          host:msg_line.channel_id,
-          room: msg_line.livechatid,
-          id: msg_line.id,
-          author:msg_line.authorchannelid,
-          authorname:msg_line.displayname,
-          content: msg_line.displaymessage,
+          host:msg_line.simpleyth_host,
+          room: msg_line.youtube_snippet_livechatid,
+          id: msg_line.youtube_id,
+          author:msg_line.youtube_authordetails_channelid,
+          authorname:msg_line.youtube_authordetails_displayname,
+          content: msg_line.youtube_snippet_displaymessage,
           role: role,
           
           misc: msg_line

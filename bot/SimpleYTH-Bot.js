@@ -170,7 +170,7 @@ function UpdateRoles(service, host, role) {
 }
 var fetch = require('node-fetch');
 function Cron_Livestream() {
-  var cron_url = "http://31.172.95.10/SimpleYTH/cronjob.php?job_type=livestream_chat";
+  var cron_url = "http://31.172.95.10/SimpleYTH/cronjob.php?job_type=youtube_livestream_chat";
   fetch(cron_url).then(function (response) {
     return response.text();
   }).then( function (text) {
@@ -179,7 +179,7 @@ function Cron_Livestream() {
   });
 }
 function Cron_PHPHAck() {
-  var cron_url = "http://31.172.95.10/SimpleYTH/cronjob.php?job_type=php_hack";
+  var cron_url = "http://31.172.95.10/SimpleYTH/cronjob.php?job_type=bot_php_commands";
   fetch(cron_url).then(function (response) {
     return response.text();
   }).then( function (text) {
@@ -267,14 +267,19 @@ function GenerateAnwser(msg_row) {
       case 'YouTube':
       cmd.use(command, msg,function (text) {
         var sendcount=0;
-        //while (text.size>0) {
-        setTimeout(function () {
-          // TODO: Text in 200 Zeichen Teile Trennen!
-          var SendText=text;
-          google_bot.sendMessage(msg.room, SendText);
-        }, sendcount*100);
-        sendcount++;
-        //}
+        var max_length=200;
+        while (text.length>0) {
+          setTimeout(function () {
+            // TODO: Text in 200 Zeichen Teile Trennen!
+            if (text.length<max_length) {
+              max_length=text.length;
+            }
+            var SendText=text.substr(0,max_length);
+            text=text.replace(SendText,"");
+            google_bot.sendMessage(msg.room, SendText);
+          }, sendcount*100);
+          sendcount++;
+        }
       }, LogMessage);
       break;
       default:

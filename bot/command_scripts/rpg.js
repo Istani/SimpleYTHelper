@@ -260,23 +260,25 @@ function CheckResult(SendFunc,GameID, NewMessageFunc, old_message) {
         console.log(err);
         return;
       }
-      var ReturnString="Top 5 - Schaden:\r\n";
-      for (var i = 0; i<list_player_dmg.length;i++) {
-        var RowString="";
-        RowString+=list_player_dmg[i].user_name+": "+list_player_dmg[i].sum_dmg;
-        RowString+="\r\n";
-        if (ReturnString.length+RowString.length>=200) {
-          SendFunc(ReturnString);
-          ReturnString="";
-        }
-        ReturnString+=RowString;
-        
-        if ((i==0) && (list_player_dmg[i].user_name!="")) {
-          if (check_state_rows[0].monster_hp_current<=0) {
-            old_message.content="!set_role "+list_player_dmg[i].user_name;
-            old_message.id=old_message.id+'0';
-            old_message.user="-1";
-            NewMessageFunc(old_message.service, old_message.host, old_message.room, old_message.id, old_message.time, old_message.user, old_message.content);
+      if (check_state_rows[0].player_count>0) {
+        var ReturnString="Top 5 - Schaden:\r\n";
+        for (var i = 0; i<list_player_dmg.length;i++) {
+          var RowString="";
+          RowString+=list_player_dmg[i].user_name+": "+list_player_dmg[i].sum_dmg;
+          RowString+="\r\n";
+          if (ReturnString.length+RowString.length>=200) {
+            SendFunc(ReturnString);
+            ReturnString="";
+          }
+          ReturnString+=RowString;
+          
+          if ((i==0) && (list_player_dmg[i].user_name!="")) {
+            if (check_state_rows[0].monster_hp_current<=0) {
+              old_message.content="!set_role "+list_player_dmg[i].user_name;
+              old_message.id=old_message.id+'0';
+              old_message.user="-1";
+              NewMessageFunc(old_message.service, old_message.host, old_message.room, old_message.id, old_message.time, old_message.user, old_message.content);
+            }
           }
         }
       }
@@ -285,10 +287,14 @@ function CheckResult(SendFunc,GameID, NewMessageFunc, old_message) {
         ReturnString="";
       }
     });
-    if (check_state_rows[0].monster_hp_current<=0) {
-      SendFunc("Ihr habt das Monster besiegt! Das nächste mal wird es sich besser vorbereiten!");
+    if (check_state_rows[0].player_count>0) {
+      if (check_state_rows[0].monster_hp_current<=0) {
+        SendFunc("Ihr habt das Monster besiegt! Das nächste mal wird es sich besser vorbereiten!");
+      } else {
+        SendFunc("Ihr habt zugelassen das des Monster weiterzieht! Das nächste mal sieht es euch weniger als Bedrohung!");
+      }
     } else {
-      SendFunc("Ihr habt zugelassen das des Monster weiterzieht! Das nächste mal sieht es euch weniger als Bedrohung!");
+      SendFunc("Kein Kampf, das Monster zerstört die Stadt!");
     }
   });
 }

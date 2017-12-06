@@ -80,6 +80,8 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     $tmp_details=$SYTHS->multiarray2array($tmp_details, "youtube");
     debug_log($tmp_details);
     
+    $tmp_details['simpleyth_host']=$_SESSION['user']['youtube_user'];
+    $tmp_details['simpleyth_ignore']=0;
     foreach ($tmp_details as $key=>$value){
       $new_feld[$key]="TEXT";
       $database->add_columns($_tmp_tabellename, $new_feld);

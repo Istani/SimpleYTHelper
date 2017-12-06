@@ -81,7 +81,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
                 }
               }
             }
-            $tmp_row4sql['message']="!report_user ".$user_name[0]['name']." : Wort aus dem Spamfilter verwendet!";
+            $tmp_row4sql['message']="!report_user ".$user_name[0]['name']." : Wort aus dem Spamfilter verwendet (".$listWords[$j]['word'].")!";
             if ($user_name[0]['name']!="" && $check_user==true) {
               $tmp_row4sql['user']=-1;
               $tmp_row4sql['time']=0;

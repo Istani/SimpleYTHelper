@@ -72,8 +72,8 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 	// Do Magic!
 	$game_data=$database->sql_select($cronjob_id, "*", "game_id='".md5($_SESSION['user']['email'])."'", false);
 	
-	$yt_livestream_data = $database->sql_select("channels_liveStreamChat", "*", "channel_id='".$_SESSION['user']['youtube_user']."'", true);
-	$LiveStream_Room=$yt_livestream_data[0]["chatid"];
+	$yt_livestream_data=$database->sql_select("youtube_livestream","*","youtube_snippet_channelid='".$_SESSION['user']['youtube_user']."' AND 	youtube_snippet_actualendtime IS NULL ORDER BY 	youtube_snippet_actualstarttime DESC LIMIT 1", true);
+	$LiveStream_Room=$yt_livestream_data[0]['youtube_snippet_livechatid'];
 	
 	$add_post['id']=time();
 	$add_post['time']=time();
@@ -262,6 +262,24 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 				}
 			}
 			$database->sql_insert_update($cronjob_id."_monster", $this_monster);
+			break;
+			case 6:
+			if ($this_game['start_time']<time()-(49*60*60)) {
+				$add_post['message']="!rpg start";
+				$game_data=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);
+				for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
+					$this_channel=$game_data[$count_game_data];
+					$add_post['room']="";
+					$add_post['service']=$this_channel['service'];
+					$add_post['host']=$this_channel['host'];
+					if ($this_channel['service']=="Discord") {
+						$add_post['room']=$this_channel['channel_rpgmain'];
+					}
+					if ($add_post['room']!="") {
+						$database->sql_insert_update("bot_chatlog", $add_post);
+					}
+				}
+			}
 			break;
 			default:
 			$change_me=false;

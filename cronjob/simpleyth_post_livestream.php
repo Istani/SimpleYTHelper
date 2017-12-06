@@ -46,8 +46,21 @@ if (count($videos_yt)==0) {
             $add_post['message']="!yt livestream";
             $add_post['process']=0;
             $database->sql_insert_update("bot_chatlog", $add_post);
-            
             debug_log($add_post);
+            
+            /* RPG Start */
+            $add_post['service']=$t_service;
+            $add_post['host']=$t_host;
+            $add_post['room']=$t_channel;
+            $add_post['id']=time()+1;
+            $add_post['time']=time()+1;
+            $add_post['user']=$t_user;
+            $add_post['message']="!rpg start";
+            $add_post['process']=0;
+            $database->sql_insert_update("bot_chatlog", $add_post);
+            debug_log($add_post);
+            
+            
             unset($add_post);
           }
         }
