@@ -52,6 +52,8 @@ var self = module.exports = {
   SendFunc("Discord: "+count_server+" Server with "+count_user+" User");
   if ((msg_guild.id!=null) && (message_row.user==msg_guild.ownerID || message_row.user==-1)) {
     msg_guild.pruneMembers(30).then(pruned => SendFunc("I just pruned "+pruned+" people!")).catch(console.error);
+  } else {
+    msg_guild.pruneMembers(30).then(pruned => {}).catch(console.error);
   }
 },
 };
