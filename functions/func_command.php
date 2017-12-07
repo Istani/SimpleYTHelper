@@ -14,7 +14,7 @@ function check_settings($database, $cronjob_id) {
         $user_where="true";
       }
       if ($cronjob_id!=str_replace("youtube_","",$cronjob_id)) {
-        $serivce="Bot";
+        $serivce="YouTube";
         $user_where="youtube_user is not null AND youtube_user not like ''";
       }
       // Get Users

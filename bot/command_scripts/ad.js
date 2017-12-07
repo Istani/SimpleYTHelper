@@ -28,7 +28,7 @@ var self = module.exports = {
         var GET_ACCOUNT="SELECT * FROM user WHERE discord_user='"+orows[num_orows].owner+"' or youtube_user='"+orows[num_orows].owner+"'";
         mysql.query(GET_ACCOUNT, function (aerr, arows) {
           if (arows.length==0) {
-            arows[0].email="simpleyth";
+            //arows[0].email="simpleyth";
           }
           for (var num_arows = 0; num_arows<arows.length;num_arows++) {
             My_Owner=arows[num_arows].email;
