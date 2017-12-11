@@ -43,6 +43,7 @@ $add_post['user']="-1";
 $add_post['message']="!ad";
 $add_post['process']=0;
 $add_post['php_process']=0;
+$channels=0;
 for ($count_channel=0;$count_channel<count($channels);$count_channel++) {
   $add_post['host']=$channels[$count_channel]['host'];
   $add_post['service']=$channels[$count_channel]['service'];
