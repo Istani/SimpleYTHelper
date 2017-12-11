@@ -10,77 +10,77 @@ if ($do_job==false) {
 $tt=$token[$cronjob_id];
 // Der hat keine Eigene Tablle
 
-$check_table=$database->show_tables();
-if(!in_array("bot_chatchannels", $check_table)) {
-  $felder=null;
-  $felder["service"]="VARCHAR(255)";
-  $felder["host"]="VARCHAR(255)";
-  $felder["room"]="VARCHAR(255)";
-  $felder["last_msg"]="INT(20)";
-  $felder["last_ad"]="INT(20)";
-  $database->create_table("bot_chatchannels", $felder, "service, host, room");
-  unset($felder);
-}
-
-$channels=$database->sql_select("bot_chatlog", "service, host, room, MAX(time) as last_msg", "service not like '%TTS' GROUP BY service, host, room", false);
-for ($count_channel=0;$count_channel<count($channels);$count_channel++) {
-  $database->sql_insert_update("bot_chatchannels", $channels[$count_channel]);
-}
-//debug_log($channels);
-unset($channels);
-$channels=$database->sql_select("bot_chatchannels", "*", "last_ad IS NULL", false);
-for ($count_channel=0;$count_channel<count($channels);$count_channel++) {
-  $channels[$count_channel]["last_ad"]=0;
-  $database->sql_insert_update("bot_chatchannels", $channels[$count_channel]);
-}
-//debug_log($channels);
-unset($channels);
-$channels=$database->sql_select("bot_chatchannels", "*", "last_msg>last_ad", false);
-
-$bonus_count=2;
-$add_post['id']=time();
-$add_post['user']="-1";
-$add_post['message']="!ad";
-$add_post['process']=0;
-$add_post['php_process']=0;
-$channels=0;
-for ($count_channel=0;$count_channel<count($channels);$count_channel++) {
-  $add_post['host']=$channels[$count_channel]['host'];
-  $add_post['service']=$channels[$count_channel]['service'];
-  $add_post['room']=$channels[$count_channel]['room'];
-  $add_post['time']=time();
-
-  $message=$database->sql_select("bot_chatlog", "count(time) as count_msg", "service='".$channels[$count_channel]['service']."' AND host='".$channels[$count_channel]['host']."' AND room='".$channels[$count_channel]['room']."' GROUP BY service, host, room", false);
-  if (($message[0]['count_msg']>$bonus_count+1) && $channels[$count_channel]['last_ad']<time()-(60*60)) {
-    $channels[$count_channel]["last_ad"]=time();
-    $database->sql_insert_update("bot_chatlog", $add_post);
-    $database->sql_insert_update("bot_chatchannels", $channels[$count_channel]);
-    $add_post['id']++;
+if (0) {
+  $check_table=$database->show_tables();
+  if(!in_array("bot_chatchannels", $check_table)) {
+    $felder=null;
+    $felder["service"]="VARCHAR(255)";
+    $felder["host"]="VARCHAR(255)";
+    $felder["room"]="VARCHAR(255)";
+    $felder["last_msg"]="INT(20)";
+    $felder["last_ad"]="INT(20)";
+    $database->create_table("bot_chatchannels", $felder, "service, host, room");
+    unset($felder);
   }
 
-  if (($message[0]['count_msg']>$bonus_count+5) && $channels[$count_channel]['last_ad']<time()-(30*60)) {
-    $channels[$count_channel]["last_ad"]=time();
-    $database->sql_insert_update("bot_chatlog", $add_post);
+  $channels=$database->sql_select("bot_chatlog", "service, host, room, MAX(time) as last_msg", "service not like '%TTS' GROUP BY service, host, room", false);
+  for ($count_channel=0;$count_channel<count($channels);$count_channel++) {
     $database->sql_insert_update("bot_chatchannels", $channels[$count_channel]);
-    $add_post['id']++;
   }
+  //debug_log($channels);
+  unset($channels);
+  $channels=$database->sql_select("bot_chatchannels", "*", "last_ad IS NULL", false);
+  for ($count_channel=0;$count_channel<count($channels);$count_channel++) {
+    $channels[$count_channel]["last_ad"]=0;
+    $database->sql_insert_update("bot_chatchannels", $channels[$count_channel]);
+  }
+  //debug_log($channels);
+  unset($channels);
+  $channels=$database->sql_select("bot_chatchannels", "*", "last_msg>last_ad", false);
 
-  if (($message[0]['count_msg']>$bonus_count+20) && $channels[$count_channel]['last_ad']<time()-(15*60)) {
-    $channels[$count_channel]["last_ad"]=time();
-    $database->sql_insert_update("bot_chatlog", $add_post);
-    $database->sql_insert_update("bot_chatchannels", $channels[$count_channel]);
-    $add_post['id']++;
-  }
+  $bonus_count=2;
+  $add_post['id']=time();
+  $add_post['user']="-1";
+  $add_post['message']="!ad";
+  $add_post['process']=0;
+  $add_post['php_process']=0;
+  for ($count_channel=0;$count_channel<count($channels);$count_channel++) {
+    $add_post['host']=$channels[$count_channel]['host'];
+    $add_post['service']=$channels[$count_channel]['service'];
+    $add_post['room']=$channels[$count_channel]['room'];
+    $add_post['time']=time();
 
-  if (($message[0]['count_msg']>$bonus_count+50) && $channels[$count_channel]['last_ad']<time()-(1*60)) {
-    $channels[$count_channel]["last_ad"]=time();
-    $database->sql_insert_update("bot_chatlog", $add_post);
-    $database->sql_insert_update("bot_chatchannels", $channels[$count_channel]);
-    $add_post['id']++;
+    $message=$database->sql_select("bot_chatlog", "count(time) as count_msg", "service='".$channels[$count_channel]['service']."' AND host='".$channels[$count_channel]['host']."' AND room='".$channels[$count_channel]['room']."' GROUP BY service, host, room", false);
+    if (($message[0]['count_msg']>$bonus_count+1) && $channels[$count_channel]['last_ad']<time()-(60*60)) {
+      $channels[$count_channel]["last_ad"]=time();
+      $database->sql_insert_update("bot_chatlog", $add_post);
+      $database->sql_insert_update("bot_chatchannels", $channels[$count_channel]);
+      $add_post['id']++;
+    }
+
+    if (($message[0]['count_msg']>$bonus_count+5) && $channels[$count_channel]['last_ad']<time()-(30*60)) {
+      $channels[$count_channel]["last_ad"]=time();
+      $database->sql_insert_update("bot_chatlog", $add_post);
+      $database->sql_insert_update("bot_chatchannels", $channels[$count_channel]);
+      $add_post['id']++;
+    }
+
+    if (($message[0]['count_msg']>$bonus_count+20) && $channels[$count_channel]['last_ad']<time()-(15*60)) {
+      $channels[$count_channel]["last_ad"]=time();
+      $database->sql_insert_update("bot_chatlog", $add_post);
+      $database->sql_insert_update("bot_chatchannels", $channels[$count_channel]);
+      $add_post['id']++;
+    }
+
+    if (($message[0]['count_msg']>$bonus_count+50) && $channels[$count_channel]['last_ad']<time()-(1*60)) {
+      $channels[$count_channel]["last_ad"]=time();
+      $database->sql_insert_update("bot_chatlog", $add_post);
+      $database->sql_insert_update("bot_chatchannels", $channels[$count_channel]);
+      $add_post['id']++;
+    }
+    
   }
-  
 }
-
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$_SESSION['user']['email'].': '.$cronjob_id." updated!<br>";
 //$tt["cooldown"]=1*60*60; // Test
