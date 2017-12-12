@@ -38,7 +38,7 @@ if (1) {
   unset($channels);
   $channels=$database->sql_select("bot_chatchannels", "*", "last_msg>last_ad", false);
 
-  $bonus_count=2;
+  $bonus_count=3;
   $add_post['id']=time();
   $add_post['user']="-1";
   $add_post['message']="!ad";
