@@ -10,7 +10,7 @@ if ($do_job==false) {
 $tt=$token[$cronjob_id];
 // Der hat keine Eigene Tablle
 
-if (1) {
+if (0) {
   $check_table=$database->show_tables();
   if(!in_array("bot_chatchannels", $check_table)) {
     $felder=null;
