@@ -53,8 +53,11 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   } else {
     $tt["token"]="";
   }
-  
-  $details_max=count($response['result']['items']);
+  if (isset($response['result']['items'])) {
+    $details_max=count($response['result']['items']);
+  } else {
+    $details_max=0;
+  }
   if ($details_max==0) {
     $tt["token"]="";
   }
