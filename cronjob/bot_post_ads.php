@@ -84,7 +84,6 @@ if (1) {
   }
 }
 
-die();
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$_SESSION['user']['email'].': '.$cronjob_id." updated!<br>";
 //$tt["cooldown"]=1*60*60; // Test
