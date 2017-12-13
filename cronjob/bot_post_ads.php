@@ -10,7 +10,7 @@ if ($do_job==false) {
 $tt=$token[$cronjob_id];
 // Der hat keine Eigene Tablle
 
-if (0) {
+if (1) {
   $check_table=$database->show_tables();
   if(!in_array("bot_chatchannels", $check_table)) {
     $felder=null;
@@ -38,6 +38,8 @@ if (0) {
   unset($channels);
   $channels=$database->sql_select("bot_chatchannels", "*", "last_msg>last_ad", false);
 
+  debug_log($channels);
+
   $bonus_count=3;
   $add_post['id']=time();
   $add_post['user']="-1";
@@ -50,7 +52,7 @@ if (0) {
     $add_post['room']=$channels[$count_channel]['room'];
     $add_post['time']=time();
 
-    $message=$database->sql_select("bot_chatlog", "count(time) as count_msg", "service='".$channels[$count_channel]['service']."' AND host='".$channels[$count_channel]['host']."' AND room='".$channels[$count_channel]['room']."' GROUP BY service, host, room", false);
+    $message=$database->sql_select("bot_chatlog", "count(time) as count_msg", "time>".$channels[$count_channel]["last_ad"]." AND service='".$channels[$count_channel]['service']."' AND host='".$channels[$count_channel]['host']."' AND room='".$channels[$count_channel]['room']."' GROUP BY service, host, room", false);
     if (($message[0]['count_msg']>$bonus_count+1) && $channels[$count_channel]['last_ad']<time()-(60*60)) {
       $channels[$count_channel]["last_ad"]=time();
       $database->sql_insert_update("bot_chatlog", $add_post);
@@ -81,6 +83,8 @@ if (0) {
     
   }
 }
+
+die();
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$_SESSION['user']['email'].': '.$cronjob_id." updated!<br>";
 //$tt["cooldown"]=1*60*60; // Test
