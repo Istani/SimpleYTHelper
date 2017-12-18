@@ -216,7 +216,7 @@ function ProcessMessageUpdate(service, id) {
 
 function GenerateAnwser(msg_row) {
   var msg=msg_row;
-  msg.message = msg.message.toLowerCase();
+  //msg.message = msg.message.toLowerCase();
   var check_command=false;
   var message=msg.message.toLowerCase();
   if (message.startsWith(command_prefix)) {
