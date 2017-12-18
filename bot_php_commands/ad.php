@@ -1,7 +1,7 @@
 <?php
 $get_owner=$database->sql_select("bot_chathosts","*","host='".$this_msg['host']."'",true)[0]['owner'];
 $owner_user=$database->sql_select("user","*","discord_user='".$get_owner."' or youtube_user='".$get_owner."'",true)[0];
-if (!isset($owner_user['ad_status']) && $owner_user['email']!="") {
+if (!isset($owner_user['ad_status']) && $owner_user['email']!="" || $owner_user['ad_status']=="" || $owner_user['ad_status']==null) {
   $owner_user['ad_status']=1;
   $new_feld['ad_status']="TEXT";
   $database->add_columns("user", $new_feld);
