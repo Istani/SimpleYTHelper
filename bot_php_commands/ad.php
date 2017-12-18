@@ -36,7 +36,7 @@ while ($get_ad['link']=="" && $try_check<3) {
 
 if ($get_ad['link']!="") {
   // Do Things with Ads
-  if ($owner_user['email']=="") {
+  if ($owner_user['email']!="") {
     $database->sql_insert_update("user",$owner_user);
   }
   if ($get_ad['premcount']>0){
