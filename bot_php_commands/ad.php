@@ -48,9 +48,11 @@ if ($get_ad['link']!="") {
   $database->sql_insert_update("user_ads",$get_ad);
 }
 
+/*
 $result = ob_get_contents();
 ob_end_clean();
 $result = replace_html2markdown($result);
 echo $result;
 die();
+*/
 ?>
