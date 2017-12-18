@@ -255,7 +255,7 @@ class db {
       }
       $key=strtolower($key);
       $value = str_replace("'", "", $value);
-      $value = utf8_decode($value);
+      //$value = utf8_decode($value);
       if ($sql_felder == "") {
         $sql_felder ="`".$key."`='" . $value . "'";
         $felder_list="`".$key."`";
