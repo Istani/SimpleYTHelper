@@ -64,7 +64,7 @@ if ($get_ad['link']!="") {
       //
       //TODO: GGF die Room ID durch die broadcastId wechseln?
       
-      $videos_yt=$database->sql_select("youtube_livestream", "*", "youtube_snippet_channelid='".$_SESSION['user']['youtube_user']."' AND (youtube_snippet_actualendtime IS NULL OR youtube_snippet_actualendtime='') ORDER BY youtube_snippet_actualstarttime DESC LIMIT 1",false);
+      $videos_yt=$database->sql_select("youtube_livestream", "*", "youtube_snippet_channelid='".$owner_user['youtube_user']."' AND (youtube_snippet_actualendtime IS NULL OR youtube_snippet_actualendtime='') ORDER BY youtube_snippet_actualstarttime DESC LIMIT 1",false);
       if (count($videos_yt)>0) {
         
         $CURL_Options[CURLOPT_POSTFIELDS]='{
