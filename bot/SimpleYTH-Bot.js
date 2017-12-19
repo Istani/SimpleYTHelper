@@ -175,7 +175,7 @@ function Cron_Livestream() {
     return response.text();
   }).then( function (text) {
     //console.log(text);
-    setTimeout(Cron_Livestream, 100);
+    setTimeout(Cron_Livestream, 500);
   });
 }
 function Cron_PHPHAck() {
@@ -184,7 +184,7 @@ function Cron_PHPHAck() {
     return response.text();
   }).then( function (text) {
     //console.log(text);
-    setTimeout(Cron_PHPHAck, 100);
+    setTimeout(Cron_PHPHAck, 500);
   });
 }
 
@@ -201,7 +201,7 @@ function ProcessMessage() {
       ProcessMessageUpdate(rows[i].service, rows[i].id);
     }
   });
-  setTimeout(ProcessMessage, 200);
+  setTimeout(ProcessMessage, 500);
 }
 
 function ProcessMessageUpdate(service, id) {
