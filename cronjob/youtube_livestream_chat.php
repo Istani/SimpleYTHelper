@@ -26,7 +26,7 @@ $tt=$token[$_tmp_tabellename];
 if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $req_max=2000;
   // Check Livstream Chat ID
-  $liveStream=$database->sql_select("youtube_livestream","*","youtube_snippet_channelid='".$_SESSION['user']['youtube_user']."' AND 	youtube_snippet_actualendtime IS NULL ORDER BY 	youtube_snippet_actualstarttime DESC LIMIT 1", true);
+  $liveStream=$database->sql_select("youtube_livestream","*","youtube_snippet_channelid='".$_SESSION['user']['youtube_user']."' AND (youtube_snippet_actualendtime IS NULL OR youtube_snippet_actualendtime='')  ORDER BY 	youtube_snippet_actualstarttime DESC LIMIT 1", true);
   $chatId=$liveStream[0]['youtube_snippet_livechatid'];
   
   $client = new OAuth2\Client($OAUTH2_CLIENT_ID, $OAUTH2_CLIENT_SECRET);
