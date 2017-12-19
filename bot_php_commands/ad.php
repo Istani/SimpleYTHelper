@@ -57,13 +57,13 @@ if ($get_ad['link']!="") {
   unset($get_ad['hash']);
   $database->sql_insert_update("user_ads",$get_ad);
   
+  
   if ($this_msg['service']=="YouTube" && $owner_user['youtube_user']==$this_msg['user']) {
     // ADD Live Cuepoint
     $TmpToken=$database->sql_select("authtoken","*","service='".$this_msg['service']."' AND user='".$owner_user['email']."' LIMIT 1",true)[0];
     if ($TmpToken['user']==$owner_user['email']) {
       //
       //TODO: GGF die Room ID durch die broadcastId wechseln?
-      
       $videos_yt=$database->sql_select("youtube_livestream", "*", "youtube_snippet_channelid='".$owner_user['youtube_user']."' AND (youtube_snippet_actualendtime IS NULL OR youtube_snippet_actualendtime='') ORDER BY youtube_snippet_actualstarttime DESC LIMIT 1",false);
       if (count($videos_yt)>0) {
         
@@ -82,12 +82,13 @@ if ($get_ad['link']!="") {
         $params = array('channelId' => $owner_user['youtube_user']);
         $response = $client->fetch('https://www.googleapis.com/youtube/partner/v1/liveCuepoints', $params);
         
-        debug_log($response);
+        //debug_log($response);
       }
       
       
     }
   }
+  
 }
 
 /*
