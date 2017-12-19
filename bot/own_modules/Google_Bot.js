@@ -74,7 +74,7 @@ function SetLogin(self, client_id, client_secret, access_token) {
 }
 
 function RefreshToken(self) {
-  var LoadToken_String = "SELECT * FROM authtoken WHERE user = 'SimpleYTH' AND service='YouTube' LIMIT 1";
+  var LoadToken_String = "SELECT * FROM authtoken WHERE user = 'simpleyth' AND service='YouTube' LIMIT 1";
   self.mysql.query(LoadToken_String, function (err, rows) {
     if (err != null) {
       console.log("MySQL: " + err);
