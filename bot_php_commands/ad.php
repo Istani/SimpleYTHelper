@@ -25,6 +25,16 @@ while ($get_ad['link']=="" && $try_check<3) {
     $get_min_counter=0;
   }
   
+  if ($get_min_counter>=2) {
+    $ToBeChange=$database->sql_select("user_ads","*",$ad_where." AND count>=".$get_min_counter,true);
+    for ($count_changes=0;$count_changes<count($ToBeChange);$count_changes++) {
+      $ToBeChange['count']=0;
+      $database->sql_insert_update("user_ads",$ToBeChange[$count_changes]);
+    }
+    $get_min_counter=0;
+    unset($ToBeChange);
+  }
+  
   $get_ad=$database->sql_select("user_ads","*, md5(concat(owner,link)) AS hash",$ad_where." AND count='".$get_min_counter."' ORDER BY RAND() LIMIT 1",true)[0];
   
   if ($owner_user['ad_status']==1) {
