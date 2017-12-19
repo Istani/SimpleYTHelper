@@ -63,7 +63,7 @@ if ($get_ad['link']!="") {
     if ($TmpToken['user']==$owner_user['email']) {
       //
       $CURL_Options[CURLOPT_POSTFIELDS]='{
-        "broadcastId": "3366FF",
+        "broadcastId": "'.$this_msg['room'].'",
         "settings": {
           "cueType": "ad",
           "offsetTimeMs": "0",
