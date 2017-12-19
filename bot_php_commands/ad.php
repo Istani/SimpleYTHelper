@@ -74,7 +74,7 @@ if ($get_ad['link']!="") {
       $client = new OAuth2\Client($OAUTH2_CLIENT_ID, $OAUTH2_CLIENT_SECRET);
       $client->setAccessToken($TmpToken['access_token']);
       $client->setAccessTokenType(1); //ACCESS_TOKEN_BEARER
-      $clinet->setCurlOptions($CURL_Options);
+      $client->setCurlOptions($CURL_Options);
       $params = array('channelId' => $owner_user['youtube_user']);
       $response = $client->fetch('https://www.googleapis.com/youtube/partner/v1/liveCuepoints', $params);
       
