@@ -175,7 +175,7 @@ function Cron_Livestream() {
     return response.text();
   }).then( function (text) {
     //console.log(text);
-    setTimeout(Cron_Livestream, 500);
+    setTimeout(Cron_Livestream, 100);
   });
 }
 function Cron_PHPHAck() {
@@ -184,7 +184,7 @@ function Cron_PHPHAck() {
     return response.text();
   }).then( function (text) {
     //console.log(text);
-    setTimeout(Cron_PHPHAck, 500);
+    setTimeout(Cron_PHPHAck, 100);
   });
 }
 
@@ -201,7 +201,7 @@ function ProcessMessage() {
       ProcessMessageUpdate(rows[i].service, rows[i].id);
     }
   });
-  setTimeout(ProcessMessage, 500);
+  setTimeout(ProcessMessage, 300);
 }
 
 function ProcessMessageUpdate(service, id) {
@@ -267,19 +267,14 @@ function GenerateAnwser(msg_row) {
       case 'YouTube':
       cmd.use(command, msg,function (text) {
         var sendcount=0;
-        var max_length=200;
-        while (text.length>0) {
-          setTimeout(function () {
-            // TODO: Text in 200 Zeichen Teile Trennen!
-            if (text.length<max_length) {
-              max_length=text.length;
-            }
-            var SendText=text.substr(0,max_length);
-            text=text.replace(SendText,"");
-            google_bot.sendMessage(msg.room, SendText);
-          }, sendcount*100);
-          sendcount++;
-        }
+        //while (text.size>0) {
+        setTimeout(function () {
+          // TODO: Text in 200 Zeichen Teile Trennen!
+          var SendText=text;
+          google_bot.sendMessage(msg.room, SendText);
+        }, sendcount*100);
+        sendcount++;
+        //}
       }, LogMessage);
       break;
       default:
