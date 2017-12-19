@@ -68,7 +68,7 @@ if ($get_ad['link']!="") {
       if (count($videos_yt)>0) {
         
         $CURL_Options[CURLOPT_POSTFIELDS]='{
-          "broadcastId": "'.$videos_yt['youtube_id'].'",
+          "broadcastId": "'.$videos_yt[0]['youtube_id'].'",
           "settings": {
             "cueType": "ad",
             "offsetTimeMs": "0",
