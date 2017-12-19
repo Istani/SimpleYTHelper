@@ -28,7 +28,7 @@ while ($get_ad['link']=="" && $try_check<3) {
   if ($get_min_counter>=2) {
     $ToBeChange=$database->sql_select("user_ads","*",$ad_where." AND count>=".$get_min_counter,true);
     for ($count_changes=0;$count_changes<count($ToBeChange);$count_changes++) {
-      $ToBeChange['count']=0;
+      $ToBeChange[$count_changes]['count']=0;
       $database->sql_insert_update("user_ads",$ToBeChange[$count_changes]);
     }
     $get_min_counter=0;
@@ -56,6 +56,30 @@ if ($get_ad['link']!="") {
   echo "(AD) ".$get_ad['title'].": http://s.defender833.de/l.php?l=".$get_ad['hash'];
   unset($get_ad['hash']);
   $database->sql_insert_update("user_ads",$get_ad);
+  
+  if ($this_msg['service']=="YouTube" && $owner_user['youtube_user']==$this_msg['user']) {
+    // ADD Live Cuepoint
+    $TmpToken=$database->sql_select("authtoken","*","service='".$this_msg['service']."' AND user='".$owner_user['email']."' LIMIT 1",true)[0];
+    if ($TmpToken['user']==$owner_user['email']) {
+      //
+      $CURL_Options[CURLOPT_POSTFIELDS]='{
+        "broadcastId": "3366FF",
+        "settings": {
+          "cueType": "ad",
+          "offsetTimeMs": "0",
+          "durationSecs": 15
+        }
+      }';
+      $client = new OAuth2\Client($OAUTH2_CLIENT_ID, $OAUTH2_CLIENT_SECRET);
+      $client->setAccessToken($TmpToken['access_token']);
+      $client->setAccessTokenType(1); //ACCESS_TOKEN_BEARER
+      $clinet->setCurlOptions($CURL_Options);
+      $params = array('channelId' => $owner_user['youtube_user']);
+      $response = $client->fetch('https://www.googleapis.com/youtube/partner/v1/liveCuepoints', $params);
+      
+      debug_log($response);
+    }
+  }
 }
 
 /*
