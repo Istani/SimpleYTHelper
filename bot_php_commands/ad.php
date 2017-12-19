@@ -62,6 +62,7 @@ if ($get_ad['link']!="") {
     $TmpToken=$database->sql_select("authtoken","*","service='".$this_msg['service']."' AND user='".$owner_user['email']."' LIMIT 1",true)[0];
     if ($TmpToken['user']==$owner_user['email']) {
       //
+      //TODO: GGF die Room ID durch die broadcastId wechseln?
       $CURL_Options[CURLOPT_POSTFIELDS]='{
         "broadcastId": "'.$this_msg['room'].'",
         "settings": {

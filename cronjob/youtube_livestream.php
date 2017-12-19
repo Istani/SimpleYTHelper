@@ -87,7 +87,6 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     $database->sql_insert_update($_tmp_tabellename, $newData);
     unset($newData);
     unset($tmp_details);
-    die();
   }
   $tt["cooldown"]=60;
 }
