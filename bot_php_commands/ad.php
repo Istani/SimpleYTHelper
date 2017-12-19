@@ -63,22 +63,29 @@ if ($get_ad['link']!="") {
     if ($TmpToken['user']==$owner_user['email']) {
       //
       //TODO: GGF die Room ID durch die broadcastId wechseln?
-      $CURL_Options[CURLOPT_POSTFIELDS]='{
-        "broadcastId": "'.$this_msg['room'].'",
-        "settings": {
-          "cueType": "ad",
-          "offsetTimeMs": "0",
-          "durationSecs": 15
-        }
-      }';
-      $client = new OAuth2\Client($OAUTH2_CLIENT_ID, $OAUTH2_CLIENT_SECRET);
-      $client->setAccessToken($TmpToken['access_token']);
-      $client->setAccessTokenType(1); //ACCESS_TOKEN_BEARER
-      $client->setCurlOptions($CURL_Options);
-      $params = array('channelId' => $owner_user['youtube_user']);
-      $response = $client->fetch('https://www.googleapis.com/youtube/partner/v1/liveCuepoints', $params);
       
-      debug_log($response);
+      $videos_yt=$database->sql_select("youtube_livestream", "*", "youtube_snippet_channelid='".$_SESSION['user']['youtube_user']."' AND (youtube_snippet_actualendtime IS NULL OR youtube_snippet_actualendtime='') ORDER BY youtube_snippet_actualstarttime DESC LIMIT 1",false);
+      if (count($videos_yt)>0) {
+        
+        $CURL_Options[CURLOPT_POSTFIELDS]='{
+          "broadcastId": "'.$videos_yt['youtube_id'].'",
+          "settings": {
+            "cueType": "ad",
+            "offsetTimeMs": "0",
+            "durationSecs": 15
+          }
+        }';
+        $client = new OAuth2\Client($OAUTH2_CLIENT_ID, $OAUTH2_CLIENT_SECRET);
+        $client->setAccessToken($TmpToken['access_token']);
+        $client->setAccessTokenType(1); //ACCESS_TOKEN_BEARER
+        $client->setCurlOptions($CURL_Options);
+        $params = array('channelId' => $owner_user['youtube_user']);
+        $response = $client->fetch('https://www.googleapis.com/youtube/partner/v1/liveCuepoints', $params);
+        
+        debug_log($response);
+      }
+      
+      
     }
   }
 }
