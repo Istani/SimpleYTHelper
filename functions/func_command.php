@@ -6,11 +6,11 @@ function check_settings($database, $cronjob_id) {
     if ($_SESSION['cronjob']=="setup") {
       // Get service
       if ($cronjob_id!=str_replace("bot_","",$cronjob_id)) {
-        $serivce="SimpleYTH";
+        $serivce="Bot";
         $user_where="status=1";
       }
       if ($cronjob_id!=str_replace("simpleyth_","",$cronjob_id)) {
-        $serivce="Bot";
+        $serivce="SimpleYTH";
         $user_where="true";
       }
       if ($cronjob_id!=str_replace("youtube_","",$cronjob_id)) {
