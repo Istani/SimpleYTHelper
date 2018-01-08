@@ -211,6 +211,8 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 			// Checking Round Counter!
 			$this_game['rounds_current']++;
 			if ($this_game['rounds_current']>$this_game['rounds_max']) {
+				$add_post['id']++;
+				$add_post['time']++;
 				$this_game['game_state']++;
 			} else {
 				$add_post['message']="!rpg round";
@@ -252,6 +254,8 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 					$database->sql_insert_update("bot_chatlog", $add_post);
 				}
 			}
+			$add_post['id']++;
+			$add_post['time']++;
 			$game_data=$database->sql_select($cronjob_id."_monster", "*", "monster_id='".$this_game['monster_id']."'", false);
 			$this_monster=$game_data[0];
 			if ($this_game['player_count']>0) {

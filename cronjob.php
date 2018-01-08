@@ -118,7 +118,8 @@ while (time()-$Time['Start']<=55) {
     $client->setClientSecret($OAUTH2_CLIENT_SECRET);
     //}
     $client->setDeveloperKey($DEV_KEY);
-    $client->setScopes('https: //www.googleapis.com/auth/youtube');
+    $client->setScopes('https://www.googleapis.com/auth/youtube');
+    //https://www.googleapis.com/auth/youtubepartner
     $client->setAccessType('offline');
     $client->setAccessToken($tmp_token);
     //debug_log($tmp_token);

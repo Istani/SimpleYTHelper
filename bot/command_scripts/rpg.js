@@ -281,10 +281,10 @@ function CheckResult(SendFunc,GameID, NewMessageFunc, old_message) {
             }
           }
         }
-      }
-      if (ReturnString.length>7) {
-        SendFunc(ReturnString);
-        ReturnString="";
+        if (ReturnString.length>7) {
+          SendFunc(ReturnString);
+          ReturnString="";
+        }
       }
     });
     if (check_state_rows[0].player_count>0) {
