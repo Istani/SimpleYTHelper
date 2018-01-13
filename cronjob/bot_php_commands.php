@@ -44,9 +44,13 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
       $this_user['roles'][]=$temp_user_roles[$count_user];
     }
     
+    $this_msg['php_process']=1;
+    $database->sql_insert_update("bot_chatlog", $this_msg);
+    
     if ($prefix==substr($this_msg['message'], 0,1)) {
       $parts=explode(" ", $this_msg['message'],2);
       $command_file="bot_php_commands/".substr($parts[0], 1).".php";
+      
       if (file_exists($command_file)) {
         ob_start();
         include("bot_php_commands/".substr($parts[0], 1).".php");
@@ -55,17 +59,14 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
         $result = utf8_decode($result);
         $result = replace_html2markdown($result);
         //debug_log($result);
+        
+        $this_msg['id']=($this_msg['id']*10)+1;
+        $this_msg['process']=0;
+        $this_msg['user']='-1';
+        $this_msg['message']="!php_hack ".$result;
+        
+        $database->sql_insert_update("bot_chatlog", $this_msg);
       }
-    }
-    $this_msg['php_process']=1;
-    $database->sql_insert_update("bot_chatlog", $this_msg);
-    if (file_exists($command_file)) {
-      $this_msg['id']=($this_msg['id']*10)+1;
-      $this_msg['process']=0;
-      $this_msg['user']='-1';
-      $this_msg['message']="!php_hack ".$result;
-      
-      $database->sql_insert_update("bot_chatlog", $this_msg);
     }
   }
   $tt["cooldown"]=2;
