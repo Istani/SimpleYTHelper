@@ -52,6 +52,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
         include("bot_php_commands/".substr($parts[0], 1).".php");
         $result = ob_get_contents();
         ob_end_clean();
+        $result = utf8_encode($result);
         $result = replace_html2markdown($result);
         //debug_log($result);
       }
