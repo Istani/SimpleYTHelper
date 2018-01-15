@@ -20,7 +20,8 @@ while ($get_ad['link']=="" && $try_check<3) {
   } else {
     $ad_where="owner='".$owner_user['email']."' AND type NOT LIKE 'Link' AND link NOT LIKE ''";
   }
-  $get_min_counter=$database->sql_select("user_ads","MIN(count) as min_counter",$ad_where,true)[0]['min_counter'];
+  
+  $get_min_counter=$database->sql_select("user_ads","MIN(count) AS min_counter",$ad_where,true)[0]['min_counter'];
   if ($get_min_counter=="") {
     $get_min_counter=0;
   }

@@ -22,7 +22,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     $database->create_table("bot_chatchannels", $felder, "service, host, room");
     unset($felder);
   }
-
+  
   $channels=$database->sql_select("bot_chatlog", "service, host, room, MAX(time) as last_msg", "service not like '%TTS' GROUP BY service, host, room", false);
   for ($count_channel=0;$count_channel<count($channels);$count_channel++) {
     $database->sql_insert_update("bot_chatchannels", $channels[$count_channel]);
@@ -37,9 +37,9 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   //debug_log($channels);
   unset($channels);
   $channels=$database->sql_select("bot_chatchannels", "*", "last_msg>last_ad", false);
-
+  
   debug_log($channels);
-
+  
   $bonus_count=3;
   $add_post['id']=time();
   $add_post['user']="-1";
@@ -51,30 +51,16 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     $add_post['service']=$channels[$count_channel]['service'];
     $add_post['room']=$channels[$count_channel]['room'];
     $add_post['time']=time();
-
-    $message=$database->sql_select("bot_chatlog", "count(time) as count_msg", "time>".$channels[$count_channel]["last_ad"]." AND service='".$channels[$count_channel]['service']."' AND host='".$channels[$count_channel]['host']."' AND room='".$channels[$count_channel]['room']."' GROUP BY service, host, room", false);
-    if (($message[0]['count_msg']>$bonus_count+1) && $channels[$count_channel]['last_ad']<time()-(60*60)) {
-      $channels[$count_channel]["last_ad"]=time();
-      $database->sql_insert_update("bot_chatlog", $add_post);
-      $database->sql_insert_update("bot_chatchannels", $channels[$count_channel]);
-      $add_post['id']++;
+    
+    $timeout_ad=60*30;
+    if ($add_post['service']=="Discord") {
+      $timeout_ad=60*60*7;
     }
-
-    if (($message[0]['count_msg']>$bonus_count+5) && $channels[$count_channel]['last_ad']<time()-(30*60)) {
-      $channels[$count_channel]["last_ad"]=time();
-      $database->sql_insert_update("bot_chatlog", $add_post);
-      $database->sql_insert_update("bot_chatchannels", $channels[$count_channel]);
-      $add_post['id']++;
-    }
-
-    if (($message[0]['count_msg']>$bonus_count+20) && $channels[$count_channel]['last_ad']<time()-(15*60)) {
-      $channels[$count_channel]["last_ad"]=time();
-      $database->sql_insert_update("bot_chatlog", $add_post);
-      $database->sql_insert_update("bot_chatchannels", $channels[$count_channel]);
-      $add_post['id']++;
-    }
-
-    if (($message[0]['count_msg']>$bonus_count+50) && $channels[$count_channel]['last_ad']<time()-(1*60)) {
+    
+    $timeout_msg=60*3;
+    
+    //$message=$database->sql_select("bot_chatlog", "count(time) as count_msg", "time>".$channels[$count_channel]["last_ad"]." AND service='".$channels[$count_channel]['service']."' AND host='".$channels[$count_channel]['host']."' AND room='".$channels[$count_channel]['room']."' GROUP BY service, host, room", false);
+    if ($channels[$count_channel]['last_msg']>time()-($timeout_msg) && $channels[$count_channel]['last_ad']<time()-($timeout_ad)) {
       $channels[$count_channel]["last_ad"]=time();
       $database->sql_insert_update("bot_chatlog", $add_post);
       $database->sql_insert_update("bot_chatchannels", $channels[$count_channel]);
