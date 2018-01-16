@@ -54,7 +54,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     
     $timeout_ad=60*30;
     if ($add_post['service']=="Discord") {
-      $timeout_ad=60*60*7;
+      $timeout_ad=60*60*24*7;
     }
     
     $timeout_msg=60*3;
