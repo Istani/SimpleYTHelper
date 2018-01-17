@@ -18,7 +18,9 @@ function handleError($code, $description, $file = null, $line = null, $context =
     'path' => $file,
     'message' => $error . ' (' . $code . '): ' . $description . ' in [' . $file . ', line ' . $line . ']'
   );
-  fileLog($data);
+  if ($data['error']!='Deprecated') {
+    fileLog($data);
+  }
   return false;
 }
 
