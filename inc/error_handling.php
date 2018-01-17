@@ -5,11 +5,9 @@ define('ERROR_LOG_FILE', '../'.date("Y-m-d").'-SYTH_PHP.log');
 function handleError($code, $description, $file = null, $line = null, $context = null) {
   $displayErrors = ini_get("display_errors");
   $displayErrors = strtolower($displayErrors);
-  if (error_reporting() === 0 || $displayErrors === "on") {
-    return false;
-  }
   list($error, $log) = mapErrorCode($code);
   $data = array(
+    'time' => date("H:i:s"),
     'level' => $log,
     'code' => $code,
     'error' => $error,
@@ -20,13 +18,15 @@ function handleError($code, $description, $file = null, $line = null, $context =
     'path' => $file,
     'message' => $error . ' (' . $code . '): ' . $description . ' in [' . $file . ', line ' . $line . ']'
   );
-  return fileLog($data);
+  fileLog($data);
+  return false;
 }
 
 function fileLog($logData, $fileName = ERROR_LOG_FILE) {
   $fh = fopen($fileName, 'a+');
   if (is_array($logData)) {
     $logData = print_r($logData, 1);
+    $logData.="\r\n";
   }
   $status = fwrite($fh, $logData);
   fclose($fh);
