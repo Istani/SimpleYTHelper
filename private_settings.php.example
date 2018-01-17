@@ -15,6 +15,11 @@ $mysql['user'] = "";
 $mysql['pass'] = "";
 $mysql['base'] = "";
 
+// EMail Settings
+$mail_data['host']="";
+$mail_data['user']="";
+$mail_data['pass']="";
+
 // Development
 $SimpleYTH_Developmentmode=false;
 ?>
