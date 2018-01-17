@@ -72,7 +72,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 	// Do Magic!
 	$game_data=$database->sql_select($cronjob_id, "*", "game_id='".md5($_SESSION['user']['email'])."'", false);
 	
-	$yt_livestream_data=$database->sql_select("youtube_livestream","*","youtube_snippet_channelid='".$_SESSION['user']['youtube_user']."' AND 	youtube_snippet_actualendtime IS NULL ORDER BY 	youtube_snippet_actualstarttime DESC LIMIT 1", true);
+	$yt_livestream_data=$database->sql_select("youtube_livestream","*","youtube_snippet_channelid='".$_SESSION['user']['youtube_user']."' AND 	youtube_snippet_actualendtime IS NULL OR youtube_snippet_actualendtime='' ORDER BY 	youtube_snippet_actualstarttime DESC LIMIT 1", true);
 	$LiveStream_Room=$yt_livestream_data[0]['youtube_snippet_livechatid'];
 	
 	$add_post['id']=time();
