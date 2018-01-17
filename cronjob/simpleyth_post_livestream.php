@@ -30,7 +30,7 @@ if (count($videos_yt)==0) {
       foreach ($the_hosts as $t_host => $t_channel) {
         if ($t_channel!="0") {
           // Posten versuchen
-          $t_user="";
+          $t_user="-1";
           if ($t_service=="Discord") {
             $t_user=$_SESSION['user']['discord_user'];
           }
@@ -47,32 +47,31 @@ if (count($videos_yt)==0) {
             $add_post['process']=0;
             $database->sql_insert_update("bot_chatlog", $add_post);
             debug_log($add_post);
-            
-            /* RPG Start */
-            $game_data=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);
-            for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
-              $this_channel=$game_data[$count_game_data];
-              if ($this_channel['service']=="YouTube") {
-                $add_post['room']=$videos_yt[0]['youtube_snippet_livechatid'];
-              }
-              if ($this_channel['service']=="Discord") {
-                $add_post['room']=$this_channel['channel_rpgmain'];
-              }
-              
-              $add_post['service']=$t_service;
-              $add_post['host']=$t_host;
-              $add_post['id']=time()+1;
-              $add_post['time']=time()+1;
-              $add_post['user']=$t_user;
-              $add_post['message']="!rpg start";
-              $add_post['process']=0;
-              $database->sql_insert_update("bot_chatlog", $add_post);
-              debug_log($add_post);
-            }
-            
-            unset($add_post);
           }
         }
+        /* RPG Start */
+        $game_data=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);
+        for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
+          $this_channel=$game_data[$count_game_data];
+          if ($this_channel['service']=="YouTube") {
+            $add_post['room']=$videos_yt[0]['youtube_snippet_livechatid'];
+          }
+          if ($this_channel['service']=="Discord") {
+            $add_post['room']=$this_channel['channel_rpgmain'];
+          }
+          
+          $add_post['service']=$t_service;
+          $add_post['host']=$t_host;
+          $add_post['id']=time()+1;
+          $add_post['time']=time()+1;
+          $add_post['user']=$t_user;
+          $add_post['message']="!rpg start";
+          $add_post['process']=0;
+          $database->sql_insert_update("bot_chatlog", $add_post);
+          debug_log($add_post);
+        }
+        
+        unset($add_post);
       }
     }
   }
