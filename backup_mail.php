@@ -1,10 +1,6 @@
 <?php
 require 'inc/php_inc.php';
 
-
-require_once 'API/PHPMailer/src/PHPMailer.php';
-require_once 'API/PHPMailer/src/POP3.php';
-
 $oMailer = new PHPMailer\PHPMailer\PHPMailer;
 $oMailer->CharSet = 'UTF-8';
 //wm.server-home.org
@@ -19,6 +15,7 @@ $oMailer->Port = 587;
 $oMailer->From = 'simpleyth@randompeople.de';
 $oMailer->FromName = 'SimpleYTH Backup E-Mail';
 $oMailer->addAddress( 'sascha.u.kaufmann@googlemail.com', 'Sascha Kaufmann' );
+$oMailer->addAddress( 'defender833@web.de', 'Defender833' );
 
 $oMailer->isHTML( true );
 $oMailer->Subject = 'SYTH - Backup '.date("Y-m-d");
@@ -28,13 +25,10 @@ $oMailer->addAttachment("/var/www/backup/simpleyth_error.tar.gz");
 $oMailer->addAttachment("/var/www/backup/simpleyth_mysql.tar.gz");
 
 if ( !$oMailer->send() ) {
-  
-  echo 'Something\'s went wrong!';
+  trigger_error('Mailer Error: ' . $oMailer->ErrorInfo, E_USER_ERROR);
   exit;
-  
 }
-
-echo 'Yes! First Mail with PHPMailer sent successfully!';
+echo 'E-Mail wurde versendet!';
 
 
 ?>
