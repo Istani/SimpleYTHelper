@@ -10,6 +10,18 @@ if ($do_job==false) {
 }
 $_tmp_tabellename=strtolower($cronjob_id);
 
+$check_table=$database->show_tables();
+if(!in_array("$_tmp_tabellename", $check_table)) {
+  $felder=null;
+  $felder["service"]="VARCHAR(255) NOT NULL";
+  $felder["host"]="VARCHAR(255) NOT NULL";
+  $felder["user"]="VARCHAR(255) NOT NULL";
+  $felder["date"]="BIGINT(20) NOT NULL";
+  $felder["count"]="BIGINT(20) NOT NULL DEFAULT '0'";
+  $database->create_table($_tmp_tabellename, $felder, "service, host, user, date");
+  unset($felder);
+}
+
 
 if (!isset($token[$_tmp_tabellename])) {
   $token[$_tmp_tabellename] = init_token($_tmp_tabellename);
