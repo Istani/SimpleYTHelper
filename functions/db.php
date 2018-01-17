@@ -239,6 +239,23 @@ class db {
     return $return_bool;
   }
   
+  function sql_droptable($tablename) {
+    $tabelle=strtolower($tabelle);
+    $return_bool = false;
+    $sql_string = "DROP TABLE " . $tabelle;
+    if ($this->system == "mysql") {
+      if ($query = mysql_query($sql_string, $this->connection)) {
+        $return_bool = true;
+      }
+    }
+    if ($this->system == "sqlite") {
+      if ($query = sqlite_query($this->database, $sql_string)) {
+        $return_bool = true;
+      }
+    }
+    return $return_bool;
+  }
+  
   function sql_insert_update($tabelle, $felder_werte_array) {
     $tabelle=strtolower($tabelle);
     $sql_felder = "";

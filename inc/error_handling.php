@@ -1,6 +1,6 @@
 <?php
 
-define('ERROR_LOG_FILE', 'error/'.date("Y-m-d").'-SYTH_PHP.log');
+define('ERROR_LOG_FILE', '../../error/'.date("Y-m-d").'-SYTH_PHP.log');
 
 function handleError($code, $description, $file = null, $line = null, $context = null) {
   $displayErrors = ini_get("display_errors");
