@@ -5,6 +5,7 @@ ini_set('display_errors', 1);
 set_time_limit(0);
 @session_start();
 header("content-type: text/html; charset=ISO-8859-5");
+require_once 'inc/error_handling.php';
 
 /* mysql settings */
 $mysql['host'] = "127.0.0.1";
