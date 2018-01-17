@@ -18,8 +18,7 @@ switch ($_GET['site']) {
   case 'Google_Auth':
   include("inc/google_connect.php");
   ob_start();
-  include("cronjob/channel_token.php");
-  include("cronjob/channels_statistics.php");
+  include("cronjob/youtube_channels.php");
   ob_end_clean();
   include("site/yt_channels.php");
   break;

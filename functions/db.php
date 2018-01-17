@@ -11,7 +11,7 @@ class db {
   }
   
   function error($meldung) {
-    echo $meldung;
+    trigger_error($meldung, E_USER_ERROR);
     die();
   }
   

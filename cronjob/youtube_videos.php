@@ -116,6 +116,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     
     
     if (isset($response['result']['items'][0])) {
+      $tmp_video_tags=null;
       $tmp_video_details=$response['result']['items'][0];
       unset($tmp_video_details['kind']);
       unset($tmp_video_details['etag']);
@@ -124,8 +125,10 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
       unset($tmp_video_details['snippet']['thumbnails']['standard']);
       unset($tmp_video_details['snippet']['thumbnails']['maxres']);
       unset($tmp_video_details['snippet']['channelTitle']);
-      $tmp_video_tags=$tmp_video_details['snippet']['tags'];
-      unset($tmp_video_details['snippet']['tags']);
+      if (isset($tmp_video_details['snippet']['tags'])) {
+        $tmp_video_tags=$tmp_video_details['snippet']['tags'];
+        unset($tmp_video_details['snippet']['tags']);
+      }
       unset($tmp_video_details['snippet']['localized']);
       $tmp_video_details=$SYTHS->multiarray2array($tmp_video_details, "youtube");
       

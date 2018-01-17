@@ -70,7 +70,6 @@ if (count($videos_yt)==0) {
   $tt['token']=$videos_yt[0]['youtube_id'];
 }
 // NOTE: Ggf weitere Dienste
-debug_log($tt);
 
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$_SESSION['user']['email'].': '.$cronjob_id." updated!<br>";

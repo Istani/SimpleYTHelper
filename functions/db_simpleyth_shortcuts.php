@@ -91,14 +91,16 @@ class SimpleYTH_Shortcuts {
   function may_post_videos_on($simple_yth_user) {
     $return = null;
     $tmp=$this->get_rights($simple_yth_user);
-    foreach ($tmp as $t_service => $tmp2) {
-      foreach ($tmp2 as $t_host => $tmp3) {
-        foreach ($tmp3 as $t_recht => $is) {
-          if ($t_recht=='recht_own_videos' && $is==1) {
-            $return[$t_service][$t_host]="0";
-            $tmp_channel_to_post=$this->db->sql_select("`bot_chathosts`","channel_video","service='".$t_service."' AND host='".$t_host."'");
-            if ($tmp_channel_to_post[0]['channel_video']!="") {
-              $return[$t_service][$t_host]=$tmp_channel_to_post[0]['channel_video'];
+    if (is_array($tmp)) {
+      foreach ($tmp as $t_service => $tmp2) {
+        foreach ($tmp2 as $t_host => $tmp3) {
+          foreach ($tmp3 as $t_recht => $is) {
+            if ($t_recht=='recht_own_videos' && $is==1) {
+              $return[$t_service][$t_host]="0";
+              $tmp_channel_to_post=$this->db->sql_select("`bot_chathosts`","channel_video","service='".$t_service."' AND host='".$t_host."'");
+              if ($tmp_channel_to_post[0]['channel_video']!="") {
+                $return[$t_service][$t_host]=$tmp_channel_to_post[0]['channel_video'];
+              }
             }
           }
         }
