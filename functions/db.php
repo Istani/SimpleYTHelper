@@ -240,7 +240,7 @@ class db {
   }
   
   function sql_droptable($tablename) {
-    $tabelle=strtolower($tabelle);
+    $tabelle=strtolower($tablename);
     $return_bool = false;
     $sql_string = "DROP TABLE " . $tabelle;
     if ($this->system == "mysql") {
