@@ -19,7 +19,7 @@ var self = module.exports = {
   },
   execute: function (message_row, SendFunc, NewMessageFunc) {
     var My_Owner="admin";
-    var SQL = "SELECT *, md5(concat(owner,link)) AS hash FROM user_ads WHERE type NOT LIKE 'AD' AND type NOT LIKE 'Link' AND link NOT LIKE '' AND owner='"+My_Owner+"'";
+    var SQL = "SELECT *, md5(concat(owner,link)) AS hash FROM user_ads WHERE type NOT LIKE 'AD' AND type NOT LIKE 'AD%' AND type NOT LIKE 'Link' AND link NOT LIKE '' AND owner='"+My_Owner+"'";
     mysql.query(SQL, function (err, rows) {
       if (err != null) {
         console.log(SQL);
