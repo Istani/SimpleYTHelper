@@ -50,10 +50,10 @@ if (count($videos_yt)==0) {
         $game_data=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);
         for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
           $this_channel=$game_data[$count_game_data];
-          if ($this_channel['service']=="YouTube") {
+          if ($t_service=="YouTube") {
             $add_post['room']=$videos_yt[0]['youtube_snippet_livechatid'];
           }
-          if ($this_channel['service']=="Discord") {
+          if ($t_service=="Discord") {
             $add_post['room']=$this_channel['channel_rpgmain'];
           }
           
