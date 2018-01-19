@@ -9,6 +9,10 @@ $OAUTH2_CLIENT_SECRET = 'SECRET';
 $Discord_CLIENT_ID     = 'TOKEN';
 $Discord_CLIENT_SECRET = 'SECRET';
 
+// Amazon
+$amazon['API_KEY']="";
+$amazon['API_Secret']="";
+
 // Mysql Settings
 $mysql['host'] = "127.0.0.1";
 $mysql['user'] = "";
