@@ -31,9 +31,6 @@ if (count($videos_yt)==0) {
         if ($t_channel!="0") {
           // Posten versuchen
           $t_user="-1";
-          if ($t_service=="Discord") {
-            $t_user=$_SESSION['user']['discord_user'];
-          }
           
           // Poste
           if ($t_user!="") {
