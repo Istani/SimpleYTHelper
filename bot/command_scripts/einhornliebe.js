@@ -18,7 +18,9 @@ var self = module.exports = {
     }
   },
   execute: function (message_row, SendFunc, NewMessageFunc) {
-    var string="#einhornliebe\r\n🦄💕\r\n :einhornliebe: \r\n";
-    SendFunc(string);
+    SendFunc("🦄💕");
+    SendFunc("#einhornliebe");
+    SendFunc(":einhornliebe:");
+    SendFunc(":def1hornliebe:");
   },//
 };
