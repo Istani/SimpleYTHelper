@@ -13,7 +13,9 @@ if ($get_owner=="") {
 
 unset($this_msg['message_parts'][0]);
 $ad_params=implode(" ", $this_msg['message_parts']);
-Generate_Amazon_Ad($amazon, $database, $ad_params, $owner_user['email'], true);
+ig ($ad_params!="") {
+  Generate_Amazon_Ad($amazon, $database, $ad_params, $owner_user['email'], true);
+}
 
 $get_ad['link']="";
 $try_check=0;
