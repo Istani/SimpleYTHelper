@@ -41,7 +41,7 @@ function Generate_Amazon_Ad($amazon, $database, $tag="", $user="-1", $is_echo=fa
       $ads_template['link']=$response['Items']['Item'][$count_links]['DetailPageURL'];
       $ads_template['title']=$response['Items']['Item'][$count_links]['ItemAttributes']['Title'];
       
-      $max_ad_len=200-65;
+      $max_ad_len=200-70;
       if (strlen($ads_template['title'])>$max_ad_len) {
         while (strlen($ads_template['title'])>$max_ad_len) {
           $this_parts=explode(" ",$ads_template['title']);
