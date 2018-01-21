@@ -41,6 +41,14 @@ function Generate_Amazon_Ad($amazon, $database, $tag="", $user="-1", $is_echo=fa
       $ads_template['link']=$response['Items']['Item'][$count_links]['DetailPageURL'];
       $ads_template['title']=$response['Items']['Item'][$count_links]['ItemAttributes']['Title'];
       
+      $max_ad_len=200-65;
+      if (str_len($ads_template['title'])>$max_ad_len) {
+        while (str_len($ads_template['title'])>$max_ad_len) {
+          $this_parts=explode(" ",$ads_template['title'],-1);
+          $ads_template['title']=implode(" ",$this_parts);
+        }
+      }
+      
       if ($is_stream==true) {
         if (($ads_template["premcount"]/2)>$count_links) {
           

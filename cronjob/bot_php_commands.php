@@ -57,7 +57,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
         include("bot_php_commands/".substr($parts[0], 1).".php");
         $result = ob_get_contents();
         ob_end_clean();
-        unset($this_msg['message_parts']);
+        
         $result = utf8_decode($result);
         $result = replace_html2markdown($result);
         //debug_log($result);
@@ -67,6 +67,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
         $this_msg['user']='-1';
         $this_msg['message']="!php_hack ".$result;
         
+        unset($this_msg['message_parts']);
         $database->sql_insert_update("bot_chatlog", $this_msg);
       }
     }
