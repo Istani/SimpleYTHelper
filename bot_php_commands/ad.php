@@ -33,7 +33,7 @@ while ($get_ad['link']=="" && $try_check<3) {
   }
   
   if ($get_min_counter>=2) {
-    $ToBeChange=$database->sql_select("user_ads","*",$ad_where." AND count>=".$get_min_counter,true);
+    $ToBeChange=$database->sql_select("user_ads","*",$ad_where." AND count>=2",true);
     for ($count_changes=0;$count_changes<count($ToBeChange);$count_changes++) {
       $ToBeChange[$count_changes]['count']=0;
       $database->sql_insert_update("user_ads",$ToBeChange[$count_changes]);
