@@ -49,6 +49,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     
     if ($prefix==substr($this_msg['message'], 0,1)) {
       $parts=explode(" ", $this_msg['message'],2);
+      $this_msg['message_parts']=explode(" ",$this_msg['message']);
       $command_file="bot_php_commands/".substr($parts[0], 1).".php";
       
       if (file_exists($command_file)) {

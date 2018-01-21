@@ -46,6 +46,9 @@ if (count($videos_yt)==0) {
             debug_log($add_post);
           }
         }
+        
+        $ad_params=explode("|", $videos_yt[0]['youtube_snippet_title']);
+        Generate_Amazon_Ad($amazon, $database, $ad_params[0], $_SESSION['user']['email'], false, true);
         /* RPG Start */
         $game_data=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);
         for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {

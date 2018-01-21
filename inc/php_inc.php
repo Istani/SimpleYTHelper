@@ -48,6 +48,7 @@ require_once 'functions/db.php';
 require_once 'functions/func_token.php';
 require_once 'functions/func_command.php';
 require_once 'functions/db_simpleyth_shortcuts.php';
+require_once 'functions/func_adgen.php';
 // load private settings - Überschreibt die hier vorher definierten mysql und oauth vars
 include("private_settings.php");
 
