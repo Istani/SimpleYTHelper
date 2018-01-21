@@ -24,7 +24,7 @@ while ($get_ad['link']=="" && $try_check<3) {
   if ($owner_user['ad_status']==1) {
     $ad_where="ispremium='1' AND link NOT LIKE '' AND premcount!='0'";
   } else {
-    $ad_where="owner='".$owner_user['email']."' AND premcount!='0' AND type NOT LIKE 'Link' AND link NOT LIKE ''";
+    $ad_where="owner='".$owner_user['email']."' AND ispremium='0' AND premcount!='0' AND type NOT LIKE 'Link' AND link NOT LIKE ''";
   }
   
   $get_min_counter=$database->sql_select("user_ads","MIN(count) AS min_counter",$ad_where,true)[0]['min_counter'];
