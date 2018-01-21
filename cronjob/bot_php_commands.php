@@ -53,7 +53,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
       $command_file="bot_php_commands/".substr($parts[0], 1).".php";
       
       if ($this_msg['service']=="Discord") {
-        $this_msg['user_mention']="<@"+$this_msg['user']+">";
+        $this_msg['user_mention']="<@".$this_msg['user'].">";
       } else {
         $this_msg['user_mention']=$this_user['name'];
       }
