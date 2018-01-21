@@ -74,6 +74,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
         $this_msg['message']="!php_hack ".$result;
         
         unset($this_msg['message_parts']);
+        unset($this_msg['user_mention']);
         $database->sql_insert_update("bot_chatlog", $this_msg);
       }
     }
