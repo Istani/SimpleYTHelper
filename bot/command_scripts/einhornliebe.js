@@ -22,5 +22,6 @@ var self = module.exports = {
     SendFunc("#einhornliebe");
     SendFunc(":einhornliebe:");
     SendFunc(":def1hornliebe:");
+		SendFunc("<:einhornliebe:354684241314840576>");
   },//
 };
