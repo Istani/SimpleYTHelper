@@ -17,13 +17,15 @@ if (!isset($token[$_tmp_tabellename])) {
 $tt=$token[strtolower($_tmp_tabellename)];
 
 if ($tt["last_used"]+$tt["cooldown"]<time()) {
+  
   $oldest_date=$SYTHS->get_timestamp('tag',true, -32);
-  //$database->sql_delete("bot_chatlog", "`time`<".$oldest_date." AND `process`=1");
   $database->sql_delete("bot_chatstats", "`date`<".$oldest_date."");
   $database->sql_delete("bot_chathosts", "`last_seen`<".$oldest_date."000");
   $database->sql_delete("bot_chatuser", "`last_seen`<".$oldest_date."000");
   
+  $oldest_date=$SYTHS->get_timestamp('tag',true, -5);
   $database->sql_delete("youtube_videos", "`simple_lastupdate`<".$oldest_date."");
+  
   
   $tt["cooldown"]=1*60*60;
 }
