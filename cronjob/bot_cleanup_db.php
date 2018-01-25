@@ -23,7 +23,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $database->sql_delete("bot_chathosts", "`last_seen`<".$oldest_date."000");
   $database->sql_delete("bot_chatuser", "`last_seen`<".$oldest_date."000");
   
-  $oldest_date=$SYTHS->get_timestamp('tag',true, -5);
+  $oldest_date=$SYTHS->get_timestamp('tag',true, -7);
   $database->sql_delete("youtube_videos", "`simple_lastupdate`<".$oldest_date."");
   
   

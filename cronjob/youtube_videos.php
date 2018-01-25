@@ -43,7 +43,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $sql_where.="youtube_videos.youtube_id IS NULL";
   $sql_group=$sql_where." GROUP BY youtube_playlists_items.youtube_snippet_resourceid_videoid";
   $sql_order=$sql_group." ORDER BY youtube_playlists.youtube_snippet_publishedat DESC";
-  $sql_limit=$sql_where." LIMIT 20 ");
+  $sql_limit=$sql_where." LIMIT 20 ";
   $sql_where=$sql_limit;
   
   $update_temp=$database->sql_select($sql_from, $sql_select,$sql_where, false);
