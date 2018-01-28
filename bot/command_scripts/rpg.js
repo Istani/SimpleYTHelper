@@ -102,7 +102,7 @@ var settings= {};
 var mysql=null;
 
 function Load_RPG_Settings() {
-  var SQL = "SELECT * FROM rpg_settings";
+  var SQL = "SELECT * FROM simpleyth_rpg_settings";
   mysql.query(SQL, function (err, rows) {
     if (err != null) {
       console.log(SQL);
