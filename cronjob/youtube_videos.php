@@ -57,7 +57,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $sql_from="youtube_videos";
   $sql_select="youtube_videos.youtube_id";
   $sql_where="";
-  $sql_where.="youtube_snippet_channelid LIKE '".$_SESSION['user']['youtube_user']."' AND youtube_status_privacystatus LIKE 'unlisted' ";
+  $sql_where.="youtube_snippet_channelid LIKE '".$_SESSION['user']['youtube_user']."' AND youtube_status_privacystatus NOT LIKE 'public' ";
   $sql_group=$sql_where."";
   $sql_order=$sql_group." ORDER BY simple_lastupdate ASC ";
   $sql_limit=$sql_order." LIMIT 30 ";
@@ -76,7 +76,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $sql_from="youtube_videos";
   $sql_select="youtube_videos.youtube_id";
   $sql_where="";
-  $sql_where.="youtube_snippet_channelid LIKE '".$_SESSION['user']['youtube_user']."' AND youtube_status_privacystatus NOT LIKE 'unlisted' ";
+  $sql_where.="youtube_snippet_channelid LIKE '".$_SESSION['user']['youtube_user']."' AND youtube_status_privacystatus LIKE 'public' ";
   $sql_group=$sql_where."";
   $sql_order=$sql_group." ORDER BY simple_lastupdate";
   $sql_limit=$sql_order." LIMIT 10";
