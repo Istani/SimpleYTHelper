@@ -57,10 +57,10 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $sql_from="youtube_videos";
   $sql_select="youtube_videos.youtube_id";
   $sql_where="";
-  $sql_where.="youtube_snippet_channelid='".$_SESSION['user']['youtube_user']."' AND youtube_status_privacystatus='unlisted' ";
+  $sql_where.="youtube_snippet_channelid LIKE '".$_SESSION['user']['youtube_user']."' AND youtube_status_privacystatus LIKE 'unlisted' ";
   $sql_group=$sql_where."";
-  $sql_order=$sql_group." ORDER BY simple_lastupdate";
-  $sql_limit=$sql_where." LIMIT 30 ";
+  $sql_order=$sql_group." ORDER BY simple_lastupdate ASC ";
+  $sql_limit=$sql_order." LIMIT 30 ";
   $sql_where=$sql_limit;
   
   $update_temp=$database->sql_select($sql_from, $sql_select,$sql_where, false);
@@ -79,7 +79,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $sql_where.="youtube_snippet_channelid='".$_SESSION['user']['youtube_user']."' AND youtube_status_privacystatus!='unlisted' ";
   $sql_group=$sql_where."";
   $sql_order=$sql_group." ORDER BY simple_lastupdate";
-  $sql_limit=$sql_where." LIMIT 10";
+  $sql_limit=$sql_order." LIMIT 10";
   $sql_where=$sql_limit;
   
   $update_temp=$database->sql_select($sql_from, $sql_select,$sql_where, false);
@@ -97,6 +97,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $count_updatelist=0;
   if (isset($update_list)) {
     $count_updatelist=count($update_list);
+    debug_log($update_list);
   }
   for ($cnt_req=0;$cnt_req<$count_updatelist;$cnt_req++) {
     //contentDetails
@@ -154,7 +155,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
       unset($tmp_video_tags);
     }
   }
-  $tt["cooldown"]=60*5;
+  $tt["cooldown"]=1;//60*5;
 }
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$tmp_token['channel_id'].': '.$_tmp_tabellename." updated!<br>";
