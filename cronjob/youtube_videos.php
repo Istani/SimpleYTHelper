@@ -76,7 +76,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $sql_from="youtube_videos";
   $sql_select="youtube_videos.youtube_id";
   $sql_where="";
-  $sql_where.="youtube_snippet_channelid='".$_SESSION['user']['youtube_user']."' AND youtube_status_privacystatus!='unlisted' ";
+  $sql_where.="youtube_snippet_channelid LIKE '".$_SESSION['user']['youtube_user']."' AND youtube_status_privacystatus NOT LIKE 'unlisted' ";
   $sql_group=$sql_where."";
   $sql_order=$sql_group." ORDER BY simple_lastupdate";
   $sql_limit=$sql_order." LIMIT 10";
@@ -155,7 +155,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
       unset($tmp_video_tags);
     }
   }
-  $tt["cooldown"]=1;//60*5;
+  $tt["cooldown"]=60*5;
 }
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$tmp_token['channel_id'].': '.$_tmp_tabellename." updated!<br>";
