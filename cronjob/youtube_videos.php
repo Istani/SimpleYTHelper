@@ -73,9 +73,6 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   if (isset($update_list)) {
     $count_updatelist=count($update_list);
   }
-  if ($max_req-$count_updatelist<0) {
-    $count_updatelist=0;
-  }
   $sql_from="youtube_videos";
   $sql_select="youtube_videos.youtube_id";
   $sql_where="";
