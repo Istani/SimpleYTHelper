@@ -1,5 +1,6 @@
 var Zombie = require('zombie');
 var cheerio = require('cheerio');
+var moment=require("moment");
 
 var self = module.exports = {
   init: function (MySQL) {
@@ -21,7 +22,7 @@ var self = module.exports = {
     }
   },
   execute: function (message_row, SendFunc, NewMessageFunc) {
-    sale_load(main_url);
+    sale_load(sale_main_url);
     
     
     if (message_row.user!="-1") {
@@ -29,8 +30,9 @@ var self = module.exports = {
     }
   }
 };
+
 var mysql=null;
-var main_url = "https://www.humblebundle.com/store/search?sort=discount";
+var sale_main_url = "https://www.humblebundle.com/store/search?sort=discount";
 var max_pages=10;
 
 function sale_load(url) {
@@ -39,12 +41,12 @@ function sale_load(url) {
     browser.visit(url, function(){
       browser.wait({duration: 10000}).then(function(){
         scan_handle_html(browser.html());
-        if (url==main_url) {  // Beim ersten mal haben wir den Parameter ja noch nicht...
-          sale_load(main_url+'&page=1');
+        if (url==sale_main_url) {  // Beim ersten mal haben wir den Parameter ja noch nicht...
+          sale_load(sale_main_url+'&page=1');
         }
         for (var page_id = 1;page_id<(max_pages-1);page_id++) {
-          if (url==main_url+'&page='+page_id) {
-            sale_load(main_url+'&page='+(page_id+1));
+          if (url==sale_main_url+'&page='+page_id) {
+            sale_load(sale_main_url+'&page='+(page_id+1));
           }
         }
       });
@@ -67,6 +69,7 @@ function scan_dismantle_entry(html) {
   newEntry.discount=$('.discount-percentage').text();
   newEntry.price=$('.price').text();
   newEntry.ref="http://humblebundle.com" + $('.entity-link').attr('href')+ "?partner=defender833";
+  newEntry.time=Math.round(moment());
   // TODO: In Datenbank speichern!
   console.log(newEntry);
 }
