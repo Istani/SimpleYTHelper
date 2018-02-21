@@ -1,3 +1,4 @@
+// Web Crawler für Humble!
 var Zombie = require('zombie');
 var cheerio = require('cheerio');
 var moment=require("moment");
@@ -33,7 +34,7 @@ var self = module.exports = {
 
 var mysql=null;
 var sale_main_url = "https://www.humblebundle.com/store/search?sort=discount";
-var max_pages=10;
+var max_pages=20;
 
 function sale_load(url) {
   var text = new Promise(function(){
@@ -65,11 +66,51 @@ function scan_handle_html(html) {
 function scan_dismantle_entry(html) {
   var $ = cheerio.load(html);
   var newEntry={};
-  newEntry.title=$('.entity-title').text();
-  newEntry.discount=$('.discount-percentage').text();
+  var title="";
+  
+  
+  
+  newEntry.link="http://humblebundle.com" + $('.entity-link').attr('href');
+  title=$('.entity-title').text();
+  newEntry.text=title.replace("'", "");
   newEntry.price=$('.price').text();
-  newEntry.ref="http://humblebundle.com" + $('.entity-link').attr('href')+ "?partner=defender833";
-  newEntry.time=Math.round(moment());
+  newEntry.discount=$('.discount-percentage').text();
+  newEntry.last_check=Math.round(moment());
+  newEntry.type="Store";
   // TODO: In Datenbank speichern!
-  console.log(newEntry);
+  entry_mysql(newEntry);
+  
+}
+
+function entry_mysql(entry) {
+  console.log(entry);
+  
+  var SQL = "SELECT * FROM bot_humble WHERE link='"+entry.link+"'";
+  mysql.query(SQL, function (err, rows) {
+    if (err != null) {
+      console.log(SQL);
+      console.log(err);
+      return;
+    }
+    var SQL_FELDER="";
+    SQL_FELDER+="link='"+entry.link+"', ";
+    SQL_FELDER+="text='"+entry.text+"', ";
+    SQL_FELDER+="price='"+entry.price+"', ";
+    SQL_FELDER+="discount='"+entry.discount+"', ";
+    SQL_FELDER+="type='"+entry.type+"', ";
+    SQL_FELDER+="last_check='"+entry.last_check+"' ";
+    if (rows.length==0) {
+      var SQL2="INSERT INTO bot_humble SET "+SQL_FELDER;
+    } else {
+      var SQL2="UPDATE bot_humble SET "+SQL_FELDER+" WHERE link='"+entry.link+"'";
+    }
+    mysql.query(SQL2, function (err2, rows2) {
+      if (err2 != null) {
+        console.log(SQL2);
+        console.log(err2);
+        return;
+      }
+      
+    });
+  });
 }

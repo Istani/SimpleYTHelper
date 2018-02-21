@@ -9,44 +9,28 @@ if ($do_job==false) {
   $token[$cronjob_id]=load_cronjobtoken($database, $cronjob_id, $_SESSION['user']['email']);
 }
 $_tmp_tabellename=strtolower($cronjob_id);
-
-
-if (!isset($token[$_tmp_tabellename])) {
-  $token[$_tmp_tabellename] = init_token($_tmp_tabellename);
-}
-$tt=$token[strtolower($_tmp_tabellename)];
-
+$tt=$token[$_tmp_tabellename];
 if ($tt["last_used"]+$tt["cooldown"]<time()) {
-  
-  $oldest_date=$SYTHS->get_timestamp('tag',true, -32);
-  $database->sql_delete("bot_chatstats", "`date`<".$oldest_date."");
-  $database->sql_delete("bot_chathosts", "`last_seen`<".$oldest_date."000");
-  $database->sql_delete("bot_chatuser", "`last_seen`<".$oldest_date."000");
-  
-  $oldest_date=$SYTHS->get_timestamp('tag',true, -7);
-  $database->sql_delete("youtube_videos", "`simple_lastupdate`<".$oldest_date."");
-  
+  // Start the Scan
   $add_post['service']="Discord";
   $add_post['host']="225369387001970690";
   $add_post['room']="225371711619465216";
   $add_post['id']=time();
   $add_post['time']=time();
   $add_post['user']="-1";
-  $add_post['message']="!discord";
+  $add_post['message']="!humble_scan";
   $add_post['process']=0;
+  $add_post['php_process']=0;
   $database->sql_insert_update("bot_chatlog", $add_post);
   debug_log($add_post);
   
-  $tt["cooldown"]=24*60*60;
+  $tt["cooldown"]=60;//60*60; // 1 Stunde?
 }
-// Save Token
 echo date("d.m.Y - H:i:s")." - ".$_tmp_tabellename." updated!<br>";
 $tt["last_used"]=time();
 $tt["user"]=$_SESSION['user']['email'];
+if (!isset($tt["token"])) {$tt["token"]="";}
 if($tt["token"]==""){$tt["token"]="null";}
-if ($_SESSION['user']['email']!="") {
-  $database->sql_insert_update("bot_token",$tt);
-}
-$token[strtolower($cronjob_id)]=$tt;
+$database->sql_insert_update("bot_token",$tt);
 unset($tt);
 ?>

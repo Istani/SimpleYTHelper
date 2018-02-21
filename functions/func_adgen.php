@@ -9,6 +9,15 @@ function Generate_Amazon_Ad($amazon, $database, $tag="", $user="-1", $is_echo=fa
     return;
   }
   
+  // TODO: Später abfragen!
+  $SYTH_USER=$database->sql_select("user","*","false Limit 1", true); // partner_humble
+  if (!isset($possible_hosts[0]['partner_amazon'])) {
+    $new_feld['partner_amazon']="TEXT";
+    $database->add_columns("user", $new_feld);
+    unset($new_feld);
+  }
+  unset($SYTH_USER);
+  
   //debug_log($response);
   
   $SYTH_USER=$database->sql_select("user", "*", "youtube_user='".$user."' or discord_user='".$user."'", true)[0];
