@@ -36,6 +36,21 @@ function test_load(url) {
     browser.visit(url, function(){
       browser.wait({duration: 10000}).then(function(){
         handle_html(browser.html());
+        if (url==main_url) {
+          test_load(url+'&page=1');
+        }
+        if (url==main_url+'&page=1') {
+          test_load(url+'&page=2');
+        }
+        if (url==main_url+'&page=2') {
+          test_load(url+'&page=3');
+        }
+        if (url==main_url+'&page=3') {
+          test_load(url+'&page=4');
+        }
+        if (url==main_url+'&page=4') {
+          test_load(url+'&page=5');
+        }
       });
     });
   });
