@@ -24,7 +24,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $database->sql_insert_update("bot_chatlog", $add_post);
   debug_log($add_post);
   
-  $tt["cooldown"]=60;//60*60; // 1 Stunde?
+  $tt["cooldown"]=60*60; // 1 Stunde?
 }
 echo date("d.m.Y - H:i:s")." - ".$_tmp_tabellename." updated!<br>";
 $tt["last_used"]=time();

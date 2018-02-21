@@ -91,7 +91,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
         debug_log($add_post);
       }
     }
-    $tt["cooldown"]=60;
+    $tt["cooldown"]=30;
     
     $possible_humble[0]['old_discount']=$possible_humble[0]['discount'];
     $database->sql_insert_update($_tmp_tabellename, $possible_humble[0]);
