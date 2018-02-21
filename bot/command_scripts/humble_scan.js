@@ -21,50 +21,52 @@ var self = module.exports = {
     }
   },
   execute: function (message_row, SendFunc, NewMessageFunc) {
-    test_load(main_url);
+    sale_load(main_url);
+    
+    
     if (message_row.user!="-1") {
-      SendFunc("Humble Sale Scan läuft!");
+      SendFunc("Humble Scan läuft!");
     }
   }
 };
 var mysql=null;
 var main_url = "https://www.humblebundle.com/store/search?sort=discount";
 
-function test_load(url) {
+function sale_load(url) {
   var text = new Promise(function(){
     var browser = new Zombie();
     browser.visit(url, function(){
       browser.wait({duration: 10000}).then(function(){
-        handle_html(browser.html());
+        scan_handle_html(browser.html());
         if (url==main_url) {
-          test_load(main_url+'&page=1');
+          sale_load(main_url+'&page=1');
         }
         if (url==main_url+'&page=1') {
-          test_load(main_url+'&page=2');
+          sale_load(main_url+'&page=2');
         }
         if (url==main_url+'&page=2') {
-          test_load(main_url+'&page=3');
+          sale_load(main_url+'&page=3');
         }
         if (url==main_url+'&page=3') {
-          test_load(main_url+'&page=4');
+          sale_load(main_url+'&page=4');
         }
         if (url==main_url+'&page=4') {
-          test_load(main_url+'&page=5');
+          sale_load(main_url+'&page=5');
         }
       });
     });
   });
 }
 
-function handle_html(html) {
+function scan_handle_html(html) {
   var $ = cheerio.load(html);
   $('.entity-block-container').filter(function() {
     var data = $(this);
-    dismantle_entry(data.html());
+    scan_dismantle_entry(data.html());
   });
 }
 
-function dismantle_entry(html) {
+function scan_dismantle_entry(html) {
   var $ = cheerio.load(html);
   var newEntry={};
   newEntry.title=$('.entity-title').text();
