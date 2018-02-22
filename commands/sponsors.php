@@ -11,7 +11,7 @@ if(in_array($_tmp_tabellename, $check_table)) {
     echo "Kein VIP gefunden!";
   }
   for ($cnt_sponsors=0;$cnt_sponsors<count($db_subs);$cnt_sponsors++) {
-    echo $db_subs[$cnt_sponsors]["youtube_snippet_sponsordetails_displayname"]."\r\n";
+    echo $db_subs[$cnt_sponsors]["youtube_snippet_sponsordetails_displayname"]." seit: ".$db_subs[$cnt_sponsors]["youtube_snippet_sponsorsince"]."\r\n";
   }
   
 } else {
