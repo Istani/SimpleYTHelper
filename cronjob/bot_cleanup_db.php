@@ -26,6 +26,9 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $oldest_date=$SYTHS->get_timestamp('tag',true, -7);
   $database->sql_delete("youtube_videos", "`simple_lastupdate`<".$oldest_date."");
   
+  $oldest_date=$SYTHS->get_timestamp('tag',true, -3);
+  $database->sql_delete("youtube_sponsors", "`simple_lastupdate`<".$oldest_date."");
+  
   $add_post['service']="Discord";
   $add_post['host']="225369387001970690";
   $add_post['room']="225371711619465216";

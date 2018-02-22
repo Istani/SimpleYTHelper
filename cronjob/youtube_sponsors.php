@@ -55,6 +55,8 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     unset($tmp_details['etag']);
     
     $tmp_details=$SYTHS->multiarray2array($tmp_details, "youtube");
+    $tmp_details['simple_lastUpdate']=time();
+    
     foreach ($tmp_details as $key=>$value){
       $new_feld[$key]="TEXT";
       $database->add_columns($_tmp_tabellename, $new_feld);
