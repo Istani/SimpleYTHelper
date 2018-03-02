@@ -42,7 +42,7 @@ $tt=$token[$_tmp_tabellename];
 if ($tt["last_used"]+$tt["cooldown"]<time()) {
   
   // Load Data
-  $possible_humble=$database->sql_select($_tmp_tabellename,"*","discount NOT LIKE old_discount AND discount>'-50%' AND type='Store' ORDER BY discount DESC LIMIT 1", true);
+  $possible_humble=$database->sql_select($_tmp_tabellename,"*","discount NOT LIKE old_discount AND discount>'-75%' AND type='Store' ORDER BY discount DESC LIMIT 1", true);
   if ($possible_humble[0]['link']=="") {
     // Es gibt keinen Link?
     echo 'Kein Humble Sale verfügbar!<br>';
