@@ -23,10 +23,14 @@ var self = module.exports = {
     }
   },
   execute: function (message_row, SendFunc, NewMessageFunc) {
-    sale_load(sale_main_url);
-    
-    
-    if (message_row.user!="-1") {
+    if (is_running==false) {
+      is_running=true;
+      sale_load(sale_main_url);
+      
+      if (message_row.user!="-1") {
+        SendFunc("Humble Scan startet!");
+      }
+    } else {
       SendFunc("Humble Scan läuft!");
     }
   }
@@ -35,6 +39,7 @@ var self = module.exports = {
 var mysql=null;
 var sale_main_url = "https://www.humblebundle.com/store/search?sort=discount";
 var max_pages=20;
+var is_running=false;
 
 function sale_load(url) {
   var text = new Promise(function(){
@@ -44,12 +49,15 @@ function sale_load(url) {
         scan_handle_html(browser.html());
         if (url==sale_main_url) {  // Beim ersten mal haben wir den Parameter ja noch nicht...
           sale_load(sale_main_url+'&page=1');
+          return;
         }
         for (var page_id = 1;page_id<(max_pages-1);page_id++) {
           if (url==sale_main_url+'&page='+page_id) {
             sale_load(sale_main_url+'&page='+(page_id+1));
+            return;
           }
         }
+        is_running=false;
       });
     });
   });
@@ -57,6 +65,8 @@ function sale_load(url) {
 
 function scan_handle_html(html) {
   var $ = cheerio.load(html);
+  
+  
   $('.entity-block-container').filter(function() {
     var data = $(this);
     scan_dismantle_entry(data.html());
@@ -83,7 +93,7 @@ function scan_dismantle_entry(html) {
 }
 
 function entry_mysql(entry) {
-  console.log(entry);
+  //console.log(entry);
   
   var SQL = "SELECT * FROM bot_humble WHERE link='"+entry.link+"'";
   mysql.query(SQL, function (err, rows) {
