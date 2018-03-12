@@ -19,7 +19,7 @@ if (isset($video_list)) {
 }
 $videos_yt=$database->sql_select("youtube_videos", "*", "youtube_snippet_channelid='".$_SESSION['user']['youtube_user']."'
 AND CAST(simple_publishtimestamp AS UNSIGNED)>".$tt['token']."
-AND youtube_status_uploadstatus NOT LIKE 'processed'
+AND youtube_status_uploadstatus LIKE 'processed'
 ORDER BY youtube_snippet_publishedat",true);
 for ($v=0;$v<count($videos_yt);$v++) {
   $tmp_newvideo['id']=$videos_yt[$v]["youtube_id"];
