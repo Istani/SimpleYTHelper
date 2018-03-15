@@ -55,6 +55,12 @@ if (count($videos_yt)==0) {
         }
         
         $ad_params=explode("|", $videos_yt[0]['youtube_snippet_title']);
+        // NOTE: Clean Old ADs
+        $old_ads=$database->sql_select("user_ads","*", "type LIKE 'AD_Livestream' AND premcount>0 AND owner LIKE '".$_SESSION['user']['email']."'");
+        for ($count_ads=0;$count_ads<count($old_ads);$count_ads++) {
+          $old_ads[$count_ads]['premcount']=0;
+          $database->sql_insert_update("user_ads", $old_ads[$count_ads]);
+        }
         Generate_Amazon_Ad($amazon, $database, $ad_params[0], $_SESSION['user']['email'], false, true);
         /* RPG Start */
         $game_data=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);

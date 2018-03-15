@@ -46,6 +46,7 @@ if (isset($video_list)) {
   // Do Magic 2
   $my_rechte=$SYTHS->may_post_videos_on($_SESSION['user']['email']);
   if ($my_rechte!=null) {
+    $post_id=time();
     foreach ($my_rechte as $t_service => $the_hosts) {
       foreach ($the_hosts as $t_host => $t_channel) {
         if ($t_channel!="0") {
@@ -60,8 +61,8 @@ if (isset($video_list)) {
             $add_post['service']=$t_service;
             $add_post['host']=$t_host;
             $add_post['room']=$t_channel;
-            $add_post['id']=time();
-            $add_post['time']=time();
+            $add_post['id']=$post_id++;
+            $add_post['time']=$post_id++;
             $add_post['user']=$t_user;
             $add_post['message']="!yt video ".$video_list[0]['id'];
             $add_post['process']=0;
