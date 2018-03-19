@@ -75,22 +75,22 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
       
       // Load "old" Playlist for Paging
       $old_playlist=$database->sql_select($_tmp_tabellename,"*","youtube_id='".$tmp_details["youtube_id"]."'",true);
-      if (!isset($old_playlist[0]['import_pageToken'])) {
-        $old_playlist[0]['import_pageToken']="";
+      if (!isset($old_playlist[0]['import_pagetoken'])) {
+        $old_playlist[0]['import_pagetoken']="";
       }
       $old_playlist=$old_playlist[0];
       
       $part2="snippet";
-      if ($old_playlist['import_pageToken']!="" && $old_playlist['import_pageToken']!=null) {
-        $params2 = array('part' => $part2, 'playlistId'=> $tmp_details["youtube_id"], 'maxResults'=>$req_max, 'pageToken'=>$old_playlist['import_pageToken']);
+      if ($old_playlist['import_pagetoken']!="" && $old_playlist['import_pagetoken']!=null) {
+        $params2 = array('part' => $part2, 'playlistId'=> $tmp_details["youtube_id"], 'maxResults'=>$req_max, 'pageToken'=>$old_playlist['import_pagetoken']);
       } else {
         $params2 = array('part' => $part2, 'playlistId'=> $tmp_details["youtube_id"], 'maxResults'=>$req_max);
       }
       $response2 = $client->fetch('https://www.googleapis.com/youtube/v3/playlistItems', $params2);
       if (isset($response2['result']['nextPageToken'])) {
-        $tmp_details['import_pageToken']=$response2['result']['nextPageToken'];
+        $tmp_details['import_pagetoken']=$response2['result']['nextPageToken'];
       } else {
-        $tmp_details['import_pageToken']="";
+        $tmp_details['import_pagetoken']="";
       }
       
       
