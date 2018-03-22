@@ -28,10 +28,10 @@ var self = module.exports = {
       sale_load(sale_main_url);
       
       if (message_row.user!="-1") {
-        SendFunc("Humble Scan startet!");
+        //SendFunc("Humble Scan startet!");
       }
     } else {
-      SendFunc("Humble Scan läuft!");
+      //SendFunc("Humble Scan läuft!");
     }
   }
 };
