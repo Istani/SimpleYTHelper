@@ -12,47 +12,48 @@ if ($do_job==false) {
 $_tmp_tabellename=strtolower($cronjob_id);
 
 $check_table=$database->show_tables();
-if(!in_array($_tmp_tabellename, $check_table)) {
-  $felder=null;
-  $felder["name"]="VARCHAR(255) NOT NULL";
-  $felder["steam_id"]="VARCHAR(255) NOT NULL";
-  $felder["humble_link"]="VARCHAR(255) NOT NULL";
-  
-  $felder["banner"]="VARCHAR(255) NOT NULL";
-  $felder["description"]="TEXT NOT NULL";
-  
-  $felder["last_import"]="INT(20) NOT NULL";
-  $database->create_table($_tmp_tabellename, $felder, "name");
-  unset($felder);
-}
-if (isset($new_data)) {
-  unset($new_data);
-}
-
-
-$tt=$token[$_tmp_tabellename];
-if ($tt["last_used"]+$tt["cooldown"]<time()) {
-  // Steam
-  $sub_query="SELECT `text` as name FROM bot_humble";
-  $tmp_video_games_list=$database->sql_select("bot_steamappid","*","name IN (".$sub_query.")");
-  for ($count_games=0;$count_games<count($tmp_video_games_list);$count_games++) {
-    $new_data['name']=$tmp_video_games_list[$count_games]['name'];
-    $new_data['steam_id']=$tmp_video_games_list[$count_games]['appid'];
-    $database->sql_insert_update($_tmp_tabellename,$new_data);
+if(in_array("bot_steamappid", $check_table)) {
+  if(!in_array($_tmp_tabellename, $check_table)) {
+    $felder=null;
+    $felder["name"]="VARCHAR(255) NOT NULL";
+    $felder["steam_id"]="VARCHAR(255) NOT NULL";
+    $felder["humble_link"]="VARCHAR(255) NOT NULL";
+    
+    $felder["banner"]="VARCHAR(255) NOT NULL";
+    $felder["description"]="TEXT NOT NULL";
+    
+    $felder["last_import"]="INT(20) NOT NULL";
+    $database->create_table($_tmp_tabellename, $felder, "name");
+    unset($felder);
+  }
+  if (isset($new_data)) {
     unset($new_data);
   }
   
-  // Humble
-  $tmp_video_games_list=$database->sql_select("bot_humble","*","true");
-  for ($count_games=0;$count_games<count($tmp_video_games_list);$count_games++) {
-    $new_data['name']=$tmp_video_games_list[$count_games]['text'];
-    $new_data['humble_link']=$tmp_video_games_list[$count_games]['link'];
-    $database->sql_insert_update($_tmp_tabellename,$new_data);
-    unset($new_data);
-  }
   
-  $tt["cooldown"]=1*60*60*24;
+  $tt=$token[$_tmp_tabellename];
+  if ($tt["last_used"]+$tt["cooldown"]<time()) {
+    // Steam
+    $sub_query="SELECT `text` as name FROM bot_humble";
+    $tmp_video_games_list=$database->sql_select("bot_steamappid","*","name IN (".$sub_query.")");
+    for ($count_games=0;$count_games<count($tmp_video_games_list);$count_games++) {
+      $new_data['name']=$tmp_video_games_list[$count_games]['name'];
+      $new_data['steam_id']=$tmp_video_games_list[$count_games]['appid'];
+      $database->sql_insert_update($_tmp_tabellename,$new_data);
+      unset($new_data);
+    }
+    
+    // Humble
+    $tmp_video_games_list=$database->sql_select("bot_humble","*","true");
+    for ($count_games=0;$count_games<count($tmp_video_games_list);$count_games++) {
+      $new_data['name']=$tmp_video_games_list[$count_games]['text'];
+      $new_data['humble_link']=$tmp_video_games_list[$count_games]['link'];
+      $database->sql_insert_update($_tmp_tabellename,$new_data);
+      unset($new_data);
+    }
+  }
 }
+$tt["cooldown"]=1*60*60*24;
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$_tmp_tabellename." updated!<br>";
 $tt["last_used"]=time();
