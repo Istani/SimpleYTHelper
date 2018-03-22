@@ -256,6 +256,16 @@ class db {
     return $return_bool;
   }
   
+  function sql_exec($sql_statment) {
+    // TODO: Shouldn't Exists!
+    if ($this->system == 'mysql') {
+      mysql_query($sql_statment, $this->connection);
+    }
+    if ($this->system == 'sqlite') {
+      sqlite_query($this->database,$sql_statment);
+    }
+  }
+  
   function sql_insert_update($tabelle, $felder_werte_array) {
     $tabelle=strtolower($tabelle);
     $sql_felder = "";
