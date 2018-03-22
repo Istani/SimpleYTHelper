@@ -29,27 +29,30 @@ if (isset($new_data)) {
   unset($new_data);
 }
 
-// Steam
-$sub_query="SELECT `text` as name FROM bot_humble";
-$tmp_video_games_list=$database->sql_select("bot_steamappid","*","name IN (".$sub_query.")");
-for ($count_games=0;$count_games<count($tmp_video_games_list);$count_games++) {
-  $new_data['name']=$tmp_video_games_list[$count_games]['name'];
-  $new_data['steam_id']=$tmp_video_games_list[$count_games]['appid'];
-  $database->sql_insert_update($_tmp_tabellename,$new_data);
-  unset($new_data);
+
+$tt=$token[$_tmp_tabellename];
+if ($tt["last_used"]+$tt["cooldown"]<time()) {
+  // Steam
+  $sub_query="SELECT `text` as name FROM bot_humble";
+  $tmp_video_games_list=$database->sql_select("bot_steamappid","*","name IN (".$sub_query.")");
+  for ($count_games=0;$count_games<count($tmp_video_games_list);$count_games++) {
+    $new_data['name']=$tmp_video_games_list[$count_games]['name'];
+    $new_data['steam_id']=$tmp_video_games_list[$count_games]['appid'];
+    $database->sql_insert_update($_tmp_tabellename,$new_data);
+    unset($new_data);
+  }
+  
+  // Humble
+  $tmp_video_games_list=$database->sql_select("bot_humble","*","true");
+  for ($count_games=0;$count_games<count($tmp_video_games_list);$count_games++) {
+    $new_data['name']=$tmp_video_games_list[$count_games]['text'];
+    $new_data['humble_link']=$tmp_video_games_list[$count_games]['link'];
+    $database->sql_insert_update($_tmp_tabellename,$new_data);
+    unset($new_data);
+  }
+  
+  $tt["cooldown"]=1*60*60*24;
 }
-
-// Humble
-$tmp_video_games_list=$database->sql_select("bot_humble","*","true");
-for ($count_games=0;$count_games<count($tmp_video_games_list);$count_games++) {
-  $new_data['name']=$tmp_video_games_list[$count_games]['text'];
-  $new_data['humble_link']=$tmp_video_games_list[$count_games]['link'];
-  $database->sql_insert_update($_tmp_tabellename,$new_data);
-  unset($new_data);
-}
-
-
-$tt["cooldown"]=1*60*60*24;
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$_tmp_tabellename." updated!<br>";
 $tt["last_used"]=time();

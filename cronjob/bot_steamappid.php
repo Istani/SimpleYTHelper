@@ -20,14 +20,19 @@ if(!in_array($_tmp_tabellename, $check_table)) {
   unset($felder);
 }
 
-$client = new OAuth2\Client(NULL, NULL);
-$response = $client->fetch('http://api.steampowered.com/ISteamApps/GetAppList/v0001/');
 
-$list_of_apps=$response['result']["applist"]["apps"]["app"];
-for ($count_appids=0;$count_appids<count($list_of_apps);$count_appids++) {
-  $database->sql_insert_update($_tmp_tabellename, $list_of_apps[$count_appids]);
+$tt=$token[$_tmp_tabellename];
+if ($tt["last_used"]+$tt["cooldown"]<time()) {
+  
+  $client = new OAuth2\Client(NULL, NULL);
+  $response = $client->fetch('http://api.steampowered.com/ISteamApps/GetAppList/v0001/');
+  
+  $list_of_apps=$response['result']["applist"]["apps"]["app"];
+  for ($count_appids=0;$count_appids<count($list_of_apps);$count_appids++) {
+    $database->sql_insert_update($_tmp_tabellename, $list_of_apps[$count_appids]);
+  }
+  $tt["cooldown"]=1*60*60*24;
 }
-$tt["cooldown"]=1*60*60*24;
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$_tmp_tabellename." updated!<br>";
 $tt["last_used"]=time();
