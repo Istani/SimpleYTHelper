@@ -64,7 +64,6 @@ if(in_array("bot_steamappid", $check_table)) {
     }
   }
 }
-die();
 $tt["cooldown"]=1*60*60*24;
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$_tmp_tabellename." updated!<br>";
