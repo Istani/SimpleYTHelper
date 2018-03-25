@@ -29,6 +29,11 @@ if(in_array("bot_steamappid", $check_table)) {
   if (isset($new_data)) {
     unset($new_data);
   }
+
+  $new_feld['humble_price']="VARCHAR(6)";
+  $new_feld['steam_price']="VARCHAR(6)";
+  $database->add_columns($_tmp_tabellename, $new_feld);
+  unset($new_feld);
   
   
   $tt=$token[$_tmp_tabellename];
@@ -39,6 +44,8 @@ if(in_array("bot_steamappid", $check_table)) {
     for ($count_games=0;$count_games<count($tmp_video_games_list);$count_games++) {
       $new_data['name']=$tmp_video_games_list[$count_games]['name'];
       $new_data['steam_id']=$tmp_video_games_list[$count_games]['appid'];
+
+      //$new_data['steam_price']=$tmp_video_games_list[$count_games]['simpleyth_price'];
       $database->sql_insert_update($_tmp_tabellename,$new_data);
       unset($new_data);
     }
@@ -48,11 +55,16 @@ if(in_array("bot_steamappid", $check_table)) {
     for ($count_games=0;$count_games<count($tmp_video_games_list);$count_games++) {
       $new_data['name']=$tmp_video_games_list[$count_games]['text'];
       $new_data['humble_link']=$tmp_video_games_list[$count_games]['link'];
+      $preis=$tmp_video_games_list[$count_games]['price'];
+      $preis=substr($preis,1);
+      $preis=str_replace(",","",$preis);
+      $new_data['humble_price']=$preis/100;
       $database->sql_insert_update($_tmp_tabellename,$new_data);
       unset($new_data);
     }
   }
 }
+die();
 $tt["cooldown"]=1*60*60*24;
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$_tmp_tabellename." updated!<br>";

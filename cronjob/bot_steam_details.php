@@ -62,6 +62,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     if (isset($response["short_description"])) {$game_to_update['description']=$response["short_description"];}
     if (isset($response["detailed_description"])) {$game_to_update['description']=$response["detailed_description"];}
     
+    $game_to_update['steam_price']=$tmp_details['steam_price_overview_final']/100;
     $game_to_update['last_import']=time();
     $database->sql_insert_update("bot_gamelist",$game_to_update);
     
