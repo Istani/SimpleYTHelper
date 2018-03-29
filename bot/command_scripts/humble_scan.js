@@ -45,7 +45,7 @@ function sale_load(url) {
   var text = new Promise(function(){
     var browser = new Zombie();
     browser.visit(url, function(){
-      browser.wait({duration: 10000}).then(function(){
+      browser.wait({duration: 30000}).then(function(){
         scan_handle_html(browser.html());
         if (url==sale_main_url) {  // Beim ersten mal haben wir den Parameter ja noch nicht...
           sale_load(sale_main_url+'&page=1');
