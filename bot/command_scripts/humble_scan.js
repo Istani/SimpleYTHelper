@@ -30,7 +30,7 @@ var self = module.exports = {
   execute: function (message_row, SendFunc, NewMessageFunc) {
     if (is_running==false) {
       is_running=true;
-      (async () => {
+      (async function save_load() {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
     
@@ -65,7 +65,7 @@ var self = module.exports = {
         is_running=false;
         
         await browser.close();
-      })();
+      });
       
       if (message_row.user!="-1") {
         //SendFunc("Humble Scan startet!");
