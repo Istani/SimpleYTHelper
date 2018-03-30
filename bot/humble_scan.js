@@ -1,81 +1,62 @@
-var puppeteer = require('puppeteer');
-var cheerio = require('cheerio');
-var moment=require("moment");
 
+// Private Settings
+const private_settings  =require('./private_settings.json');
 
-var mysql=null;
+// Mysql - Settings
+var mysql_file = require("mysql");
+var mysql = mysql_file.createConnection({
+  host     : private_settings.mysql_host,
+  user     : private_settings.mysql_user,
+  password : private_settings.mysql_pass,
+  database : private_settings.mysql_base
+});
+
+// Sonstiges
+const puppeteer = require('puppeteer');
+const cheerio = require('cheerio');
+const moment=require("moment");
+
 var sale_main_url = "https://www.humblebundle.com/store/search?sort=discount";
 var max_pages=2;//20;
 var is_running=false;
 
-var self = module.exports = {
-  init: function (MySQL) {
-    mysql=MySQL;
-  },
-  check_permission: function (message_row, SendFunc, NewMessageFunc) {
-    var permissions=false;
-    
-    if (message_row.user=="-1") {
-      permissions=true;
+(async () => {
+  is_running=true;
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+
+  url=sale_main_url;
+
+  for (var i=0;i<max_pages-1;i++) {
+
+    if (i>0) {
+      url=sale_main_url+'&page='+(i);
     }
+
+    await console.log(url);
+    await page.goto(url);
+
+    await page.waitFor(10000);
+
+    const dimensions = await page.evaluate(() => {
+      return {
+        width: document.documentElement.clientWidth,
+        height: document.documentElement.clientHeight,
+        deviceScaleFactor: window.devicePixelRatio,
+        html: document.documentElement.outerHTML
+      };
+    });
     
-    permissions=true; // Fake Recht!
-    
-    if (permissions==false) {
-      SendFunc(message_row.user+ " du hast keine Rechte den Befehl auszuführen!\r\n" + message_row.message);
-    } else {
-      self.execute(message_row, SendFunc, NewMessageFunc);
-    }
-  },
-  execute: function (message_row, SendFunc, NewMessageFunc) {
-    if (is_running==false) {
-      is_running=true;
-      (async function save_load() {
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
-    
-        url=sale_main_url;
-    
-        for (var i=0;i<max_pages-1;i++) {
-    
-          if (i>0) {
-            url=sale_main_url+'&page='+(i);
-          }
-    
-          await console.log(url);
-          await page.goto(url);
-    
-          await page.waitFor(10000);
-    
-          const dimensions = await page.evaluate(() => {
-            return {
-              width: document.documentElement.clientWidth,
-              height: document.documentElement.clientHeight,
-              deviceScaleFactor: window.devicePixelRatio,
-              html: document.documentElement.outerHTML
-            };
-          });
-          
-          //await scan_handle_html(dimensions.html);
-    
-          if (i==0) {
-            await scan_pages_html(dimensions.html);
-          }
-        }
-        is_running=false;
-        
-        await browser.close();
-      });
-      
-      if (message_row.user!="-1") {
-        //SendFunc("Humble Scan startet!");
-      }
-    } else {
-      //SendFunc("Humble Scan läuft!");
+    //await scan_handle_html(dimensions.html);
+
+    if (i==0) {
+      await scan_pages_html(dimensions.html);
     }
   }
-};
-
+  is_running=false;
+  
+  await browser.close();
+})();
 
 function scan_pages_html(html) {
 	var $ = cheerio.load(html);
