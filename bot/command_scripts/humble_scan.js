@@ -1,6 +1,6 @@
-const puppeteer = require('puppeteer');
-const cheerio = require('cheerio');
-const moment=require("moment");
+var puppeteer = require('puppeteer');
+var cheerio = require('cheerio');
+var moment=require("moment");
 
 
 var mysql=null;
@@ -42,43 +42,42 @@ var self = module.exports = {
 };
 
 function sale_load() {
-    is_running=true;
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
+  is_running=true;
+  const browser = puppeteer.launch();
+  const page = browser.newPage();
 
-    url=sale_main_url;
+  url=sale_main_url;
 
-    for (var i=0;i<max_pages-1;i++) {
+  for (var i=0;i<max_pages-1;i++) {
 
-      if (i>0) {
-        url=sale_main_url+'&page='+(i);
-      }
-
-      await console.log(url);
-      await page.goto(url);
-
-      await page.waitFor(10000);
-
-      const dimensions = await page.evaluate(() => {
-        return {
-          width: document.documentElement.clientWidth,
-          height: document.documentElement.clientHeight,
-          deviceScaleFactor: window.devicePixelRatio,
-          html: document.documentElement.outerHTML
-        };
-
-      });
-      
-      //await scan_handle_html(dimensions.html);
-
-      if (i==0) {
-        await scan_pages_html(dimensions.html);
-      }
+    if (i>0) {
+      url=sale_main_url+'&page='+(i);
     }
-    is_running=false;
+
+    console.log(url);
+    page.goto(url);
+
+    page.waitFor(10000);
+
+    const dimensions = page.evaluate(() => {
+      return {
+        width: document.documentElement.clientWidth,
+        height: document.documentElement.clientHeight,
+        deviceScaleFactor: window.devicePixelRatio,
+        html: document.documentElement.outerHTML
+      };
+
+    });
     
-    await browser.close();
-  })();
+    //await scan_handle_html(dimensions.html);
+
+    if (i==0) {
+      scan_pages_html(dimensions.html);
+    }
+  }
+  is_running=false;
+  
+  browser.close();
 }
 
 function scan_pages_html(html) {
