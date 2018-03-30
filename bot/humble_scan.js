@@ -47,7 +47,7 @@ var is_running=false;
       };
     });
     
-    //await scan_handle_html(dimensions.html);
+    await scan_handle_html(dimensions.html);
 
     if (i==0) {
       await scan_pages_html(dimensions.html);
