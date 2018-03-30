@@ -49,6 +49,7 @@ function sale_load() {
 
     url=sale_main_url;
 
+<<<<<<< HEAD
     for (var i=0;i<max_pages-1;i++) {
 
       if (i>0) {
@@ -67,6 +68,25 @@ function sale_load() {
           deviceScaleFactor: window.devicePixelRatio,
           html: document.documentElement.outerHTML
         };
+=======
+function sale_load(url) {
+  var text = new Promise(function(){
+    var browser = new Zombie();
+    browser.visit(url, function(){
+      browser.wait({duration: 30000}).then(function(){
+        scan_handle_html(browser.html());
+        if (url==sale_main_url) {  // Beim ersten mal haben wir den Parameter ja noch nicht...
+          sale_load(sale_main_url+'&page=1');
+          return;
+        }
+        for (var page_id = 1;page_id<(max_pages-1);page_id++) {
+          if (url==sale_main_url+'&page='+page_id) {
+            sale_load(sale_main_url+'&page='+(page_id+1));
+            return;
+          }
+        }
+        is_running=false;
+>>>>>>> 23bb9281cf7a631612bfcb90ec9b64bd4266ca60
       });
       
       //await scan_handle_html(dimensions.html);
