@@ -1,7 +1,12 @@
-// Web Crawler für Humble!
-var Zombie = require('zombie');
-var cheerio = require('cheerio');
-var moment=require("moment");
+const puppeteer = require('puppeteer');
+const cheerio = require('cheerio');
+const moment=require("moment");
+
+
+var mysql=null;
+var sale_main_url = "https://www.humblebundle.com/store/search?sort=discount";
+var max_pages=2;//20;
+var is_running=false;
 
 var self = module.exports = {
   init: function (MySQL) {
@@ -36,49 +41,73 @@ var self = module.exports = {
   }
 };
 
-var mysql=null;
-var sale_main_url = "https://www.humblebundle.com/store/search?sort=discount";
-var max_pages=20;
-var is_running=false;
+function sale_load() {
+  (async () => {
+    is_running=true;
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
 
-function sale_load(url) {
-  var text = new Promise(function(){
-    var browser = new Zombie();
-    browser.visit(url, function(){
-      browser.wait({duration: 10000}).then(function(){
-        scan_handle_html(browser.html());
-        if (url==sale_main_url) {  // Beim ersten mal haben wir den Parameter ja noch nicht...
-          sale_load(sale_main_url+'&page=1');
-          return;
-        }
-        for (var page_id = 1;page_id<(max_pages-1);page_id++) {
-          if (url==sale_main_url+'&page='+page_id) {
-            sale_load(sale_main_url+'&page='+(page_id+1));
-            return;
-          }
-        }
-        is_running=false;
+    url=sale_main_url;
+
+    for (var i=0;i<max_pages-1;i++) {
+
+      if (i>0) {
+        url=sale_main_url+'&page='+(i);
+      }
+
+      await console.log(url);
+      await page.goto(url);
+
+      await page.waitFor(10000);
+
+      const dimensions = await page.evaluate(() => {
+        return {
+          width: document.documentElement.clientWidth,
+          height: document.documentElement.clientHeight,
+          deviceScaleFactor: window.devicePixelRatio,
+          html: document.documentElement.outerHTML
+        };
       });
-    });
+      
+      //await scan_handle_html(dimensions.html);
+
+      if (i==0) {
+        await scan_pages_html(dimensions.html);
+      }
+    }
+    is_running=false;
+    
+    await browser.close();
+  })();
+}
+
+function scan_pages_html(html) {
+	var $ = cheerio.load(html);
+	$('.pagination').filter(function() {
+		var data = $(this);
+		scan_dismantle_pages(data.html());
+	});
+}
+
+function scan_dismantle_pages(html) {
+  var $ = cheerio.load(html);
+  $('.grid-page').each(function (i, elem) {
+    max_pages=$(this).attr('data-page-index');
   });
 }
 
 function scan_handle_html(html) {
-  var $ = cheerio.load(html);
-  
-  
-  $('.entity-block-container').filter(function() {
-    var data = $(this);
-    scan_dismantle_entry(data.html());
-  });
+	var $ = cheerio.load(html);
+	$('.entity-block-container').filter(function() {
+		var data = $(this);
+		scan_dismantle_entry(data.html());
+	});
 }
 
 function scan_dismantle_entry(html) {
   var $ = cheerio.load(html);
   var newEntry={};
   var title="";
-  
-  
   
   newEntry.link="http://humblebundle.com" + $('.entity-link').attr('href');
   title=$('.entity-title').text();
@@ -89,8 +118,8 @@ function scan_dismantle_entry(html) {
   newEntry.type="Store";
   // TODO: In Datenbank speichern!
   entry_mysql(newEntry);
-  
 }
+
 
 function entry_mysql(entry) {
   //console.log(entry);
