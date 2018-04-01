@@ -1,6 +1,7 @@
 
 // Private Settings
 const private_settings  =require('./private_settings.json');
+var public_settings  =require('./humble_scan.json');
 
 // Mysql - Settings
 var mysql_file = require("mysql");
@@ -15,9 +16,10 @@ var mysql = mysql_file.createConnection({
 const puppeteer = require('puppeteer');
 const cheerio = require('cheerio');
 const moment=require("moment");
+const fs = require("fs");
 
 var sale_main_url = "https://www.humblebundle.com/store/search?sort=discount";
-var max_pages=2;//20;
+var max_pages=public_settings.max_page;//20;
 var is_running=false;
 
 (async () => {
@@ -27,7 +29,7 @@ var is_running=false;
 
   url=sale_main_url;
 
-  for (var i=0;i<max_pages-1;i++) {
+  for (var i=public_settings.last_page;i<max_pages-1;i++) {
 
     if (i>0) {
       url=sale_main_url+'&page='+(i);
@@ -48,22 +50,31 @@ var is_running=false;
     });
     
     await scan_handle_html(dimensions.html);
+    await scan_pages_html(dimensions.html);
 
-    if (i==0) {
-      await scan_pages_html(dimensions.html);
-    }
+    public_settings.last_page++;
+    save_settings(); // Ja dadurch ist die Forschleife fürn hintern
   }
+  public_settings.last_page=0;
+  save_settings();
   is_running=false;
   
   await browser.close();
 })();
+
+function save_settings() {
+  let data = JSON.stringify(public_settings);  
+  fs.writeFileSync('./humble_scan.json', data); 
+  process.exit();
+}
 
 function scan_pages_html(html) {
 	var $ = cheerio.load(html);
 	$('.pagination').filter(function() {
 		var data = $(this);
 		scan_dismantle_pages(data.html());
-	});
+  });
+  
 }
 
 function scan_dismantle_pages(html) {
@@ -71,6 +82,7 @@ function scan_dismantle_pages(html) {
   $('.grid-page').each(function (i, elem) {
     max_pages=$(this).attr('data-page-index');
   });
+  public_settings.max_page=max_pages;
 }
 
 function scan_handle_html(html) {
