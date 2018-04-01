@@ -29,7 +29,7 @@ var is_running=false;
 
   url=sale_main_url;
 
-  for (var i=public_settings.last_page;i<max_pages-1;i++) {
+  for (var i=public_settings.last_page;i<=max_pages;i++) {
 
     if (i>0) {
       url=sale_main_url+'&page='+(i);
@@ -53,19 +53,20 @@ var is_running=false;
     await scan_pages_html(dimensions.html);
 
     public_settings.last_page++;
-    save_settings(); // Ja dadurch ist die Forschleife fürn hintern
+    save_settings();
   }
   public_settings.last_page=0;
   save_settings();
   is_running=false;
   
   await browser.close();
+  process.exit(); // Hier sollte man eigentlich noch auf MYSQL warten
 })();
 
 function save_settings() {
   let data = JSON.stringify(public_settings);  
   fs.writeFileSync('./humble_scan.json', data); 
-  process.exit();
+  
 }
 
 function scan_pages_html(html) {
