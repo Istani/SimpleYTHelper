@@ -40,6 +40,7 @@ require_once 'API/PHPMailer/src/SMTP.php';
 require_once 'API/PHPMailer/src/Exception.php';
 //require_once 'API/PHPMailer/src/Exception.php';
 
+require_once 'API/Amazon/lib/AmazonECS.class.php';
 
 require_once 'API/Wordpress/class-IXR.php';
 
