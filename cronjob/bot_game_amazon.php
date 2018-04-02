@@ -15,6 +15,7 @@ if(!in_array($_tmp_tabellename, $check_table)) {
   $felder["game_name"]="VARCHAR(255) NOT NULL";
   $felder["link"]="VARCHAR(255) NOT NULL";
   $felder["text"]="VARCHAR(255) NOT NULL";
+  $felder["ignore"]="INT(1) NOT NULL DEFAULT '0'";
   $felder["score"]="BIGINT(20) NOT NULL DEFAULT '0'";
   $felder["last_update"]="BIGINT(20) NOT NULL DEFAULT '0'";
   $database->create_table($_tmp_tabellename, $felder, "game_name, link");
