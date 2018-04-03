@@ -53,8 +53,9 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
         unset($new_feld);
         $newData[$key]=$value;
       }
-      $database->sql_insert_update($_tmp_tabellename, $newData);
       unset($newData);
+      $database->sql_insert_update($_tmp_tabellename, $newData);
+      
     }
     
     if (isset($response["header_image"])) {$game_to_update['banner']=$response["header_image"];}
