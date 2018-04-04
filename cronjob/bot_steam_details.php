@@ -44,6 +44,8 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
       unset($response['movies']);
       unset($response['achievements']);
       unset($response['background']);
+
+      unset($response['dlc']);  // Ja es gibt spiele die zu viele DLC haben
       $tmp_details=$SYTHS->multiarray2array($response, "steam");
       
       $tmp_details['steam_app_id']=$game_to_update['steam_id'];
