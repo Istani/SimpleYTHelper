@@ -36,7 +36,7 @@ switch ($_GET['site']) {
   include("site/auth_twitch.php");
   break;
   case 'Twitch_Auth':
-  include("inc/Twitch_connect.php");
+  include("inc/twitch_connect.php");
   break;
   // Sites
   case 'my_accounts':
