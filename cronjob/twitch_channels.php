@@ -24,6 +24,18 @@ if(!in_array($_tmp_tabellename, $check_table)) {
 $tt=$token[$_tmp_tabellename];
 if ($tt["last_used"]+$tt["cooldown"]<time()) {
   
+  /* REFRESH TOKEN */
+  $params=array(
+    "refresh_token"=>$tmp_token["refresh_token"]
+  );
+  $Twitch_TOKEN_ENDPOINT         = 'https://id.twitch.tv/oauth2/token';
+  $response = $twitch->getAccessToken($Twitch_TOKEN_ENDPOINT, 'RefreshToken', $params);
+  $response=$response['result'];
+  $response['user']=$_SESSION['user']['email'];
+  $response['service']="Twitch";
+  $response['scope']=implode("+",$response['scope']);
+  authtoken_save($database, $response);
+  
   $response = $twitch->fetch('https://api.twitch.tv/helix/users');
   $tmp_channel_details=$response['result']['data'][0];
   

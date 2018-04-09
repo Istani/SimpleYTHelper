@@ -34,6 +34,7 @@ require_once 'API/google/vendor/autoload.php';
 require_once 'API/OAuth2/src/OAuth2/Client.php';
 require_once 'API/OAuth2/src/OAuth2/GrantType/IGrantType.php';
 require_once 'API/OAuth2/src/OAuth2/GrantType/AuthorizationCode.php';
+require_once 'API/OAuth2/src/OAuth2/GrantType/RefreshToken.php';
 
 require_once 'API/PHPMailer/src/PHPMailer.php';
 require_once 'API/PHPMailer/src/SMTP.php';
