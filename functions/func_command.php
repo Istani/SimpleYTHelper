@@ -17,6 +17,10 @@ function check_settings($database, $cronjob_id) {
         $serivce="YouTube";
         $user_where="youtube_user is not null AND youtube_user not like ''";
       }
+      if ($cronjob_id!=str_replace("twitch_","",$cronjob_id)) {
+        $serivce="Twitch";
+        $user_where="twitch_user is not null AND twitch_user not like ''";
+      }
       // Get Users
       $users=$database->sql_select("user", "*", $user_where, true);
       if (isset($newData)) {

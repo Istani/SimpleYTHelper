@@ -132,19 +132,33 @@ while (time()-$Time['Start']<=55) {
       }
     }
     $youtube = new Google_Service_YouTube($client);
-    
-    default:
-    if (file_exists("cronjob/".$TmpNextJob[0]['id'].".php")) {
-      include("cronjob/".$TmpNextJob[0]['id'].".php");
-    } else {
-      $database->sql_delete("bot_token", "id='".$TmpNextJob[0]['id']."'");
-    }
-    //die();
-    sleep(1);
-    if (isset($_GET['job_type'])) {
-      die();
-    }
     break;
+    case 'Twitch':
+    $tmp_token=$TmpToken['User'];
+    if ($tmp_token['user']=="") {
+      $tmp_token=$TmpToken['Bot'];
+    }
+    $client = new OAuth2\Client($twitch_CLIENT_ID, $twitch_CLIENT_SECRET);
+    // TODO: Check for Refresh TOKEN
+    
+    $client->setAccessToken($tmp_token["access_token"]);
+    $client->setAccessTokenType(1); //ACCESS_TOKEN_BEARER
+    $twitch=$client;
+    
+    break;
+    default:
+    
+    break;
+  }
+  if (file_exists("cronjob/".$TmpNextJob[0]['id'].".php")) {
+    include("cronjob/".$TmpNextJob[0]['id'].".php");
+  } else {
+    $database->sql_delete("bot_token", "id='".$TmpNextJob[0]['id']."'");
+  }
+  //die();
+  sleep(1);
+  if (isset($_GET['job_type'])) {
+    die();
   }
 }
 //$database->close();

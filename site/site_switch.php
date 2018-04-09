@@ -30,6 +30,14 @@ switch ($_GET['site']) {
   case 'Discord_Auth':
   include("inc/discord_connect.php");
   break;
+  // Twitch auth
+  case 'New_Twitch_Auth':
+  include("inc/twitch_connect.php");
+  include("site/auth_twitch.php");
+  break;
+  case 'Twitch_Auth':
+  include("inc/Twitch_connect.php");
+  break;
   // Sites
   case 'my_accounts':
   include("site/my_accounts.php");
