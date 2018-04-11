@@ -23,6 +23,7 @@ if(!in_array($_tmp_tabellename, $check_table)) {
 
 $tt=$token[$_tmp_tabellename];
 if ($tt["last_used"]+$tt["cooldown"]<time()) {
+  $tt["cooldown"]=60;
   
   $params = array('user_id' => $_SESSION['user']['twitch_user']);
   
@@ -48,12 +49,13 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
       $database->sql_insert_update("user", $_SESSION['user']);
     }
     unset($newData);
+    $tt["cooldown"]=5*60;
   } else {
     $database->sql_delete($_tmp_tabellename, "twitch_user_id='".$_SESSION['user']['twitch_user']."'");
   }
   
   debug_log($tmp_details);
-  $tt["cooldown"]=60;
+  
 }
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$_SESSION['user']['email'].': '.$_tmp_tabellename." updated!<br>";
