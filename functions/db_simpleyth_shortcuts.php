@@ -110,7 +110,7 @@ class SimpleYTH_Shortcuts {
   }
   
   function multiarray2array($array, $last_key="") {
-    //$return_array=array();
+    $return_array=array();
     
     foreach ($array as $key => $value) {
       if (is_array($value)) {
