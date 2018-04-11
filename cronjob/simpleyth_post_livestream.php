@@ -95,7 +95,8 @@ $post_time=time();
   }
 }
 // Twitch
-{
+
+if (false) {
   
   if (isset($videos)) {unset($videos);}
   $videos=$database->sql_select("twitch_livestream", "*", "twitch_user_id='".$_SESSION['user']['twitch_user']."'",false);
