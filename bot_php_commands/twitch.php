@@ -1,6 +1,6 @@
 <?php
 $get_owner=$database->sql_select("bot_chathosts","*","host='".$this_msg['host']."'",true)[0]['owner'];
-$owner_user=$database->sql_select("user","*","twitch_user='".$get_owner."' ordiscord_user='".$get_owner."' or youtube_user='".$get_owner."'",true)[0];
+$owner_user=$database->sql_select("user","*","twitch_user='".$get_owner."' or discord_user='".$get_owner."' or youtube_user='".$get_owner."'",true)[0];
 
 // Check for Own Video Right
 $own_video=false;
