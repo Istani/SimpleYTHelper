@@ -6,7 +6,7 @@ if (isset($_POST['login'])) {
     $user_rows=$database->sql_select("user", "*", "email='".$_POST['email']."'",true);
     if ($user_rows[0]['email']==$_POST['email']) {
       if ($user_rows[0]['password']!=$_POST['passwort']) {
-        die("Falsches Passwort!");
+        die("Falsche Login Informationen!");
       }
       if (isset($new_data)) {
         unset($new_data);

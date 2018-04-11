@@ -96,12 +96,13 @@ $post_time=time();
 }
 // Twitch
 {
+  
   if (isset($videos)) {unset($videos);}
   $videos=$database->sql_select("twitch_livestream", "*", "twitch_user_id='".$_SESSION['user']['twitch_user']."'",false);
   if (count($videos)==0) {
     $tt['token']="";
   } else {
-    if ($tt['token']=='null') {
+    if ($tt['token']=='null' || $tt['token']=='') {
       $tt['token']=$videos[0]['twitch_id'];
       // Do Magic 2
       $my_rechte=$SYTHS->may_post_videos_on($_SESSION['user']['email']);
@@ -165,7 +166,7 @@ $post_time=time();
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$_SESSION['user']['email'].': '.$cronjob_id." updated!<br>";
 //$tt["cooldown"]=1*60*60; // Test
-$tt["cooldown"]=60; // Test
+$tt["cooldown"]=0; // Test
 $tt["last_used"]=time();
 $tt["user"]=$_SESSION['user']['email'];
 if($tt["token"]==""){$tt["token"]="null";}

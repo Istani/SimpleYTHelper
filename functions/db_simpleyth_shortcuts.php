@@ -49,7 +49,7 @@ class SimpleYTH_Shortcuts {
   
   function get_rights($simple_yth_user) {
     $return = null;
-    $activity_check=time()-(1*24*60*60);
+    $activity_check=time()-(30*24*60*60);
     // Wo darf der User seine Videos Posten?
     $user_accounts=$this->db->sql_select('`user`', "*","email='".$simple_yth_user."'", true);
     
