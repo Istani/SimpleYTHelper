@@ -24,6 +24,9 @@ switch ($this_msg['message_parts'][1]) {
     // Yeah twitch_livestream
     echo "https://www.twitch.tv/".$twitch_user['twitch_display_name'];
   }
+  default:
+  echo "Befehl: ".$this_msg['message_parts'][1];
+  echo "<br>Nicht gefunden!";
   break;
 }
 
