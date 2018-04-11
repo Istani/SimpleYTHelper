@@ -11,7 +11,12 @@ for ($count_right=0; $count_right<count($this_user['roles']);$count_right++) {
   }
 }
 if ($own_video) {
-  $twitch_user=$this_user['twitch_user'];
+  $msg_user=$database->sql_select("user","*","twitch_user='".$this_msg['user']."' or discord_user='".$this_msg['user']."' or youtube_user='".$this_msg['user']."'",true)[0];
+  if ($msg_user['twitch_user']!="") {
+    $twitch_user=$msg_user['twitch_user'];
+  } else {
+    $twitch_user=$owner_user['twitch_user'];  
+  }
 } else {
   $twitch_user=$owner_user['twitch_user'];
 }
@@ -24,6 +29,7 @@ switch ($this_msg['message_parts'][1]) {
     // Yeah twitch_livestream
     echo "https://www.twitch.tv/".$twitch_user['twitch_display_name'];
   }
+  break;
   default:
   echo "Befehl: ".$this_msg['message_parts'][1];
   echo "<br>Nicht gefunden!";
