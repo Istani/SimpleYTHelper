@@ -39,7 +39,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $response = $twitch->fetch('https://api.twitch.tv/helix/users');
   $tmp_channel_details=$response['result']['data'][0];
   
-  $tmp_channel_details=$SYTHS->multiarray2array($tmp_channel_details, "youtube");
+  $tmp_channel_details=$SYTHS->multiarray2array($tmp_channel_details, "twitch");
   debug_log($tmp_channel_details);
   
   foreach ($tmp_channel_details as $key=>$value){
@@ -49,6 +49,12 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     $newData[$key]=$value;
   }
   $database->sql_insert_update($_tmp_tabellename, $newData);
+  
+  if ($_SESSION['user']['twitch_user']=="") {
+    $_SESSION['user']['twitch_user']=$newData['twitch_id'];
+    $database->sql_insert_update("user", $_SESSION['user']);
+  }
+  
   unset($newData);
   
   $tt["cooldown"]=60*60;
