@@ -53,9 +53,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   }
   
   debug_log($tmp_details);
-  die();
-  
-  $tt["cooldown"]=60*60;
+  $tt["cooldown"]=60;
 }
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$_SESSION['user']['email'].': '.$_tmp_tabellename." updated!<br>";
