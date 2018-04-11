@@ -27,6 +27,7 @@ $post_time=time();
     }
     if ($tt['token']=='null') {
       // Do Magic 2
+      $tt['token']=$videos_yt[0]['youtube_id'];
       $my_rechte=$SYTHS->may_post_videos_on($_SESSION['user']['email']);
       foreach ($my_rechte as $t_service => $the_hosts) {
         foreach ($the_hosts as $t_host => $t_channel) {
@@ -90,7 +91,7 @@ $post_time=time();
         }
       }
     }
-    $tt['token']=$videos_yt[0]['youtube_id'];
+    
   }
 }
 // Twitch
@@ -101,6 +102,7 @@ $post_time=time();
     $tt['token']="";
   } else {
     if ($tt['token']=='null') {
+      $tt['token']=$videos[0]['twitch_id'];
       // Do Magic 2
       $my_rechte=$SYTHS->may_post_videos_on($_SESSION['user']['email']);
       foreach ($my_rechte as $t_service => $the_hosts) {
@@ -130,34 +132,32 @@ $post_time=time();
               debug_log($add_post);
             }
           }
-          /* Ads */
-          /* RPG Start */
-          $game_data=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['twitch_user']."' or owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);
-          for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
-            $this_channel=$game_data[$count_game_data];
-            if ($t_service=="YouTube") {
-              $add_post['room']=$videos[0]['youtube_snippet_livechatid'];
-            }
-            if ($t_service=="Discord") {
-              $add_post['room']=$this_channel['channel_rpgmain'];
-            }
-            
-            $add_post['service']=$t_service;
-            $add_post['host']=$t_host;
-            $add_post['id']=$post_time++;
-            $add_post['time']=time()+1;
-            $add_post['user']=$t_user;
-            $add_post['message']="!rpg start";
-            $add_post['process']=0;
-            $database->sql_insert_update("bot_chatlog", $add_post);
-            debug_log($add_post);
-          }
-          
-          unset($add_post);
         }
       }
+      /* Ads */
+      /* RPG Start */
+      $game_data=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['twitch_user']."' or owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);
+      for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
+        $this_channel=$game_data[$count_game_data];
+        if ($t_service=="YouTube") {
+          $add_post['room']=$videos[0]['youtube_snippet_livechatid'];
+        }
+        if ($t_service=="Discord") {
+          $add_post['room']=$this_channel['channel_rpgmain'];
+        }
+        
+        $add_post['service']=$t_service;
+        $add_post['host']=$t_host;
+        $add_post['id']=$post_time++;
+        $add_post['time']=time()+1;
+        $add_post['user']=$t_user;
+        $add_post['message']="!rpg start";
+        $add_post['process']=0;
+        $database->sql_insert_update("bot_chatlog", $add_post);
+        debug_log($add_post);
+      }
+      unset($add_post);
     }
-    $tt['token']=$videos[0]['twitch_id'];
   }
 }
 // NOTE: Ggf weitere Dienste
