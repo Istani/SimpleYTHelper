@@ -15,12 +15,12 @@ if ($own_video) {
   if ($msg_user['twitch_user']!="") {
     $twitch_user=$msg_user['twitch_user'];
   } else {
-    $twitch_user=$owner_user['twitch_user'];  
+    $twitch_user=$owner_user['twitch_user'];
   }
 } else {
   $twitch_user=$owner_user['twitch_user'];
 }
-$twitch_user=$database->sql_select("twitch_channels","*","twitch_id='".$twitch_user."'");
+$twitch_user=$database->sql_select("twitch_channels","*","twitch_id='".$twitch_user."'",true)[0];
 
 switch ($this_msg['message_parts'][1]) {
   case 'livestream':
@@ -28,6 +28,8 @@ switch ($this_msg['message_parts'][1]) {
   if ($twitch_livestreams[0]['twitch_id']!='') {
     // Yeah twitch_livestream
     echo "https://www.twitch.tv/".$twitch_user['twitch_display_name'];
+  } else {
+    echo "Kein Livestream gefunden!";
   }
   break;
   default:
