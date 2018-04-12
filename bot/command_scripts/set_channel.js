@@ -53,12 +53,16 @@ var self = module.exports = {
           case 'humble':
           FELDER_UPDATE=FELDER_UPDATE+",channel_humble='"+channel+"'";
           break;
+          case 'community':
+          FELDER_UPDATE=FELDER_UPDATE+",channel_community='"+channel+"'";
+          break;
           default:
           var output="Diese Channel Art gibt es nicht!\r\n";
           output=output+"Mögliche Channel:\r\n";
           output=output+"- shame\r\n";
           output=output+"- video\r\n";
           output=output+"- humble\r\n";
+          output=output+"- community\r\n";
           output=output+"- rpg (beta)\r\n";
           output=output+"- rss\r\n";
           SendFunc(output);
