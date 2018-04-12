@@ -25,6 +25,7 @@ if(!in_array($_tmp_tabellename, $check_table)) {
 
 $tt=$token[$_tmp_tabellename];
 if ($tt["last_used"]+$tt["cooldown"]<time()) {
+  $tt_cooldown=60*15;
   /* Starte neuen Scan */
   if ($tt["cooldown"]>60*2) {
     $add_post['service']="Discord";
@@ -39,13 +40,14 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     $database->sql_insert_update("bot_chatlog", $add_post);
     debug_log($add_post);
     unset($add_post);
+    $tt_cooldown=60;
   }
-  $tt["cooldown"]=60*15;
+  
   
   /* Überprüfe vorhande Daten */
   $yt_com=$database->sql_select($_tmp_tabellename,"*","youtube_link LIKE 'https://www.youtube.com/channel/".$tmp_token['channel_id']."%' AND last_update=0 LIMIT 1",false);
   if (isset($yt_com[0])) {
-    $tt["cooldown"]=60; // Geringere Cooldown weil es ggf mehr zu posten geben könnte...
+    $tt_cooldown=60; // Geringere Cooldown weil es ggf mehr zu posten geben könnte...
     $yt_com['0']['last_update']=time();
     $database->sql_insert_update($_tmp_tabellename, $yt_com['0']);
     
@@ -72,7 +74,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
       unset($add_post);
     }
   }
-  
+  $tt["cooldown"]=$tt_cooldown;
 }
 
 // Save Token
