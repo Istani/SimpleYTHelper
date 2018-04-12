@@ -12,7 +12,7 @@ if(in_array($_tmp_tabellename, $check_table)) {
   } else {
     $output_text=$yt_com[0]['youtube_text'];
     $output_link=$yt_com[0]['youtube_link'];
-    while (str_len($output_text."<br>".$output_link)>200) {
+    while (strlen($output_text."<br>".$output_link)>200) {
       $parts=explode(" ", $output_text);
       unset($parts[count($parts)-1]);
       $output_text=implode(" ",$parts);
