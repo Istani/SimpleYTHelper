@@ -90,18 +90,25 @@ if ($livestream['id']!='null' && $livestream['id']!=$tt["token"]) {
   /* RPG Start */
   $game_data=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['twitch_user']."' or owner='".$_SESSION['user']['youtube_user']."' or owner='".$_SESSION['user']['discord_user']."'", false);
   for ($count_game_data=0;$count_game_data<count($game_data);$count_game_data++) {
+    
     $this_channel=$game_data[$count_game_data];
     $add_post['room']='';
-    if ($t_service=="YouTube") {
+    if ($this_channel['service']=="YouTube") {
       $add_post['room']=$livestream['chatroom'];
+      $t_user=$_SESSION['user']['youtube_user'];
     }
-    if ($t_service=="Discord") {
+    if ($this_channel['service']=="Discord") {
       $add_post['room']=$this_channel['channel_rpgmain'];
+      $t_user=$_SESSION['user']['discord_user'];
+    }
+    if ($this_channel['service']=="Twitch") {
+      $t_user=$_SESSION['user']['twitch_user'];
     }
     
+    
     if ($add_post['room']!='') {
-      $add_post['service']=$t_service;
-      $add_post['host']=$t_host;
+      $add_post['service']=$this_channel['service'];
+      $add_post['host']=$this_channel['host'];
       $add_post['id']=$post_time++;
       $add_post['time']=time();
       $add_post['user']=$t_user;
