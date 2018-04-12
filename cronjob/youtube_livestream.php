@@ -60,6 +60,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   }
   if ($details_max==0) {
     $tt["token"]="";
+    $database->sql_delete($_tmp_tabellename, "youtube_snippet_actualendtime NOT LIKE ''");
   }
   for ($cnt_details=0;$cnt_details<$details_max;$cnt_details++) {
     $tmp_details=$response['result']['items'][$cnt_details];
