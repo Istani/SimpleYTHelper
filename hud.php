@@ -56,6 +56,7 @@ if (isset($user[0]['email'])) {
     echo '<marquee>';
     echo $result;
     echo '</marquee>';
+    echo '</div>';
     break;
   }
   ?>
