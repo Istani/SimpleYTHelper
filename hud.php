@@ -20,6 +20,20 @@ if (isset($user[0]['email'])) {
 <head>
   <title>SimpleYTH - HUD</title>
   <?php require_once 'inc/html_inc.php'; ?>
+  <style type="text/css">
+  * {
+    font-weight:normal;
+    color:#FFFFFF;
+    background-color:#000000;
+    letter-spacing:1pt;
+    word-spacing:3pt;
+    font-size:12px;
+    text-align:left;
+    font-family:arial black, sans-serif;
+    line-height:1;
+  }
+  </style>
+  
 </head>
 <body>
   <?php
