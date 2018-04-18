@@ -99,7 +99,11 @@ switch ($this_msg['message_parts'][1]) {
       while (($min_date = strtotime("+1 MONTH", $min_date)) <= $max_date) {
         $i++;
       }
-      echo $db_subs[$cnt_sponsors]["youtube_snippet_sponsordetails_displayname"].": ".$i." Monat<br>";
+      if ($i>1) {
+        echo $db_subs[$cnt_sponsors]["youtube_snippet_sponsordetails_displayname"].": ".$i." Monate<br>";
+      } else {
+        echo $db_subs[$cnt_sponsors]["youtube_snippet_sponsordetails_displayname"].": ".$i." Monat<br>";
+      }
     }
   } else {
     echo "Kein VIP gefunden!";
