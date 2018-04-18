@@ -30,7 +30,8 @@ $_SESSION['user']=$user[0];
 if (!isset($_GET["command"]) OR $_GET["command"] == "" OR $_GET["command"] == "null") {
   echo "No Command given!
   ";
-  $_GET["command"] = "commands";
+  //$_GET["command"] = "commands";
+  die();
 }
 
 if (!isset($_GET["param"])) {
