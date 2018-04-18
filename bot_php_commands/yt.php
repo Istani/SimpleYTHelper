@@ -20,7 +20,7 @@ if ($own_video) {
 } else {
   $service_user=$owner_user['youtube_user'];
 }
-$user_channel=$database->sql_select("youtube_channels","*","youtube_id='".$twitch_user."'",true)[0];
+$user_channel=$database->sql_select("youtube_channels","*","youtube_id='".$service_user."'",true)[0];
 $check_table=$database->show_tables();
 
 if (!isset($this_msg['message_parts'][1])) {
