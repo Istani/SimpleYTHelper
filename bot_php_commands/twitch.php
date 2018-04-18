@@ -22,6 +22,9 @@ if ($own_video) {
 }
 $twitch_user=$database->sql_select("twitch_channels","*","twitch_id='".$twitch_user."'",true)[0];
 
+if (!isset($this_msg['message_parts'][1])) {
+  isset($this_msg['message_parts'][1]="";
+}
 switch ($this_msg['message_parts'][1]) {
   case 'livestream':
   $twitch_livestreams=$database->sql_select("twitch_livestream","*","twitch_user_id='".$twitch_user['twitch_id']."' LIMIT 1", true);
