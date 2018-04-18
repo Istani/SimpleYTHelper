@@ -28,7 +28,6 @@ if (isset($user[0]['email'])) {
     letter-spacing:1pt;
     word-spacing:3pt;
     font-size:12px;
-    text-align:left;
     font-family:arial black, sans-serif;
     line-height:1;
   }
