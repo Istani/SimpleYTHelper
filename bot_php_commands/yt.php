@@ -90,7 +90,16 @@ switch ($this_msg['message_parts'][1]) {
       echo "Kein VIP gefunden!";
     }
     for ($cnt_sponsors=0;$cnt_sponsors<count($db_subs);$cnt_sponsors++) {
-      echo $db_subs[$cnt_sponsors]["youtube_snippet_sponsordetails_displayname"]." seit: ".$db_subs[$cnt_sponsors]["youtube_snippet_sponsorsince"]."<br>";
+      $d1=time();
+      $d2=strtotime($db_subs[$cnt_sponsors]["youtube_snippet_sponsorsince"]);
+      $min_date = min($d1, $d2);
+      $max_date = max($d1, $d2);
+      $i = 1;
+      
+      while (($min_date = strtotime("+1 MONTH", $min_date)) <= $max_date) {
+        $i++;
+      }
+      echo $db_subs[$cnt_sponsors]["youtube_snippet_sponsordetails_displayname"].": ".$i." Monat<br>";
     }
   } else {
     echo "Kein VIP gefunden!";
