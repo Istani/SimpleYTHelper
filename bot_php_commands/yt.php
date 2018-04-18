@@ -101,7 +101,7 @@ switch ($this_msg['message_parts'][1]) {
   case 'community':
   $_tmp_tabellename=strtolower("youtube_communitytab");
   if(in_array($_tmp_tabellename, $check_table)) {
-    $yt_com = $database->sql_select($_tmp_tabellename,"*","youtube_link LIKE 'https://www.youtube.com/channel/".$_SESSION['user']['youtube_user']."%' ORDER BY last_update DESC LIMIT 1",false);
+    $yt_com = $database->sql_select($_tmp_tabellename,"*","youtube_link LIKE 'https://www.youtube.com/channel/".$service_user."%' ORDER BY last_update DESC LIMIT 1",false);
     if (count($yt_com)==0) {
       echo "Kein Community Tab eintrag gefunden!";
     } else {

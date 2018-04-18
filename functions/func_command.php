@@ -62,7 +62,7 @@ function execute_command($command) {
   if (file_exists($filepath)) {
     include($filepath);
   } else {
-    echo "No Command: <b>" . $command . "</b>!";
+    //echo "No Command: <b>" . $command . "</b>!";
   }
   $result = ob_get_contents();
   ob_end_clean();
