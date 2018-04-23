@@ -24,16 +24,16 @@ if(in_array("bot_gamelist", $check_table)) {
   if (isset($new_data)) {
     unset($new_data);
   }
-
+  
   $tt=$token[$_tmp_tabellename];
   if ($tt["last_used"]+$tt["cooldown"]<time()) {
     $games=$database->sql_select("bot_gamelist","name","description NOT LIKE ''");
-
+    
     for ($count_games=0;$count_games<count($games);$count_games++) {
       $this_game=$games[$count_games];
       if ($this_game['name']!="") {
         // TODO: Bei mehreren Video Quellen erweitern!
-        $possible_videos=$database->sql_select("youtube_videos","youtube_snippet_channelid, COUNT(youtube_id) AS simpleyth_count","youtube_snippet_title LIKE '%".$this_game['name']."%' GROUP BY youtube_snippet_channelid");
+        $possible_videos=$database->sql_select("youtube_videos","youtube_snippet_channelid, COUNT(youtube_id) AS simpleyth_count","youtube_snippet_title LIKE '".$this_game['name']." |%' GROUP BY youtube_snippet_channelid");
         for ($count_videos=0;$count_videos<count($possible_videos);$count_videos++) {
           $this_channel=$possible_videos[$count_videos];
           if ($this_channel['youtube_snippet_channelid']!="") {
