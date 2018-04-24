@@ -102,13 +102,13 @@ function twitch_check_Channels() {
       return;
     }
     var twtich_channel=twitch_bot.getChannels();
-    console.log(twtich_channel);
+    //console.log(twtich_channel);
     for (var i = 0; i < rows.length; i++) {
-      console.log("Connect to " + rows[i].twitch_login);
+      //console.log("Connect to " + rows[i].twitch_login);
       twitch_bot.join(rows[i].twitch_login).then(function(data) {
         // Join Channel
       }).catch(function(err) {
-        console.log(err);
+        //console.log(err);
       });
     }
     //console.log(twitch_client.getChannels());
