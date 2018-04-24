@@ -9,6 +9,10 @@ $chats_temp=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['use
 for ($i=0;$i<count($chats_temp);$i++) {
   $chats[]=$chats_temp[$i];
 }
+$chats_temp=$database->sql_select("bot_chathosts", "*", "owner='".$_SESSION['user']['twitch_user']."'", true);
+for ($i=0;$i<count($chats_temp);$i++) {
+  $chats[]=$chats_temp[$i];
+}
 
 if (isset($_POST['save_roles'])) {
   unset($_POST['save_roles']);
