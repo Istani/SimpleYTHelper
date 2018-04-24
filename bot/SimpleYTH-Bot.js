@@ -106,6 +106,7 @@ function twitch_check_Channels() {
       twitch_bot.join(rows[i].twitch_login).then(function(data) {
         // Join Channel
       }).catch(function(err) {
+        console.log("Error Join "+rows[i].twitch_login);
         console.log(err);
       });
     }
