@@ -49,12 +49,12 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
       $database->sql_insert_update("user", $_SESSION['user']);
     }
     unset($newData);
+    debug_log($tmp_details);
     $tt["cooldown"]=5*60;
   } else {
     $database->sql_delete($_tmp_tabellename, "twitch_user_id='".$_SESSION['user']['twitch_user']."'");
+    echo "Kein Livestream gefunden!<br>";
   }
-  
-  debug_log($tmp_details);
   
 }
 // Save Token

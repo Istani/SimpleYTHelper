@@ -48,6 +48,71 @@ google_bot.on("message", msg => {
   LogMessage("YouTube", msg.host, msg.room, msg.id, msg.createdTimestamp, msg.author, msg.content);
 });
 
+// Twitch - Settings
+var tmi    = require('tmi.js');
+var twitch_options = {
+  options: {
+    debug: false
+  },
+  connection: {
+    cluster: "aws",
+    reconnect: true
+  },
+  identity: {
+    username: private_settings.twitch_user,
+    password: private_settings.twitch_password
+  },
+  channels: []
+};
+var twitch_bot = new tmi.client(twitch_options);
+twitch_bot.on('connected', function(adress, port){
+  twitch_check_Channels();
+});
+twitch_bot.on("message", function (channel, userstate, message, self) {
+  if (self) {return;}
+  var UserRoles=[];
+  if (userstate['user-id']==userstate['room-id']) {
+    UserRoles.push("Owner");
+  }
+  if (userstate.mod) {
+    UserRoles.push("Mod");
+  }
+  if (userstate.turbo) {
+    UserRoles.push("Turbo");
+  }
+  if (userstate.subscriber) {
+    UserRoles.push("Subsciber");
+  }
+  if (UserRoles.length==0) {
+    UserRoles.push("Guest");
+  }
+  
+  if (typeof userstate['room-id'] != undefined) {
+    UpdateHosts("Twitch", channel, "Twitch Stream", userstate['room-id']); // TODO: Room-id ?
+  }
+  UpdateUser("Twitch", channel, userstate['user-id'], userstate['username'], UserRoles);
+  LogMessage("Twitch", channel, "Twitch Stream", userstate.id, 0, userstate['user-id'], message);
+});
+function twitch_check_Channels() {
+  var LoadUser = "SELECT twitch_login FROM twitch_channels";
+  mysql_connection.query(LoadUser, function (err, rows) {
+    if (err != null) {
+      console.log("Channel konnten nicht geladen werden!");
+      console.log(err);
+      return;
+    }
+    for (var i = 0; i < rows.length; i++) {
+      twitch_bot.join(rows[i].twitch_login).then(function(data) {
+        // Join Channel
+      }).catch(function(err) {
+        console.log(err);
+      });
+    }
+    //console.log(twitch_client.getChannels());
+  });
+  setTimeout(twitch_check_Channels,60000);
+}
+
 // Whatever - Settings
 
 
@@ -80,6 +145,7 @@ function Login() {
     }
   });
   discord_bot.login(private_settings.discord_token);
+  twitch_bot.connect();
 }
 
 function LogMessage(service, host, room, id, time, user, message) {
@@ -200,13 +266,16 @@ function ProcessMessage() {
       GenerateAnwser(rows[i]);
       ProcessMessageUpdate(rows[i].service, rows[i].id);
     }
+    if (rows.length==0) {
+      setTimeout(ProcessMessage, 100);
+    }
   });
-  setTimeout(ProcessMessage, 300);
 }
 
 function ProcessMessageUpdate(service, id) {
   var UPDATE_MESSAGE="UPDATE `bot_chatlog` SET process='1' WHERE service='"+ service + "' AND id='"+ id + "'";
   mysql_connection.query(UPDATE_MESSAGE, function (err, rows) {
+    setTimeout(ProcessMessage, 100);
     if (err != null) {
       console.log("MySQL: " + err);
       return;
@@ -272,6 +341,23 @@ function GenerateAnwser(msg_row) {
           // TODO: Text in 200 Zeichen Teile Trennen!
           var SendText=text;
           google_bot.sendMessage(msg.room, SendText);
+        }, sendcount*100);
+        sendcount++;
+        //}
+      }, LogMessage);
+      break;
+      case 'Twitch':
+      cmd.use(command, msg,function (text) {
+        var sendcount=0;
+        //while (text.size>0) {
+        setTimeout(function () {
+          // TODO: Text in 200 Zeichen Teile Trennen!
+          var SendText=text;
+          twitch_bot.say(msg.host, SendText).then(function(data) {
+            // data returns [channel]
+          }).catch(function(err) {
+            console.log(err);
+          });;
         }, sendcount*100);
         sendcount++;
         //}
