@@ -40,19 +40,20 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   
   debug_log($channels);
   
-  $GetOwner=$database->sql_select("user","*","youtube_user LIKE '' OR discord_user LIKE '' OR twitch_user LIKE ''",true)[0];
-  if (!isset($GetOwner['display_ads'])) {
-    $GetOwner['display_ads']="";
-  }
-  
-  if ($GetOwner['display_ads']!="1") {
+  $add_post['id']=time();
+  $add_post['user']="-1";
+  $add_post['message']="!ad";
+  $add_post['process']=0;
+  $add_post['php_process']=0;
+  for ($count_channel=0;$count_channel<count($channels);$count_channel++) {
     
-    $add_post['id']=time();
-    $add_post['user']="-1";
-    $add_post['message']="!ad";
-    $add_post['process']=0;
-    $add_post['php_process']=0;
-    for ($count_channel=0;$count_channel<count($channels);$count_channel++) {
+    $GetHost=$database->sql_select("bot_chathosts","*","serivce='".$channels[$count_channel]['service']."' AND host='".$channels[$count_channel]['host']."'", true)[0];
+    $GetOwner=$database->sql_select("user","*","youtube_user LIKE '".$GetHost['owner']."' OR discord_user LIKE '".$GetHost['owner']."' OR twitch_user LIKE '".$GetHost['owner']."'",true)[0];
+    if (!isset($GetOwner['display_ads'])) {
+      $GetOwner['display_ads']="0";
+    }
+    
+    if ($GetOwner['display_ads']!="1") {
       $add_post['host']=$channels[$count_channel]['host'];
       $add_post['service']=$channels[$count_channel]['service'];
       $add_post['room']=$channels[$count_channel]['room'];
