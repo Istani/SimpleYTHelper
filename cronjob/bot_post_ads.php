@@ -47,7 +47,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   $add_post['php_process']=0;
   for ($count_channel=0;$count_channel<count($channels);$count_channel++) {
     
-    $GetHost=$database->sql_select("bot_chathosts","*","serivce='".$channels[$count_channel]['service']."' AND host='".$channels[$count_channel]['host']."'", true)[0];
+    $GetHost=$database->sql_select("bot_chathosts","*","service='".$channels[$count_channel]['service']."' AND host='".$channels[$count_channel]['host']."'", true)[0];
     $GetOwner=$database->sql_select("user","*","youtube_user LIKE '".$GetHost['owner']."' OR discord_user LIKE '".$GetHost['owner']."' OR twitch_user LIKE '".$GetHost['owner']."'",true)[0];
     if (!isset($GetOwner['display_ads'])) {
       $GetOwner['display_ads']="0";
