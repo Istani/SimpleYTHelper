@@ -37,7 +37,10 @@ if (isset($user[0]['email'])) {
     line-height:1;
   }
   .hud_username {
-    color: #ff0000;
+    color: #D84759;
+  }
+  .hud_special {
+    color: #46e65a;
   }
   </style>
   
