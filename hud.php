@@ -69,6 +69,7 @@ if (isset($user[0]['email'])) {
     ob_start();
     include($command_file);
     $result = ob_get_contents();
+    $result = substr($result,0,strlen($result)-2);
     ob_end_clean();
     $result = str_replace("<br>", " | ", $result);
     $result = utf8_decode($result);
