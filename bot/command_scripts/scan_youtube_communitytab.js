@@ -70,6 +70,7 @@ function scan_dismantle_entry(html) {
   var temp_link = cheerio.load($('#published-time-text').html());
   newEntry.link="https://www.youtube.com" + temp_link('a').attr('href').replace("'","");
   newEntry.text=$('#content-text').text().replace("'","");
+  newEntry.text = newEntry.text.substr(0, newEntry.text.length-1);
   entry_mysql(newEntry);
 }
 
