@@ -99,6 +99,9 @@ switch ($this_msg['message_parts'][1]) {
       while (($min_date = strtotime("+1 MONTH", $min_date)) <= $max_date) {
         $i++;
       }
+      if (isset($_SESSION['hud'])) {
+        $db_subs[$cnt_sponsors]["youtube_snippet_sponsordetails_displayname"]='<span class="hud_username">'.$db_subs[$cnt_sponsors]["youtube_snippet_sponsordetails_displayname"].'</span>';
+      }
       if ($i>1) {
         echo $db_subs[$cnt_sponsors]["youtube_snippet_sponsordetails_displayname"].": ".$i." Monate<br>";
       } else {

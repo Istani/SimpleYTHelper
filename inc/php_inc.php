@@ -4,7 +4,7 @@
 ini_set('display_errors', 1);
 set_time_limit(0);
 @session_start();
-header("content-type: text/html; charset=ISO-8859-5");
+header("content-type: text/html; charset=ISO-8859-1");
 require_once 'inc/error_handling.php';
 
 /* mysql settings */

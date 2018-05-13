@@ -22,20 +22,29 @@ if (isset($user[0]['email'])) {
   <?php require_once 'inc/html_inc.php'; ?>
   <style type="text/css">
   * {
+    text-shadow:
+    1px 1px 0 rgba(0,0,0,1),
+    1px -1px 0 rgba(0,0,0,1),
+    -1px 1px 0 rgba(0,0,0,1),
+    -1px -1px 0 rgba(0,0,0,1);
+    
     font-weight:normal;
     color:#FFFFFF;
-    background-color:#000000;
     letter-spacing:1pt;
-    word-spacing:3pt;
+    word-spacing:2pt;
     font-size:12px;
     font-family:arial black, sans-serif;
     line-height:1;
+  }
+  .hud_username {
+    color: #ff0000;
   }
   </style>
   
 </head>
 <body>
   <?php
+  $_SESSION['hud']=true;
   if (!isset($_GET['info'])) {
     $_GET['info']="";
   }
@@ -59,9 +68,9 @@ if (isset($user[0]['email'])) {
     $result = ob_get_contents();
     ob_end_clean();
     $result = str_replace("<br>", " | ", $result);
-    $result = utf8_decode($result);
+    //$result = utf8_encode($result);
+    $result= mb_convert_encoding($result, "ISO-8859-1");
     $result = replace_html2markdown($result);
-    
     
     if (get_magic_quotes_gpc()) {
       $result = stripslashes($result);
