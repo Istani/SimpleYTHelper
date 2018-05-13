@@ -71,7 +71,7 @@ if (isset($user[0]['email'])) {
     $result = ob_get_contents();
     ob_end_clean();
     $result = str_replace("<br>", " | ", $result);
-    //$result = utf8_encode($result);
+    $result = utf8_decode($result);
     $result= mb_convert_encoding($result, "ISO-8859-1");
     $result = replace_html2markdown($result);
     
