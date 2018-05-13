@@ -71,6 +71,7 @@ function scan_dismantle_entry(html) {
   newEntry.link="https://www.youtube.com" + temp_link('a').attr('href').replace("'","");
   newEntry.text=$('#content-text').text().replace("'","");
   newEntry.text = newEntry.text.substr(0, newEntry.text.length-1);
+  newEntry.text = newEntry.replace("'","");
   entry_mysql(newEntry);
 }
 
