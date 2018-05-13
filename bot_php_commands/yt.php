@@ -104,7 +104,7 @@ switch ($this_msg['message_parts'][1]) {
         $db_subs[$cnt_sponsors]["youtube_snippet_sponsordetails_displayname"]='<span class="hud_username">'.$db_subs[$cnt_sponsors]["youtube_snippet_sponsordetails_displayname"].'</span>';
         $monate='<span class="hud_special">'.$monate.'</span>';
       }
-      if ($monate>1) {
+      if ($i>1) {
         echo $db_subs[$cnt_sponsors]["youtube_snippet_sponsordetails_displayname"].": ".$monate." Monate<br>";
       } else {
         echo $db_subs[$cnt_sponsors]["youtube_snippet_sponsordetails_displayname"].": ".$monate." Monat<br>";
