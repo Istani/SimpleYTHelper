@@ -7,6 +7,4 @@ if ($get_discord_link['link']!="") {
   $get_discord_link['count']++;
   $database->sql_insert_update("user_ads", $get_discord_link);
 }
-
-var SQL4 = "UPDATE user_ads SET count=count+1 WHERE link='"+rows[i].link+"'";
 ?>
