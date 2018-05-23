@@ -48,7 +48,7 @@ var self = module.exports = {
         });
         UpdateUser("Discord", guild.id, member.user.id, member.user.username, UserRoles);
       }
-      msg_guild.pruneMembers(30).then(pruned => {}).catch(console.error);
+      //msg_guild.pruneMembers(30).then(pruned => {}).catch(console.error);
     }
     SendFunc("Discord: "+count_server+" Server with "+count_user+" User");
     
