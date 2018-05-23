@@ -1,3 +1,4 @@
 <?php
-echo utf8_decode("(╯°□°）╯︵ ┻━┻");
+//echo utf8_decode("(╯°□°）╯︵ ┻━┻");
+echo "/tableflip";
 ?>
