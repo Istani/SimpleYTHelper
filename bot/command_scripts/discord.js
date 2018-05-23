@@ -51,6 +51,7 @@ var self = module.exports = {
           var has_kick = guild.member(member.user).hasPermission("KICK_MEMBERS");
           if (has_kick) {
             guild.pruneMembers(30).then(pruned => {}).catch(console.error);
+            console.log("Prune on "+guild.id);
           }
         }
       }
