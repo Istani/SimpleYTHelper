@@ -47,8 +47,13 @@ var self = module.exports = {
           UserRoles.push(element.name);
         });
         UpdateUser("Discord", guild.id, member.user.id, member.user.username, UserRoles);
+        if (member.user.id==discord.user.id) {
+          var has_kick = guild.member(member.user).hasPermission("KICK_MEMBERS");
+          if (has_kick) {
+            guild.pruneMembers(30).then(pruned => {}).catch(console.error);
+          }
+        }
       }
-      //msg_guild.pruneMembers(30).then(pruned => {}).catch(console.error);
     }
     SendFunc("Discord: "+count_server+" Server with "+count_user+" User");
     
