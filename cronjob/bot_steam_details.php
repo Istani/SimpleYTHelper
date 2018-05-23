@@ -26,7 +26,12 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     $game_to_update=$database->sql_select("bot_gamelist", "*", "steam_id NOT LIKE '' ORDER BY last_import, name LIMIT 1")[0];
     
     $client = new OAuth2\Client(NULL, NULL);
-    $response = $client->fetch('http://store.steampowered.com/api/appdetails?appids='.$game_to_update['steam_id'].'&cc=de&l=de');
+    $url='http://store.steampowered.com/api/appdetails?appids='.$game_to_update['steam_id'].'&cc=de&l=de';
+    //$response = $client->fetch($url);
+    $rep = file_get_contents($url);
+    $response['result']=json_decode($rep, true);
+    //echo $url;
+    //debug_log($response['result']);
     if (isset($response["result"][$game_to_update['steam_id']])) {
       $response = $response["result"][$game_to_update['steam_id']];
       if (isset($response['data'])) {
