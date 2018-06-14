@@ -38,7 +38,7 @@ $link=$links[0];
 
 $link['total_clicks']++;
 $database->sql_insert_update($_tmp_tabellename, $link);
-//$url = "http://simpleyth.randompeople.de/l.php?l=".$link['hash'];
+//$url = "http://simpleyth.randompeople.http://s.defender833.de/l.php?l=".$link['hash'];
 //md5(concat(owner,link)) AS hash
 
 //die($link['link']);

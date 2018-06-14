@@ -10,7 +10,7 @@ var youtube = google.youtube('v3');
 var OAuth2Client = google.auth.OAuth2;
 var CLIENT_ID     = '';
 var CLIENT_SECRET = '';
-var REDIRECT_URL  = 'http://simpleyth.randompeople.de/index.php';
+var REDIRECT_URL  = 'http://s.defender833.de/index.php';
 var oauth2Client;
 
 

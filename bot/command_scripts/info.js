@@ -22,7 +22,7 @@ var self = module.exports = {
     string=string+"Hier folgt ein Info Text!\r\n";
     SendFunc(string);
     string="";
-    string=string+"Homepage: http://simpleyth.randompeople.de\n\r";
+    string=string+"Homepage: http://s.defender833.de\n\r";
     SendFunc(string);
     string="";
     string=string+"Discord Server zum Bot: https://discord.gg/BtKf23Q\n\r";

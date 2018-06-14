@@ -9,7 +9,7 @@ $client->setScopes('https://www.googleapis.com/auth/youtube');
 if ($SimpleYTH_Developmentmode==true) {
   $redirect = filter_var('http://127.0.0.1/SimpleYTH/index.php?site=Google_Auth', FILTER_SANITIZE_URL);
 } else {
-  $redirect = filter_var('http://simpleyth.randompeople.de/index.php?site=Google_Auth', FILTER_SANITIZE_URL);
+  $redirect = filter_var('http://s.defender833.de/index.php?site=Google_Auth', FILTER_SANITIZE_URL);
 }
 $client->setRedirectUri($redirect);
 $client->setAccessType('offline');

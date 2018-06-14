@@ -2,7 +2,7 @@
 if ($SimpleYTH_Developmentmode==true) {
   $redirect = filter_var('http://127.0.0.1/SimpleYTH/index.php?site=Twitch_Auth', FILTER_SANITIZE_URL);
 } else {
-  $redirect = filter_var('http://simpleyth.randompeople.de/index.php?site=Twitch_Auth', FILTER_SANITIZE_URL);
+  $redirect = filter_var('http://s.defender833.de/index.php?site=Twitch_Auth', FILTER_SANITIZE_URL);
 }
 const AUTHORIZATION_ENDPOINT = 'https://id.twitch.tv/oauth2/authorize';
 const TOKEN_ENDPOINT         = 'https://id.twitch.tv/oauth2/token';
@@ -38,7 +38,7 @@ if (!isset($_GET['code']))
   if ($SimpleYTH_Developmentmode==true) {
     $redirect = filter_var('http://127.0.0.1/SimpleYTH/index.php?site=my_accounts', FILTER_SANITIZE_URL);
   } else {
-    $redirect = filter_var('http://simpleyth.randompeople.de/index.php?site=my_accounts', FILTER_SANITIZE_URL);
+    $redirect = filter_var('http://s.defender833.de/index.php?site=my_accounts', FILTER_SANITIZE_URL);
   }
   header("Location: ".$redirect);
 }
