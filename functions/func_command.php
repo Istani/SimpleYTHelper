@@ -22,6 +22,11 @@ function check_settings($database, $cronjob_id) {
         $user_where="twitch_user is not null AND twitch_user not like ''";
       }
       
+      if ($cronjob_id!=str_replace("streamlabs_","",$cronjob_id)) {
+        $serivce="Streamlabs";
+        $user_where="streamlabs_user is not null AND streamlabs_user not like ''";
+      }
+      
       if ($cronjob_id!=str_replace("wordpress_","",$cronjob_id)) {
         $serivce="Wordpress";
         $user_where="email='admin'"; // TODO: Irgendwann vielleicht mehr Leute?!?

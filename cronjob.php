@@ -146,6 +146,19 @@ while (time()-$Time['Start']<=55) {
     $twitch=$client;
     
     break;
+    case 'Streamlabs':
+    $tmp_token=$TmpToken['User'];
+    if ($tmp_token['user']=="") {
+      $tmp_token=$TmpToken['Bot'];
+    }
+    $client = new OAuth2\Client($streamlabs_CLIENT_ID, $streamlabs_CLIENT_SECRET);
+    // TODO: Check for Refresh TOKEN
+    
+    $client->setAccessToken($tmp_token["access_token"]);
+    $client->setAccessTokenType(1); //ACCESS_TOKEN_BEARER
+    $streamlabs=$client;
+    
+    break;
     default:
     
     break;
