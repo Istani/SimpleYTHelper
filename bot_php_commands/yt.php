@@ -90,21 +90,12 @@ switch ($this_msg['message_parts'][1]) {
       echo "Kein VIP gefunden!";
     }
     for ($cnt_sponsors=0;$cnt_sponsors<count($db_subs);$cnt_sponsors++) {
-      $d1=time();
-      $d2=strtotime($db_subs[$cnt_sponsors]["youtube_snippet_sponsorsince"]);
-      $min_date = min($d1, $d2);
-      $max_date = max($d1, $d2);
-      $i = 1;
       
-      while (($min_date = strtotime("+1 MONTH", $min_date)) <= $max_date) {
-        $i++;
-      }
-      $monate=$i;
       if (isset($_SESSION['hud'])) {
         $db_subs[$cnt_sponsors]["youtube_snippet_sponsordetails_displayname"]='<span class="hud_username">'.$db_subs[$cnt_sponsors]["youtube_snippet_sponsordetails_displayname"].'</span>';
-        $monate='<span class="hud_special">'.$monate.'</span>';
+        $monate='<span class="hud_special">'.$db_subs[$cnt_sponsors]["simpleyth_monate"].'</span>';
       }
-      if ($i>1) {
+      if ($db_subs[$cnt_sponsors]["simpleyth_monate"]>1) {
         echo $db_subs[$cnt_sponsors]["youtube_snippet_sponsordetails_displayname"].": ".$monate." Monate<br>";
       } else {
         echo $db_subs[$cnt_sponsors]["youtube_snippet_sponsordetails_displayname"].": ".$monate." Monat<br>";

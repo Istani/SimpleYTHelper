@@ -55,6 +55,18 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     unset($tmp_details['etag']);
     
     $tmp_details=$SYTHS->multiarray2array($tmp_details, "youtube");
+    
+    $d1=time();
+    $d2=strtotime($tmp_details["youtube_snippet_sponsorsince"]);
+    $min_date = min($d1, $d2);
+    $max_date = max($d1, $d2);
+    $i = 1;
+    
+    while (($min_date = strtotime("+1 MONTH", $min_date)) <= $max_date) {
+      $i++;
+    }
+    $monate=$i;
+    $tmp_details["simpleyth_monate"]=$monate;
     $tmp_details['simple_lastUpdate']=time();
     
     foreach ($tmp_details as $key=>$value){
