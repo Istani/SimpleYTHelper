@@ -90,10 +90,10 @@ switch ($this_msg['message_parts'][1]) {
       echo "Kein VIP gefunden!";
     }
     for ($cnt_sponsors=0;$cnt_sponsors<count($db_subs);$cnt_sponsors++) {
-      
+      $monate=$db_subs[$cnt_sponsors]["simpleyth_monate"];
       if (isset($_SESSION['hud'])) {
         $db_subs[$cnt_sponsors]["youtube_snippet_sponsordetails_displayname"]='<span class="hud_username">'.$db_subs[$cnt_sponsors]["youtube_snippet_sponsordetails_displayname"].'</span>';
-        $monate='<span class="hud_special">'.$db_subs[$cnt_sponsors]["simpleyth_monate"].'</span>';
+        $monate='<span class="hud_special">'.$monate.'</span>';
       }
       if ($db_subs[$cnt_sponsors]["simpleyth_monate"]>1) {
         echo $db_subs[$cnt_sponsors]["youtube_snippet_sponsordetails_displayname"].": ".$monate." Monate<br>";
