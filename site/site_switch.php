@@ -38,6 +38,14 @@ switch ($_GET['site']) {
   case 'Twitch_Auth':
   include("inc/twitch_connect.php");
   break;
+  // Streamlabs auth
+  case 'New_Streamlabs_Auth':
+  include("inc/streamlabs_connect.php");
+  include("site/auth_streamlabs.php");
+  break;
+  case 'Streamlabs_Auth':
+  include("inc/streamlabs_connect.php");
+  break;
   // Sites
   case 'my_accounts':
   include("site/my_accounts.php");

@@ -18,4 +18,5 @@ function display_account($name, $icon, $field, $site) {
 display_account("Google", "icon_youtube_32px.png", "youtube_user", "New_Google_Auth");
 display_account("Discord", "icon_discord_32px.png", "discord_user", "New_Discord_Auth");
 display_account("Twitch", "icon_twitch_32px.png", "twitch_user", "New_Twitch_Auth");
+display_account("Streamlabs", "icon_streamlabs_32px.png", "streamlabs_user", "New_Streamlabs_Auth");
 ?>
