@@ -46,6 +46,14 @@ switch ($_GET['site']) {
   case 'Streamlabs_Auth':
   include("inc/streamlabs_connect.php");
   break;
+  // Patreon auth
+  case 'New_Patreon_Auth':
+  include("inc/patreon_connect.php");
+  include("site/auth_patreon.php");
+  break;
+  case 'Patreon_Auth':
+  include("inc/patreon_connect.php");
+  break;
   // Sites
   case 'my_accounts':
   include("site/my_accounts.php");

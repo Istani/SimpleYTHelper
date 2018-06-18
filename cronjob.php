@@ -159,6 +159,19 @@ while (time()-$Time['Start']<=55) {
     $streamlabs=$client;
     
     break;
+    case 'Patreon':
+    $tmp_token=$TmpToken['User'];
+    if ($tmp_token['user']=="") {
+      $tmp_token=$TmpToken['Bot'];
+    }
+    $client = new OAuth2\Client($patreon_CLIENT_ID, $patreon_CLIENT_SECRET);
+    // TODO: Check for Refresh TOKEN
+    
+    $client->setAccessToken($tmp_token["access_token"]);
+    $client->setAccessTokenType(1); //ACCESS_TOKEN_BEARER
+    $streamlabs=$client;
+    
+    break;
     default:
     
     break;
