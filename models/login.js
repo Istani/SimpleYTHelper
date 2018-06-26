@@ -2,11 +2,16 @@ const db = require('../db.js');
 
 var login = {};
 
-login.getLogin = function (username, passwort, done) {
+login.getLogin = function (reutrn_data, done_callback, username, passwort, done) {
   try {
-    var result = db.query("SELECT * FROM simpleyth_login WHERE email=?", username);
-    done(null);
-    return result;
+    db.query("SELECT * FROM simpleyth_login WHERE email=?", username, function (err, result) {
+      if (err) {
+        done_callback(err);
+        return;
+      }
+      reutrn_data.login = result;
+      done_callback();
+    });
   } catch (err) {
     console.log("Error", err);
     return;

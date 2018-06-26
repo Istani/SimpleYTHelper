@@ -17,26 +17,15 @@ if (fs.existsSync("./.env")) {
 var async = require('async');
 const db = require('./db.js');
 var login = require("./models/login.js");
-var data = {};
+var data = { a: {}, b: {} };
 async.parallel([
-    function (callback) {
-        db.query("SELECT 1 as ONE", {}, function (err, results) {
-            if (err) return callback(err);
-            data.table1 = results;
-            callback();
-        });
-    },
-    function (callback) {
-        db.query("SELECT 2 as TWO", {}, function (err, results) {
-            if (err) return callback(err);
-            data.table2 = results;
-            callback();
-        });
-    },
+    function (callback) { login.getLogin(data.a, callback, "sascha.u.kaufmann@googlemail.com", "test1234"); },
+    function (callback) { login.getLogin(data.b, callback, "alexander.amling@gmail.com", "test1234"); },
 ], function (err) {
     if (err) console.log(err);
     db.end();
-    console.log(data);
+    console.log(data.a);
+    console.log(data.b);
 });
 
 /* Beispiel SQL */
