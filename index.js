@@ -35,10 +35,30 @@ var express = require('express');
 var exphbs = require('express-handlebars');
 var i18n = require("i18n");
 
+var hbs = exphbs.create({
+    helpers: {
+        i18n: function (key, options) {
+            var temp_data = {}
+            temp_data.data = options;
+            //var result = i18n.__(key, temp_data);
+            var result = i18n.__(key, options);
+            result = result.split("[[").join("{{");
+            result = result.split("]]").join("}}");
+            result = hbs.handlebars.escapeExpression(result);
+            result = hbs.handlebars.compile(result);   // Dann ist der String leer!
+            result = result(temp_data);
+            return result;
+        }
+    },
+    defaultLayout: 'main',
+    extname: '.hbs'
+});
+
 var app = express();
 
-app.engine('handlebars', exphbs({ defaultLayout: 'main' }));
-app.set('view engine', 'handlebars');
+app.engine('.hbs', hbs.engine);
+app.set('view engine', '.hbs');
+
 
 i18n.configure({
     defaultLocale: 'de',
@@ -49,19 +69,13 @@ i18n.configure({
 });
 app.use(i18n.init);
 
-var hbs = exphbs.create({
-    helpers: {
-        __: function () {
-            return i18n.__.apply(this, arguments);
-        }
-    }
-});
 
 app.get('/', function (req, res) {
-    var user = {};
-    user.name = "Test";
+    var temp_data = {}
+    temp_data.user = { name: "Test" };
+
     res.render('home', {
-        user: user
+        data: temp_data
     });
 });
 
