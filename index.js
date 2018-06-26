@@ -14,19 +14,33 @@ if (fs.existsSync("./.env")) {
 }
 /* Example File Finish */
 
-var db = require("./db.js");
+var async = require('async');
+const db = require('./db.js');
+var login = require("./models/login.js");
+var data = {};
+async.parallel([
+    function (callback) {
+        db.query("SELECT 1 as ONE", {}, function (err, results) {
+            if (err) return callback(err);
+            data.table1 = results;
+            callback();
+        });
+    },
+    function (callback) {
+        db.query("SELECT 2 as TWO", {}, function (err, results) {
+            if (err) return callback(err);
+            data.table2 = results;
+            callback();
+        });
+    },
+], function (err) {
+    if (err) console.log(err);
+    db.end();
+    console.log(data);
+});
 
 /* Beispiel SQL */
-async function x() {
-    try {
-        var result = await db.query("SELECT 1 AS one");
-        console.log(result);
-        return result;
-    } catch (err) {
-        console.log("Error", err);
-    }
-};
-x();
+
 
 /* Webserver */
 var express = require('express');
