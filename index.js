@@ -37,7 +37,7 @@ var i18n = require("i18n");
 
 var app = express();
 
-app.engine('handlebars', exphbs({ extname: '.hbs', defaultLayout: 'main' }));
+app.engine('handlebars', exphbs({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars');
 
 i18n.configure({
