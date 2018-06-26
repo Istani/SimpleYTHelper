@@ -58,7 +58,11 @@ var hbs = exphbs.create({
 });
 
 app.get('/', function (req, res) {
-    res.render('home');
+    var user = {};
+    user.name = "Test";
+    res.render('home', {
+        user: user
+    });
 });
 
 // route for handling 404 requests(unavailable routes)
