@@ -8,6 +8,23 @@ for (var attributename in config.parsed) {
 fs.writeFileSync('./.env.example', config_example);
 /* Example File Finish */
 
+var db = require("./db.js");
+db.connect(
+    process.env.DB_HOST,
+    process.env.DB_USER,
+    process.env.DB_PASS,
+    process.env.DB_NAME,
+    (err) => {
+        if (err) {
+            console.log('Unable to connect to MySQL.');
+            console.log('Error:', err);
+            process.exit(1);
+        } else {
+            console.log('Connect to MySQL established.');
+        }
+    }
+);
+
 var express = require('express');
 var exphbs = require('express-handlebars');
 var i18n = require("i18n");
@@ -40,4 +57,4 @@ app.get('/', function (req, res) {
     res.render('home');
 });
 
-app.listen(3000, () => console.log('Webinterface Gestartet!'));
+app.listen(3000, () => console.log('Webinterface running!'));
