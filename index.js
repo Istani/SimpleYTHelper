@@ -45,21 +45,33 @@ i18n.configure({
     cookie: 'syth_language',
     directory: './locales',
     queryParameter: 'lang',
-    extension: '.js'
+    extension: '.json'
 });
 app.use(i18n.init);
 
 var hbs = exphbs.create({
     helpers: {
         __: function () {
-            return i18n.__.apply(this,
-                arguments);
+            return i18n.__.apply(this, arguments);
         }
     }
 });
 
 app.get('/', function (req, res) {
     res.render('home');
+});
+
+// route for handling 404 requests(unavailable routes)
+app.use(function (req, res, next) {
+    fs.readFile(__dirname + '/www/' + req.url, function (err, data) {
+        if (err) {
+            console.log("Datei nicht gefunden! " + __dirname + '/www' + req.url);
+            res.render('404');
+            return;
+        }
+        res.write(data);
+        return res.end();
+    });
 });
 
 app.listen(3000, () => console.log('Webinterface running!'));
