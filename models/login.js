@@ -9,7 +9,7 @@ login.getLogin = function (reutrn_data, done_callback, username, passwort, done)
         done_callback(err);
         return;
       }
-      reutrn_data.login = result;
+      reutrn_data.login = result[0];
       done_callback();
     });
   } catch (err) {
