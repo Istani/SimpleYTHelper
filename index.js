@@ -14,6 +14,7 @@ if (fs.existsSync("./.env")) {
 }
 /* Example File Finish */
 
+/*
 var async = require('async');
 const db = require('./db.js');
 var login = require("./models/login.js");
@@ -84,7 +85,9 @@ app.get('/', function (req, res) {
 app.use(function (req, res, next) {
     fs.readFile(__dirname + '/www/' + req.url, function (err, data) {
         if (err) {
-            console.log("Datei nicht gefunden! " + __dirname + '/www' + req.url);
+            console.log("Datei aufruf: " 
++ __dirname + '/www' + req.url);
+        //if (err) {
             res.render('404');
             return;
         }
