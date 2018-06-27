@@ -5,11 +5,14 @@ const config = require('dotenv').config();
 const db = require('./db.js');
 
 client.on('ready', () => {
-  console.log(`Logged in as ${client.user.tag}!`);
+  console.log(`Logged in as <${client.user.tag}>!`);
+
+  client.user.setActivity('SYTH').then(presence => { console.log(`Activity set to ${presence.game ? presence.game.name : 'none'}`); }).catch(console.error);
+
 });
 
 client.on('error', err => {
-  console.log("Client Error", err);
+  console.log("Client Error", err.code);
   process.exit(1);
 });
 
@@ -24,7 +27,7 @@ db.query("SELECT user_token FROM simpleyth_oauth_botcredentials WHERE service='d
     process.exit(1);
   }
   if (result.length == 0) {
-    console.log("Entry Discord-Token Missing");
+    console.log("Entry Discord-Credentials Missing");
     process.exit(1);
   }
   client.login(result[0].user_token).catch(function (err) {
