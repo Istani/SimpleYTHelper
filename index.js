@@ -24,8 +24,8 @@ async.parallel([
 ], function (err) {
     if (err) console.log(err);
     db.end();
-    console.log(data.a.login.email);
-    console.log(data.b.login.email);
+//    console.log(data.a.login.email);
+//    console.log(data.b.login.email);
 });
 
 /* Beispiel SQL */
