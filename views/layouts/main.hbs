@@ -8,14 +8,26 @@
     <link rel="stylesheet" type="text/css" href="jquery-ui/jquery-ui.css" />
     <link rel="stylesheet" type="text/css" href="jquery-ui/jquery-ui.structure.css" />
     <link rel="stylesheet" type="text/css" href="jquery-ui/jquery-ui.theme.css" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
 
     <meta charset="utf-8">
     <title>SimpleYTH</title>
 </head>
 
 <body>
-    <img src="banner.png">
-    <br> {{{body}}}
+    <div id="header" class="ui-accordion ui-widget ui-helper-reset" width="100%">
+        <h3 class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">Simple YoutubeHelper</h3>
+        <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
+            <img src="banner.png">
+        </div>
+    </div>
+
+    <div id="content" class="ui-accordion ui-widget ui-helper-reset">
+        <h3 class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">Content</h3>
+        <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
+            {{{body}}}
+        </div>
+    </div>
 
 </body>
 
