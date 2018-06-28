@@ -1,0 +1,61 @@
+<h1>{{{i18n "Site.Register"}}}</h1>
+<form method="POST" action="/Register">
+  <table width="100%">
+    <tr>
+      <td>
+        <label>{{{i18n "E-Mail"}}}*:</label>
+      </td>
+      <td>
+        <input type="email" name="Email">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <label>{{{i18n "Password"}}}*:</label>
+      </td>
+      <td>
+        <input type="password" name="Password">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <label>{{{i18n "Repeat.Password"}}}*:</label>
+      </td>
+      <td>
+        <input type="password" name="Password_Repeat">
+      </td>
+    </tr>
+
+    <tr>
+      <td colspan="2">
+        &nbsp;
+        <!-- Placeholder -->
+      </td>
+    </tr>
+
+    <tr>
+      <td colspan="2">
+        <input type="checkbox" name="newsletter"> {{{i18n "Newsletter"}}}
+        <br>
+        <input type="checkbox" name="AGB"> {{{i18n "AGB"}}}
+        <a href="/AGB" target="_blank">{{{i18n "Click here"}}}</a>
+        <br>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td colspan="2">
+        &nbsp;
+        <!-- Placeholder -->
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <center>
+          <input type="submit" name="Register">
+        </center>
+      </td>
+    </tr>
+  </table>
+</form>

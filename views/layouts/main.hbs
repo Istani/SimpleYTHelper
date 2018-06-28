@@ -30,7 +30,38 @@
     </div>
 
     <div id="navigation">
-        [NAV]
+        {{#if data.currentuser}}
+            User eingeloggt!
+        {{else}}
+            <div id="page_login" class="ui-accordion ui-widget ui-helper-reset">
+                <h3 class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">Login</h3>
+                <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
+                    <form method="POST" action="/Login">
+                        <label>{{{i18n "E-Mail"}}}:</label>
+                        <br>
+                        <input type="email" name="Email">
+                        <br>
+                        <br>
+                        <label>{{{i18n "Password"}}}:</label>
+                        <br>
+                        <input type="password" name="Password">
+                        <br>
+                        <br>
+                        <input type="submit" name="Login" value="{{{i18n "Login"}}}">&nbsp;{{{i18n "Login or Register . Or"}}}
+                        <a href="/Register">{{{i18n "Regsiter"}}}</a>
+                        <br>
+                    </form>
+                </div>
+            </div>
+        {{/if}}
+        <br>
+        <br>
+        <div id="page_info" class="ui-accordion ui-widget ui-helper-reset">
+            <h3 class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">About</h3>
+            <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
+                Hier kommen links hin!
+            </div>
+        </div>
     </div>
 
     <div id="footer" class="ui-accordion ui-widget ui-helper-reset" width="100%">

@@ -71,10 +71,17 @@ i18n.configure({
 });
 app.use(i18n.init);
 
+app.get('/Register', function (req, res) {
+    var temp_data = {}
+
+    res.render('register', {
+        data: temp_data
+    });
+});
 
 app.get('/', function (req, res) {
     var temp_data = {}
-    temp_data.user = { name: "Test" };
+    temp_data.user = { name: "Test", currentuser: "x" };
 
     res.render('home', {
         data: temp_data
