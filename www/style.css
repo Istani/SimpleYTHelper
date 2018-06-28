@@ -1,6 +1,40 @@
-body {
-  background-color:#f9f9f9;
-}
+/* JQuery UI Manipulate */
 .ui-widget-content {
   background: #FFFFFF url('') !important;
 }
+
+.sk_ui-corner-all {
+  border: 1px solid #cccccc !important;
+  border-radius: 4px !important;
+}
+
+
+
+/* Own Style */
+body {
+  background-color:#f9f9f9;
+  display: grid;
+  grid-gap: 10px;
+  grid-template-areas:
+    'header header header header '
+    'navigation content content anzeige'
+    'navigation content content anzeige'
+    'footer footer footer footer';
+}
+
+#header {
+  grid-area: header;
+}
+#content {
+  grid-area: content;
+}
+#navigation {
+  grid-area: navigation;
+}
+#footer {
+  grid-area: footer;
+}
+#anzeige {
+  grid-area: anzeige;
+}
+
