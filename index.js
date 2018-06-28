@@ -46,7 +46,7 @@ var hbs = exphbs.create({
             var result = i18n.__(key, options);
             result = result.split("[[").join("{{");
             result = result.split("]]").join("}}");
-            result = hbs.handlebars.escapeExpression(result);
+            //result = hbs.handlebars.escapeExpression(result);
             result = hbs.handlebars.compile(result);   // Dann ist der String leer!
             result = result(temp_data);
             return result;
@@ -83,12 +83,16 @@ app.get('/', function (req, res) {
 
 // route for handling 404 requests(unavailable routes)
 app.use(function (req, res, next) {
-    fs.readFile(__dirname + '/www/' + req.url, function (err, data) {
+    fs.readFile(__dirname + '/www' + req.url, function (err, data) {
         if (err) {
-            console.log("Datei aufruf: " 
-+ __dirname + '/www' + req.url);
-        //if (err) {
-            res.render('404');
+            var temp_data = {};
+            err.text = "Could not open: " + req.url;
+            temp_data.error = err;
+            console.log("404 Error: ", JSON.stringify(temp_data));
+            console.log("Datei nicht Gefunden: " + __dirname + '/www' + req.url);
+            //if (err) {
+
+            res.render('error', { data: temp_data });
             return;
         }
         res.write(data);
