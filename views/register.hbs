@@ -1,12 +1,22 @@
 <h1>{{{i18n "Site.Register"}}}</h1>
 <form method="POST" action="/Register">
+  {{#if data.error}}
+    <div class="ui-widget">
+      <div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">
+        <p>
+          <span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+          <strong>{{{i18n "Error.Code" data}}}:</strong> {{{i18n "Error.Text" data}}}</p>
+      </div>
+    </div>
+    <br>
+  {{/if}}
   <table width="100%">
     <tr>
       <td>
         <label>{{{i18n "E-Mail"}}}*:</label>
       </td>
       <td>
-        <input type="email" name="Email">
+        <input type="email" name="email">
       </td>
     </tr>
     <tr>
@@ -14,7 +24,7 @@
         <label>{{{i18n "Password"}}}*:</label>
       </td>
       <td>
-        <input type="password" name="Password">
+        <input type="password" name="password">
       </td>
     </tr>
     <tr>
@@ -22,7 +32,7 @@
         <label>{{{i18n "Repeat.Password"}}}*:</label>
       </td>
       <td>
-        <input type="password" name="Password_Repeat">
+        <input type="password" name="password_repeat">
       </td>
     </tr>
 

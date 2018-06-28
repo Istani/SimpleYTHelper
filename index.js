@@ -14,21 +14,10 @@ if (fs.existsSync("./.env")) {
 }
 /* Example File Finish */
 
-/*
+
 var async = require('async');
 const db = require('./db.js');
 var login = require("./models/login.js");
-var data = { a: {}, b: {} };
-async.parallel([
-    function (callback) { login.getLogin(data.a, callback, "sascha.u.kaufmann@googlemail.com", "test1234"); },
-    function (callback) { login.getLogin(data.b, callback, "alexander.amling@gmail.com", "test1234"); },
-], function (err) {
-    if (err) console.log(err);
-    db.end();
-//    console.log(data.a.login.email);
-//    console.log(data.b.login.email);
-});
-
 /* Beispiel SQL */
 
 
@@ -81,10 +70,26 @@ app.get('/Register', function (req, res) {
 
 app.post('/Register', function (req, res) {
     // TODO: Daten auswerten
-    var temp_data = {}
-
-    res.render('register', {
-        data: temp_data
+    var temp_data = {};
+    async.parallel([
+        function (callback) { login.register_new(temp_data, callback); },
+    ], function (err) {
+        if (err) {
+            temp_data.error = {};
+            temp_data.error.code = "Error";
+            temp_data.error.text = i18n.__("Something went wrong!");
+        }
+        db.end();
+        if (temp_data.register != true) {
+            res.render('register', {
+                data: temp_data
+            });
+        } else {
+            // TODO: Weiterleiten?
+            res.render('dashboard', {
+                data: temp_data
+            });
+        }
     });
 });
 
