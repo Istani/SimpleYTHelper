@@ -79,6 +79,15 @@ app.get('/Register', function (req, res) {
     });
 });
 
+app.post('/Register', function (req, res) {
+    // TODO: Daten auswerten
+    var temp_data = {}
+
+    res.render('register', {
+        data: temp_data
+    });
+});
+
 app.get('/', function (req, res) {
     var temp_data = {}
     temp_data.user = { name: "Test", currentuser: "x" };
