@@ -85,10 +85,8 @@ app.post('/Register', function (req, res) {
                 data: temp_data
             });
         } else {
-            // TODO: Weiterleiten?
-            res.render('dashboard', {
-                data: temp_data
-            });
+            res.redirect('/Dashboard');
+            // TODO: Login Cookie Setzen?
         }
     });
 });
