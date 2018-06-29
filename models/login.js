@@ -2,9 +2,9 @@ const db = require('../db.js');
 
 var login = {};
 
-login.getLogin = function (return_data, done_callback, username, passwort) {
+login.get_login = function (return_data, done_callback, login_data) {
   try {
-    db.query("SELECT * FROM simpleyth_login WHERE email=?", username, function (err, result) {
+    db.query("SELECT * FROM simpleyth_login WHERE email=? AND password=?", [login_data.email, login_data.password], function (err, result) {
       if (err) {
         done_callback(err);
         return;
@@ -25,11 +25,14 @@ login.getLogin = function (return_data, done_callback, username, passwort) {
 login.register_new = function (return_data, done_callback, register_data) {
   try {
     // TODO: Mehr Felder!
+    console.log("REGISTER NEW DATA:", register_data);
     if (register_data.password_repeat != register_data.password) {
       done_callback(err);
       return;
     }
-    db.query("INSERT INTO simpleyth_login SET email=?, password=?", register_data.email, register_data.password, function (err, result) {
+    console.log("Bevor SQL");
+    db.query("INSERT INTO simpleyth_login (email, password) VALUES (?, ?)", [register_data.email, register_data.password], function (err, result) {
+      console.log("After SQL");
       if (err) {
         done_callback(err);
         return;

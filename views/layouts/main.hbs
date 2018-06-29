@@ -30,7 +30,7 @@
     </div>
 
     <div id="navigation">
-        {{#if data.currentuser}}
+        {{#if data.login.email}}
             User eingeloggt!
         {{else}}
             <div id="page_login" class="ui-accordion ui-widget ui-helper-reset">
@@ -39,15 +39,15 @@
                     <form method="POST" action="/Login">
                         <label>{{{i18n "E-Mail"}}}:</label>
                         <br>
-                        <input type="email" name="Email">
+                        <input type="email" name="email">
                         <br>
                         <br>
                         <label>{{{i18n "Password"}}}:</label>
                         <br>
-                        <input type="password" name="Password">
+                        <input type="password" name="password">
                         <br>
                         <br>
-                        <input type="submit" name="Login" value="{{{i18n "Login"}}}">&nbsp;{{{i18n "Login or Register . Or"}}}
+                        <input type="submit" name="button" value="{{{i18n "Login"}}}">&nbsp;{{{i18n "Login or Register . Or"}}}
                         <a href="/Register">{{{i18n "Regsiter"}}}</a>
                         <br>
                     </form>

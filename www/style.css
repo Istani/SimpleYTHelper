@@ -10,7 +10,11 @@
 
 
 
-/* Own Style */
+/* Own Style 
+* {
+  opacity: 0.95;
+}
+*/
 body {
   background-color:#f9f9f9;
   display: grid;
