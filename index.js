@@ -47,7 +47,6 @@ var hbs = exphbs.create({
 });
 
 var app = express();
-
 app.engine('.hbs', hbs.engine);
 app.set('view engine', '.hbs');
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -62,7 +61,6 @@ app.use(session({
     }
 }));
 
-
 i18n.configure({
     defaultLocale: 'de',
     cookie: 'syth_language',
@@ -72,6 +70,10 @@ i18n.configure({
 });
 app.use(i18n.init);
 
+app.get('/Login', function (req, res) {
+    var temp_data = {};
+    res.render('login', { data: temp_data });
+});
 app.post('/Login', function (req, res) {
     var temp_data = {};
     async.parallel([
@@ -85,26 +87,19 @@ app.post('/Login', function (req, res) {
             res.render('error', { data: temp_data });
         }
         if (temp_data.login === undefined) {
-            res.render('login', {
-                data: temp_data
-            });
+            res.render('login', { data: temp_data });
         } else {
             // TODO: Login Cookie Setzen?
             req.session.user = temp_data.login;
             res.redirect('/Dashboard');
-
         }
     });
 });
 
 app.get('/Register', function (req, res) {
-    var temp_data = {}
-
-    res.render('register', {
-        data: temp_data
-    });
+    var temp_data = {};
+    res.render('register', { data: temp_data });
 });
-
 app.post('/Register', function (req, res) {
     // TODO: Daten auswerten
     var temp_data = {};
@@ -118,9 +113,7 @@ app.post('/Register', function (req, res) {
             temp_data.error.text = err.sqlMessage;
         }
         if (temp_data.register != true) {
-            res.render('register', {
-                data: temp_data
-            });
+            res.render('register', { data: temp_data });
         } else {
             // TODO: Login Cookie Setzen?
             req.session.user = temp_data.currentuser;
@@ -135,7 +128,6 @@ app.get('/Dashboard', function (req, res) {
         async.parallel([
             function (callback) { login.get_login(temp_data, callback, req.session.user); },
         ], function (err) {
-            console.log(req.session.user);
             if (err) {
                 console.log("ERROR", err);
                 temp_data.error = {};
@@ -145,7 +137,6 @@ app.get('/Dashboard', function (req, res) {
             }
             res.render('dashboard', { data: temp_data });
         });
-
     } else {
         temp_data.error = {};
         temp_data.error.code = "Error";
@@ -155,15 +146,10 @@ app.get('/Dashboard', function (req, res) {
 });
 
 app.get('/', function (req, res) {
-    var temp_data = {}
-    temp_data.user = { name: "Test", currentuser: "x" };
-
-    res.render('home', {
-        data: temp_data
-    });
+    var temp_data = {};
+    res.render('home', { data: temp_data });
 });
 
-// route for handling 404 requests(unavailable routes)
 app.use(function (req, res, next) {
     fs.readFile(__dirname + '/www' + req.url, function (err, data) {
         if (err) {

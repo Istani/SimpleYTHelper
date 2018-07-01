@@ -1,6 +1,8 @@
 const nodemailer = require('nodemailer');
-
 const db = require('./db.js');
+
+var email_data;
+
 db.query("SELECT login, password FROM simpleyth_oauth_botcredentials WHERE service='email'", function (err, result) {
     if (err) {
         console.log(err);
@@ -10,10 +12,10 @@ db.query("SELECT login, password FROM simpleyth_oauth_botcredentials WHERE servi
         console.log("Entry Email-Credentials Missing");
         process.exit(1);
     }
-    SendMail(result[0]);
+    email_data = result[0];
 });
 
-function SendMail(email_data) {
+const sendMail = (mailtext) => {
     nodemailer.createTestAccount((err, account) => {
         let transporter = nodemailer.createTransport({
             host: 'webbox14.server-home.org',
@@ -29,8 +31,8 @@ function SendMail(email_data) {
             from: '"Simple YTH" <simpleyth@randompeople.de>',
             to: 'sascha.u.kaufmann@googlemail.com',
             subject: 'Testmail',
-            text: 'Hello world?',
-            html: '<b>Hello world?</b>'
+            text: mailtext,
+            html: mailtext
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
@@ -41,3 +43,4 @@ function SendMail(email_data) {
         });
     });
 }
+module.exports = sendMail;
