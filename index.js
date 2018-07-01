@@ -6,6 +6,20 @@ const package = require('./package.json');
 const login = require("./models/login.js");
 const session_secret = new Buffer(package.name).toString("base64");
 
+/* Cronjob QUEUE */
+var cron = require('node-cron');
+var queue_class = require('better-queue');
+var queue = new queue_class(function (func, cb) {
+    func();
+    cb(null, result);
+});
+cron.schedule('0 0 0 * * *', function () {
+    queue.push(() => {
+        console.log('Daily Backup');
+        // TODO: Backup!
+    });
+});
+
 /* Webserver */
 var express = require('express');
 var exphbs = require('express-handlebars');
