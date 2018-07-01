@@ -11,6 +11,9 @@ login.check_login = function (return_data, done_callback, login_data) {
       }
       if (result.length == 0) {
         Up_Fail(login_data.email);
+        return_data.error = {};
+        return_data.error.code = "Login";
+        return_data.error.text = "Wrong Login Information";
         done_callback(err);
         return;
       }

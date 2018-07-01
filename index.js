@@ -2,11 +2,9 @@
 const fs = require('fs');
 const async = require('async');
 
-
 const package = require('./package.json');
 const login = require("./models/login.js");
 const session_secret = new Buffer(package.name).toString("base64");
-
 
 /* Webserver */
 var express = require('express');
@@ -21,7 +19,6 @@ var hbs = exphbs.create({
         i18n: function (key, options) {
             var temp_data = {}
             temp_data.data = options;
-            //var result = i18n.__(key, temp_data);
             var result = i18n.__(key, options);
             result = result.split("[[").join("{{");
             result = result.split("]]").join("}}");
@@ -74,7 +71,7 @@ app.post('/Login', function (req, res) {
             res.render('error', { data: temp_data });
         }
         if (temp_data.login === undefined) {
-            res.render('/Login', {
+            res.render('login', {
                 data: temp_data
             });
         } else {
@@ -114,7 +111,6 @@ app.post('/Register', function (req, res) {
             // TODO: Login Cookie Setzen?
             req.session.user = temp_data.currentuser;
             res.redirect('/Dashboard');
-
         }
     });
 });
@@ -162,8 +158,6 @@ app.use(function (req, res, next) {
             temp_data.error = err;
             console.log("404 Error: ", JSON.stringify(temp_data));
             console.log("Datei nicht Gefunden: " + __dirname + '/www' + req.url);
-            //if (err) {
-
             res.render('error', { data: temp_data });
             return;
         }
