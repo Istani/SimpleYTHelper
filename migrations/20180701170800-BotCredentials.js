@@ -23,8 +23,8 @@ exports.up = function (db) {
 };
 
 exports.down = function (db) {
-  db.removeColumn(tableName, "login", callback);
-  db.removeColumn(tableName, "password", callback);
+  db.removeColumn(tableName, "login");
+  db.removeColumn(tableName, "password");
   return null;
 };
 

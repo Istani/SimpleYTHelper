@@ -1,8 +1,6 @@
-'use strict';
 const nodemailer = require('nodemailer');
 
 const db = require('./db.js');
-
 db.query("SELECT login, password FROM simpleyth_oauth_botcredentials WHERE service='email'", function (err, result) {
     if (err) {
         console.log(err);

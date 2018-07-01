@@ -64,7 +64,7 @@ app.use(i18n.init);
 app.post('/Login', function (req, res) {
     var temp_data = {};
     async.parallel([
-        function (callback) { login.get_login(temp_data, callback, req.body); },
+        function (callback) { login.check_login(temp_data, callback, req.body); },
     ], function (err) {
         if (err) {
             console.log("ERROR", err);
