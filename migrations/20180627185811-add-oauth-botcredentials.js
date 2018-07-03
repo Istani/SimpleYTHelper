@@ -21,7 +21,6 @@ exports.up = function (db) {
   }, createTimestamps);
 
   function createTimestamps(err) {
-    if (err) { callback(err); return; }
     db.connection.query([
       'ALTER TABLE simpleyth_oauth_botcredentials',
       'ADD updatedAt timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
@@ -29,13 +28,11 @@ exports.up = function (db) {
     ].join(' '), createTrigger);
   }
   function createTrigger(err) {
-    return;
-    if (err) { callback(err); return; }
     db.connection.query([
       'CREATE TRIGGER oauthbotcredentialInsert',
       'BEFORE INSERT ON simpleyth_oauth_botcredentials FOR EACH ROW SET NEW.createdAt=CURRENT_TIMESTAMP'
     ].join(' '), function (err) {
-      callback(err);
+      console.log(err);
     });
   }
   return null;
