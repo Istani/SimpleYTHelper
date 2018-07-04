@@ -1,1 +1,12 @@
 {{data.login.email}} Hier folgt das Dashboard!
+<br>
+<div>
+  {{i18n "New.OAuth"}}
+  <center>
+    {{#each data.services}}
+      <a href="/auth/{{service}}" class="">
+        <img src="/service_icons/{{service}}.png" alt="{{service}}" width="16" height="16">
+      </a>
+    {{/each}}
+  </center>
+</div>

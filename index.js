@@ -4,6 +4,7 @@ const async = require('async');
 
 const package = require('./package.json');
 const login = require("./models/login.js");
+const oauth = require("./models/login_oauth.js");
 const session_secret = new Buffer(package.name).toString("base64");
 
 /* Cronjob QUEUE */
@@ -27,6 +28,8 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var i18n = require("i18n");
+var passport = require('passport');
+var youtube_auth = require('./oauth/youtube.js');
 
 var hbs = exphbs.create({
     helpers: {
@@ -50,6 +53,7 @@ var app = express();
 app.engine('.hbs', hbs.engine);
 app.set('view engine', '.hbs');
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(passport.initialize());
 app.use(cookieParser());
 app.use(session({
     key: 'login_check',
@@ -69,6 +73,10 @@ i18n.configure({
     extension: '.json'
 });
 app.use(i18n.init);
+
+youtube_auth(passport);
+app.get('/auth/youtube', passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/userinfo.profile'] }));
+app.get('/auth/youtube/callback', passport.authenticate('google', { failureRedirect: '/login' }), function (req, res) { res.redirect('/'); });
 
 app.get('/Login', function (req, res) {
     var temp_data = {};
@@ -127,6 +135,8 @@ app.get('/Dashboard', function (req, res) {
     if (req.session.user && req.cookies.login_check) {
         async.parallel([
             function (callback) { login.get_login(temp_data, callback, req.session.user); },
+            function (callback) { oauth.get_services(temp_data, callback); },
+            function (callback) { oauth.get_oauth_user(temp_data, callback, req.session.user.email); },
         ], function (err) {
             if (err) {
                 console.log("ERROR", err);
@@ -135,6 +145,7 @@ app.get('/Dashboard', function (req, res) {
                 temp_data.error.text = err.sqlMessage;
                 res.render('error', { data: temp_data });
             }
+            console.log(temp_data);
             res.render('dashboard', { data: temp_data });
         });
     } else {
@@ -146,6 +157,7 @@ app.get('/Dashboard', function (req, res) {
 });
 
 app.get('/', function (req, res) {
+    console.log("http://" + req.headers.host + req.url);
     var temp_data = {};
     res.render('home', { data: temp_data });
 });
