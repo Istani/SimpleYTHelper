@@ -1,6 +1,6 @@
 const oauth = require("../models/login_oauth.js");
 var youtube = {};
-var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+var YoutubeV3Strategy = require('passport-youtube-v3').Strategy
 var async = require("async");
 
 module.exports = (passport) => {
@@ -13,16 +13,14 @@ module.exports = (passport) => {
     passport.deserializeUser((user, done) => {
       done(null, user);
     });
-    passport.use(new GoogleStrategy({
+    passport.use(new YoutubeV3Strategy({
       clientID: data[0].client_id,
       clientSecret: data[0].client_secret,
-      callbackURL: "http://127.0.0.1:3000/"
+      callbackURL: "http://127.0.0.1:3000/auth/youtube/callback"
     },
-      (token, refreshToken, profile, done) => {
-        return done(null, {
-          profile: profile,
-          token: token
-        });
+      function (accessToken, refreshToken, profile, done) {
+        console.log("ACCESS", accessToken, "REFRESH", refreshToken);
+        return done(null, profile);
       }));
   });
 };

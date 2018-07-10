@@ -75,8 +75,10 @@ i18n.configure({
 app.use(i18n.init);
 
 youtube_auth(passport);
-app.get('/auth/youtube', passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/userinfo.profile'] }));
-app.get('/auth/youtube/callback', passport.authenticate('google', { failureRedirect: '/login' }), function (req, res) { res.redirect('/'); });
+app.get('/auth/youtube', passport.authenticate('youtube', {
+    scope: ['https://www.googleapis.com/auth/youtube']
+}));
+app.get('/auth/youtube/callback', passport.authenticate('youtube'), function (req, res) { res.redirect('/Dashboard'); });
 
 app.get('/Login', function (req, res) {
     var temp_data = {};
