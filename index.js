@@ -89,12 +89,13 @@ app.get('/auth/youtube/callback', passport.authenticate('youtube'), function (re
         temp_data.new.access = req.user.accessToken;
         temp_data.new.refresh = req.user.refreshToken;
 
-        oauth.set_oauth_user(temp_data, () => { }, temp_data.new);
-        console.log(req.user);
-        res.redirect('/Dashboard');
+        async.parallel([
+            function (callback) { oauth.set_oauth_user(temp_data, callback, temp_data.new); }
+        ], function (err) {
+            console.log(req.user);
+            res.redirect('/Dashboard');
+        });
     });
-    //console.log(req, res);
-
 });
 
 app.get('/Login', function (req, res) {
