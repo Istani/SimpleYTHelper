@@ -78,7 +78,24 @@ youtube_auth(passport);
 app.get('/auth/youtube', passport.authenticate('youtube', {
     scope: ['https://www.googleapis.com/auth/youtube']
 }));
-app.get('/auth/youtube/callback', passport.authenticate('youtube'), function (req, res) { res.redirect('/Dashboard'); });
+app.get('/auth/youtube/callback', passport.authenticate('youtube'), function (req, res) {
+    var temp_data = {};
+    async.parallel([
+        function (callback) { login.get_login(temp_data, callback, req.session.user); }
+    ], function (err) {
+        temp_data.new = {};
+        temp_data.new.service = "youtube";
+        temp_data.new.email = temp_data.login.email;
+        temp_data.new.access = req.user.accessToken;
+        temp_data.new.refresh = req.user.refreshToken;
+
+        oauth.set_oauth_user(temp_data, () => { }, temp_data.new);
+        console.log(req.user);
+        res.redirect('/Dashboard');
+    });
+    //console.log(req, res);
+
+});
 
 app.get('/Login', function (req, res) {
     var temp_data = {};

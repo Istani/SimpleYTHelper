@@ -54,4 +54,22 @@ login_oauth.get_oauth_user = function (return_data, done_callback, useremail) {
     return;
   }
 }
+
+login_oauth.set_oauth_user = function (return_data, done_callback, data) {
+  try {
+    console.log("Insert Oauth-Login");
+    db.query("INSERT INTO simpleyth_login_token (service, user, access_token, refresh_token) VALUES (?, ?, ?, ?)", [data.service, data.email, data.access, data.refresh], function (err, result) {
+      if (err) {
+        done_callback(err);
+        return;
+      }
+      //return_data.oauth = result;
+      done_callback();
+    });
+  } catch (err) {
+    done_callback(err);
+    console.log("Error", err);
+    return;
+  }
+}
 module.exports = login_oauth; 

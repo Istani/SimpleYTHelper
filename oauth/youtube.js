@@ -19,8 +19,12 @@ module.exports = (passport) => {
       callbackURL: "http://127.0.0.1:3000/auth/youtube/callback"
     },
       function (accessToken, refreshToken, profile, done) {
-        console.log("ACCESS", accessToken, "REFRESH", refreshToken);
-        return done(null, profile);
+        var user = {
+          'accessToken': accessToken,
+          'refreshToken': refreshToken,
+          'profile': profile
+        }
+        return done(null, user);
       }));
   });
 };
