@@ -36,5 +36,8 @@ pool.getConnection((err, connection) => {
 });
 
 pool.query = util.promisify(pool.query);
+pool.format = function (sql, inserts) {
+  return mysql.format(sql, inserts);
+};
 
 module.exports = pool;

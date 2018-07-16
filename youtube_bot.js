@@ -2,38 +2,6 @@ const async = require('async');
 const db = require("./db.js");
 var request = require('request');
 
-/*
-request({
-  url: 'https://api.someapi.com/oauth/token',
-  method: 'POST',
-  auth: {
-    user: 'xxx',
-    pass: 'yyy'
-  },
-  form: {
-    'grant_type': 'client_credentials'
-  }
-}, function (err, res) {
-  var json = JSON.parse(res.body);
-  console.log("Access Token:", json.access_token);
-});
-
-/* ----------------------------------------------------------------- */
-/*
-var request = require('request');
-var accessToken = 'ACCESS_TOKEN_HERE';
-
-request({
-  url: 'https://api.someapi.com/blah/something',
-  auth: {
-    'bearer': accessToken
-  }
-}, function (err, res) {
-  console.log(res.body);
-});
-
-/* ----------------------------------------------------------------- */
-
 var OAuth_Settings = {};
 var OAuth_Bot_User = {};
 
@@ -68,12 +36,38 @@ async.parallel([
   }
 ], function (err) {
   if (err) {
-    console.log("ERROR", err);
+    console.error("ERROR", err);
     process.exit(1);
   }
-  //console.log("Settings", OAuth_Settings, OAuth_Bot_User);
-  GetChannel(OAuth_Bot_User);
+
+  db.query("UPDATE simpleyth_login_token SET cronjob=false WHERE service = 'youtube'", function (err, result) {
+    // Yeay
+    if (err) {
+      console.error(err);
+      process.exit(1);
+    }
+    Gen_New_Cronjobs();
+
+  });
+  //GetChannel(OAuth_Bot_User);
 });
+
+function Gen_New_Cronjobs() {
+  db.query("SELECT * FROM simpleyth_login_token WHERE cronjob=false AND service = 'youtube'", function (err, result) {
+    if (err) {
+      console.error(err);
+    } else {
+      if (result.length > 0) {
+        db.query("UPDATE simpleyth_login_token SET cronjob=true WHERE id=? ", [result[0].id], function (err2, result2) {
+          // TODO: Start Cronjob
+          //console.log("RESULT", JSON.stringify(result[0]));
+          GetChannel(result[0]);
+        });
+      }
+    }
+    //setTimeout(Gen_New_Cronjobs, 1000);
+  });
+};
 
 function Refresh_Token(token_data, org_function) {
   var request_data = {
@@ -93,7 +87,7 @@ function Refresh_Token(token_data, org_function) {
     json: false
   }, function (err, res) {
     if (err) {
-      //console.error(err);
+      console.error("ERROR", err);
       return;
     }
     var data = JSON.parse(res.body);
@@ -103,32 +97,58 @@ function Refresh_Token(token_data, org_function) {
       return; // TODO: Token löschen?!?
     }
     token_data.access_token = data.access_token;
-    org_function(token_data);
+    // TODO: Neuen Token speichern
+    var temp_sql = db.format("UPDATE simpleyth_login_token SET access_token=? WHERE id=?", [token_data.access_token, token_data.id]);
+    console.log(temp_sql);
+    db.query(temp_sql, function (err, result) {
+      if (err) {
+        console.error(err);
+        //process.exit(1);
+      }
+      //console.log("RESULT", result);
+      //console.log(JSON.stringify(token_data));
+      org_function(token_data);
+    });
   });
-}
+};
 
 function GetChannel(token_data) {
-  request({
-    url: 'https://www.googleapis.com/youtube/v3/channels',
-    auth: {
-      'bearer': token_data.access_token
-    },
-    qs: {
-      "mine": "true",
-      "part": "contentDetails,snippet"
+  async.parallel([
+    function (callback) {
+      //callback();
+      //return;
+      db.query("SELECT * FROM simpleyth_login_token WHERE id=?", [token_data.id], function (err, result) {
+        if (err) {
+          console.error(err);
+        }
+        console.log("===", "params", JSON.stringify(token_data), "mysql", JSON.stringify(result[0]));
+        token_data = result[0];
+        callback();
+      });
     }
-  }, function (err, res) {
-    if (err) {
-      //console.error(err);
-      return;
-    }
-    var data = JSON.parse(res.body);
-    console.log("BODY", JSON.stringify(data));
-    if (typeof data.error !== "undefined") {
-      if (data.error.code == 401) {
-        console.error("YOUTUBE", data.error.message);
-        Refresh_Token(token_data, GetChannel);
+  ], function (err) {
+    request({
+      url: 'https://www.googleapis.com/youtube/v3/channels',
+      auth: {
+        'bearer': token_data.access_token
+      },
+      qs: {
+        "mine": "true",
+        "part": "contentDetails,snippet"
       }
-    }
+    }, function (err, res) {
+      if (err) {
+        //console.error(err);
+        return;
+      }
+      var data = JSON.parse(res.body);
+      console.log("BODY", JSON.stringify(data));
+      if (typeof data.error !== "undefined") {
+        if (data.error.code == 401) {
+          console.error("YOUTUBE", data.error.message, "Token:", JSON.stringify(token_data));
+          Refresh_Token(token_data, GetChannel);
+        }
+      }
+    });
   });
 };
