@@ -26,5 +26,14 @@ module.exports = {
       out_file: "out.log",
       merge_logs: true
     }
+    ,
+    {
+      name: "Gameimport-Steam",
+      script: "./games-steam.js",
+      log_date_format: "YYYY-MM-DD HH:mm Z",
+      error_file: "err.log",
+      out_file: "out.log",
+      merge_logs: true
+    }
   ]
 }
