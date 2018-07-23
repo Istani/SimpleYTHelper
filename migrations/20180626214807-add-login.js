@@ -21,7 +21,6 @@ exports.up = function (db, callback) {
   }, createTimestamps);
 
   function createTimestamps(err) {
-    if (err) { callback(err); return; }
     db.connection.query([
       'ALTER TABLE simpleyth_login',
       'ADD updatedAt timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
@@ -29,13 +28,11 @@ exports.up = function (db, callback) {
     ].join(' '), createTrigger);
   }
   function createTrigger(err) {
-    return;
-    if (err) { callback(err); return; }
     db.connection.query([
       'CREATE TRIGGER usersInsert',
       'BEFORE INSERT ON simpleyth_login FOR EACH ROW SET NEW.createdAt=CURRENT_TIMESTAMP'
     ].join(' '), function (err) {
-      callback(err);
+      console.log(err);
     });
   }
   return null;
