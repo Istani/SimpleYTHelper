@@ -2,6 +2,7 @@ const request = require("request");
 const queue_lib = require('better-queue');
 const striptags = require('striptags');
 
+const game_db = require('./models/games.js');
 
 var overview_url = 'http://api.steampowered.com/ISteamApps/GetAppList/v0001/';
 var games_url = 'http://store.steampowered.com/api/appdetails';
@@ -69,14 +70,14 @@ function request_game(appid, name, callback) {
 				var store_data = {};
 				var overview_data = {};
 				overview_data.type = game_data.type;
-				overview_data.name = game_data.name;
+				overview_data.name = game_db.get_name(game_data.name);
 				//overview_data.dlcs = game_data.dlc; // TODO - Name ID Convention
 				overview_data.description = striptags(game_data.about_the_game, ['br']);//game_data.short_description;
 				overview_data.banner = game_data.header_image;
 
 				store_data.store = 'Steam';
 				store_data.link = '';
-				store_data.name = game_data.name;
+				store_data.name = game_db.get_name(game_data.name);
 				store_data.price = game_data.price_overview.final / 100;
 				store_data.discount = game_data.price_overview.discount_percent;
 
@@ -97,8 +98,11 @@ function request_game(appid, name, callback) {
 		callback();
 	});
 }
-request_game(57690, "", () => { });
+//request_game(57690, "", () => { });
 //request_overview();
+
+game_db.get_name("Witcher 3: Wildhunt");
+game_db.get_name("Wie macht man ein R $%");
 
 queue.on('drain', function () {
 	console.log("===============");

@@ -2,9 +2,17 @@ const db = require('../db.js');
 
 var games = {};
 
+games.get_name = function (name) {
+  var reg_exname = name.replace(/ /gi, "_");
+  reg_exname = reg_exname.replace(/[\W]+/gi, "");
+
+  console.log("Normal:", name, "Change:", reg_exname);
+  return reg_exname;
+}
+
 games.get_login = function (return_data, done_callback, login_data) {
-  try {
-    db.query("SELECT * FROM simpleyth_login WHERE email=?", [login_data.email], function (err, result) {
+  try {/*
+      db.query("SELECT * FROM simpleyth_login WHERE email=?", [login_data.email], function (err, result) {
       if (err) {
         done_callback(err);
         return;
@@ -18,6 +26,7 @@ games.get_login = function (return_data, done_callback, login_data) {
       return_data.login = result[0];
       done_callback();
     });
+    */
   } catch (err) {
     done_callback(err);
     console.log("Error", err);

@@ -18,10 +18,10 @@ exports.setup = function (options, seedLink) {
 
 exports.up = function (db) {
   db.createTable(tableName, {
-    store: { type: 'char', length: 30, primaryKey: true, notNull: true, autoIncrement: true },
+    store: { type: 'char', length: 30, primaryKey: true, notNull: true },
     name: { type: 'char', length: 100, primaryKey: true, notNull: true },
     link: { type: 'char', length: 200, notNull: true },
-    price: { type: 'single', notNull: true },
+    price: { type: 'int', notNull: true },
     discount: { type: 'int', notNull: true }
   }, createTimestamps);
 

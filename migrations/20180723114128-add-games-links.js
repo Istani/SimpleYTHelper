@@ -4,21 +4,21 @@ var dbm;
 var type;
 var seed;
 
-var tableName = "game_overview";
+var tableName = "game_links";
 
 /**
   * We receive the dbmigrate dependency from dbmigrate initially.
   * This enables us to not have to rely on NODE_PATH.
   */
-exports.setup = function(options, seedLink) {
+exports.setup = function (options, seedLink) {
   dbm = options.dbmigrate;
   type = dbm.dataType;
   seed = seedLink;
 };
 
-exports.up = function(db) {
+exports.up = function (db) {
   db.createTable(tableName, {
-    type: { type: 'char', length: 30, notNull: true, autoIncrement: true },
+    type: { type: 'char', length: 30, notNull: true },
     name: { type: 'char', length: 100, primaryKey: true, notNull: true },
     description: { type: 'text', notNull: true },
     banner: { type: 'char', length: 200, notNull: true }
@@ -42,7 +42,7 @@ exports.up = function(db) {
   return null;
 };
 
-exports.down = function(db) {
+exports.down = function (db) {
   db.dropTable(tableName);
   return null;
 };
