@@ -6,13 +6,13 @@ games.get_name = function (name) {
   var reg_exname = name.replace(/ /gi, "_");
   reg_exname = reg_exname.replace(/[\W]+/gi, "");
 
-  console.log("Normal:", name, "Change:", reg_exname);
+  console.log("Games","Normal:", name, "Change:", reg_exname);
   return reg_exname;
 }
 
-games.get_login = function (return_data, done_callback, login_data) {
-  try {/*
-      db.query("SELECT * FROM simpleyth_login WHERE email=?", [login_data.email], function (err, result) {
+games.import_details = function (return_data, done_callback, write_data) {
+  try {
+      db.query("SELECT * FROM game_overview WHERE email=?", [login_data.email], function (err, result) {
       if (err) {
         done_callback(err);
         return;

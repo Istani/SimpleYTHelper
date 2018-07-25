@@ -4,7 +4,7 @@ var dbm;
 var type;
 var seed;
 
-var tableName = "game_overview";
+var tableName = "game_link";
 
 /**
   * We receive the dbmigrate dependency from dbmigrate initially.
