@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: "Website",
-      script: "./index.js",
+      script: "./website/index.js",
       log_date_format: "YYYY-MM-DD HH:mm Z",
       error_file: "err.log",
       out_file: "out.log",
@@ -10,7 +10,7 @@ module.exports = {
     },
     {
       name: "Discord-Bot",
-      script: "./discord-bot.js",
+      script: "./discord/discord-bot.js",
       log_date_format: "YYYY-MM-DD HH:mm Z",
       restart_delay: 1000,
       error_file: "err.log",
@@ -19,17 +19,24 @@ module.exports = {
     },
     {
       name: "YouTube-Bot",
-      script: "./youtube_bot.js",
+      script: "./youtube/youtube_bot.js",
       log_date_format: "YYYY-MM-DD HH:mm Z",
       restart_delay: 1000,
       error_file: "err.log",
       out_file: "out.log",
       merge_logs: true
-    }
-    ,
+    },
     {
       name: "Gameimport-Steam",
-      script: "./games-steam.js",
+      script: "./steam/games-steam.js",
+      log_date_format: "YYYY-MM-DD HH:mm Z",
+      error_file: "err.log",
+      out_file: "out.log",
+      merge_logs: true
+    },
+    {
+      name: "Gameimport-Humble",
+      script: "./humble/games-humble.js",
       log_date_format: "YYYY-MM-DD HH:mm Z",
       error_file: "err.log",
       out_file: "out.log",

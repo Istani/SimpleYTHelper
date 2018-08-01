@@ -1,5 +1,4 @@
 git pull
-npm install
-db-migrate up
+knex migrate:latest
 pm2 startOrReload ecosystem.config.js
 pm2 save
