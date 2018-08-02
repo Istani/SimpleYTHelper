@@ -58,11 +58,11 @@ function request_game(appid, name, callback) {
 			} else {
 				types["No Data"]++;
 			}
-			/*
+
 			setTimeout(() => {
 				queue.push({ id: appid, func: (callback) => { request_game(appid, name, callback); } });
 			}, 60000);
-			*/
+
 		} else {
 			try {
 				if (data[appid].success) {
