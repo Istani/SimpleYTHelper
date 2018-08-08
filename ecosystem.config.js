@@ -4,8 +4,8 @@ module.exports = {
       name: "Website",
       script: "./website/index.js",
       log_date_format: "YYYY-MM-DD HH:mm Z",
-      error_file: "err.log",
-      out_file: "out.log",
+      error_file: "logs/err.log",
+      out_file: "logs/out.log",
       merge_logs: true
     },
     {
@@ -13,8 +13,8 @@ module.exports = {
       script: "./discord/discord-bot.js",
       log_date_format: "YYYY-MM-DD HH:mm Z",
       restart_delay: 1000,
-      error_file: "err.log",
-      out_file: "out.log",
+      error_file: "logs/err.log",
+      out_file: "logs/out.log",
       merge_logs: true
     },
     {
@@ -22,24 +22,24 @@ module.exports = {
       script: "./youtube/youtube_bot.js",
       log_date_format: "YYYY-MM-DD HH:mm Z",
       restart_delay: 1000,
-      error_file: "err.log",
-      out_file: "out.log",
+      error_file: "logs/err.log",
+      out_file: "logs/out.log",
       merge_logs: true
     },
     {
       name: "Gameimport-Steam",
       script: "./steam/games-steam.js",
       log_date_format: "YYYY-MM-DD HH:mm Z",
-      error_file: "err.log",
-      out_file: "out.log",
+      error_file: "logs/err.log",
+      out_file: "logs/out.log",
       merge_logs: true
     },
     {
       name: "Gameimport-Humble",
       script: "./humble/games-humble.js",
       log_date_format: "YYYY-MM-DD HH:mm Z",
-      error_file: "err.log",
-      out_file: "out.log",
+      error_file: "logs/err.log",
+      out_file: "logs/out.log",
       merge_logs: true
     }
   ]
