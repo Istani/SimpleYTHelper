@@ -64,7 +64,7 @@ function Gen_New_Cronjobs() {
           // TODO: Start Cronjob
           //console.log("RESULT", JSON.stringify(result[0]));
           cron.schedule('* * * * *', function () {
-            console.log("Cronjob", "GetChannel", result[0].user)
+            console.log("Cronjob", "GetChannel", result[0].id, result[0].user)
             GetChannel(result[0]);
           });
         });

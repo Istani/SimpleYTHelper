@@ -9,6 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "async": "^2.6.1"
+    "async": "^2.6.1",
+    "dotenv": "^6.0.0",
+    "mysql": "^2.16.0",
+    "node-cron": "^1.2.1",
+    "request": "^2.87.0"
   }
 }
