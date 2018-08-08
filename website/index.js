@@ -68,7 +68,7 @@ app.use(session({
 i18n.configure({
     defaultLocale: 'de',
     cookie: 'syth_language',
-    directory: './locales',
+    directory: './website/locales',
     queryParameter: 'lang',
     extension: '.json'
 });
