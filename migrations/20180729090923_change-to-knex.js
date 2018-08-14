@@ -1,6 +1,6 @@
 
-exports.up = function(knex, Promise) {
-  return knex.schema.createTable('simpleyth_login', function(t) {
+exports.up = function (knex, Promise) {
+  return knex.schema.createTable('simpleyth_login', function (t) {
     t.string('email').notNull().primary();
     t.string('password').notNull();
     t.timestamps(false, true);
@@ -11,7 +11,7 @@ exports.up = function(knex, Promise) {
   });
 };
 
-exports.down = function(knex, Promise) {
-  
+exports.down = function (knex, Promise) {
+
 };
 

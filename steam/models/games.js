@@ -18,6 +18,15 @@ games.import_details = function (return_data, done_callback, write_data) {
         return;
       }
       if (result.length == 0) {
+        if ((typeof write_data.type == undefined) || (write_data.type == "")) {
+          write_data.type = "Unknown";
+        }
+        if (typeof write_data.description == undefined) {
+          write_data.description = "";
+        }
+        if (typeof write_data.banner == undefined) {
+          write_data.banner = "";
+        }
         db.query("INSERT INTO game_overview SET type=?, description=?, banner=?, name=?", [write_data.type, write_data.description, write_data.banner, write_data.name], function (err, result) {
           if (err) {
             done_callback(err);

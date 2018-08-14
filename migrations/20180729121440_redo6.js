@@ -1,5 +1,5 @@
 
-exports.up = function(knex, Promise) {
+exports.up = function (knex, Promise) {
   return knex.schema.createTable('game_link', function (t) {
     t.string('store').notNull();
     t.string('name').notNull();
@@ -8,10 +8,10 @@ exports.up = function(knex, Promise) {
     t.integer('discount').notNull().defaultTo(0);
     t.timestamps(false, true);
 
-    t.primary(['store','name']);
+    t.primary(['store', 'name']);
   });
 };
 
-exports.down = function(knex, Promise) {
-  
+exports.down = function (knex, Promise) {
+
 };

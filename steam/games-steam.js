@@ -3,6 +3,7 @@ const queue_lib = require('better-queue');
 const striptags = require('striptags');
 
 const game_db = require('./models/games.js');
+const steam_controller = require('./models/steam_controller.js');
 
 var overview_url = 'http://api.steampowered.com/ISteamApps/GetAppList/v0001/';
 var games_url = 'http://store.steampowered.com/api/appdetails';
@@ -12,10 +13,30 @@ var types = {};
 var queue = new queue_lib(
 	function (input, cb) {
 		input.func(cb);
-	}, {}
+	}, {
+		/*batchSize: 10*/
+		/*concurrent: 10*/
+	}
 );
 
+
+function start_import() {
+	var Game_List;
+	steam_controller.LIST(
+		Game_List,
+		(data, err) => {
+			if (err) { console.error("Controller Import", err); }
+			queue.push({ id: "GAME_" + data.appid, func: (callback) => { request_game(data.appid, (err) => { if (err) { console.error("Controller Import", err); } callback(); }); } });
+		}
+		, null
+	);
+	Game_List = null;
+
+	request_overview();
+}
+
 function request_overview() {
+	// TODO: SELECT Appid from DB and Ignore Case? - 1 SQL for all the numbers?
 	request(overview_url, function (error, response, body) {
 		console.log("Importing Gamelist");
 		if (error) {
@@ -26,16 +47,18 @@ function request_overview() {
 			var data = JSON.parse(body);
 			data = data.applist.apps.app;
 			data.forEach(function (game) {
-				queue.push({ id: game.appid, func: (callback) => { request_game(game.appid, game.name, callback); } });
+				queue.push({ id: "CONTROLLER_" + game.appid, func: (callback) => { console.log("Controller Check", game.appid); steam_controller.INSERT_UPDATE(null, (err) => { if (err) { console.error("Controller Import", err); } callback(); }, { appid: game.appid, ignore: 0, type: "UNKNOWN" }); } });
 			});
+			data = null;
+
 		} catch (err) {
 			console.error("Parse", err);
 		}
 	});
 }
 
-function request_game(appid, name, callback) {
-	console.log("Game Import", appid, "-", name);
+function request_game(appid, callback) {
+	console.log("Game Import", appid);
 	var query_string = {
 		appids: appid,
 		cc: 'de',
@@ -58,11 +81,6 @@ function request_game(appid, name, callback) {
 			} else {
 				types["No Data"]++;
 			}
-
-			setTimeout(() => {
-				queue.push({ id: appid, func: (callback) => { request_game(appid, name, callback); } });
-			}, 60000);
-
 		} else {
 			try {
 				if (data[appid].success) {
@@ -94,6 +112,7 @@ function request_game(appid, name, callback) {
 
 
 					game_db.import_store_links(null, (err) => { if (err) { console.error("Game Import", err); } }, store_data);
+					steam_controller.INSERT_UPDATE(null, (err) => { if (err) { console.error("Controller Import", err); } callback(); }, { appid: appid, ignore: 0, type: game_data.type });
 
 					//console.log("overview_data", overview_data);
 					//console.log("store_data", store_data);
@@ -107,6 +126,7 @@ function request_game(appid, name, callback) {
 					} else {
 						types["No Success"]++;
 					}
+					steam_controller.INSERT_UPDATE(null, (err) => { if (err) { console.error("Controller Import", err); } callback(); }, { appid: appid, ignore: 1, type: "No Success" });
 				}
 			} catch (err) {
 				console.error(err);
@@ -117,7 +137,7 @@ function request_game(appid, name, callback) {
 }
 
 //request_game(221680, "", () => { });
-request_overview();
+start_import();
 
 queue.on('drain', function () {
 	console.log("===============");

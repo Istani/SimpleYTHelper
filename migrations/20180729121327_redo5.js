@@ -1,5 +1,5 @@
 
-exports.up = function(knex, Promise) {
+exports.up = function (knex, Promise) {
   return knex.schema.createTable('game_overview', function (t) {
     t.string('type').notNull();
     t.string('name').notNull().primary();

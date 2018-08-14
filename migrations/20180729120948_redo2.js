@@ -1,5 +1,5 @@
 
-exports.up = function(knex, Promise) {
+exports.up = function (knex, Promise) {
   return knex.schema.createTable('simpleyth_oauth_secrets', function (t) {
     t.string('service').notNull().primary();
     t.string('client_id').notNull();
