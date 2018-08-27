@@ -103,7 +103,7 @@ function request_game(appid, callback) {
 
 						var store_data = {};
 						store_data.store = 'Steam';
-						store_data.link = '';
+						store_data.link = 'https://store.steampowered.com/app/' + appid;
 						store_data.name = game_db.get_name(game_data.name);
 						if (typeof game_data.price_overview == "undefined") {
 							store_data.price = 0;
