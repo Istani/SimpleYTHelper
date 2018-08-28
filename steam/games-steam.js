@@ -58,9 +58,9 @@ function start_import() {
 }
 
 function request_overview() {
-	// TODO: SELECT Appid from DB and Ignore Case? - 1 SQL for all the numbers?
+	console.log("Start Overview Import");
 	request(overview_url, function (error, response, body) {
-		//console.log("Importing Gamelist");
+		console.log("Importing Gamelist");
 		if (error) {
 			console.error("Overview", error);
 			process.exit(1);
@@ -68,6 +68,7 @@ function request_overview() {
 		try {
 			var data = JSON.parse(body);
 			data = data.applist.apps.app;
+			//console.log("Overview:", Ignore_List.size, data.size);
 			data.forEach(function (game) {
 				if (Ignore_List.indexOf(game.appid) >= 0) {
 					// Gibt es schon!	
@@ -81,6 +82,7 @@ function request_overview() {
 		} catch (err) {
 			console.error("Parse", err);
 		}
+		console.log("Start Game Import");
 		start_import();
 	});
 }
