@@ -1,5 +1,6 @@
 const async = require('async');
 const db = require("./db.js");
+const channel = require("./models/channel.js");
 var request = require('request');
 var cron = require('node-cron');
 
@@ -61,12 +62,14 @@ function Gen_New_Cronjobs() {
     } else {
       if (result.length > 0) {
         db.query("UPDATE simpleyth_login_token SET cronjob=true WHERE id=? ", [result[0].id], function (err2, result2) {
-          // TODO: Start Cronjob
-          //console.log("RESULT", JSON.stringify(result[0]));
-          cron.schedule('* * * * *', function () {
+          GetChannel(result[0]);  // Einmalig am anfang.
+
+          cron.schedule('0 0 * * *', function () {
             console.log("Cronjob", "GetChannel", result[0].id, result[0].user)
             GetChannel(result[0]);
           });
+
+
         });
       }
     }
@@ -131,7 +134,7 @@ function GetChannel(token_data) {
       },
       qs: {
         "mine": "true",
-        "part": "contentDetails,snippet"
+        "part": "brandingSettings,contentDetails,snippet,statistics"
       }
     }, function (err, res) {
       if (err) {
@@ -144,7 +147,40 @@ function GetChannel(token_data) {
         if (data.error.code == 401) {
           console.error("YOUTUBE", data.error.message, "Token:", JSON.stringify(token_data));
           Refresh_Token(token_data, GetChannel);
+          return;
         }
+      }
+      try {
+        var channel_details = {};
+        channel_details.channel_title = data.items[0].snippet.title;
+        channel_details.description = data.items[0].snippet.description;
+        channel_details.start_date = data.items[0].snippet.publishedAt;
+        var thumb;
+        if (typeof data.items[0].snippet.thumbnails.high !== "undefined") {
+          thumb = data.items[0].snippet.thumbnails.high;
+        } else if (typeof data.items[0].snippets.thumbnail.medium !== "undefined") {
+          thumb = data.items[0].snippet.thumbnails.medium;
+        } else {
+          thumb = data.items[0].snippet.thumbnails.default;
+        }
+        channel_details.thumbnail = thumb.url;
+        if (typeof data.items[0].brandingsettings !== "undefined") {
+          channel_details.banner = data.items[0].brandingsettings.image.bannerimageurl;
+        } else {
+          channel_details.banner = "";
+        }
+        channel_details.main_playlist = data.items[0].contentDetails.relatedPlaylists.uploads;
+        channel_details.views = data.items[0].statistics.viewCount;
+        channel_details.subscriber = data.items[0].statistics.subscriberCount;
+        channel_details.videos = data.items[0].statistics.videoCount;
+        channel_details.user_id = token_data.id;
+        channel_details.service = "youtube";
+        channel_details.channel_id = data.items[0].id;
+
+        channel.import_details(null, (err) => { if (err) { console.error("Channel Import", err); } }, channel_details);
+        console.log(channel_details);
+      } catch (e) {
+        console.error(e);
       }
     });
   });
