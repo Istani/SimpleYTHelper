@@ -53,7 +53,7 @@ games.INSERT_UPDATE = function (return_data, done_callback, write_data) {
 
 games.LIST = function (return_data, done_callback, write_data) {
   try {
-    db.query("(SELECT * FROM import_steam_controller WHERE type like ? ORDER BY updated_at) UNION (SELECT * FROM import_steam_controller WHERE `ignore` = 0 AND type not like ? ORDER BY updated_at)", ["UNKNOWN", "UNKNOWN"], function (err, result) {
+    db.query("(SELECT (1) AS x, import_steam_controller.* FROM import_steam_controller WHERE type like ? ORDER BY updated_at) UNION (SELECT (2) AS x, import_steam_controller.* FROM import_steam_controller WHERE `ignore` = 0 AND type not like ? ORDER BY updated_at) ORDER BY x, updated_at", ["UNKNOWN", "UNKNOWN"], function (err, result) {
       if (err) {
         done_callback(null, err);
         return;
@@ -68,9 +68,29 @@ games.LIST = function (return_data, done_callback, write_data) {
     });
   } catch (err) {
     done_callback(null, err);
-    console.log("Error", err);
+    console.error(err);
     return;
   }
+};
+
+games.LIST_IGNORE = function (return_data, done_callback, write_data) {
+  try {
+    db.query("SELECT appid  FROM import_steam_controller WHERE `ignore` = true", ["UNKNOWN", "UNKNOWN"], function (err, result) {
+      if (err) {
+        done_callback(err);
+        return;
+      }
+      if (result.length == 0) {
+        done_callback();
+        return;
+      }
+      return_data.apps = result;
+      done_callback();
+    });
+  } catch (e) {
+    done_callback(e);
+    console.error(e);
+  };
 };
 
 module.exports = games; 

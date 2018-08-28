@@ -1,9 +1,32 @@
 const request = require("request");
 const queue_lib = require('better-queue');
 const striptags = require('striptags');
+const async = require("async");
 
 const game_db = require('./models/games.js');
 const steam_controller = require('./models/steam_controller.js');
+
+var Ignore_List = {};
+async.parallel([
+	function (callback) {
+		steam_controller.LIST_IGNORE(Ignore_List, callback, null);
+	}
+], function (e) {
+	if (e) {
+		console.error(e);
+	}
+	if (typeof Ignore_List.apps !== "undefined") {
+		var sic = Ignore_List.apps;
+		Ignore_List = [];
+		sic.forEach(function (game) {
+			Ignore_List.push(game.appid);
+		});
+	} else {
+		Ignore_List = [];
+	}
+	//console.log(Ignore_List.indexOf("10680"));
+});
+
 
 var overview_url = 'http://api.steampowered.com/ISteamApps/GetAppList/v0001/';
 var games_url = 'http://store.steampowered.com/api/appdetails';
@@ -46,7 +69,12 @@ function request_overview() {
 			var data = JSON.parse(body);
 			data = data.applist.apps.app;
 			data.forEach(function (game) {
-				queue.push({ id: "CONTROLLER_" + game.appid, func: (callback) => { console.log("Controller Check", game.appid); steam_controller.INSERT_UPDATE(null, (err) => { if (err) { console.error("Controller Import", err); } callback(); }, { appid: game.appid, ignore: 0, type: "UNKNOWN" }); } });
+				if (Ignore_List.indexOf(game.appid) >= 0) {
+					// Gibt es schon!	
+					console.log("Ignore", game.appid);
+				} else {
+					queue.push({ id: "CONTROLLER_" + game.appid, func: (callback) => { console.log("Controller Check", game.appid); steam_controller.INSERT_UPDATE(null, (err) => { if (err) { console.error("Controller Import", err); } callback(); }, { appid: game.appid, ignore: 0, type: "UNKNOWN" }); } });
+				}
 			});
 			data = null;
 
