@@ -75,7 +75,7 @@ games.LIST = function (return_data, done_callback, write_data) {
 
 games.LIST_IGNORE = function (return_data, done_callback, write_data) {
   try {
-    db.query("SELECT appid  FROM import_steam_controller WHERE `ignore` = true", ["UNKNOWN", "UNKNOWN"], function (err, result) {
+    db.query("SELECT appid  FROM import_steam_controller WHERE `ignore` = true ORDER BY updated_at", ["UNKNOWN", "UNKNOWN"], function (err, result) {
       if (err) {
         done_callback(err);
         return;
@@ -92,5 +92,17 @@ games.LIST_IGNORE = function (return_data, done_callback, write_data) {
     console.error(e);
   };
 };
-
+games.SET_IGNORE = function (return_data, done_callback, write_data) {
+  try {
+    db.query("UPDATE import_steam_controller SET `ignore` = true WHERE type = ?", [write_data.type], function (err, result) {
+      if (err) {
+        done_callback(err);
+        return;
+      }
+      done_callback();
+    });
+  } catch (e) {
+    done_callback(e);
+  };
+}
 module.exports = games; 

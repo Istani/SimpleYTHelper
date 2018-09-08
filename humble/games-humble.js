@@ -3,6 +3,8 @@ const game_db = require('./models/games.js');
 
 const puppeteer = require('puppeteer');
 
+var Neustart;
+
 (async function main() {
   try {
     const browser = await puppeteer.launch({ headless: true });
@@ -25,7 +27,13 @@ const puppeteer = require('puppeteer');
         } catch (e) {
           var ediscount = "0";
         }
-        var eprice = await entity.$eval('.price', div => div.innerHTML);
+
+        try {
+          var eprice = await entity.$eval('.price', div => div.innerHTML);
+        } catch (e) {
+          var eprice = "0";
+        }
+
 
         ediscount = ediscount.replace("-", "");
         ediscount = ediscount.replace("%", "");
@@ -36,6 +44,7 @@ const puppeteer = require('puppeteer');
         console.log(ename, elink, ediscount, eprice);
 
         var store_data = {};
+
         store_data.store = 'Humble';
         store_data.link = elink;
         store_data.name = game_db.get_name(ename);
@@ -43,21 +52,29 @@ const puppeteer = require('puppeteer');
         store_data.discount = parseInt(ediscount);
 
         game_db.import_store_links(null, (err) => { if (err) { console.error("Game Import", err); } }, store_data);
+
         //process.exit(0);
       }
+      /*
       if (entitys.length < 20) {
-        next_page = false;
+        next_page = false;  // TODO: Bessere Erkennung!
       }
+      */
       var next = await page.$('.grid-next');
       next.click();
       await page.waitForNavigation();
     }
 
-    console.log("===============");
-    console.log("Game Import Done, Wating 1 Hour for Restart");
-    setTimeout(() => { process.exit(0) }, 60 * 60 * 1000);	// 1 Stunde warten bevor Ende und Neustart
-
   } catch (e) {
-    console.error("ERROR", e);
+    console.error(e);
+    Neustart = setTimeout(() => {
+      console.log("===============");
+      console.log("Game Import Done, Wating 1 Hour for Restart");
+
+      setTimeout(() => {
+        process.exit(0)
+      }, 60 * 60 * 1000);	// 1 Stunde warten bevor Ende und Neustart
+    }, 60 * 1000);	// 1 Minute Warten für Seiten Reload
   }
+
 })();

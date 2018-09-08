@@ -24,7 +24,9 @@ async.parallel([
 	} else {
 		Ignore_List = [];
 	}
-	//console.log(Ignore_List.indexOf("10680"));
+	//console.log(Ignore_List.indexOf("" + 10680));
+	//process.exit(0);
+	imp();
 });
 
 
@@ -58,9 +60,9 @@ function start_import() {
 }
 
 function request_overview() {
-	// TODO: SELECT Appid from DB and Ignore Case? - 1 SQL for all the numbers?
+	console.log("Start Overview Import");
 	request(overview_url, function (error, response, body) {
-		//console.log("Importing Gamelist");
+		console.log("Importing Gamelist");
 		if (error) {
 			console.error("Overview", error);
 			process.exit(1);
@@ -68,8 +70,9 @@ function request_overview() {
 		try {
 			var data = JSON.parse(body);
 			data = data.applist.apps.app;
+			//console.log("Overview:", Ignore_List.size, data.size);
 			data.forEach(function (game) {
-				if (Ignore_List.indexOf(game.appid) >= 0) {
+				if (Ignore_List.indexOf("" + game.appid) >= 0) {
 					// Gibt es schon!	
 					console.log("Ignore", game.appid);
 				} else {
@@ -81,6 +84,7 @@ function request_overview() {
 		} catch (err) {
 			console.error("Parse", err);
 		}
+		console.log("Start Game Import");
 		start_import();
 	});
 }
@@ -170,9 +174,52 @@ function request_game(appid, callback) {
 	});
 }
 
-//request_game(221680, "", () => { });
-//start_import();
-request_overview();
+function imp() {
+
+	async.parallel(
+		[
+			function (callback) {
+				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: "advertising" });
+			},
+			function (callback) {
+				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: "demo" });
+			},
+			function (callback) {
+				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: "dlc" });
+			},
+			function (callback) {
+				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: "episode" });
+			},
+			function (callback) {
+				//steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: "game" });
+				callback();
+			},
+			function (callback) {
+				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: "hardware" });
+			},
+			function (callback) {
+				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: "mod" });
+			},
+			function (callback) {
+				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: "movie" });
+			},
+			function (callback) {
+				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: "series" });
+			},
+			function (callback) {
+				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: "video" });
+			}
+		]
+		, function (e) {
+			if (e) {
+				console.error(e);
+			}
+			//request_game(221680, "", () => { });
+			//start_import();
+			request_overview();
+		});
+}
+
 
 queue.on('drain', function () {
 	console.log("===============");
