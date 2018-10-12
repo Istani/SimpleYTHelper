@@ -176,46 +176,64 @@ function request_game(appid, callback) {
 
 function imp() {
 
-	async.parallel(
+	async.series(
 		[
 			function (callback) {
-				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: "advertising" });
+				var tmp_type = "advertising";
+				console.log("DELETEING ", tmp_type);
+				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } game_db.delete_game_and_links_BYTYPE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: tmp_type }); }, { type: tmp_type });
 			},
 			function (callback) {
-				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: "demo" });
+				var tmp_type = "demo";
+				console.log("DELETEING ", tmp_type);
+				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } game_db.delete_game_and_links_BYTYPE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: tmp_type }); }, { type: tmp_type });
 			},
 			function (callback) {
-				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: "dlc" });
+				var tmp_type = "dlc";
+				console.log("DELETEING ", tmp_type);
+				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } game_db.delete_game_and_links_BYTYPE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: tmp_type }); }, { type: tmp_type });
 			},
 			function (callback) {
-				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: "episode" });
+				var tmp_type = "episode";
+				console.log("DELETEING ", tmp_type);
+				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } game_db.delete_game_and_links_BYTYPE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: tmp_type }); }, { type: tmp_type });
 			},
 			function (callback) {
-				//steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: "game" });
+				var tmp_type = "game";
+				//console.log("DELETEING ", temp_type);
+				//steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } game_db.delete_game_and_links_BYTYPEcallback(null, null, (err) => { if (err) { console.error(err); } callback(); }, { type: tmp_type }); }, { type: tmp_type });
 				callback();
 			},
 			function (callback) {
-				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: "hardware" });
+				var tmp_type = "hardware";
+				console.log("DELETEING ", tmp_type);
+				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } game_db.delete_game_and_links_BYTYPE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: tmp_type }); }, { type: tmp_type });
 			},
 			function (callback) {
-				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: "mod" });
+				var tmp_type = "mod";
+				console.log("DELETEING ", tmp_type);
+				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } game_db.delete_game_and_links_BYTYPE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: tmp_type }); }, { type: tmp_type });
 			},
 			function (callback) {
-				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: "movie" });
+				var tmp_type = "movie";
+				console.log("DELETEING ", tmp_type);
+				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } game_db.delete_game_and_links_BYTYPE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: tmp_type }); }, { type: tmp_type });
 			},
 			function (callback) {
-				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: "series" });
+				var tmp_type = "series";
+				console.log("DELETEING ", tmp_type);
+				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } game_db.delete_game_and_links_BYTYPE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: tmp_type }); }, { type: tmp_type });
 			},
 			function (callback) {
-				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: "video" });
+				var tmp_type = "video";
+				console.log("DELETEING ", tmp_type);
+				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } game_db.delete_game_and_links_BYTYPE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: tmp_type }); }, { type: tmp_type });
 			}
 		]
 		, function (e) {
 			if (e) {
 				console.error(e);
 			}
-			//request_game(221680, "", () => { });
-			//start_import();
 			request_overview();
 		});
 }
