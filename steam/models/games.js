@@ -85,4 +85,23 @@ games.import_store_links = function (return_data, done_callback, write_data) {
   }
 };
 
+games.delete_game_and_links_BYTYPE = function (return_data, done_callback, write_data) {
+  try {
+    db.query("DELETE FROM game_overview WHERE type = ?", [write_data.type], function (err, result) {
+      if (err) {
+        done_callback(err);
+        return;
+      }
+      db.query("DELETE game_link FROM game_link LEFT JOIN game_overview ON game_link.name=game_overview.name WHERE game_overview.name IS NULL", [], function (err, result) {
+        if (err) {
+          done_callback(err);
+          return;
+        }
+        done_callback();
+      });
+    });
+  } catch (e) {
+    done_callback(e);
+  };
+}
 module.exports = games; 
