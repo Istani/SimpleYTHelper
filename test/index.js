@@ -12,3 +12,12 @@ Jimp.read(img_path)
   .catch(err => {
     console.error(err);
   });
+
+
+new Jimp(512, 150, 0xff0000ff, (err, image) => {
+  image.quality(100);
+  Jimp.loadFont(Jimp.FONT_SANS_32_BLACK).then(font => {
+    image.print(font, 10, 10, 'Anime Chat');
+  });
+  image.write('banner.png');
+});
