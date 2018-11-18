@@ -13,6 +13,7 @@ if (!isset($token[$cronjob_id])) {
 	$token[$cronjob_id] = init_token($cronjob_id);
 }
 $tt=$token[$cronjob_id];
+if (0) {
 if ($tt["last_used"]+$tt["cooldown"]<time()) {
 	$tt["token"]="null";
 	$tt["cooldown"]=1;
@@ -306,5 +307,13 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 	$database->sql_insert_update("bot_token",$tt);
 	unset($tt);
 }
-
+} else {
+        // Save Token
+        echo date("d.m.Y - H:i:s")." - ".$_SESSION['user'][$
+        $tt["last_used"]=time();
+        $tt["user"]=$_SESSION['user']['email'];
+        if($tt["token"]==""){$tt["token"]="null";}
+        $database->sql_insert_update("bot_token",$tt);
+        unset($tt);
+}
 ?>
