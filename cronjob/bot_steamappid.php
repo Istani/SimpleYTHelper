@@ -22,6 +22,7 @@ if(!in_array($_tmp_tabellename, $check_table)) {
 
 
 $tt=$token[$_tmp_tabellename];
+if (0) {
 if ($tt["last_used"]+$tt["cooldown"]<time()) {
   
   $client = new OAuth2\Client(NULL, NULL);
@@ -32,6 +33,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     $database->sql_insert_update($_tmp_tabellename, $list_of_apps[$count_appids]);
   }
   $tt["cooldown"]=1*60*60*24;
+}
 }
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$_tmp_tabellename." updated!<br>";

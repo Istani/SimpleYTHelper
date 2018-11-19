@@ -37,6 +37,7 @@ if(in_array("bot_steamappid", $check_table)) {
   
   
   $tt=$token[$_tmp_tabellename];
+if (0) {
   if ($tt["last_used"]+$tt["cooldown"]<time()) {
     // Steam
     $sub_query="SELECT `text` as name FROM bot_humble";
@@ -63,6 +64,7 @@ if(in_array("bot_steamappid", $check_table)) {
       unset($new_data);
     }
   }
+}
 }
 $tt["cooldown"]=1*60*60*24;
 // Save Token

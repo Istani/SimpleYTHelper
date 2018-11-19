@@ -20,6 +20,7 @@ if(!in_array($_tmp_tabellename, $check_table)) {
 
 
 $tt=$token[$_tmp_tabellename];
+if (0) {
 if ($tt["last_used"]+$tt["cooldown"]<time()) {
   
   if(in_array("bot_gamelist", $check_table)) {
@@ -79,6 +80,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
     }
   }
   $tt["cooldown"]=1*60;
+}
 }
 // Save Token
 echo date("d.m.Y - H:i:s")." - ".$_tmp_tabellename." updated!<br>";
