@@ -309,7 +309,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 }
 } else {
         // Save Token
-        echo date("d.m.Y - H:i:s")." - ".$_SESSION['user'][$
+        echo date("d.m.Y - H:i:s")." - ".$_SESSION['user']['email'].': '.$cronjob_id." updated!<br>";
         $tt["last_used"]=time();
         $tt["user"]=$_SESSION['user']['email'];
         if($tt["token"]==""){$tt["token"]="null";}
