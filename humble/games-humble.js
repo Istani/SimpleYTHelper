@@ -72,7 +72,7 @@ var Neustart;
       console.log("Game Import Done, Wating 1 Hour for Restart");
 
       setTimeout(() => {
-        process.exit(0)
+        main();
       }, 60 * 60 * 1000);	// 1 Stunde warten bevor Ende und Neustart
     }, 60 * 1000);	// 1 Minute Warten für Seiten Reload
   }
