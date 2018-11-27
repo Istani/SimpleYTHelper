@@ -50,7 +50,9 @@ function start_import() {
 		Game_List,
 		(data, err) => {
 			if (err) { console.error("Controller Import", err); }
-			queue.push({ id: "GAME_" + data.appid, func: (callback) => { request_game(data.appid, (err) => { if (err) { console.error("Controller Import", err); } callback(); }); } });
+			if (data != null) {
+				queue.push({ id: "GAME_" + data.appid, func: (callback) => { request_game(data.appid, (err) => { if (err) { console.error("Controller Import", err); } callback(); }); } });
+			}
 		}
 		, null
 	);
