@@ -20,7 +20,7 @@ games.INSERT_UPDATE = function (return_data, done_callback, write_data) {
         });
       } else {
         if (write_data.type == "UNKNOWN") {
-          db.query("UPDATE import_steam_controller SET updated_at=NOW() WHERE appid=?", [write_data.appid], function (err, result) {
+          db.query("UPDATE import_steam_controller SET updated_at=NOW(), `ignore=0 WHERE appid=?", [write_data.appid], function (err, result) {
             if (err) {
               done_callback(err);
               return;
