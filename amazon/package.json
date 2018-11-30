@@ -1,8 +1,8 @@
 {
-  "name": "cronjob",
+  "name": "amazon",
   "version": "1.0.0",
   "description": "",
-  "main": "cronjob.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,10 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "async": "^2.6.1",
-    "dotenv": "^6.1.0",
-    "find-remove": "^1.2.2",
-    "moment": "^2.22.2",
-    "node-cron": "^2.0.3"
+    "amazon-product-api": "^0.4.4"
   }
 }
