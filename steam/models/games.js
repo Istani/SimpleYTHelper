@@ -27,7 +27,7 @@ games.import_details = function (return_data, done_callback, write_data) {
         if (typeof write_data.banner == undefined) {
           write_data.banner = "";
         }
-        db.query("INSERT INTO game_overview SET type=?, description=?, banner=?, name=?", [write_data.type, write_data.description, write_data.banner, write_data.name], function (err, result) {
+        db.query("INSERT INTO game_overview SET type=?, description=?, banner=?, name=?, display_name=?", [write_data.type, write_data.description, write_data.banner, write_data.name, write_data.display_name], function (err, result) {
           if (err) {
             done_callback(err);
             return;

@@ -9,6 +9,14 @@ module.exports = {
       merge_logs: true
     },
     {
+      name: "Backup",
+      script: "./cronjob/cronjob.js",
+      log_date_format: "YYYY-MM-DD HH:mm Z",
+      error_file: "logs/err.log",
+      out_file: "logs/out.log",
+      merge_logs: true
+    },
+    {
       name: "Discord-Bot",
       script: "./discord/discord-bot.js",
       log_date_format: "YYYY-MM-DD HH:mm Z",

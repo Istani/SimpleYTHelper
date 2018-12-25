@@ -20,7 +20,7 @@ games.INSERT_UPDATE = function (return_data, done_callback, write_data) {
         });
       } else {
         if (write_data.type == "UNKNOWN") {
-          db.query("UPDATE import_steam_controller SET updated_at=NOW(), `ignore=0 WHERE appid=?", [write_data.appid], function (err, result) {
+          db.query("UPDATE import_steam_controller SET updated_at=NOW(), `ignore`=0 WHERE appid=?", [write_data.appid], function (err, result) {
             if (err) {
               done_callback(err);
               return;
@@ -53,7 +53,29 @@ games.INSERT_UPDATE = function (return_data, done_callback, write_data) {
 
 games.LIST = function (return_data, done_callback, write_data) {
   try {
-    db.query("(SELECT (1) AS x, import_steam_controller.* FROM import_steam_controller WHERE type like ? ORDER BY updated_at) UNION (SELECT (2) AS x, import_steam_controller.* FROM import_steam_controller WHERE `ignore` = 0 AND type not like ? ORDER BY updated_at) ORDER BY x, updated_at", ["UNKNOWN", "UNKNOWN"], function (err, result) {
+    db.query("(SELECT (2) AS x, import_steam_controller.* FROM import_steam_controller WHERE `ignore` = 0 AND type not like ? ORDER BY updated_at)", ["UNKNOWN"], function (err, result) {
+      if (err) {
+        done_callback(null, err);
+        return;
+      }
+      if (result.length == 0) {
+        done_callback(null, err);
+        return;
+      }
+      result.forEach(function (row) {
+        done_callback(row);
+      });
+    });
+  } catch (err) {
+    done_callback(null, err);
+    console.error(err);
+    return;
+  }
+};
+
+games.LIST_UNKONWN = function (return_data, done_callback, write_data) {
+  try {
+    db.query("(SELECT import_steam_controller.* FROM import_steam_controller WHERE type like ? ORDER BY updated_at)", ["UNKNOWN"], function (err, result) {
       if (err) {
         done_callback(null, err);
         return;

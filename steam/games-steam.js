@@ -45,6 +45,24 @@ var queue = new queue_lib(
 
 
 function start_import() {
+	console.log("Start Game Import");
+	var Game_List;
+	steam_controller.LIST_UNKONWN(
+		Game_List,
+		(data, err) => {
+			if (err) { console.error("Controller Import", err); }
+			if (data != null) {
+				queue.push({ id: "GAME_" + data.appid, func: (callback) => { request_game(data.appid, (err) => { if (err) { console.error("Controller Import", err); } callback(); }); } });
+			}
+		}
+		, null
+	);
+	Game_List = null;
+
+	request_overview();
+}
+
+function start_update() {
 	var Game_List;
 	steam_controller.LIST(
 		Game_List,
@@ -60,6 +78,7 @@ function start_import() {
 
 	//request_overview();
 }
+
 
 function request_overview() {
 	console.log("Start Overview Import");
@@ -87,7 +106,7 @@ function request_overview() {
 			console.error("Parse", err);
 		}
 		console.log("Start Game Import");
-		start_import();
+		start_update();
 	});
 }
 
@@ -131,6 +150,7 @@ function request_game(appid, callback) {
 						var overview_data = {};
 						overview_data.type = game_data.type;
 						overview_data.name = game_db.get_name(game_data.name);
+                                                overview_data.display_name=game_data.name;
 						overview_data.description = striptags(game_data.about_the_game, ['br']);//game_data.short_description;
 						overview_data.banner = game_data.header_image;
 						game_db.import_details(null, (err) => { if (err) { console.error("Game Import", err); } }, overview_data);
@@ -177,7 +197,7 @@ function request_game(appid, callback) {
 }
 
 function imp() {
-
+	
 	async.series(
 		[
 			function (callback) {
@@ -236,7 +256,8 @@ function imp() {
 			if (e) {
 				console.error(e);
 			}
-			request_overview();
+			//request_overview();
+			start_import();
 		});
 }
 
