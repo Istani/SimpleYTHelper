@@ -1,0 +1,58 @@
+/* JQuery UI Manipulate */
+.ui-widget-content {
+  background: #FFFFFF url('') !important;
+}
+
+.sk_ui-corner-all {
+  border: 1px solid #cccccc !important;
+  border-radius: 4px !important;
+}
+
+
+
+/* Own Style 
+* {
+  opacity: 0.95;
+}
+*/
+body {
+  background-color:#f9f9f9;
+  /* width: 1060px;*/
+  display: grid;
+  grid-gap: 10px;
+  grid-template-columns: auto;
+  grid-template-areas:
+    'header'
+    'navigation'
+    'content'
+    'footer';
+}
+
+#header {
+  grid-area: header;
+}
+#content {
+  grid-area: content;
+}
+#navigation {
+  grid-area: navigation;
+}
+#footer {
+  grid-area: footer;
+}
+#anzeige {
+  grid-area: anzeige;
+}
+
+.game_list-container {
+  display: flex;
+  flex-wrap: wrap;
+  /*justify-content : space-around;*/
+}
+
+.game_list { 
+  margin: 5px;
+  width: 276px;
+  max-width: 276px;
+  flex: 1;
+}
