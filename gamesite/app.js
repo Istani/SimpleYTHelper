@@ -31,7 +31,14 @@ var hbs = exphbs.create({
       result = hbs.handlebars.compile(result);
       result = result(temp_data);
       return result;
-    } */
+    }, */
+    checkPrice: function (low, high,options) {
+      if(low==high) {
+        return options.inverse(this);
+      } else {
+        return options.fn(this);
+      }
+    },
   },
   defaultLayout: 'main',
   extname: '.hbs'

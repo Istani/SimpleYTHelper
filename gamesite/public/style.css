@@ -27,6 +27,7 @@ body {
     'content'
     'footer';
 }
+p { margin-top: 0; margin-bottom: 0; }
 
 #header {
   grid-area: header;
@@ -55,4 +56,19 @@ body {
   width: 276px;
   max-width: 276px;
   flex: 1;
+  position:relative;
+}
+.price {
+  text-align: right;
+  font-weight: bold;
+  position:absolute;
+  bottom:0;
+  right:0;
+}
+.price .low {
+  color: green;
+}
+.price .high {
+  color: red;
+  text-decoration: line-through;
 }

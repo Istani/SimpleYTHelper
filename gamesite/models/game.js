@@ -12,15 +12,30 @@ class Game extends Model {
   static get idColumn() {
     return 'name';
   }
-/*
+
   static get virtualAttributes() {
-    return ['fullName'];
+    return ['lowPrice','highPrice'];
   }
 
-  fullName() {
-    return `${this.firstName} ${this.lastName}`;
+  get lowPrice() {
+    var ret=100000000;
+    for(var i=0;i<this.links.length;i++) {
+      if (this.links[i].price<ret) {
+        ret=this.links[i].price;
+      }
+    }
+    return parseFloat(ret/100).toFixed(2);
   }
-*/
+  get highPrice() {
+    var ret=0;
+    for(var i=0;i<this.links.length;i++) {
+      if (this.links[i].price>ret) {
+        ret=this.links[i].price;
+      }
+    }
+    return parseFloat(ret/100).toFixed(2);
+  }
+
   static get relationMappings() {
     const Link = require('./game_link.js');
 
