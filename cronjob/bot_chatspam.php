@@ -19,6 +19,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
   if (isset($data4sql)) {
     unset($data4sql);
   }
+/*
   // Mehr als 3 Nachrichten in der Minute
   // TODO: Die Berechnung stimmt noch nicht^^
   $listRequests = $database->sql_select("bot_chatlog","service, host, room, user, count(message) as Anzahl", "`time` >=".($tt["last_used"]-1)." GROUP BY service, host, room, user", true);
@@ -126,7 +127,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
       unset($new_msg);
     }
   }
-  
+*/  
   
   $tt["cooldown"]="60";
   $tt["last_used"]=time();
