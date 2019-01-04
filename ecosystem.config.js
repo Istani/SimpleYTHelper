@@ -35,6 +35,14 @@ module.exports = {
       merge_logs: true
     },
     {
+      name: "Gamespage",
+      script: "./gamesite/app.js",
+      log_date_format: "YYYY-MM-DD HH:mm Z",
+      error_file: "logs/err.log",
+      out_file: "logs/out.log",
+      merge_logs: true
+    },
+    {
       name: "Gameimport-Steam",
       script: "./steam/games-steam.js",
       log_date_format: "YYYY-MM-DD HH:mm Z",

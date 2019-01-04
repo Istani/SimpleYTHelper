@@ -12,6 +12,14 @@ class Game_Link extends Model {
   static get idColumn() {
     return 'store, name';
   }
+  static get virtualAttributes() {
+    return ['formatPrice'];
+  }
+
+  get formatPrice() {
+    var ret=this.price;
+    return parseFloat(ret/100).toFixed(2);
+  }
 }
 
 module.exports = Game_Link;

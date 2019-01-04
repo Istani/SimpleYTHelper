@@ -3,8 +3,9 @@ HOME<br>
 
 <div class="game_list-container">
 {{#each games}}
+  <a href="/game/{{name}}" class="game_link">
   <div class="game_list sk_ui-corner-all">
-    <img src="{{banner}}" height="129" width="276"><br>
+    <img src="{{localBanner}}" height="129" width="276"><br>
     {{display_name}}<br>
     <br><p class="price">
     {{#checkPrice lowPrice highPrice}}
@@ -14,5 +15,6 @@ HOME<br>
     {{/checkPrice}}
     </p>
   </div>
+  </a>
 {{/each}}
 </div>

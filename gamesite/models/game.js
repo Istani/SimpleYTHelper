@@ -14,7 +14,7 @@ class Game extends Model {
   }
 
   static get virtualAttributes() {
-    return ['lowPrice','highPrice'];
+    return ['lowPrice','highPrice','localBanner'];
   }
 
   get lowPrice() {
@@ -34,6 +34,9 @@ class Game extends Model {
       }
     }
     return parseFloat(ret/100).toFixed(2);
+  }
+  get localBanner() {
+    return "/img/games/"+this.name+".png";
   }
 
   static get relationMappings() {

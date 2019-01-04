@@ -9,12 +9,12 @@
 }
 
 
-
-/* Own Style 
+ 
 * {
-  opacity: 0.95;
+  /*opacity: 0.95;*/
+  font-size: 12 !important;
 }
-*/
+
 body {
   background-color:#f9f9f9;
   /* width: 1060px;*/
@@ -50,13 +50,18 @@ p { margin-top: 0; margin-bottom: 0; }
   flex-wrap: wrap;
   /*justify-content : space-around;*/
 }
-
 .game_list { 
   margin: 5px;
   width: 276px;
   max-width: 276px;
   flex: 1;
   position:relative;
+}
+.game_description {
+  text-align: justify;
+}
+.price-container {
+  position: relative;
 }
 .price {
   text-align: right;

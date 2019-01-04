@@ -1,0 +1,24 @@
+<center>
+<h1>{{display_name}}</h1>
+<div class="game">
+<img src="{{localBanner}}" class="game_pic"><br>
+<br>
+<p class="game_description">{{{description}}}</p>
+<br>
+<hr class="game_hr">
+<table width="100%">
+{{#each links}}
+  <tr>
+    <td width="100%">{{store}}</td>
+    <td class="price-container"><p class="price">
+    {{#checkPrice ../lowPrice formatPrice}}
+      <span class="">{{formatPrice}}&nbsp;€</span>
+    {{else}}
+      <span class="low">{{formatPrice}}&nbsp;€</span>
+    {{/checkPrice}}
+    </p></td>
+  </tr>
+{{/each}}
+</table>
+</div>
+</center>
