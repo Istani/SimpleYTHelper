@@ -6,9 +6,10 @@ const fs   = require("fs");
 async function main() {
   const g = await Game.query().where({type:'game'}).orderBy('updated_at');
   for(var i = 0; i<g.length;i++) {
-    await get_image(g[i]);
+    //await get_image(g[i]);
   }
-  await gen_text();
+  //await gen_text();
+  await gen_no_pic();
 }
 async function get_image(game) {
   var pic_path="./public"+game.localBanner;
@@ -29,7 +30,7 @@ async function gen_text() {
   var font = await Jimp.loadFont(Jimp.FONT_SANS_64_WHITE);
   var widht = Jimp.measureText(font, package_info.name);
   var height = Jimp.measureTextHeight(font, package_info.name, 100);
-  var offset = 10;
+  var offset = 8;
   var offset_fix=0;
   var pic = new Jimp(widht+offset, height+offset, 0xFFFFFF00);
 
@@ -58,5 +59,23 @@ async function gen_text() {
 
   pic.write('./public/img/text.png');
   console.log('text done');
+}
+async function gen_no_pic() {
+  var font = await Jimp.loadFont(Jimp.FONT_SANS_128_BLACK);
+  var widht = Jimp.measureText(font, '?');
+  var height = Jimp.measureTextHeight(font, '?');
+  var text = await Jimp.read('./public/img/text.png');
+
+  var pic = new Jimp(widht,height,0xFFFFFFFF);
+  pic.print(font,0,0,'?');
+  pic.resize(460,215);
+
+  text.scaleToFit(460,215);
+  text.fade(0.5);
+
+  pic.composite(text,(pic.bitmap.width-text.bitmap.width)/2, (pic.bitmap.height-text.bitmap.height)/2);
+
+  pic.write('./public/img/games/no_pic.jpg');
+  console.log('no pic done');
 }
 main();
