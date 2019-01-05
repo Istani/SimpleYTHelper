@@ -1,3 +1,4 @@
+const package_info = require('./package.json');
 const Game = require("./models/game.js");
 const Jimp = require("jimp");
 const fs   = require("fs");
@@ -7,7 +8,7 @@ async function main() {
   for(var i = 0; i<g.length;i++) {
     await get_image(g[i]);
   }
-  return;
+  await gen_text();
 }
 async function get_image(game) {
   var pic_path="./public"+game.localBanner;
@@ -19,11 +20,43 @@ async function get_image(game) {
       pic
         .scaleToFit(460, 215)
         .write(pic_path);
-      return pic;
     }).catch(error => {
       console.error(error);
     });
   }
 }
+async function gen_text() {
+  var font = await Jimp.loadFont(Jimp.FONT_SANS_64_WHITE);
+  var widht = Jimp.measureText(font, package_info.name);
+  var height = Jimp.measureTextHeight(font, package_info.name, 100);
+  var offset = 10;
+  var offset_fix=0;
+  var pic = new Jimp(widht+offset, height+offset, 0xFFFFFF00);
 
+  for (var i=offset_fix;i<offset-offset_fix;i++) {
+    for (var j=offset_fix;j<offset-offset_fix;j++) {
+      pic.print(font, i, j, package_info.name);
+    }
+  }
+  pic.color([
+    {apply:'blue',params:[-0xff]}
+  ]);
+
+  offset_fix=parseInt(offset/4);
+  for (var i=offset_fix;i<offset-offset_fix;i++) {
+    for (var j=offset_fix;j<offset-offset_fix;j++) {
+      pic.print(font, i, j, package_info.name);
+    }
+  }
+  pic.color([
+    {apply:'red',params:[-0xff]},
+    {apply:'green',params:[-0xff]}
+  ]);
+
+  offset_fix=offset/2;
+  pic.print(font, offset_fix, offset_fix, package_info.name);
+
+  pic.write('./public/img/text.png');
+  console.log('text done');
+}
 main();
