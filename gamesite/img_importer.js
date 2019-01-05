@@ -14,7 +14,7 @@ async function main() {
   }
 }
 async function get_image(game) {
-  var pic_path="./public"+game.localBanner;
+  var pic_path="./public/img/games/"+game.name+".png";
   if (fs.existsSync(pic_path)) {
     //console.log("Skip Import of",game.name);
   } else {
