@@ -1,5 +1,6 @@
 const package_info = require('./package.json');
 const Game = require("./models/game.js");
+const Link = require("./models/game_link.js");
 const Jimp = require("jimp");
 const fs   = require("fs");
 
@@ -9,7 +10,8 @@ async function main() {
     //await get_image(g[i]);
   }
   //await gen_text();
-  await gen_no_pic();
+  //await gen_no_pic();
+  //await gen_banner();
 }
 async function get_image(game) {
   var pic_path="./public"+game.localBanner;
@@ -77,5 +79,47 @@ async function gen_no_pic() {
 
   pic.write('./public/img/games/no_pic.jpg');
   console.log('no pic done');
+}
+async function gen_banner() {
+  var text = await Jimp.read('./public/img/text.png');
+  var pic = new Jimp(1450,300,0x00000000);
+
+  // Getting and Adding Games
+  var count_width=0;
+  var count_height=0;
+  var count_games=0;
+  const l = await Link.query().select('name').groupBy('name').orderBy('discount', 'DESC');
+  while (count_height<pic.bitmap.height) {
+    while (count_width<pic.bitmap.width) {
+      if (count_games>=l.length) {
+        if (count_width==0 && count_height==0) {
+          count_width=pic.bitmap.width;
+          count_height=pic.bitmap.height;
+        }
+        count_games=0;
+      }
+      var path="./public/img/games/"+l[count_games].name+".png";
+      if (fs.existsSync(path)) {
+        var gp = await Jimp.read(path);
+        gp.scaleToFit(pic.bitmap.width/5,pic.bitmap.height/3);
+        //gp.rotate(-20,false);
+        pic.composite(gp,count_width, count_height);
+        count_width+=gp.bitmap.width;
+        if (count_width>=pic.bitmap.width) {
+          count_height+=gp.bitmap.height;
+        }
+      }
+      count_games++;
+    }
+    count_width=0;
+  }
+  pic.grayscale();
+
+  // Adding Text
+  text.scaleToFit(pic.bitmap.width/2,pic.bitmap.height/2);
+  pic.composite(text,(pic.bitmap.width-text.bitmap.width)/2, (pic.bitmap.height-text.bitmap.height)/2);
+
+  pic.write('./public/img/banner.png');
+  console.log('banner done');
 }
 main();

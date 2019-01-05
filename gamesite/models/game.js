@@ -2,6 +2,7 @@ const { Model } = require('objection');
 const Knex = require('knex');
 
 const knex = Knex(require("../../knexfile.js"));
+const fs = require('fs');
 
 Model.knex(knex);
 
@@ -36,7 +37,13 @@ class Game extends Model {
     return parseFloat(ret/100).toFixed(2);
   }
   get localBanner() {
-    return "/img/games/"+this.name+".png";
+    var path="/img/games/"+this.name+".png";
+    var pic_path="./public"+path;
+    if (fs.existsSync(pic_path)) {
+    } else {
+      path="/img/games/no_pic.jpg";
+    }
+    return path;
   }
 
   static get relationMappings() {
