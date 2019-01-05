@@ -81,8 +81,12 @@ app.get('/game/:gname', function(req, res) {
   });
 });
 
+app.get('/games', function (req, res) {
+  res.render('list', { games:All_Games });
+});
+
 app.get('/', function (req, res) {
-  res.render('home', { games:All_Games });
+  res.redirect("/games");
 });
 
 

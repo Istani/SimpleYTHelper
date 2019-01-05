@@ -5,13 +5,13 @@ const Jimp = require("jimp");
 const fs   = require("fs");
 
 async function main() {
+  await gen_text();
+  await gen_no_pic();
+  await gen_banner();
   const g = await Game.query().where({type:'game'}).orderBy('updated_at');
   for(var i = 0; i<g.length;i++) {
-    //await get_image(g[i]);
+    await get_image(g[i]);
   }
-  //await gen_text();
-  //await gen_no_pic();
-  //await gen_banner();
 }
 async function get_image(game) {
   var pic_path="./public"+game.localBanner;
@@ -71,9 +71,11 @@ async function gen_no_pic() {
   var pic = new Jimp(widht,height,0xFFFFFFFF);
   pic.print(font,0,0,'?');
   pic.resize(460,215);
+  pic.invert();
+  pic.blur(5);
 
-  text.scaleToFit(460,215);
-  text.fade(0.5);
+  text.scaleToFit(pic.bitmap.width*0.9,pic.bitmap.height*0.9);
+  text.fade(0.30);
 
   pic.composite(text,(pic.bitmap.width-text.bitmap.width)/2, (pic.bitmap.height-text.bitmap.height)/2);
 
@@ -116,7 +118,7 @@ async function gen_banner() {
   pic.grayscale();
 
   // Adding Text
-  text.scaleToFit(pic.bitmap.width/2,pic.bitmap.height/2);
+  text.scaleToFit(pic.bitmap.width*0.75,pic.bitmap.height*0.75);
   pic.composite(text,(pic.bitmap.width-text.bitmap.width)/2, (pic.bitmap.height-text.bitmap.height)/2);
 
   pic.write('./public/img/banner.png');
