@@ -59,6 +59,7 @@ async function gen_text() {
   offset_fix=offset/2;
   pic.print(font, offset_fix, offset_fix, package_info.name);
 
+  pic.scaleToFit(1600*0.75,300*0.75);
   pic.write('./public/img/text.png');
   console.log('text done');
 }
@@ -84,7 +85,15 @@ async function gen_no_pic() {
 }
 async function gen_banner() {
   var text = await Jimp.read('./public/img/text.png');
-  var pic = new Jimp(1450,300,0x00000000);
+  var pic_size = await Jimp.read('./public/img/games/no_pic.jpg');
+  pic_size.scaleToFit(text.bitmap.width/3,text.bitmap.height/3);
+  var tmp_height=text.bitmap.height/3*4;
+  var tmp_width=0;
+  while (tmp_width<text.bitmap.width) {
+    tmp_width+=pic_size.bitmap.width;
+  }
+
+  var pic = new Jimp(tmp_width,tmp_height,0x00000000);
 
   // Getting and Adding Games
   var count_width=0;
@@ -103,7 +112,7 @@ async function gen_banner() {
       var path="./public/img/games/"+l[count_games].name+".png";
       if (fs.existsSync(path)) {
         var gp = await Jimp.read(path);
-        gp.scaleToFit(pic.bitmap.width/5,pic.bitmap.height/3);
+        gp.scaleToFit(pic.bitmap.width,pic.bitmap.height/4);
         //gp.rotate(-20,false);
         pic.composite(gp,count_width, count_height);
         count_width+=gp.bitmap.width;
@@ -116,6 +125,9 @@ async function gen_banner() {
     count_width=0;
   }
   pic.grayscale();
+
+  pic.write('./public/img/background.png');
+  console.log('background done');
 
   // Adding Text
   text.scaleToFit(pic.bitmap.width*0.75,pic.bitmap.height*0.75);

@@ -47,6 +47,8 @@ li a:hover {
 
 #header {
   grid-area: header;
+  background-image: url("/img/background.png");
+  background-repeat: repeat;
 }
 #content {
   grid-area: content;
@@ -64,7 +66,7 @@ li a:hover {
 .game_list-container {
   display: flex;
   flex-wrap: wrap;
-  /*justify-content : space-around;*/
+  justify-content : center;
 }
 a {
   text-decoration: none;
