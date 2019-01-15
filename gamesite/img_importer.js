@@ -59,7 +59,7 @@ async function gen_text() {
   offset_fix=offset/2;
   pic.print(font, offset_fix, offset_fix, package_info.name);
 
-  pic.scaleToFit(1600*0.75,300*0.75);
+  pic.scaleToFit(1060,300);
   pic.write('./public/img/text.png');
   console.log('text done');
 }
