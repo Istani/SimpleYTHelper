@@ -1,4 +1,7 @@
-var config = require('dotenv').config();
+var envpath = __dirname+'/.env';
+console.log('Settingspath:', envpath);
+
+var config = require('dotenv').config({path: envpath});
 // Update with your config settings.
 
 if (process.env.ENVIROMENT == "DEV") {
