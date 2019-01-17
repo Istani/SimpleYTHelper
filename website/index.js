@@ -1,3 +1,5 @@
+process.chdir(__dirname);
+
 /* Node Functions */
 const fs = require('fs');
 const async = require('async');
@@ -68,7 +70,7 @@ app.use(session({
 i18n.configure({
     defaultLocale: 'de',
     cookie: 'syth_language',
-    directory: './website/locales',
+    directory: './locales',
     queryParameter: 'lang',
     extension: '.json'
 });

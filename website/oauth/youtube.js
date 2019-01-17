@@ -7,6 +7,13 @@ module.exports = (passport) => {
   async.series([
     function (callback) { oauth.get_oauth_settings(youtube, callback, "youtube"); }
   ], function (err, data) {
+    if (typeof data[0] == 'undefined') {
+      err='Missing Data';
+    }
+    if (err) {
+      console.error(err);
+      return err;
+    }
     passport.serializeUser((user, done) => {
       done(null, user);
     });

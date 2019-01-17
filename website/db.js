@@ -2,14 +2,14 @@ const mysql = require('mysql');
 const util = require('util');
 
 /* Checking Example File for New Data! */
-var config = require('dotenv').config();
+var config = require('dotenv').config({path: '../.env'});
 const fs = require('fs');
 var config_example = "";
-if (fs.existsSync("./.env")) {
+if (fs.existsSync("../.env")) {
   for (var attributename in config.parsed) {
     config_example += attributename + "=\r\n";
   }
-  fs.writeFileSync('./.env.example', config_example);
+  fs.writeFileSync('../.env.example', config_example);
 } else {
   //fs.copyFileSync("./.env.example", ".env");
   console.log("Update .env Files first!");

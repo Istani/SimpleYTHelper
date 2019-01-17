@@ -9,8 +9,8 @@ db.query("SELECT login, password FROM simpleyth_oauth_botcredentials WHERE servi
         process.exit(1);
     }
     if (result.length == 0) {
-        console.log("Entry Email-Credentials Missing");
-        process.exit(1);
+        console.error("Entry Email-Credentials Missing");
+        //process.exit(1);
     }
     email_data = result[0];
 });
