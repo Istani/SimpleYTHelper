@@ -5,16 +5,14 @@ module.exports = {
       script: "./website/index.js",
       log_date_format: "YYYY-MM-DD HH:mm Z",
       error_file: "logs/err.log",
-      out_file: "logs/out.log",
-      merge_logs: true
+      out_file: "logs/out.log"
     },
     {
       name: "Backup",
       script: "./cronjob/cronjob.js",
       log_date_format: "YYYY-MM-DD HH:mm Z",
       error_file: "logs/err.log",
-      out_file: "logs/out.log",
-      merge_logs: true
+      out_file: "logs/out.log"
     },
     {
       name: "Discord-Bot",
@@ -23,7 +21,6 @@ module.exports = {
       restart_delay: 1000,
       error_file: "logs/err.log",
       out_file: "logs/out.log",
-      merge_logs: true
     },
     {
       name: "YouTube-Bot",
@@ -32,31 +29,27 @@ module.exports = {
       restart_delay: 1000,
       error_file: "logs/err.log",
       out_file: "logs/out.log",
-      merge_logs: true
     },
     {
       name: "Gamespage",
       script: "./gamesite/app.js",
       log_date_format: "YYYY-MM-DD HH:mm Z",
       error_file: "logs/err.log",
-      out_file: "logs/out.log",
-      merge_logs: true
+      out_file: "logs/out.log"
     },
     {
       name: "Gameimport-Steam",
-      script: "./steam/games-steam.js",
+      script: "./steam/app.js",
       log_date_format: "YYYY-MM-DD HH:mm Z",
       error_file: "logs/err.log",
-      out_file: "logs/out.log",
-      merge_logs: true
+      out_file: "logs/out.log"
     },
     {
       name: "Gameimport-Humble",
       script: "./humble/games-humble.js",
       log_date_format: "YYYY-MM-DD HH:mm Z",
       error_file: "logs/err.log",
-      out_file: "logs/out.log",
-      merge_logs: true
+      out_file: "logs/out.log"
     }
   ]
 }

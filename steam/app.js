@@ -104,6 +104,7 @@ async function getAppDetails(appid) {
 
       //console.log('Data:',data);
       if (overview_data.type=='game') {
+        console.log(appid, 'Import');
         if (fs.existsSync('./tmp/game.json')==false) {
           fs.writeFileSync("./tmp/game.json",JSON.stringify(data));
         }
@@ -124,6 +125,8 @@ async function getAppDetails(appid) {
           GameLinks.query().patch(store_data).where('name', store_data.name).where('store',store_data.store);
         }
 
+      } else {
+        console.log(appid, 'No Game');
       }
     } catch (error) {
       console.error(error);
