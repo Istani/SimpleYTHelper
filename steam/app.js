@@ -1,248 +1,178 @@
-const request = require("request");
-const queue_lib = require('better-queue');
+process.chdir(__dirname);
+const package_info = require('./package.json');
+var software=package_info.name+" (V "+package_info.version+")";
+console.log(software);
+console.log("===");
+console.log();
+
+const async = require('async');
+const fs = require('fs');
+const request = require('request-promise');
+const sleep = require('await-sleep');
 const striptags = require('striptags');
-const async = require("async");
 
-const Games = require('./models/games.js');
 const Steam = require('./models/steam.js');
-
-var queue = new queue_lib(function (input, cb) {input.func(cb);}, {});
+const Games = require('./models/game.js');
+const GameLinks = require('./models/game_link.js');
 
 async function main() {
-  // Set wrong types to ignore
-  imp();
+  // get all unknown
+  var steam_apps = await Steam.query().where('type','ERROR');
+  console.log(steam_apps.length, 'Errored Steam Apps');
+  for (var i = 0; i<steam_apps.length;i++) {
+    await getAppDetails(steam_apps[i].appid);
+  }
 
-  // Import ignore list
-  var Ignore_List = await Steam.query().where('ignore',true);
+  steam_apps = await Steam.query().where('type','UNKNOWN');
+  console.log(steam_apps.length, 'Unknown Steam Apps');
+  for (var i = 0; i<steam_apps.length;i++) {
+    await getAppDetails(steam_apps[i].appid);
+  }
+
+  // Set wrong types to ignore
+  var tmp_update=0;
+  var steam_types = await Steam.query().select('type').groupBy('type');
+  for (var i = 0; i<steam_types.length; i++) {
+    console.log('Steam Type:', steam_types[i].type);
+    if (steam_types[i].type == 'game') { continue; }
+    if (steam_types[i].type == 'UNKNOWN') { continue; }
+    if (steam_types[i].type == 'ERROR') { continue; }
+    tmp_update += await Steam.query().patch({ignore: true}).where('type',steam_types[i].type);
+  }
+  if (steam_apps.length<=100) {
+    await getAppOverview();
+  } else {
+    console.log('Skip Import of new Overview');
+  }
+
+  var steam_apps = await Steam.query().where('ignore',false);
+  for (var i = 0; i<steam_apps.length;i++) {
+    await getAppDetails(steam_apps[i].appid);
+  }
+
+  console.log("Game Import Done, Wating 1 Hour for Restart");
+  setTimeout(() => { process.exit(0) }, 60 * 60 * 1000);
 }
 main();
 
+async function getAppDetails(appid) {
+  //console.log('Import App',appid);
+  var query_string = {appids: appid, cc: 'de', l: 'german'};
+  var url = Steam.URL_GamesAPI();
+  await request({url: url,qs: query_string}, async function (error, response, body) {
+    if (error) {
+      console.error(error);
+      await Steam.query().patch({type: 'ERROR'}).where('appid',appid).where('type','UNKNOWN');
+      return;
+    }
+    try {
+      var data = JSON.parse(body);
+      if ((typeof data == "undefined") || (data == null) || (typeof data[appid] == "undefined")) {
+        console.error(appid, 'No Data');
+        await sleep(1000 * 60);
+        await getAppDetails(appid);
+        return;
+      }
+      if (data[appid].success==false) {
+        console.error(appid,'No Success');
+        await Steam.query().patch({type: 'FAILED'}).where('appid',appid);
+        return;
+      }
+      var app_data=data[appid].data;
+      await Steam.query().patch({type: app_data.type}).where('appid',appid);
 
+      var overview_data = {
+        type: app_data.type,
+        banner: app_data.header_image,
+        name: Games.getEncodedName(app_data.name),
+        display_name: app_data.name,
+        description : striptags(app_data.about_the_game, ['br'])
+      };
 
+      var store_data = {
+        store: 'Steam',
+        link: 'https://store.steampowered.com/app/' + appid,
+        name: overview_data.name
+      };
+      if (typeof app_data.price_overview == "undefined") {
+        store_data.price = 0;
+        store_data.discount = 0;
+      } else {
+        store_data.price = app_data.price_overview.final;
+        store_data.discount = parseInt(app_data.price_overview.discount_percent);
+      }
 
-function start_import() {
-	console.log("Start Game Import");
-	var Game_List;
-	steam_controller.LIST_UNKONWN(
-		Game_List,
-		(data, err) => {
-			if (err) { console.error("Controller Import", err); }
-			if (data != null) {
-				queue.push({ id: "GAME_" + data.appid, func: (callback) => { request_game(data.appid, (err) => { if (err) { console.error("Controller Import", err); } callback(); }); } });
-			}
-		}
-		, null
-	);
-	Game_List = null;
+      //console.log('Data:',data);
+      if (overview_data.type=='game') {
+        if (fs.existsSync('./tmp/game.json')==false) {
+          fs.writeFileSync("./tmp/game.json",JSON.stringify(data));
+        }
 
-	request_overview();
+        //console.log('Overview:', overview_data);
+        var check_game = Games.query().where('name',overview_data.name);
+        if (check_game.length==0) {
+          Games.query().insert(overview_data);
+        } else {
+          Games.query().patch(overview_data).where('name', overview_data.name);
+        }
+
+        //console.log('Store:', store_data);
+        var check_store = GameLinks.query().where('name',store_data.name).where('store',store_data.store);
+        if (check_store.length==0) {
+          GameLinks.query().insert(store_data);
+        } else {
+          GameLinks.query().patch(store_data).where('name', store_data.name).where('store',store_data.store);
+        }
+
+      }
+    } catch (error) {
+      console.error(error);
+      await Steam.query().patch({type: 'ERROR'}).where('appid',appid);
+      return;
+    }
+  });
 }
+async function getAppOverview() {
+  var url=Steam.URL_Overview();
+  console.log('Get Overview',url);
 
-function start_update() {
-	var Game_List;
-	steam_controller.LIST(
-		Game_List,
-		(data, err) => {
-			if (err) { console.error("Controller Import", err); }
-			if (data != null) {
-				queue.push({ id: "GAME_" + data.appid, func: (callback) => { request_game(data.appid, (err) => { if (err) { console.error("Controller Import", err); } callback(); }); } });
-			}
-		}
-		, null
-	);
-	Game_List = null;
+  if (fs.existsSync('./tmp/overview.json')==false) {
+    await request(url, function (error, response, body) {
+      if (error) {
+        console.error(error);
+        return;
+      }
+      try {
+        var data = JSON.parse(body);
+        data = data.applist.apps.app;
+        fs.writeFileSync("./tmp/overview.json",JSON.stringify(data));
+      } catch (error) {
+        console.error(error);
+        return;
+      }
+    });
+  }
 
-	//request_overview();
+  try {
+    var new_apps=0;
+    var data = require('./tmp/overview.json');
+    var base = await Steam.query();
+    for (var i = 0; i<data.length;i++) {
+      var entry = data[i];
+      //console.log(entry);
+      var new_entry = { appid: entry.appid, ignore: 0, type: "UNKNOWN" };
+      var check = base.find((e) => {return e.appid==new_entry.appid});
+      if (typeof check == "undefined") {
+        console.log('Found new SteamApp', new_entry.appid);
+        await Steam.query().insert(new_entry);
+        new_apps++;
+      } else {
+        console.log('Already imported SteamApp', new_entry.appid);
+      }
+    }
+    console.log(new_apps,'new SteamApps found!');
+  } catch (error) {
+    console.error(error);
+  }
+  //fs.unlinkSync('tmp/overview.json');
 }
-
-
-function request_overview() {
-	console.log("Start Overview Import");
-	request(overview_url, function (error, response, body) {
-		console.log("Importing Gamelist");
-		if (error) {
-			console.error("Overview", error);
-			process.exit(1);
-		}
-		try {
-			var data = JSON.parse(body);
-			data = data.applist.apps.app;
-			//console.log("Overview:", Ignore_List.size, data.size);
-			data.forEach(function (game) {
-				if (Ignore_List.indexOf("" + game.appid) >= 0) {
-					// Gibt es schon!	
-					console.log("Ignore", game.appid);
-				} else {
-					queue.push({ id: "CONTROLLER_" + game.appid, func: (callback) => { console.log("Controller Check", game.appid); steam_controller.INSERT_UPDATE(null, (err) => { if (err) { console.error("Controller Import", err); } callback(); }, { appid: game.appid, ignore: 0, type: "UNKNOWN" }); } });
-				}
-			});
-			data = null;
-
-		} catch (err) {
-			console.error("Parse", err);
-		}
-		console.log("Start Game Import");
-		start_update();
-	});
-}
-
-function request_game(appid, callback) {
-	console.log("Game Import", appid);
-	var query_string = {
-		appids: appid,
-		cc: 'de',
-		l: 'german'
-	};
-	request({
-		url: games_url,
-		qs: query_string
-	}, function (err, response, body) {
-		if (err) {
-			console.error("Get Game Details", err);
-			callback();
-			return;
-		}
-		try {
-			var data = JSON.parse(body);
-			if ((typeof data == "undefined") || (data == null) || (typeof data[appid] == "undefined")) {
-				console.error("STEAM", appid, "No Data? Rate Limit?");
-				if (typeof types["No Data"] == "undefined") {
-					types["No Data"] = 1;
-				} else {
-					types["No Data"]++;
-				}
-				setTimeout(() => { request_game(appid, callback); }, 1000 * 60);
-				return;
-			} else {
-				try {
-					if (data[appid].success) {
-						var game_data = data[appid].data;
-						if (typeof types[game_data.type] == "undefined") {
-							types[game_data.type] = 1;
-						} else {
-							types[game_data.type]++;
-						}
-
-						var overview_data = {};
-						overview_data.type = game_data.type;
-						overview_data.name = game_db.get_name(game_data.name);
-                                                overview_data.display_name=game_data.name;
-						overview_data.description = striptags(game_data.about_the_game, ['br']);//game_data.short_description;
-						overview_data.banner = game_data.header_image;
-						game_db.import_details(null, (err) => { if (err) { console.error("Game Import", err); } }, overview_data);
-
-						var store_data = {};
-						store_data.store = 'Steam';
-						store_data.link = 'https://store.steampowered.com/app/' + appid;
-						store_data.name = game_db.get_name(game_data.name);
-						if (typeof game_data.price_overview == "undefined") {
-							store_data.price = 0;
-							store_data.discount = 0;
-						} else {
-							store_data.price = game_data.price_overview.final;
-							store_data.discount = parseInt(game_data.price_overview.discount_percent);
-						}
-
-
-						game_db.import_store_links(null, (err) => { if (err) { console.error("Game Import", err); } }, store_data);
-						steam_controller.INSERT_UPDATE(null, (err) => { if (err) { console.error("Controller Import", err); } callback(); }, { appid: appid, ignore: 0, type: game_data.type });
-
-						//console.log("overview_data", overview_data);
-						//console.log("store_data", store_data);
-
-						//console.log("orginal_data", game_data);
-
-					} else {
-						console.error("STEAM", "No Success for", appid);
-						if (typeof types["No Success"] == "undefined") {
-							types["No Success"] = 1;
-						} else {
-							types["No Success"]++;
-						}
-						steam_controller.INSERT_UPDATE(null, (err) => { if (err) { console.error("Controller Import", err); } callback(); }, { appid: appid, ignore: 1, type: "No Success" });
-					}
-				} catch (err) {
-					console.error(err);
-				}
-			}
-		} catch (err) {
-			console.error("Parse", err, games_url);
-		}
-		callback();
-	});
-}
-
-function imp() {
-	
-	async.series(
-		[
-			function (callback) {
-				var tmp_type = "advertising";
-				console.log("DELETEING ", tmp_type);
-				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } game_db.delete_game_and_links_BYTYPE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: tmp_type }); }, { type: tmp_type });
-			},
-			function (callback) {
-				var tmp_type = "demo";
-				console.log("DELETEING ", tmp_type);
-				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } game_db.delete_game_and_links_BYTYPE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: tmp_type }); }, { type: tmp_type });
-			},
-			function (callback) {
-				var tmp_type = "dlc";
-				console.log("DELETEING ", tmp_type);
-				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } game_db.delete_game_and_links_BYTYPE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: tmp_type }); }, { type: tmp_type });
-			},
-			function (callback) {
-				var tmp_type = "episode";
-				console.log("DELETEING ", tmp_type);
-				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } game_db.delete_game_and_links_BYTYPE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: tmp_type }); }, { type: tmp_type });
-			},
-			function (callback) {
-				var tmp_type = "game";
-				//console.log("DELETEING ", temp_type);
-				//steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } game_db.delete_game_and_links_BYTYPEcallback(null, null, (err) => { if (err) { console.error(err); } callback(); }, { type: tmp_type }); }, { type: tmp_type });
-				callback();
-			},
-			function (callback) {
-				var tmp_type = "hardware";
-				console.log("DELETEING ", tmp_type);
-				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } game_db.delete_game_and_links_BYTYPE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: tmp_type }); }, { type: tmp_type });
-			},
-			function (callback) {
-				var tmp_type = "mod";
-				console.log("DELETEING ", tmp_type);
-				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } game_db.delete_game_and_links_BYTYPE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: tmp_type }); }, { type: tmp_type });
-			},
-			function (callback) {
-				var tmp_type = "movie";
-				console.log("DELETEING ", tmp_type);
-				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } game_db.delete_game_and_links_BYTYPE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: tmp_type }); }, { type: tmp_type });
-			},
-			function (callback) {
-				var tmp_type = "series";
-				console.log("DELETEING ", tmp_type);
-				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } game_db.delete_game_and_links_BYTYPE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: tmp_type }); }, { type: tmp_type });
-			},
-			function (callback) {
-				var tmp_type = "video";
-				console.log("DELETEING ", tmp_type);
-				steam_controller.SET_IGNORE(null, (err) => { if (err) { console.error(err); } game_db.delete_game_and_links_BYTYPE(null, (err) => { if (err) { console.error(err); } callback(); }, { type: tmp_type }); }, { type: tmp_type });
-			}
-		]
-		, function (e) {
-			if (e) {
-				console.error(e);
-			}
-			//request_overview();
-			start_import();
-		});
-}
-
-
-queue.on('drain', function () {
-	console.log("===============");
-	console.log(types);
-	console.log("===============");
-
-	console.log("Game Import Done, Wating 1 Hour for Restart");
-	setTimeout(() => { process.exit(0) }, 60 * 60 * 1000);	// 1 Stunde warten bevor Ende und Neustart
-})
