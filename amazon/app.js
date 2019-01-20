@@ -1,4 +1,11 @@
-var config = require('dotenv').config();
+process.chdir(__dirname);
+const package_info = require('./package.json');
+var software=package_info.name+" (V "+package_info.version+")";
+console.log(software);
+console.log("===");
+console.log();
+const config = require('dotenv').config({path: '../.env'});
+
 var amazon = require('amazon-product-api');
 
 var client = amazon.createClient({
