@@ -1,5 +1,13 @@
+process.chdir(__dirname);
+const package_info = require('./package.json');
+var software=package_info.name+" (V "+package_info.version+")";
+console.log(software);
+console.log("===");
+console.log();
+const config = require('dotenv').config({path: '../.env'});
+
 var FeedParser = require('feedparser');
-var request = require('request'); // for fetching the feed
+var request = require('request-promise'); // for fetching the feed
 
 var req = request('https://www.factorio.com/blog/rss')
 var feedparser = new FeedParser();

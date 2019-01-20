@@ -10,6 +10,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "feedparser": "^2.2.9"
+    "dotenv": "^6.2.0",
+    "feedparser": "^2.2.9",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2"
   }
 }
