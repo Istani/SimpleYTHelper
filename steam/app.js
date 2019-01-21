@@ -177,5 +177,5 @@ async function getAppOverview() {
   } catch (error) {
     console.error(error);
   }
-  //fs.unlinkSync('tmp/overview.json');
+  fs.unlinkSync('tmp/overview.json');
 }
