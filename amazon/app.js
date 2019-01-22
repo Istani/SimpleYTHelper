@@ -7,20 +7,28 @@ console.log();
 const config = require('dotenv').config({path: '../.env'});
 
 const amazon = require('amazon-product-api');
+const Queue = require('better-queue');
 
 var client = amazon.createClient({
   awsId: process.env.AMAZON_ID,
   awsSecret: process.env.AMAZON_SECRET,
   awsTag: process.env.AMAZON_TAG
 });
+var q = new Queue(function (input) {
+  input();
+});
+q.on('drain', function (){
+ process.exit(0);
+});
 
 var game='Kill Bill';
-async function getDetails(name) {
+async function getDetails(name, callback) {
   await client.itemSearch({
     keywords: name,
     responseGroup: 'ItemAttributes,Offers,Images',
     domain: 'webservices.amazon.de'
   }, function (err, results, response) {
+    var returns = [];
     if (err) {
       console.error(err[0].Error);
     } else {
@@ -36,11 +44,12 @@ async function getDetails(name) {
           picture: results[i].MediumImage[0].URL[0],
           price: results[i].OfferSummary[0].LowestNewPrice[0].Amount[0]
         };
-        console.log(product);
-      //return product;
+        returns.push(product);
+        //console.log(product);
       }
     }
+    callback(returns);
   });
 }
 
-getDetails(game);
+q.push( () => {getDetails(game,(x) => console.log(x))});
