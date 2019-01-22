@@ -6,7 +6,7 @@ console.log("===");
 console.log();
 const config = require('dotenv').config({path: '../.env'});
 
-var amazon = require('amazon-product-api');
+const amazon = require('amazon-product-api');
 
 var client = amazon.createClient({
   awsId: process.env.AMAZON_ID,
@@ -14,15 +14,33 @@ var client = amazon.createClient({
   awsTag: process.env.AMAZON_TAG
 });
 
-client.itemSearch({
-  keywords: 'Kill Bill',
-  responseGroup: 'ItemAttributes,Offers,Images',
-  domain: 'webservices.amazon.de'
-}, function (err, results, response) {
-  if (err) {
-    console.error(err[0].Error);
-  } else {
-    console.log(results);  // products (Array of Object)
-    console.log(response); // response (Array where the first element is an Object that contains Request, Item, etc.)
-  }
-});
+var game='Kill Bill';
+async function getDetails(name) {
+  await client.itemSearch({
+    keywords: name,
+    responseGroup: 'ItemAttributes,Offers,Images',
+    domain: 'webservices.amazon.de'
+  }, function (err, results, response) {
+    if (err) {
+      console.error(err[0].Error);
+    } else {
+      for (var i = 0;i<results.length;i++) {
+        //console.log(results[i]);  // products (Array of Object)
+        //console.log(response); // response (Array where the first element is an Object that contains Request, Item, etc.)
+        var product = {
+          store: 'amazon',
+          product: results[i].ASIN[0],
+          name: name,
+          link: results[i].DetailPageURL[0],
+          display_name:results[i].ItemAttributes[0].Title[0],
+          picture: results[i].MediumImage[0].URL[0],
+          price: results[i].OfferSummary[0].LowestNewPrice[0].Amount[0]
+        };
+        console.log(product);
+      //return product;
+      }
+    }
+  });
+}
+
+getDetails(game);
