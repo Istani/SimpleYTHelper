@@ -1,6 +1,6 @@
 process.chdir(__dirname);
 const package_info = require('./package.json');
-var software=package_info.name+" (V "+package_info.version+")";
+var software = package_info.name + " (V " + package_info.version + ")";
 console.log(software);
 console.log("===");
 console.log();
@@ -17,36 +17,36 @@ const GameLinks = require('./models/game_link.js');
 
 async function main() {
   // get all unknown
-  var steam_apps = await Steam.query().where('type','ERROR');
+  var steam_apps = await Steam.query().where('type', 'ERROR');
   console.log(steam_apps.length, 'Errored Steam Apps');
-  for (var i = 0; i<steam_apps.length;i++) {
+  for (var i = 0; i < steam_apps.length; i++) {
     await getAppDetails(steam_apps[i].appid);
   }
 
-  steam_apps = await Steam.query().where('type','UNKNOWN');
+  steam_apps = await Steam.query().where('type', 'UNKNOWN');
   console.log(steam_apps.length, 'Unknown Steam Apps');
-  for (var i = 0; i<steam_apps.length;i++) {
+  for (var i = 0; i < steam_apps.length; i++) {
     await getAppDetails(steam_apps[i].appid);
   }
 
   // Set wrong types to ignore
-  var tmp_update=0;
+  var tmp_update = 0;
   var steam_types = await Steam.query().select('type').groupBy('type');
-  for (var i = 0; i<steam_types.length; i++) {
+  for (var i = 0; i < steam_types.length; i++) {
     console.log('Steam Type:', steam_types[i].type);
     if (steam_types[i].type == 'game') { continue; }
     if (steam_types[i].type == 'UNKNOWN') { continue; }
     if (steam_types[i].type == 'ERROR') { continue; }
-    tmp_update += await Steam.query().patch({ignore: true}).where('type',steam_types[i].type);
+    tmp_update += await Steam.query().patch({ ignore: true }).where('type', steam_types[i].type);
   }
-  if (steam_apps.length<=100) {
+  if (steam_apps.length <= 100) {
     await getAppOverview();
   } else {
     console.log('Skip Import of new Overview');
   }
 
-  var steam_apps = await Steam.query().where('ignore',false);
-  for (var i = 0; i<steam_apps.length;i++) {
+  var steam_apps = await Steam.query().where('ignore', false);
+  for (var i = 0; i < steam_apps.length; i++) {
     await getAppDetails(steam_apps[i].appid);
   }
 
@@ -57,36 +57,37 @@ main();
 
 async function getAppDetails(appid) {
   //console.log('Import App',appid);
-  var query_string = {appids: appid, cc: 'de', l: 'german'};
+  var query_string = { appids: appid, cc: 'de', l: 'german' };
   var url = Steam.URL_GamesAPI();
-  await request({url: url,qs: query_string}, async function (error, response, body) {
+  await request({ url: url, qs: query_string }, async function (error, response, body) {
     if (error) {
       console.error(error);
-      await Steam.query().patch({type: 'ERROR'}).where('appid',appid).where('type','UNKNOWN');
+      await Steam.query().patch({ type: 'ERROR' }).where('appid', appid).where('type', 'UNKNOWN');
       return;
     }
     try {
       var data = JSON.parse(body);
       if ((typeof data == "undefined") || (data == null) || (typeof data[appid] == "undefined")) {
         console.error(appid, 'No Data');
+        await Steam.query().patch({ type: 'ERROR' }).where('appid', appid).where('type', 'UNKNOWN');
         await sleep(1000 * 60);
         await getAppDetails(appid);
         return;
       }
-      if (data[appid].success==false) {
-        console.error(appid,'No Success');
-        await Steam.query().patch({type: 'FAILED'}).where('appid',appid);
+      if (data[appid].success == false) {
+        console.error(appid, 'No Success');
+        await Steam.query().patch({ type: 'FAILED' }).where('appid', appid);
         return;
       }
-      var app_data=data[appid].data;
-      await Steam.query().patch({type: app_data.type}).where('appid',appid);
+      var app_data = data[appid].data;
+      await Steam.query().patch({ type: app_data.type }).where('appid', appid);
 
       var overview_data = {
         type: app_data.type,
         banner: app_data.header_image,
         name: Games.getEncodedName(app_data.name),
         display_name: app_data.name,
-        description : striptags(app_data.about_the_game, ['br'])
+        description: striptags(app_data.about_the_game, ['br'])
       };
 
       var store_data = {
@@ -103,26 +104,26 @@ async function getAppDetails(appid) {
       }
 
       //console.log('Data:',data);
-      if (overview_data.type=='game') {
+      if (overview_data.type == 'game') {
         console.log(appid, 'Import');
-        if (fs.existsSync('./tmp/game.json')==false) {
-          fs.writeFileSync("./tmp/game.json",JSON.stringify(data));
+        if (fs.existsSync('./tmp/game.json') == false) {
+          fs.writeFileSync("./tmp/game.json", JSON.stringify(data));
         }
 
         //console.log('Overview:', overview_data);
-        var check_game = Games.query().where('name',overview_data.name);
-        if (check_game.length==0) {
-          Games.query().insert(overview_data);
+        var check_game = await Games.query().where('name', overview_data.name);
+        if (check_game.length == 0) {
+          await Games.query().insert(overview_data);
         } else {
-          Games.query().patch(overview_data).where('name', overview_data.name);
+          await Games.query().patch(overview_data).where('name', overview_data.name);
         }
 
         //console.log('Store:', store_data);
-        var check_store = GameLinks.query().where('name',store_data.name).where('store',store_data.store);
-        if (check_store.length==0) {
-          GameLinks.query().insert(store_data);
+        var check_store = await GameLinks.query().where('name', store_data.name).where('store', store_data.store);
+        if (check_store.length == 0) {
+          await GameLinks.query().insert(store_data);
         } else {
-          GameLinks.query().patch(store_data).where('name', store_data.name).where('store',store_data.store);
+          await GameLinks.query().patch(store_data).where('name', store_data.name).where('store', store_data.store);
         }
 
       } else {
@@ -130,16 +131,17 @@ async function getAppDetails(appid) {
       }
     } catch (error) {
       console.error(error);
-      await Steam.query().patch({type: 'ERROR'}).where('appid',appid);
+      await Steam.query().patch({ type: 'ERROR' }).where('appid', appid);
       return;
     }
   });
+  return;
 }
 async function getAppOverview() {
-  var url=Steam.URL_Overview();
-  console.log('Get Overview',url);
+  var url = Steam.URL_Overview();
+  console.log('Get Overview', url);
 
-  if (fs.existsSync('./tmp/overview.json')==false) {
+  if (fs.existsSync('./tmp/overview.json') == false) {
     await request(url, function (error, response, body) {
       if (error) {
         console.error(error);
@@ -148,7 +150,7 @@ async function getAppOverview() {
       try {
         var data = JSON.parse(body);
         data = data.applist.apps.app;
-        fs.writeFileSync("./tmp/overview.json",JSON.stringify(data));
+        fs.writeFileSync("./tmp/overview.json", JSON.stringify(data));
       } catch (error) {
         console.error(error);
         return;
@@ -157,14 +159,14 @@ async function getAppOverview() {
   }
 
   try {
-    var new_apps=0;
+    var new_apps = 0;
     var data = require('./tmp/overview.json');
     var base = await Steam.query();
-    for (var i = 0; i<data.length;i++) {
+    for (var i = 0; i < data.length; i++) {
       var entry = data[i];
       //console.log(entry);
       var new_entry = { appid: entry.appid, ignore: 0, type: "UNKNOWN" };
-      var check = base.find((e) => {return e.appid==new_entry.appid});
+      var check = base.find((e) => { return e.appid == new_entry.appid });
       if (typeof check == "undefined") {
         console.log('Found new SteamApp', new_entry.appid);
         await Steam.query().insert(new_entry);
@@ -173,7 +175,7 @@ async function getAppOverview() {
         console.log('Already imported SteamApp', new_entry.appid);
       }
     }
-    console.log(new_apps,'new SteamApps found!');
+    console.log(new_apps, 'new SteamApps found!');
   } catch (error) {
     console.error(error);
   }
