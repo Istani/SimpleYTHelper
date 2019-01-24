@@ -9,6 +9,9 @@ const config = require('dotenv').config({path: '../.env'});
 const amazon = require('amazon-product-api');
 const Queue = require('better-queue');
 
+const Games = require('./models/game.js');
+const GameMerch = require('./models/game_merch.js');
+
 var client = amazon.createClient({
   awsId: process.env.AMAZON_ID,
   awsSecret: process.env.AMAZON_SECRET,

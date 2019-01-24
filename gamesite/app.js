@@ -13,7 +13,7 @@ var exphbs = require('express-handlebars');
 const Game = require("./models/game.js");
 var All_Games;
 async function GetAllGames() {
-  const g = await Game.query().where({type:'game'}).eager("links");
+  const g = await Game.query().where({type:'game'}).eager("[links, merch]");
   All_Games=g;
   console.log("Total of",All_Games.length,"Games Loaded");
   require("./img_importer.js");
