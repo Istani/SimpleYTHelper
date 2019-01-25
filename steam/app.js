@@ -59,83 +59,90 @@ async function getAppDetails(appid) {
   //console.log('Import App',appid);
   var query_string = { appids: appid, cc: 'de', l: 'german' };
   var url = Steam.URL_GamesAPI();
-  await request({ url: url, qs: query_string }, async function (error, response, body) {
-    if (error) {
-      console.error(error);
-      await Steam.query().patch({ type: 'ERROR' }).where('appid', appid).where('type', 'UNKNOWN');
-      return;
-    }
-    try {
-      var data = JSON.parse(body);
-      if ((typeof data == "undefined") || (data == null) || (typeof data[appid] == "undefined")) {
-        console.error(appid, 'No Data');
+  try {
+    await request({ url: url, qs: query_string }, async function (error, response, body) {
+      if (response.statusCode == 429) { // Doesnt Trigger... Need TryCatch arround the Request, for the Programm to continue...
+        error = "Too Many Requests";
+      }
+      if (error) {
+        console.error(error);
         await Steam.query().patch({ type: 'ERROR' }).where('appid', appid).where('type', 'UNKNOWN');
-        await sleep(1000 * 60);
-        await getAppDetails(appid);
-        return;
-      }
-      if (data[appid].success == false) {
-        console.error(appid, 'No Success');
-        await Steam.query().patch({ type: 'FAILED' }).where('appid', appid);
-        return;
-      }
-      var app_data = data[appid].data;
-      await Steam.query().patch({ type: app_data.type }).where('appid', appid);
-
-      var overview_data = {
-        type: app_data.type,
-        banner: app_data.header_image,
-        name: Games.getEncodedName(app_data.name),
-        display_name: app_data.name,
-        description: striptags(app_data.about_the_game, ['br'])
-      };
-
-      var store_data = {
-        store: 'Steam',
-        link: 'https://store.steampowered.com/app/' + appid,
-        name: overview_data.name
-      };
-      if (typeof app_data.price_overview == "undefined") {
-        store_data.price = 0;
-        store_data.discount = 0;
+        await sleep(1000 * 60 * 5);
       } else {
-        store_data.price = app_data.price_overview.final;
-        store_data.discount = parseInt(app_data.price_overview.discount_percent);
+        try {
+          var data = JSON.parse(body);
+          if ((typeof data == "undefined") || (data == null) || (typeof data[appid] == "undefined")) {
+            console.error(appid, 'No Data'); // Do we really need this? Should be error 429...
+            await Steam.query().patch({ type: 'ERROR' }).where('appid', appid).where('type', 'UNKNOWN');
+            await sleep(1000 * 60 * 5);
+          } else if (data[appid].success == false) {
+            console.error(appid, 'No Success');
+            await Steam.query().patch({ type: 'FAILED' }).where('appid', appid);
+            return;
+          } else {
+            var app_data = data[appid].data;
+            await Steam.query().patch({ type: app_data.type }).where('appid', appid);
+
+            var overview_data = {
+              type: app_data.type,
+              banner: app_data.header_image,
+              name: Games.getEncodedName(app_data.name),
+              display_name: app_data.name,
+              description: striptags(app_data.about_the_game, ['br'])
+            };
+
+            var store_data = {
+              store: 'Steam',
+              link: 'https://store.steampowered.com/app/' + appid,
+              name: overview_data.name
+            };
+            if (typeof app_data.price_overview == "undefined") {
+              store_data.price = 0;
+              store_data.discount = 0;
+            } else {
+              store_data.price = app_data.price_overview.final;
+              store_data.discount = parseInt(app_data.price_overview.discount_percent);
+            }
+
+            //console.log('Data:',data);
+            if (overview_data.type == 'game') {
+              console.log(appid, 'Import');
+              if (fs.existsSync('./tmp/game.json') == false) {
+                fs.writeFileSync("./tmp/game.json", JSON.stringify(data));
+              }
+
+              //console.log('Overview:', overview_data);
+              var check_game = await Games.query().where('name', overview_data.name);
+              if (check_game.length == 0) {
+                await Games.query().insert(overview_data);
+              } else {
+                await Games.query().patch(overview_data).where('name', overview_data.name);
+              }
+
+              //console.log('Store:', store_data);
+              var check_store = await GameLinks.query().where('name', store_data.name).where('store', store_data.store);
+              if (check_store.length == 0) {
+                await GameLinks.query().insert(store_data);
+              } else {
+                await GameLinks.query().patch(store_data).where('name', store_data.name).where('store', store_data.store);
+              }
+
+            } else {
+              console.log(appid, 'No Game');
+            }
+          }
+        } catch (error) {
+          console.error(error);
+          await Steam.query().patch({ type: 'ERROR' }).where('appid', appid);
+          await sleep(1000 * 60 * 5);
+        }
       }
-
-      //console.log('Data:',data);
-      if (overview_data.type == 'game') {
-        console.log(appid, 'Import');
-        if (fs.existsSync('./tmp/game.json') == false) {
-          fs.writeFileSync("./tmp/game.json", JSON.stringify(data));
-        }
-
-        //console.log('Overview:', overview_data);
-        var check_game = await Games.query().where('name', overview_data.name);
-        if (check_game.length == 0) {
-          await Games.query().insert(overview_data);
-        } else {
-          await Games.query().patch(overview_data).where('name', overview_data.name);
-        }
-
-        //console.log('Store:', store_data);
-        var check_store = await GameLinks.query().where('name', store_data.name).where('store', store_data.store);
-        if (check_store.length == 0) {
-          await GameLinks.query().insert(store_data);
-        } else {
-          await GameLinks.query().patch(store_data).where('name', store_data.name).where('store', store_data.store);
-        }
-
-      } else {
-        console.log(appid, 'No Game');
-      }
-    } catch (error) {
-      console.error(error);
-      await Steam.query().patch({ type: 'ERROR' }).where('appid', appid);
-      return;
-    }
-  });
-  return;
+    });
+  } catch (error) {
+    //console.error(error); // To long Error Message for Status Code 429
+    await Steam.query().patch({ type: 'ERROR' }).where('appid', appid);
+    await sleep(1000 * 60 * 5);
+  }
 }
 async function getAppOverview() {
   var url = Steam.URL_Overview();
