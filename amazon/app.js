@@ -18,7 +18,7 @@ var client = amazon.createClient({
   awsSecret: process.env.AMAZON_SECRET,
   awsTag: process.env.AMAZON_TAG
 });
-var q = new Queue(function (input) {
+var q = new Queue(function (input, cb) {
   console.log('job',input.id);
   async.series([
     function (callback_intern) {
@@ -28,7 +28,7 @@ var q = new Queue(function (input) {
     if (err) {
       console.error(err);
     }
-    console.log('next');
+    cb();
   });
 });
 /*q.on('drain', function (){
@@ -46,19 +46,23 @@ async function getDetails(name, callback) {
       // SKIP AMAZON PRASE
     } else {
       for (var i = 0;i<results.length;i++) {
-        //console.log(results[i]);  // products (Array of Object)
+        console.log(results[i]);  // products (Array of Object)
         //console.log(response); // response (Array where the first element is an Object that contains Request, Item, etc.)
-        var product = {
-          store: 'amazon',
-          product: results[i].ASIN[0],
-          name: name,
-          link: results[i].DetailPageURL[0],
-          display_name:results[i].ItemAttributes[0].Title[0],
-          picture: results[i].MediumImage[0].URL[0],
-          price: results[i].OfferSummary[0].LowestNewPrice[0].Amount[0]
-        };
-        returns.push(product);
-        //console.log(product);
+        try {
+          var product = {
+            store: 'amazon',
+            product: results[i].ASIN[0],
+            name: name,
+            link: results[i].DetailPageURL[0],
+            display_name:results[i].ItemAttributes[0].Title[0],
+            picture: results[i].MediumImage[0].URL[0],
+            price: results[i].OfferSummary[0].LowestNewPrice[0].Amount[0]
+          };
+          returns.push(product);
+          //console.log(product);
+        } catch (e) {
+          console.error(e);
+        }
       }
     }
     callback(err, returns);
@@ -75,8 +79,9 @@ async function AddGameMerch(game,callback) {
       if (err) {
         // SKIP DATA
       } else {
+        console.log(data.length);
         console.log(data);
-        //process.exit(0);
+        process.exit(0);
       }
       callback(err,data);
     });
