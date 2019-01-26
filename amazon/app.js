@@ -6,6 +6,7 @@ console.log("===");
 console.log();
 const config = require('dotenv').config({path: '../.env'});
 
+const async = require('async');
 const amazon = require('amazon-product-api');
 const Queue = require('better-queue');
 
@@ -18,13 +19,22 @@ var client = amazon.createClient({
   awsTag: process.env.AMAZON_TAG
 });
 var q = new Queue(function (input) {
-  input();
+  console.log('job',input.id);
+  async.series([
+    function (callback_intern) {
+      input.f(input.d,callback_intern);
+    }
+  ], function (err,data) {
+    if (err) {
+      console.error(err);
+    }
+    console.log('next');
+  });
 });
-q.on('drain', function (){
+/*q.on('drain', function (){
  process.exit(0);
-});
+});*/
 
-var game='Kill Bill';
 async function getDetails(name, callback) {
   await client.itemSearch({
     keywords: name,
@@ -33,7 +43,7 @@ async function getDetails(name, callback) {
   }, function (err, results, response) {
     var returns = [];
     if (err) {
-      console.error(err[0].Error);
+      // SKIP AMAZON PRASE
     } else {
       for (var i = 0;i<results.length;i++) {
         //console.log(results[i]);  // products (Array of Object)
@@ -51,8 +61,36 @@ async function getDetails(name, callback) {
         //console.log(product);
       }
     }
-    callback(returns);
+    callback(err, returns);
   });
 }
+async function AddGameMerch(game,callback) {
+  try {
+    console.log('MERCH', game.display_name);
+    async.series([
+      function (callback_intern) {
+        getDetails(game.display_name,callback_intern);
+      }
+    ], function (err,data) {
+      if (err) {
+        // SKIP DATA
+      } else {
+        console.log(data);
+        //process.exit(0);
+      }
+      callback(err,data);
+    });
+  } catch(error) {
+    callback(error);
+  }
+}
 
-q.push( () => {getDetails(game,(x) => console.log(x))});
+//q.push( () => {getDetails(game,(x) => console.log(x))});
+async function main() {
+  const AllGames = await Games.query().where({type:'game'})/*.orderByRaw('RAND()')*/.eager("[merch]");
+  for (var i = 0; i<AllGames.length;i++) {
+    q.push({id:i,f:AddGameMerch,d:AllGames[i]});
+  }
+
+}
+main();
