@@ -19,7 +19,6 @@ var client = amazon.createClient({
   awsTag: process.env.AMAZON_TAG
 });
 var q = new Queue(function (input, cb) {
-  console.log('job',input.id);
   async.series([
     function (callback_intern) {
       input.f(input.d,callback_intern);
@@ -41,18 +40,18 @@ async function getDetails(name, callback) {
     responseGroup: 'ItemAttributes,Offers,Images',
     domain: 'webservices.amazon.de'
   }, function (err, results, response) {
-    var returns = [];
+    var returns=[];
     if (err) {
       // SKIP AMAZON PRASE
     } else {
       for (var i = 0;i<results.length;i++) {
-        console.log(results[i]);  // products (Array of Object)
+        //console.log(results[i]);  // products (Array of Object)
         //console.log(response); // response (Array where the first element is an Object that contains Request, Item, etc.)
         try {
           var product = {
             store: 'amazon',
             product: results[i].ASIN[0],
-            name: name,
+            name: Games.getEncodedName(name),
             link: results[i].DetailPageURL[0],
             display_name:results[i].ItemAttributes[0].Title[0],
             picture: results[i].MediumImage[0].URL[0],
@@ -61,7 +60,7 @@ async function getDetails(name, callback) {
           returns.push(product);
           //console.log(product);
         } catch (e) {
-          console.error(e);
+          err=e;
         }
       }
     }
@@ -75,13 +74,22 @@ async function AddGameMerch(game,callback) {
       function (callback_intern) {
         getDetails(game.display_name,callback_intern);
       }
-    ], function (err,data) {
+    ], async function (err,data) {
       if (err) {
         // SKIP DATA
       } else {
+        // TODO: why [0] nessesary?
+        data=data[0];
         console.log(data.length);
         console.log(data);
-        process.exit(0);
+        for (var i = 0; i<data.length;i++) {
+          var check_merch = await GameMerch.query().where({store:data[i].store, name:data[i].name, product:data[i].product});
+          if (check_merch.length==0) {
+            await GameMerch.query().insert(data[i]);
+          } else {
+            await GameMerch.query().update(data[i]);
+          }
+        }
       }
       callback(err,data);
     });
@@ -92,9 +100,9 @@ async function AddGameMerch(game,callback) {
 
 //q.push( () => {getDetails(game,(x) => console.log(x))});
 async function main() {
-  const AllGames = await Games.query().where({type:'game'})/*.orderByRaw('RAND()')*/.eager("[merch]");
+  const AllGames = await Games.query().where({type:'game'})/*.orderByRaw('RAND()')*/;
   for (var i = 0; i<AllGames.length;i++) {
-    q.push({id:i,f:AddGameMerch,d:AllGames[i]});
+    q.push({f:AddGameMerch,d:AllGames[i]});
   }
 
 }
