@@ -108,3 +108,13 @@ a {
     border: 1px solid #ff0000;
     border-radius: 4px ;
 }
+
+a[href^="https://www.amazon.de"] {
+  background: url("/img/service/amazon.png") no-repeat right; 
+}
+a[href^="https://store.steampowered.com"] {
+  background: url("/img/service/steam.png") no-repeat right; 
+}
+a[href^="http://www.humblebundle.com"] {
+  background: url("/img/service/humble.png") no-repeat right; 
+}
