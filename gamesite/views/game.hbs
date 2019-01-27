@@ -6,6 +6,7 @@
 <p class="game_description">{{{description}}}</p>
 <br>
 <hr class="game_hr">
+<h2>Stores</h2>
 <table width="100%">
 {{#each links}}
   <tr>
@@ -16,6 +17,18 @@
     {{else}}
       <span class="low">{{formatPrice}}&nbsp;€</span>
     {{/checkPrice}}
+    </p></td>
+  </tr>
+{{/each}}
+</table>
+<hr class-"game_hr">
+<h2>Merch</h2>
+<table width="100%">
+{{#each merch}}
+  <tr>
+    <td width="100%">{{display_name}}</td>
+    <td class="price-container"><p class="price">
+      <span class="">{{formatPrice}}&nbsp;€</span>
     </p></td>
   </tr>
 {{/each}}
