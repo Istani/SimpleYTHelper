@@ -100,7 +100,7 @@ async function AddGameMerch(game,callback) {
 
 //q.push( () => {getDetails(game,(x) => console.log(x))});
 async function main() {
-  const AllGames = await Games.query().where({type:'game'})/*.orderByRaw('RAND()')*/;
+  const AllGames = await Games.query().where({type:'game'}).orderByRaw('RAND()');
   for (var i = 0; i<AllGames.length;i++) {
     q.push({f:AddGameMerch,d:AllGames[i]});
   }
