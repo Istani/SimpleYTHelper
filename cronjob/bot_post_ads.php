@@ -64,7 +64,7 @@ if ($tt["last_used"]+$tt["cooldown"]<time()) {
 			//$message=$database->sql_select("bot_chatlog", "count(time) as count_msg", "time>".$channels[$count_channel]["last_ad"]." AND service='".$channels[$count_channel]['service']."' AND host='".$channels[$count_channel]['host']."' AND room='".$channels[$count_channel]['room']."' GROUP BY service, host, room", false);
 			if ($channels[$count_channel]['last_msg']>time()-($timeout_msg) && $channels[$count_channel]['last_ad']<time()-($timeout_ad)) {
 				$channels[$count_channel]["last_ad"]=time();
-				$database->sql_insert_update("bot_chatlog", $add_post);
+				//$database->sql_insert_update("bot_chatlog", $add_post);
 				$database->sql_insert_update("bot_chatchannels", $channels[$count_channel]);
 				$add_post['id']++;
 			}
