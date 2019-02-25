@@ -1,6 +1,6 @@
 process.chdir(__dirname);
 const package_info = require('./package.json');
-var software=package_info.name+" (V "+package_info.version+")";
+var software = package_info.name + " (V " + package_info.version + ")";
 console.log(software);
 console.log("===");
 console.log();
@@ -13,25 +13,26 @@ var exphbs = require('express-handlebars');
 const Game = require("./models/game.js");
 var All_Games;
 async function GetAllGames() {
-  const g = await Game.query().where({type:'game'}).eager("[links, merch]");
-  All_Games=g;
-  console.log("Total of",All_Games.length,"Games Loaded");
+  console.log("Loading Games");
+  const g = await Game.query().where({ type: 'game' }).eager("[links, merch]");
+  All_Games = g;
+  console.log("Total of", All_Games.length, "Games Loaded");
   require("./img_importer.js");
-  setTimeout(GetAllGames,1000*60*60);
+  setTimeout(GetAllGames, 1000 * 60 * 60);
 }
 GetAllGames();
 function FindGame(name, callback) {
-  var error=null;
+  var error = null;
   //console.log("FindGame",All_Games);
-  var game = All_Games.find(function(element) {
-    return element.name==name;
+  var game = All_Games.find(function (element) {
+    return element.name == name;
   });
   if (typeof game == "undefined") {
-    error="Game not found";
+    error = "Game not found";
   } else {
-    game=game.toJSON();
+    game = game.toJSON();
   }
-  callback(error,game);
+  callback(error, game);
 }
 
 // Start Site
@@ -47,8 +48,8 @@ var hbs = exphbs.create({
       result = result(temp_data);
       return result;
     }, */
-    checkPrice: function (low, high,options) {
-      if(low==high) {
+    checkPrice: function (low, high, options) {
+      if (low == high) {
         return options.inverse(this);
       } else {
         return options.fn(this);
@@ -66,16 +67,16 @@ app.set('view engine', '.hbs');
 //
 app.use(express.static('public'));
 app.use(function (req, res, next) {
-  console.log("REQ:",req.url);
+  console.log("REQ:", req.url);
   next();
 });
 
-app.get('/game/:gname', function(req, res) {
+app.get('/game/:gname', function (req, res) {
   var game_name = req.params.gname;
-  FindGame(game_name, function(error, game) {
+  FindGame(game_name, function (error, game) {
     if (error) {
-      console.error(req.url,error);
-      res.render('error',{ error:error});
+      console.error(req.url, error);
+      res.render('error', { error: error });
     } else {
       res.render('game', game);
     }
@@ -83,7 +84,7 @@ app.get('/game/:gname', function(req, res) {
 });
 
 app.get('/games', function (req, res) {
-  res.render('list', { games:All_Games });
+  res.render('list', { games: All_Games });
 });
 
 app.get('/', function (req, res) {

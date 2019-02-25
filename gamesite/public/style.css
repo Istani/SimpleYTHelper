@@ -5,7 +5,7 @@
 
 body {
   font-size: 100%;
-  padding: 0px;
+  padding: 5px;
   margin: 0px;
   background-color:black;
   color: white;
@@ -15,7 +15,8 @@ body {
   grid-template-areas:
     'header'
     'navigation'
-    'content';
+    'content'
+    'footer';
 }
 p { 
   margin-top: 0; 
@@ -28,6 +29,8 @@ ul {
   padding: 0;
   overflow: hidden;
   background-color: #0000CC;
+  border: 1px solid #0000ff;
+  border-radius: 4px ;
 }
 li {
   float: left;
@@ -44,6 +47,10 @@ li a:hover {
   background-color: #1111FF;
 }
 
+hr {
+  border-color: #0000CC;
+}
+
 
 #header {
   grid-area: header;
@@ -58,6 +65,9 @@ li a:hover {
 }
 #footer {
   grid-area: footer;
+  background-color: #0000CC;
+  border: 1px solid #0000ff;
+  border-radius: 4px ;
 }
 #anzeige {
   grid-area: anzeige;
@@ -70,6 +80,7 @@ li a:hover {
 }
 a {
   text-decoration: none;
+  color: white;
 }
 .game_list {
   text-decoration: none;
@@ -80,6 +91,7 @@ a {
   flex: 1;
   position:relative;
   background-color: white;
+  margin: 10px;
 }
 .game_description {
   text-align: justify;
@@ -110,11 +122,23 @@ a {
 }
 
 a[href^="https://www.amazon.de"] {
-  background: url("/img/service/amazon.png") no-repeat right; 
+  background: url("/img/service/amazon.png") no-repeat left; 
+  background-position: 0px 0px;
+  background-size: 16px 16px;
+  padding-left: 18px;
 }
 a[href^="https://store.steampowered.com"] {
-  background: url("/img/service/steam.png") no-repeat right; 
+  background: url("/img/service/steam.png") no-repeat left; 
+  background-position: 0px 0px;
+  background-size: 16px 16px;
+  padding-left: 18px;
 }
 a[href^="http://www.humblebundle.com"] {
-  background: url("/img/service/humble.png") no-repeat right; 
+  background: url("/img/service/humble.png") no-repeat left; 
+  background-position: 0px 0px;
+  background-size: 16px 16px;
+  padding-left: 18px;
+}
+.price a {
+  background: url('') !important;
 }

@@ -1,41 +1,57 @@
 <center>
-<h1>{{display_name}}</h1>
-<div class="game">
-<img src="{{localBanner}}" class="game_pic"><br>
-<br>
-<p class="game_description">{{{description}}}</p>
-<br>
-<hr class="game_hr">
-<h2>Stores</h2>
-<table width="100%">
-{{#each links}}
-  <a href="{{link}}">
-    <tr>
-      <td width="100%">{{store}}</td>
-      <td class="price-container"><p class="price">
-      {{#checkPrice ../lowPrice formatPrice}}
-        <span class="">{{formatPrice}}&nbsp;€</span>
+  <h1>{{display_name}}</h1>
+  <div class="game">
+    <img src="{{banner}}" class="game_pic" width="460" height="215" alt="Game Banner {{display_name}}"><br>
+    <br>
+    <p class="game_description">{{{description}}}</p>
+    <br>
+    <hr class="game_hr">
+    <h2>Stores</h2>
+    <table width="90%">
+      {{#each links}}
+        <tr>
+          <td width="100%">
+            <a href="{{link}}">
+              {{store}}
+            </a>
+          </td>
+          <td class="price-container">
+            <p class="price">
+              <a href="{{link}}">
+                {{#checkPrice ../lowPrice formatPrice}}
+                  <span class="">{{formatPrice}}&nbsp;€</span>
       {{else}}
         <span class="low">{{formatPrice}}&nbsp;€</span>
-      {{/checkPrice}}
-      </p></td>
-    </tr>
-  </a>
-{{/each}}
-</table>
-<hr class-"game_hr">
-<h2>Merch</h2>
-<table width="100%">
-{{#each merch}}
-  <a href="{{link}}"
-    <tr>
-      <td width="100%">{{display_name}}</td>
-      <td class="price-container"><p class="price">
-        <span class="">{{formatPrice}}&nbsp;€</span>
-      </p></td>
-    </tr>
-  </a>
-{{/each}}
-</table>
-</div>
+                {{/checkPrice}}
+              </a>
+            </p>
+
+          </td>
+        </tr>
+        </a>
+      {{/each}}
+    </table>
+    <hr class-"game_hr">
+    <h2>Merch</h2>
+    <table width="90%">
+      {{#each merch}}
+        <tr>
+          <td width="100%">
+            <a href="{{link}}">
+              {{display_name}}
+            </a>
+          </td>
+          <td class="price-container">
+            <p class="price">
+              <a href="{{link}}">
+                <span class="">{{formatPrice}}&nbsp;€</span>
+              </a>
+            </p>
+          </td>
+        </tr>
+        </a>
+      {{/each}}
+    </table>
+  </div>
+  <br><br>
 </center>
