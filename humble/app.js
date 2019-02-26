@@ -1,17 +1,23 @@
-const striptags = require('striptags');
-const game_db = require('./models/games.js');
+process.chdir(__dirname);
+const package_info = require('./package.json');
+var software = package_info.name + " (V " + package_info.version + ")";
+console.log(software);
+console.log("===");
+console.log();
 
 const puppeteer = require('puppeteer');
 
-var Neustart;
+const Games = require('./models/game.js');
+const GameLinks = require('./models/game_link.js');
 
-(async function main() {
+var Neustart;
+async function main() {
   try {
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
 
     await page.goto('https://www.humblebundle.com/store/search?sort=discount', {
-      timeout: 6000000
+      timeout: 600000
     });
 
     var next_page = true;
@@ -33,8 +39,6 @@ var Neustart;
         } catch (e) {
           var eprice = "0";
         }
-
-
         ediscount = ediscount.replace("-", "");
         ediscount = ediscount.replace("%", "");
 
@@ -47,34 +51,29 @@ var Neustart;
 
         store_data.store = 'Humble';
         store_data.link = elink;
-        store_data.name = game_db.get_name(ename);
+        store_data.name = Games.getEncodedName(ename);
         store_data.price = parseInt(eprice);
         store_data.discount = parseInt(ediscount);
 
-        game_db.import_store_links(null, (err) => { if (err) { console.error("Game Import", err); } }, store_data);
-
-        //process.exit(0);
+        var check_store = await GameLinks.query().where('name', store_data.name).where('store', store_data.store);
+        if (check_store.length == 0) {
+          await GameLinks.query().insert(store_data);
+        } else {
+          await GameLinks.query().patch(store_data).where('name', store_data.name).where('store', store_data.store);
+        }
       }
-      /*
-      if (entitys.length < 20) {
-        next_page = false;  // TODO: Bessere Erkennung!
-      }
-      */
       var next = await page.$('.grid-next');
       next.click();
       await page.waitForNavigation();
     }
-
   } catch (e) {
     console.error(e);
     Neustart = setTimeout(() => {
       console.log("===============");
-      console.log("Game Import Done, Wating 1 Hour for Restart");
-
-      setTimeout(() => {
-        main();
-      }, 60 * 60 * 1000);	// 1 Stunde warten bevor Ende und Neustart
+      console.log("Game Import Done");
+      process.exit(0);
     }, 60 * 1000);	// 1 Minute Warten für Seiten Reload
   }
+};
 
-})();
+setTimeout(() => { main(); }, 60 * 60 * 1000);	// 1 Stunde warten bevor Start
