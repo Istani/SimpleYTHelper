@@ -50,7 +50,7 @@ client.on('message', msg => {
   var channel = msg.channel;
   AddChannel(channel, guild);
   var user = msg.author;
-  AddUser(user,guild);
+  AddUser(user, guild);
 
   AddMessage(msg, guild, channel, user);
 });
@@ -75,7 +75,7 @@ async function AddMessage(msg, guild, channel,user) {
     console.log('Message:',JSON.stringify(tmp_message));
     await Chat_Message.query().insert(tmp_message);
   } else {
-    await Chat_Message.query().update(tmp_messge);
+    await Chat_Message.query().patch(tmp_messge).where(m[0]);
   }
 
 };
@@ -96,7 +96,7 @@ async function AddGuild(guild) {
     console.log('Server:',JSON.stringify(tmp_server));
     await Chat_Server.query().insert(tmp_server);
   } else {
-    await Chat_Server.query().update(tmp_server);
+    await Chat_Server.query().patch(tmp_server).where(g[0]);
   }
 }
 
@@ -117,7 +117,7 @@ async function AddChannel(channel, guild) {
     console.log('Room:',JSON.stringify(tmp_room));
     await Chat_Room.query().insert(tmp_room);
   } else {
-    await Chat_Room.query().update(tmp_room);
+    await Chat_Room.query().patch(tmp_room).where(c[0]);
   }
 }
 
@@ -129,7 +129,7 @@ async function AddUser(user, guild) {
   tmp_user.server=guild.id;
   tmp_user.user=user.id;
 
-  var u = Chat_User.query().where(tmp_user);
+  var u = await Chat_User.query().where(tmp_user);
 
   // Additions
   tmp_user.name=user.username;
@@ -138,6 +138,6 @@ async function AddUser(user, guild) {
     console.log('User:',JSON.stringify(tmp_user));
     await Chat_User.query().insert(tmp_user);
   } else {
-    await Chat_User.query().update(tmp_user);
+    await Chat_User.query().patch(tmp_user).where(u[0]);
   }
 }
