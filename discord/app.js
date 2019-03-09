@@ -41,6 +41,11 @@ client.on('disconnect', event => {
 /* Custom Stuff */
 client.on('message', msg => {
   var guild = msg.guild;
+  if (guild==null) {
+    guild={};
+    guild.id=msg.author.id;
+    guild.name='DM';
+  }
   AddGuild(guild);
   var channel = msg.channel;
   AddChannel(channel, guild);
