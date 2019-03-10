@@ -4,17 +4,6 @@ console.log('Settingspath:', envpath);
 var config = require('dotenv').config({path: envpath});
 // Update with your config settings.
 
-if (process.env.ENVIROMENT == "DEV") {
-  module.exports = {
-    client: 'sqlite3',
-    connection: {
-      filename: "./mydb.sqlite"
-    },
-    migrations: {
-      tableName: 'migrations'
-    }
-  };
-} else {
   module.exports = {
     client: 'mysql',
     connection: {
@@ -27,4 +16,4 @@ if (process.env.ENVIROMENT == "DEV") {
       tableName: 'migrations'
     }
   };
-}
+

@@ -10,6 +10,20 @@ const fs = require('fs');
 const async = require('async');
 const exec = require('child_process').execSync;
 
+/* Checking Example File for New Data! */
+var config = require('dotenv').config({path: '.env'});
+var config_example = "";
+if (fs.existsSync(".env")) {
+  for (var attributename in config.parsed) {
+    config_example += attributename + "=\r\n";
+  }
+  fs.writeFileSync('.env.example', config_example);
+  //install();
+} else {
+  console.error("Update .env File first!");
+  process.exit(1);
+}
+
 var need_install=false;
 async function install() {
   fs. readdir(__dirname, function(err, items) {
@@ -25,18 +39,15 @@ async function install() {
       }
     }
     if (need_install) {
-     console.log('pm2 restarr all');
+     exec('pm2 restart all');
     }
     process.exit(0);
   });
 }
 
 async function check_modules(package,cb) {
-  //console.log(package.name);
-
   var debs = Object.keys(package.dependencies);
   for (var i = 0; i<debs.length;i++) {
-    //console.log('Require',debs[i]);
     try {
       var tmp_mods = require(debs[i]);
     } catch (e) {
@@ -47,6 +58,3 @@ async function check_modules(package,cb) {
   }
   cb();
 }
-
-
-//install();
