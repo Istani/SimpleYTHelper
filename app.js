@@ -18,7 +18,7 @@ if (fs.existsSync(".env")) {
     config_example += attributename + "=\r\n";
   }
   fs.writeFileSync('.env.example', config_example);
-  //install();
+  install();
 } else {
   console.error("Update .env File first!");
   process.exit(1);
@@ -39,6 +39,12 @@ async function install() {
       }
     }
     if (need_install) {
+     exec('git add package.json');
+     exec('git add package-lock.json');
+     exec('git add .env.example');
+     exec('git commit -am "Package Update"');
+     exec('git push');
+
      exec('pm2 restart all');
     }
     process.exit(0);
