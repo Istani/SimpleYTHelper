@@ -7,7 +7,7 @@ exports.up = function (knex, Promise) {
     t.string('display_name').notNull().defaultTo('');
     t.string('picture').notNull().defaultTo('');
     t.integer('price').notNull().defaultTo(0);
-    t.timestamps(false, true);
+    t.timestamps(true, true);
 
     t.primary(['store', 'name', 'product']);
   });

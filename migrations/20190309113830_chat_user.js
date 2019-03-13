@@ -7,7 +7,7 @@ exports.up = function(knex, Promise) {
     t.string('user');
     t.string('name');
 
-    t.timestamps(false, true);
+    t.timestamps(true, true);
     t.primary(['service', 'server', 'user']);
   });
 };

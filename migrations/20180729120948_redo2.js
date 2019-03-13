@@ -7,7 +7,7 @@ exports.up = function (knex, Promise) {
     t.string('url_authorize').notNull();
     t.string('url_token').notNull();
     t.string('app_scope').notNull();
-    t.timestamps(false, true);
+    t.timestamps(true, true);
   });
 };
 

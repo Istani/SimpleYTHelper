@@ -6,7 +6,7 @@ exports.up = function (knex, Promise) {
     t.string('link').notNull();
     t.integer('price').notNull().defaultTo(0);
     t.integer('discount').notNull().defaultTo(0);
-    t.timestamps(false, true);
+    t.timestamps(true, true);
 
     t.primary(['store', 'name']);
   });

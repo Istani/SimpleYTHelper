@@ -7,7 +7,7 @@ exports.up = function(knex, Promise) {
     t.string('room');
     t.string('name');
 
-    t.timestamps(false, true);
+    t.timestamps(true, true);
     t.primary(['service', 'server', 'room']);
   });
 };

@@ -9,7 +9,7 @@ exports.up = function (knex, Promise) {
     t.string('refresh_token').notNull();
     t.integer('expires_in').notNull().defaultTo(0);
     t.integer('created').notNull().defaultTo(0);
-    t.timestamps(false, true);
+    t.timestamps(true, true);
   });
 };
 

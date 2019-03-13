@@ -15,7 +15,7 @@ exports.up = function (knex, Promise) {
     t.integer('subscriber').notNull();
     t.integer('videos').notNull();
 
-    t.timestamps(false, true);
+    t.timestamps(true, true);
 
     t.primary(['user_id', 'service', 'channel_id']);
   });
