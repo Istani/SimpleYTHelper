@@ -59,12 +59,12 @@ module.exports = {
       error_file: "logs/err.log",
       out_file: "logs/out.log"
     },
-    {
+    /*{
       name: "SYTH-Humble",
       script: "./humble/games-humble.js",
       log_date_format: "YYYY-MM-DD HH:mm Z",
       error_file: "logs/err.log",
       out_file: "logs/out.log"
-    }
+    }*/
   ]
 }
