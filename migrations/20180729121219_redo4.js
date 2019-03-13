@@ -7,7 +7,7 @@ exports.up = function (knex, Promise) {
     t.string('access_token').notNull();
     t.string('refresh_token').notNull();
     t.boolean('cronjob').notNull();
-    t.timestamps(true, true);
+    t.timestamps(true, false);
   });
 };
 

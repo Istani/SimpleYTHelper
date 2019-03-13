@@ -6,7 +6,7 @@ exports.up = function (knex, Promise) {
     t.string('display_name').notNull();
     t.string('banner').notNull();
     t.text('description').notNull();
-    t.timestamps(false, true);
+    t.timestamps(true, false);
   });
 };
 

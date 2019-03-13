@@ -10,7 +10,7 @@ exports.up = function(knex, Promise) {
     t.datetime('timestamp');
     t.string('content');
     
-    t.timestamps(true, true);
+    t.timestamps(true, false);
     t.primary(['service', 'server', 'room', 'id']);
   });
 };
