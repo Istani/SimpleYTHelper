@@ -7,7 +7,7 @@ module.exports = {
       error_file: 'logs/err.log',
       out_file: 'logs/out.log',
       autorestart: false
-    }
+    },
     /*{
       name: "SYTH-Web",
       script: "./website/index.js",
