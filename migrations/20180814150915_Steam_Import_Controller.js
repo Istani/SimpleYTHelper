@@ -4,7 +4,7 @@ exports.up = function (knex, Promise) {
     t.string('appid').notNull();
     t.string('type').notNull();
     t.boolean('ignore').notNull();
-    t.timestamps(false, true);
+    t.timestamps(true, false);
 
     t.primary(['appid']);
   });

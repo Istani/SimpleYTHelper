@@ -10,14 +10,6 @@ const cron = require('node-cron');
 cron.schedule('30 11 * * *', () => {
   var cmd = "";
 
-  try {
-    cmd = "mkdir -p cronjob/backup";
-    //console.log(cmd);
-    exec(cmd);
-  } catch (e) {
-    //console.log(e);
-  }
-
   var timedate = moment().format("YYYYMMDD_HHmmss");
 
   cmd = process.env.PATH_MYSQLDUMP + ' --user ' + process.env.DB_USER + ' --password=' + process.env.DB_PASS + ' ' + process.env.DB_NAME + ' >> cronjob\\backup\\' + timedate + '_' + process.env.DB_NAME + '.sql';
