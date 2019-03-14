@@ -80,8 +80,8 @@ async function AddGameMerch(game,callback) {
       } else {
         // TODO: why [0] nessesary?
         data=data[0];
-        console.log(data.length);
-        console.log(data);
+        //console.log(data.length);
+        //console.log(data);
         for (var i = 0; i<data.length;i++) {
           var check_merch = await GameMerch.query().where({store:data[i].store, name:data[i].name, product:data[i].product});
           if (check_merch.length==0) {
