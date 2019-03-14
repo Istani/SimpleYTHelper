@@ -12,6 +12,10 @@ class Chat_Message extends Model {
   static get idColumn() {
     return 'service, server, room, id';
   }
+
+  $beforeUpdate() {
+    this.updated_at = new Date().toISOString();
+  }
 }
 
 module.exports = Chat_Message;

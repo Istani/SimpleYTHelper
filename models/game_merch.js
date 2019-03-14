@@ -20,6 +20,10 @@ class Game_Merch extends Model {
     var ret=this.price;
     return parseFloat(ret/100).toFixed(2);
   }
+
+  $beforeUpdate() {
+    this.updated_at = new Date().toISOString();
+  }
 }
 
 module.exports = Game_Merch;
