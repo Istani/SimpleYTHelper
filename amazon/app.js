@@ -30,10 +30,10 @@ var q = new Queue(function (input, cb) {
     }
     cb();
   });
-}, { afterProcessDelay: 10000, filo: true });
-/*q.on('drain', function (){
+}, { afterProcessDelay: 30000, filo: true });
+q.on('drain', function (){
  process.exit(0);
-});*/
+});
 
 async function getDetails(name, callback) {
   await client.itemSearch({
@@ -105,6 +105,6 @@ async function main() {
   for (var i = 0; i < AllGames.length; i++) {
     q.push({ f: AddGameMerch, d: AllGames[i] });
   }
-
 }
-main();
+
+setTimeout(main,10000);

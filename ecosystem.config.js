@@ -45,13 +45,13 @@ module.exports = {
       error_file: "logs/GAME-Web.err",
       out_file: "logs/GAME-Web.log"
     },
-    /*{
+    {
       name: 'SYTH-Amazon',
       script: "./amazon/app.js",
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       error_file: "logs/SYTH-Amazon.err",
       out_file: "logs/SYTH-Amazon.log"
-    },*/
+    },
     {
       name: "SYTH-Steam",
       script: "./steam/app.js",
