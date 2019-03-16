@@ -12,12 +12,20 @@ var exphbs = require('express-handlebars');
 // DB Models
 const Game = require("./models/game.js");
 var All_Games;
+var Display_Games;
 async function GetAllGames() {
   console.log("Loading Games");
   const g = await Game.query().where({ type: 'game' }).eager("[links, merch]");
   All_Games = g;
   console.log("Total of", All_Games.length, "Games Loaded");
   require("./img_importer.js");
+  Display_Games=[];
+  for (var i = 0; i<All_Games.length;i++) {
+    if (All_Games[i].links.length>1) {
+      Display_Games.push(All_Games[i]);
+    }
+  }
+  console.log('Display: ', Display_Games.length);
   setTimeout(GetAllGames, 1000 * 60 * 60);
 }
 GetAllGames();
@@ -84,7 +92,7 @@ app.get('/game/:gname', function (req, res) {
 });
 
 app.get('/games', function (req, res) {
-  res.render('list', { games: All_Games });
+  res.render('list', { games: Display_Games });
 });
 
 app.get('/', function (req, res) {
