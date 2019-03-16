@@ -3,7 +3,7 @@
 {{#each games}}
   <a href="/game/{{name}}" class="game_link">
   <div class="game_list corner-all">
-    <img src="{{banner}}" height="129" width="276"><br>
+    <img data-src="{{banner}}" src="img/games/no_pic.jpg" height="129" width=276" class="lazyload" /><br>
     {{display_name}}<br>
     <br><p class="price">
     {{#checkPrice lowPrice highPrice}}
