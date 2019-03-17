@@ -79,6 +79,11 @@ app.use(function (req, res, next) {
   next();
 });
 
+app.get('/impressum', function (req, res) {
+  res.render('impressum');
+});
+
+
 app.get('/game/:gname', function (req, res) {
   var game_name = req.params.gname;
   FindGame(game_name, function (error, game) {

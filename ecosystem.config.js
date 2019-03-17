@@ -45,6 +45,13 @@ module.exports = {
       error_file: "logs/GAME-Web.err",
       out_file: "logs/GAME-Web.log"
     },
+    /*{
+      name: "GAME-Sales",
+      script: "./gamecheck/app.js",
+      log_date_format: "YYYY-MM-DD HH:mm:ss Z",
+      error_file: "logs/GAME-Sales.err",
+      out_file: "logs/GAME-Sales.log"
+    },*/
     {
       name: 'SYTH-Amazon',
       script: "./amazon/app.js",
