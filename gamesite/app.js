@@ -80,13 +80,14 @@ app.use(function (req, res, next) {
 });
 
 app.get('/impressum', function (req, res) {
-  res.render('impressum');
+  res.render('impressum', { page_title: 'Impressum' });
 });
 
 
 app.get('/game/:gname', function (req, res) {
   var game_name = req.params.gname;
   FindGame(game_name, function (error, game) {
+    game.page_title = game.display_name;
     if (error) {
       console.error(req.url, error);
       res.render('error', { error: error });
@@ -97,7 +98,7 @@ app.get('/game/:gname', function (req, res) {
 });
 
 app.get('/games', function (req, res) {
-  res.render('list', { games: Display_Games });
+  res.render('list', { page_title: 'Game List', games: Display_Games });
 });
 
 app.get('/', function (req, res) {
