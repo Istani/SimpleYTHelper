@@ -4,10 +4,12 @@ node_modules
 cronjob/backup/
 mydb.sqlite
 gamesite/public/img/games/*.png
+
 logs/
+*.log
 
 gamesite/public/img/background.png
 gamesite/public/img/banner.png
 steam/tmp/overview.json
 
-!*.gitkeep
+!*/.gitkeep
