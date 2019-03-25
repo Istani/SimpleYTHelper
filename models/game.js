@@ -21,6 +21,7 @@ class Game extends Model {
   static getEncodedName(name) {
     var reg_exname = name.replace(/ /gi, "_");
     reg_exname = reg_exname.replace(/[\W]+/gi, "");
+    reg_exname = reg_exname.toLowerCase();
     return reg_exname;
   }
 
