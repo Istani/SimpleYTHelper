@@ -53,6 +53,7 @@ class GameCheck extends Model {
 
   $beforeUpdate() {
     this.updated_at = new Date().toISOString();
+    this.game = this.game.toLowerCase();
   }
 }
 

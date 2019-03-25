@@ -27,6 +27,7 @@ class Game_Link extends Model {
 
   $beforeUpdate() {
     this.updated_at = new Date().toISOString();
+    this.name = this.name.toLowerCase();
   }
 }
 

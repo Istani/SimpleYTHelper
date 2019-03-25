@@ -15,7 +15,7 @@ class Game extends Model {
   }
 
   static get virtualAttributes() {
-    return ['lowPrice','highPrice','localBanner'];
+    return ['lowPrice', 'highPrice', 'localBanner'];
   }
 
   static getEncodedName(name) {
@@ -25,29 +25,29 @@ class Game extends Model {
   }
 
   get lowPrice() {
-    var ret=100000000;
-    for(var i=0;i<this.links.length;i++) {
-      if (this.links[i].price<ret) {
-        ret=this.links[i].price;
+    var ret = 100000000;
+    for (var i = 0; i < this.links.length; i++) {
+      if (this.links[i].price < ret) {
+        ret = this.links[i].price;
       }
     }
-    return parseFloat(ret/100).toFixed(2);
+    return parseFloat(ret / 100).toFixed(2);
   }
   get highPrice() {
-    var ret=0;
-    for(var i=0;i<this.links.length;i++) {
-      if (this.links[i].price>ret) {
-        ret=this.links[i].price;
+    var ret = 0;
+    for (var i = 0; i < this.links.length; i++) {
+      if (this.links[i].price > ret) {
+        ret = this.links[i].price;
       }
     }
-    return parseFloat(ret/100).toFixed(2);
+    return parseFloat(ret / 100).toFixed(2);
   }
   get localBanner() {
-    var path="/img/games/"+this.name+".png";
-    var pic_path="./public"+path;
+    var path = "/img/games/" + this.name + ".png";
+    var pic_path = "./public" + path;
     if (fs.existsSync(pic_path)) {
     } else {
-      path="/img/games/no_pic.jpg";
+      path = "/img/games/no_pic.jpg";
     }
     return path;
   }
@@ -75,13 +75,14 @@ class Game extends Model {
       }
     }
   }
-  
+
   $beforeInsert() {
     this.$beforeUpdate();
   }
 
   $beforeUpdate() {
     this.updated_at = new Date().toISOString();
+    this.name = this.name.toLowerCase();
   }
 }
 
