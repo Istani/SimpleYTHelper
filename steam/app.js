@@ -180,6 +180,7 @@ async function getAppOverview() {
         new_apps++;
       } else {
         console.log('Already imported SteamApp', new_entry.appid);
+        await sleep(1000);
       }
     }
     console.log(new_apps, 'new SteamApps found!');
