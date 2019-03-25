@@ -53,7 +53,7 @@ async function get_games() {
     tmp_obj.game = sale.name;
     tmp_obj.discount = sale.discount;
     tmp_obj.link = sale.link;
-    tmp_obj.display_title = sale.discount + "% auf " + details[0].display_name;
+    tmp_obj.display_title = details[0].display_name + " > " + sale.discount + "% (" + sale.formatPrice + "€)";
     tmp_obj.display_text = text;
 
     var active = await Check.query().where('category', tmp_obj.category).where('game', tmp_obj.game);
