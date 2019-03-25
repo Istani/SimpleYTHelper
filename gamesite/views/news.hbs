@@ -1,0 +1,9 @@
+{{#each news}}
+  <div class="news_list corner-all">
+    <h2>{{display_title}}</h2>
+    <img data-src="{{banner}}" src="img/games/no_pic.jpg" height="129" width=276" class="lazyload" />
+    <p>{{display_text}}</p>
+    <p><a href="{{link}}">Zum Store</a></p>
+    <p><a href="/game/{{game}}">Zum Game</a></p>
+  </div>
+{{/each}}

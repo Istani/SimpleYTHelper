@@ -11,6 +11,8 @@ var exphbs = require('express-handlebars');
 
 // DB Models
 const Game = require("./models/game.js");
+const News = require("./models/game_check.js");
+
 var All_Games;
 var Display_Games;
 async function GetAllGames() {
@@ -18,7 +20,7 @@ async function GetAllGames() {
   const g = await Game.query().where({ type: 'game' }).eager("[links, merch]");
   All_Games = g;
   console.log("Total of", All_Games.length, "Games Loaded");
-  require("./img_importer.js");
+  //require("./img_importer.js");
   Display_Games = [];
   for (var i = 0; i < All_Games.length; i++) {
     if (All_Games[i].links.length > 1) {
@@ -83,6 +85,10 @@ app.get('/impressum', function (req, res) {
   res.render('impressum', { page_title: 'Impressum' });
 });
 
+app.get('/news', async function (req, res) {
+  var current_news = await News.query().orderBy('created_at','DESC').eager("[details]");
+  res.render('news', { page_title: 'News', news: current_news });
+});
 
 app.get('/game/:gname', function (req, res) {
   var game_name = req.params.gname;
