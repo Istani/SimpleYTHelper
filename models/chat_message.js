@@ -13,6 +13,10 @@ class Chat_Message extends Model {
     return 'service, server, room, id';
   }
 
+  $beforeInsert() {
+    this.$beforeUpdate();
+  }
+
   $beforeUpdate() {
     this.updated_at = new Date().toISOString();
   }

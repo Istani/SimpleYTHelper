@@ -78,6 +78,10 @@ hr {
   flex-wrap: wrap;
   justify-content : center;
 }
+.news_list-container {
+  justify-content : center;
+  width: 500px;
+}
 a {
   text-decoration: none;
   color: white;
@@ -141,4 +145,8 @@ a[href^="https://www.humblebundle.com"] {
 }
 .price a {
   background: url('') !important;
+}
+p.created {
+  text-align: right;
+  font-size: 60%;
 }

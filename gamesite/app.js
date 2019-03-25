@@ -86,19 +86,24 @@ app.get('/impressum', function (req, res) {
 });
 
 app.get('/news', async function (req, res) {
-  var current_news = await News.query().orderBy('created_at','DESC').eager("[details]");
+  var current_news = await News.query().orderBy('created_at', 'DESC').orderBy('game').eager("[details]");
   res.render('news', { page_title: 'News', news: current_news });
 });
 
 app.get('/game/:gname', function (req, res) {
   var game_name = req.params.gname;
   FindGame(game_name, function (error, game) {
-    game.page_title = game.display_name;
     if (error) {
       console.error(req.url, error);
       res.render('error', { error: error });
     } else {
-      res.render('game', game);
+      if (game == undefined) {
+        console.error(req.url, 'Game Undefined?');
+        res.render('error', { error: 'Game Undefined?' });
+      } else {
+        game.page_title = game.display_name;
+        res.render('game', game);
+      }
     }
   });
 });
@@ -108,7 +113,7 @@ app.get('/games', function (req, res) {
 });
 
 app.get('/', function (req, res) {
-  res.redirect("/games");
+  res.redirect("/news");
 });
 
 

@@ -18,7 +18,12 @@ class GameCheck extends Model {
     return ['banner'];
   }
   get banner() {
-    //if (this.details==undefined) 
+    if (this.details == null) {
+      return '';
+    }
+    if (this.details == undefined) {
+      return '';
+    }
     return this.details.banner;
   }
 
@@ -35,6 +40,15 @@ class GameCheck extends Model {
         }
       }
     }
+  }
+
+  static get DeleteDate() {
+    var date = new Date();
+    date.setDate(date.getDate() - 1);
+    return date.toISOString();
+  }
+  $beforeInsert() {
+    this.$beforeUpdate();
   }
 
   $beforeUpdate() {

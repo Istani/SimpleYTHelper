@@ -35,6 +35,11 @@ class Steam extends Model {
       }
     }
   }*/
+
+  
+  $beforeInsert() {
+    this.$beforeUpdate();
+  }
   $beforeUpdate() {
     this.updated_at = new Date().toISOString();
   }

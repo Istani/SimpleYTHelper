@@ -12,6 +12,10 @@ class Chat_Server extends Model {
   static get idColumn() {
     return 'service, server';
   }
+  
+  $beforeInsert() {
+    this.$beforeUpdate();
+  }
 
   $beforeUpdate() {
     this.updated_at = new Date().toISOString();
