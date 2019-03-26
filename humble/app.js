@@ -50,7 +50,7 @@ async function main() {
         var store_data = {};
 
         store_data.store = 'Humble';
-        store_data.link = elink+'?partner=istani0815';
+        store_data.link = elink + '?partner=istani0815';
         store_data.name = Games.getEncodedName(ename);
         store_data.price = parseInt(eprice);
         store_data.discount = parseInt(ediscount);
@@ -76,4 +76,5 @@ async function main() {
   }
 };
 
-setTimeout(() => { main(); }, 60 * 60 * 1000);	// 1 Stunde warten bevor Start
+setTimeout(() => { main(); }, 24 * 60 * 60 * 1000);	// 24*1 Stunde warten bevor Start
+//main();
