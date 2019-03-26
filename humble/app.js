@@ -6,6 +6,7 @@ console.log("===");
 console.log();
 
 const puppeteer = require('puppeteer');
+const sleep = require('await-sleep');
 
 const Games = require('./models/game.js');
 const GameLinks = require('./models/game_link.js');
@@ -62,6 +63,7 @@ async function main() {
           await GameLinks.query().patch(store_data).where('name', store_data.name).where('store', store_data.store);
         }
       }
+      await sleep(1000);
       var next = await page.$('.grid-next');
       next.click();
       await page.waitForNavigation();
