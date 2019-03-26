@@ -52,26 +52,26 @@ module.exports = {
       error_file: "logs/GAME-Sales.err",
       out_file: "logs/GAME-Sales.log"
     },
-    {
+    /*{
       name: 'SYTH-Amazon',
       script: "./amazon/app.js",
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       error_file: "logs/SYTH-Amazon.err",
       out_file: "logs/SYTH-Amazon.log"
-    },
+    },*/
     {
       name: "SYTH-Steam",
       script: "./steam/app.js",
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       error_file: "logs/SYTH-Steam.err",
       out_file: "logs/SYTH-Steam.log"
-    },
+    }/*,
     {
       name: "SYTH-Humble",
       script: "./humble/app.js",
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       error_file: "logs/SYTH-Humble.err",
       out_file: "logs/SYTH-Humble.log"
-    }
+    }*/
   ]
 }
