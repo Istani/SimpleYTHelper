@@ -53,7 +53,7 @@ doc.useServiceAccountAuth(creds, function (err) {
       console.log("===============");
       console.log("Game Import Done");
       process.exit(0);
-    }, 60 * 1000);	
+    }, 60 * 60 * 1000);	
 
   });
 
