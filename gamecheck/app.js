@@ -9,6 +9,7 @@ console.log();
 const Check = require("./models/game_check.js");
 const Game = require("./models/game.js");
 const Links = require("./models/game_link.js");
+const Merch = require("./models/game_merch.js");
 
 // Settings
 var Discount = 75;
@@ -70,7 +71,11 @@ async function get_games() {
     await sleep(1000);
   }
   console.log("Delete all older as " + Check.DeleteDate);
+
   await Check.query().delete().where('updated_at', '<', Check.DeleteDate);
+  await Merch.query().delete().where('updated_at', '<', Check.DeleteDate);
+  await Links.query().delete().where('updated_at', '<', Check.DeleteDate);
+  await Game.query().delete().where('updated_at', '<', Check.DeleteDate);
 
   setTimeout(get_games, 1000 * 60 * 15); // 15 Minuten
 }

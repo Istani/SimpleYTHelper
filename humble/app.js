@@ -7,13 +7,17 @@ console.log();
 
 const puppeteer = require('puppeteer');
 const sleep = require('await-sleep');
+const fs = require('fs');
 
-const Games = require('./models/game.js');
-const GameLinks = require('./models/game_link.js');
+const Games = require('../models/game.js');
+const GameLinks = require('../models/game_link.js');
 
 var Neustart;
+let STORE_NAME = "Humble";
+
 async function main() {
   try {
+    import_data();
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
 
@@ -50,7 +54,7 @@ async function main() {
 
         var store_data = {};
 
-        store_data.store = 'Humble';
+        store_data.store = STORE_NAME;
         store_data.link = elink + '?partner=istani0815';
         store_data.name = Games.getEncodedName(ename);
         store_data.price = parseInt(eprice);
@@ -70,7 +74,9 @@ async function main() {
     }
   } catch (e) {
     console.error(e);
-    Neustart = setTimeout(() => {
+    Neustart = setTimeout(async () => {
+      // Export
+      await export_data();
       console.log("===============");
       console.log("Game Import Done");
       process.exit(0);
@@ -78,5 +84,42 @@ async function main() {
   }
 };
 
-setTimeout(() => { main(); }, 24 * 60 * 60 * 1000);	// 24*1 Stunde warten bevor Start
+async function export_data() {
+  var Export_Data = await GameLinks.query().where('store', STORE_NAME);
+  fs.writeFileSync('tmp/export.json', JSON.stringify(Export_Data), (err) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+  });
+  console.log('The file has been saved!');
+}
+
+async function import_data() {
+  if (fs.existsSync('tmp/import.json')) {
+    try {
+      var data = require('./tmp/import.json');
+      for (i = 0; i < data.length; i++) {
+        var game_data = data[i];
+        var check_store = await GameLinks.query().where('name', game_data.name).where('store', game_data.store);
+        if (check_store.length == 0) {
+          await GameLinks.query().insert(game_data);
+        } else {
+          await GameLinks.query().patch(game_data).where('name', game_data.name).where('store', game_data.store);
+        }
+      }
+      fs.unlinkSync('tmp/import.json');
+      console.log("===============");
+      console.log("Game Import Done");
+      process.exit(0);
+    } catch (e) {
+      console.error(e);
+    }
+  } else {
+    console.log('Import-File Not Exists!');
+  }
+}
+
+setTimeout(() => { main(); }, 12 * 60 * 60 * 1000);	// 12*1 Stunde warten bevor Start
 //main();
+
