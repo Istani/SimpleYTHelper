@@ -78,5 +78,5 @@ async function main() {
   }
 };
 
-setTimeout(() => { main(); }, 24 * 60 * 60 * 1000);	// 24*1 Stunde warten bevor Start
-//main();
+//setTimeout(() => { main(); }, 24 * 60 * 60 * 1000);	// 24*1 Stunde warten bevor Start
+main();
