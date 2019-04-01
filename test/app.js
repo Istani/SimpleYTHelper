@@ -47,8 +47,6 @@ doc.useServiceAccountAuth(creds, function (err) {
       }
     }
 
-    await GameLinks.query().delete().where('updated_at', '<', date);
-
     setTimeout(() => {
       console.log("===============");
       console.log("Game Import Done");

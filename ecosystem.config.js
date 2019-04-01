@@ -80,13 +80,13 @@ module.exports = {
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       error_file: "logs/SYTH-Steam.err",
       out_file: "logs/SYTH-Steam.log"
-    }/*,
+    },
     {
       name: "SYTH-Humble",
       script: "./humble/app.js",
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       error_file: "logs/SYTH-Humble.err",
       out_file: "logs/SYTH-Humble.log"
-    }*/
+    }
   ]
 }
