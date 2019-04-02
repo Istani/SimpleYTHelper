@@ -107,6 +107,8 @@ async function import_data() {
         } else {
           await GameLinks.query().patch(game_data).where('name', game_data.name).where('store', game_data.store);
         }
+	console.log('Import: ',game_data.name);
+	await sleep(1000);
       }
       fs.unlinkSync('tmp/import.json');
       console.log("===============");
@@ -122,4 +124,3 @@ async function import_data() {
 
 setTimeout(() => { main(); }, 12 * 60 * 60 * 1000);	// 12*1 Stunde warten bevor Start
 //main();
-
