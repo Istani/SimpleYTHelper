@@ -44,7 +44,7 @@ class GameCheck extends Model {
 
   static get DeleteDate() {
     var date = new Date();
-    date.setDate(date.getDate() - 1);
+    date.setDate(date.getDate() - 7);
     return date.toISOString();
   }
   $beforeInsert() {

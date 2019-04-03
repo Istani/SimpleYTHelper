@@ -61,6 +61,7 @@ async function get_games() {
     if (active.length > 0) {
       if (active[0].discount == tmp_obj.discount) {
         await Check.query().patch(tmp_obj).where('category', tmp_obj.category).where('game', tmp_obj.game);
+        await sleep(1000);
         continue;
       }
       await Check.query().delete().where('category', tmp_obj.category).where('game', tmp_obj.game);
