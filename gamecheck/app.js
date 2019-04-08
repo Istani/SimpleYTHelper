@@ -60,6 +60,7 @@ async function get_games() {
     var active = await Check.query().where('category', tmp_obj.category).where('game', tmp_obj.game);
     if (active.length > 0) {
       if (active[0].discount == tmp_obj.discount) {
+        tmp_obj.created_at = active[0].created_at;
         await Check.query().patch(tmp_obj).where('category', tmp_obj.category).where('game', tmp_obj.game);
         await sleep(1000);
         continue;
