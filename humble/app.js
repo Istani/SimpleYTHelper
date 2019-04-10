@@ -129,4 +129,5 @@ if (isWin) {
 } else {
   setTimeout(() => { main(); }, 12 * 60 * 60 * 1000);	// 12*1 Stunde warten bevor Start
   setInterval(import_data, 60 * 60 * 1000);
+  import_data();
 }
