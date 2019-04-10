@@ -17,7 +17,7 @@ let STORE_NAME = "Humble";
 
 async function main() {
   try {
-    import_data();
+    //await import_data();
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
 
@@ -96,6 +96,7 @@ async function export_data() {
 }
 
 async function import_data() {
+  console.log("Import File");
   if (fs.existsSync('tmp/import.json')) {
     try {
       var data = require('./tmp/import.json');
@@ -123,4 +124,6 @@ async function import_data() {
 }
 
 setTimeout(() => { main(); }, 12 * 60 * 60 * 1000);	// 12*1 Stunde warten bevor Start
+setInterval(import_data, 60*60*1000);
+import_data();
 //main();
