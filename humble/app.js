@@ -123,11 +123,18 @@ async function import_data() {
   }
 }
 
+async function trigger() {
+  request('https://humblebundle.herokuapp.com/', function (error, response, body) {
+    console.log("Trigger Start");
+  });
+}
+
 var isWin = process.platform === "win32";
 if (isWin) {
   main();
 } else {
-  setTimeout(() => { main(); }, 12 * 60 * 60 * 1000);	// 12*1 Stunde warten bevor Start
+  setTimeout(() => { trigger(); }, 12 * 60 * 60 * 1000);	// 12*1 Stunde warten bevor Start
   setInterval(import_data, 60 * 60 * 1000);
   import_data();
+  trigger();
 }
