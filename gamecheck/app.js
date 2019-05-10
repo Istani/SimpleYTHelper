@@ -84,7 +84,7 @@ async function get_games() {
   setTimeout(get_games, 1000 * 60 * 15); // 15 Minuten
 }
 
-//get_games();
+get_games();
 
 async function get_link(link) {
   
