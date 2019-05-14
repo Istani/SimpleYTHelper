@@ -75,6 +75,11 @@ app.engine('.hbs', hbs.engine);
 app.set('view engine', '.hbs');
 
 //
+//var swStats = require('swagger-stats');
+//var apiSpec = require('swagger.json');
+//app.use(swStats.getMiddleware(/*{ swaggerSpec: apiSpec }*/));
+
+//
 app.use(express.static('public'));
 app.use(function (req, res, next) {
   console.log("REQ:", req.url);

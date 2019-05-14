@@ -19,6 +19,7 @@ const sleep = require('await-sleep');
 
 async function get_games() {
   var sales = await Links.query().where('discount', '>', Discount).orderBy('name');
+
   for (var i = 0; i < sales.length; i++) {
     var sale = sales[i];
     var shops = await Links.query().where('name', sale.name);
@@ -72,6 +73,7 @@ async function get_games() {
     console.log('New Discount', JSON.stringify(tmp_obj));
     await sleep(1000);
   }
+
   console.log("Delete all older as " + Check.DeleteDate);
 
   await Check.query().delete().where('updated_at', '<', Check.DeleteDate);
@@ -83,3 +85,8 @@ async function get_games() {
 }
 
 get_games();
+
+async function get_link(link) {
+  
+}
+get_link('');
