@@ -36,9 +36,10 @@ class Short_URL extends Model {
       check = await Short_URL.query().where("url",url).where("user",user);
       if (check.length == 0) {
         var new_link = {};
-        new_link.code = Short_URL.gen_code();
+        new_link.code = await Short_URL.gen_code();
         new_link.url=url;
         new_link.user=user;
+        console.log('New Shortlink',new_link);
         await Short_URL.query().insert(new_link);
       } else {
         is_ok=true;
