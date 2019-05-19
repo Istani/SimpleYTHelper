@@ -12,6 +12,8 @@ var exphbs = require('express-handlebars');
 // DB Models
 const Game = require("./models/game.js");
 const News = require("./models/game_check.js");
+const short_url = require("./models/short_url.js");
+
 
 var All_Games;
 var Display_Games;
@@ -85,6 +87,8 @@ app.use(function (req, res, next) {
   console.log("REQ:", req.url);
   next();
 });
+
+app.get("/s/:code", short_url.express);
 
 app.get('/impressum', function (req, res) {
   res.render('impressum', { page_title: 'Impressum' });
