@@ -77,7 +77,9 @@ async function get_games() {
     var tmp_tweet={};
     tmp_tweet.user="GamesOnSaleDE";
     tmp_tweet.message=""+tmp_obj.display_title+" http://games-on-sale.de/s/"+tmp_link;
-    // Adding Discord & Twitter Export
+    await Tweets.query().insert(tmp_tweet);
+
+    // Adding Discord
     console.log('New Discount', JSON.stringify(tmp_obj));
     await sleep(1000);
   }
