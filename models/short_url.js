@@ -55,7 +55,7 @@ class Short_URL extends Model {
       next();
       return;
     }
-    await Short_URL.query().patch(check[0]);
+    //await Short_URL.query().patch(check[0]);
     return res.redirect(check[0].url);
   }
 
