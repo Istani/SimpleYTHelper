@@ -37,14 +37,14 @@ async function tweet_main() {
 }
 
 async function tweet_gos() {
-  var tweet = await Tweets.query().where('user','GamesOnSaleDE');
-  if (tweet.length>0) {
-    await client_gos.post('statuses/update', { status: tweet[0].message }, async function (error, tweet, response) {
+  var pre_tweet = await Tweets.query().where('user','GamesOnSaleDE');
+  if (pre_tweet.length>0) {
+    await client_gos.post('statuses/update', { status: pre_tweet[0].message }, async function (error, tweet, response) {
       if (error) {
         console.error(error);
         return;
       }
-      await Tweets.query().delete().where('id',tweet[0].id);
+      await Tweets.query().delete().where('id',pre_tweet[0].id);
     });
   }
   setTimeout(tweet_gos,5*60*1000);
