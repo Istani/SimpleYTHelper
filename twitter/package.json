@@ -11,6 +11,9 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^6.2.0",
+    "knex": "^0.17.0-next3",
+    "mysql": "^2.17.1",
+    "objection": "^1.6.9",
     "twitter": "^1.7.1"
   }
 }

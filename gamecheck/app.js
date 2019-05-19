@@ -10,6 +10,9 @@ const Check = require("./models/game_check.js");
 const Game = require("./models/game.js");
 const Links = require("./models/game_link.js");
 const Merch = require("./models/game_merch.js");
+const Tweets = require("./models/send_tweets.js");
+
+const Short_URL = require("./models/short_url.js");
 
 // Settings
 var Discount = 75;
@@ -69,6 +72,11 @@ async function get_games() {
       await Check.query().delete().where('category', tmp_obj.category).where('game', tmp_obj.game);
     }
     await Check.query().insert(tmp_obj);
+    var tmp_link = await Short_URL.gen_link(tmp_obj.link);
+
+    var tmp_tweet={};
+    tmp_tweet.user="GamesOnSaleDE";
+    tmp_tweet.message=""+tmp_obj.display_title+" http://games-on-sale.de/s/"+tmp_link;
     // Adding Discord & Twitter Export
     console.log('New Discount', JSON.stringify(tmp_obj));
     await sleep(1000);
