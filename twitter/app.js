@@ -75,9 +75,9 @@ async function bg_gos() {
 }
 async function pp_gos() {
   var img = await Jimp.read('../gamesite/public/img/text.png');
-  img.scaleToFit(400, 400);
-  img.contain(400, 400, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_CENTER);
-  img.getBase64(Jimp.AUTO, (err, res) => {
+  await img.scaleToFit(400, 400);
+  await img.contain(400, 400, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE);
+  await img.getBase64(Jimp.AUTO, (err, res) => {
     if (err) {
       console.error(err);
       //return;
@@ -89,7 +89,7 @@ async function pp_gos() {
       }
     });
   });
-  img.write('gos_pp.png');
+  await img.write('gos_pp.png');
 }
 
 bg_gos();
