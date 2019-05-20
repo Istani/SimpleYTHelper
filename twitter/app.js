@@ -6,7 +6,8 @@ console.log("===");
 console.log();
 const config = require('dotenv').config({ path: '../.env' });
 
-var Twitter = require('twitter');
+const Twitter = require('twitter');
+const Jimp = require("jimp");
 
 const Tweets = require("./models/send_tweets.js");
 
@@ -54,12 +55,13 @@ async function tweet_gos() {
 }
 
 async function bg_gos() {
-  var img = await Jimp.read('../gamesite/public/img/games/background.png');
+  var img = await Jimp.read('../gamesite/public/img/background.png');
   img.getBase64(Jimp.AUTO, (err, res) => {
     if (err) {
+      console.error(error);
       return;
     }
-    client_gos.post('account/update_profile_banner', { image: res }, async function (error, tweet, response) {
+    client_gos.post('account/update_profile_banner', { banner: res }, async function (error, tweet, response) {
       if (error) {
         console.error(error);
         return;
@@ -68,9 +70,10 @@ async function bg_gos() {
   });
 }
 async function pp_gos() {
-  var img = await Jimp.read('../gamesite/public/img/games/text.png');
+  var img = await Jimp.read('../gamesite/public/img/text.png');
   img.getBase64(Jimp.AUTO, (err, res) => {
     if (err) {
+      console.error(err);
       return;
     }
     client_gos.post('account/update_profile_image', { image: res }, async function (error, tweet, response) {
@@ -83,7 +86,7 @@ async function pp_gos() {
 
 }
 
-bg_gos();
-pp_gos();
-//tweet_gos();
-//tweet_main();
+//bg_gos();
+//pp_gos();
+tweet_gos();
+tweet_main();
