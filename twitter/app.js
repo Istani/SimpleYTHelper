@@ -8,6 +8,7 @@ const config = require('dotenv').config({ path: '../.env' });
 
 const Twitter = require('twitter');
 const Jimp = require("jimp");
+const fs = require('fs');
 
 const Tweets = require("./models/send_tweets.js");
 
@@ -55,18 +56,12 @@ async function tweet_gos() {
 }
 
 async function bg_gos() {
-  var img = await Jimp.read('../gamesite/public/img/background.png');
-  img.getBase64(Jimp.AUTO, (err, res) => {
-    if (err) {
-      console.error(error);
-      return;
-    }
-    client_gos.post('account/update_profile_banner', { banner: res }, async function (error, tweet, response) {
-      if (error) {
-        console.error(error);
-        return;
-      }
-    });
+  var img = fs.readFileSync('../gamesite/public/img/background.png');
+  await client_gos.post('account/update_profile_banner', { banner: img }, async function (error, tweet, response) {
+  if (error) {
+    console.error(error);
+    return;
+  }
   });
 }
 async function pp_gos() {
