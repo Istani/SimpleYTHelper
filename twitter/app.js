@@ -6,7 +6,9 @@ console.log("===");
 console.log();
 const config = require('dotenv').config({ path: '../.env' });
 
-var Twitter = require('twitter');
+const Twitter = require('twitter');
+const Jimp = require("jimp");
+const fs = require('fs');
 
 const Tweets = require("./models/send_tweets.js");
 
@@ -54,33 +56,40 @@ async function tweet_gos() {
 }
 
 async function bg_gos() {
-  var img = await Jimp.read('../gamesite/public/img/games/background.png');
+  var img = await Jimp.read('../gamesite/public/img/background.png');
+  //img.scaleToFit(400, 400);
+  //img.contain(400, 400, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_CENTER);
   img.getBase64(Jimp.AUTO, (err, res) => {
     if (err) {
-      return;
+      console.error(err);
+      //return;
     }
-    client_gos.post('account/update_profile_banner', { image: res }, async function (error, tweet, response) {
+    client_gos.post('account/update_profile_banner', { banner: img }, async function (error, response) {
       if (error) {
         console.error(error);
-        return;
+        //return;
       }
     });
   });
+  img.write('gos_bg.png');
 }
 async function pp_gos() {
-  var img = await Jimp.read('../gamesite/public/img/games/text.png');
-  img.getBase64(Jimp.AUTO, (err, res) => {
+  var img = await Jimp.read('../gamesite/public/img/text.png');
+  await img.scaleToFit(400, 400);
+  await img.contain(400, 400, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE);
+  await img.getBase64(Jimp.AUTO, (err, res) => {
     if (err) {
-      return;
+      console.error(err);
+      //return;
     }
-    client_gos.post('account/update_profile_image', { image: res }, async function (error, tweet, response) {
+    client_gos.post('account/update_profile_image', { image: res }, async function (error, response) {
       if (error) {
         console.error(error);
-        return;
+        //return;
       }
     });
   });
-
+  await img.write('gos_pp.png');
 }
 
 bg_gos();
