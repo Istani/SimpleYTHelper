@@ -1,7 +1,7 @@
 
 exports.up = function (knex, Promise) {
   return knex.schema.createTable('simpleyth_login', function (t) {
-    t.string('email').notNull().primary();
+    t.string('email',50).notNull().primary();
     t.string('password').notNull();
     t.timestamps(true, false);
     t.string('activation_code').notNull();
