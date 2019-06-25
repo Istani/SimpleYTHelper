@@ -1,7 +1,7 @@
 
 exports.up = function (knex, Promise) {
   return knex.schema.createTable('simpleyth_oauth_botcredentials', function (t) {
-    t.string('service').notNull().primary();
+    t.string('service',50).notNull().primary();
     t.string('user_token').notNull();
     t.string('login').notNull();
     t.string('password').notNull();

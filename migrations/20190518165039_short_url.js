@@ -1,6 +1,6 @@
 exports.up = function(knex, Promise) {
   return knex.schema.createTable('short_url', function(t) {
-    t.string('code');
+    t.string('code',50);
     t.string('url');
     t.integer('user').defaultTo(0);
 

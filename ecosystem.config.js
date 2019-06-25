@@ -8,6 +8,14 @@ module.exports = {
       out_file: 'logs/SYTH-Core.log',
       autorestart: false
     },
+    {
+      name: 'SYTH-Backup',
+      script: './cronjob/app.js',
+      log_date_format: "YYYY-MM-DD HH:mm:ss Z",
+      error_file: 'logs/SYTH-Backup.err',
+      out_file: 'logs/SYTH-Backup.log',
+      autorestart: false
+    },
     /*{
       name: "SYTH-Web",
       script: "./website/index.js",
@@ -67,13 +75,13 @@ module.exports = {
       error_file: "logs/GAME-Sales.err",
       out_file: "logs/GAME-Sales.log"
     },
-    {
+    /*{
       name: "GAME-CustomImport",
       script: "./test/app.js",
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       error_file: "logs/GAME-CustomImport.err",
       out_file: "logs/GAME-CustomImport.log"
-    },
+    },*/
     /*{
       name: 'SYTH-Amazon',
       script: "./amazon/app.js",

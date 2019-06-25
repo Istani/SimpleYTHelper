@@ -1,9 +1,9 @@
 
 exports.up = function (knex, Promise) {
   return knex.schema.createTable('channel', function (t) {
-    t.string('user_id').notNull();
-    t.string('service').notNull();
-    t.string('channel_id').notNull();
+    t.string('user_id',50).notNull();
+    t.string('service',50).notNull();
+    t.string('channel_id',50).notNull();
     t.string('channel_title').notNull();
     t.text('description').notNull();
     t.datetime('start_date').notNull();
