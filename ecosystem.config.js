@@ -67,13 +67,13 @@ module.exports = {
       error_file: "logs/GAME-Sales.err",
       out_file: "logs/GAME-Sales.log"
     },
-    {
+    /*{
       name: "GAME-CustomImport",
       script: "./test/app.js",
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       error_file: "logs/GAME-CustomImport.err",
       out_file: "logs/GAME-CustomImport.log"
-    },
+    },*/
     /*{
       name: 'SYTH-Amazon',
       script: "./amazon/app.js",

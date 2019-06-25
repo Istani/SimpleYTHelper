@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.js",
   "dependencies": {
+    "SYTH-Twitter": "file:twitter",
     "amazon-product-api": "^0.4.4",
     "async": "^2.6.2",
     "await-sleep": "0.0.1",

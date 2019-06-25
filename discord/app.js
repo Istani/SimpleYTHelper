@@ -15,6 +15,7 @@ const Chat_Room = require("./models/chat_room.js");
 const Chat_Server = require("./models/chat_server.js");
 const Chat_User = require("./models/chat_user.js");
 
+//console.log(process.env.DISCORD_TOKEN);
 
 client.login(process.env.DISCORD_TOKEN).catch(function (error) {
   if (error) {

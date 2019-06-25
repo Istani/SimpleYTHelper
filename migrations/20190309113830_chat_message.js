@@ -2,11 +2,11 @@
 exports.up = function(knex, Promise) {
   return knex.schema.createTable('chat_message', function(t) {
     //t.increments('id').primary();
-    t.string('service');
-    t.string('server');
-    t.string('room');
+    t.string('service',50);
+    t.string('server',50);
+    t.string('room',50);
     t.string('user');
-    t.string('id');
+    t.string('id',50);
     t.datetime('timestamp');
     t.string('content');
     
