@@ -1,9 +1,9 @@
 
 exports.up = function (knex, Promise) {
   return knex.schema.alterTable('game_merch', function (t) {
-    t.string('store', 50).notNull().alter();
-    //t.string('name', 200).notNull().alter();
-    t.string('product', 50).notNull().alter();
+    t.string('store', 20).notNull().alter();
+    t.string('name', 100).notNull().alter();
+    t.string('product', 20).notNull().alter();
   });
 };
 
