@@ -5,17 +5,17 @@ exports.up = function (knex, Promise) {
   }).then(knex.schema.alterTable('simpleyth_oauth_botcredentials', function (t) {
     t.string('service', 50).notNull().alter();
   }).then(knex.schema.alterTable('game_overview', function (t) {
-    t.string('name', 255).notNull().alter();
+    t.string('name', 200).notNull().alter();
   }).then(knex.schema.alterTable('game_link', function (t) {
     t.string('store', 50).notNull().alter();
-    t.string('name', 255).notNull().alter();
+    t.string('name', 200).notNull().alter();
   }).then(knex.schema.alterTable('channel', function (t) {
     t.string('user_id', 50).notNull().alter();
     t.string('service', 50).notNull().alter();
     t.string('channel_id', 50).notNull().alter();
   }).then(knex.schema.alterTable('game_merch', function (t) {
     t.string('store', 50).notNull().alter();
-    t.string('name', 255).notNull().alter();
+    t.string('name', 200).notNull().alter();
     t.string('product', 50).notNull().alter();
   }).then(knex.schema.alterTable('chat_message', function (t) {
     t.string('service', 50).notNull().alter();
@@ -35,7 +35,7 @@ exports.up = function (knex, Promise) {
     t.string('user', 50).notNull().alter();
   }).then(knex.schema.alterTable('game_check', function (t) {
     t.string('category', 50).notNull().alter();
-    t.string('game', 255).notNull().alter();
+    t.string('game', 200).notNull().alter();
   }).then()))))))))));
 };
 
