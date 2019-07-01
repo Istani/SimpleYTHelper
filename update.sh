@@ -1,4 +1,4 @@
 #!/usr/bin/sh
-cd ~/node/SimpleYTH
+cd ~/SimpleYTHelper/
 pm2 resurrect
 git pull
