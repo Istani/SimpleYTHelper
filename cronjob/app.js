@@ -68,7 +68,7 @@ cron.schedule('30 11 * * *', () => {
       }
     ], function (error) {
       console.log("===DONE===");
-      process.exit(0);
+      process.exit(1);
     }
   )
 });
