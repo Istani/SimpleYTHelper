@@ -22,6 +22,13 @@ class Game extends Model {
     var reg_exname = name.replace(/ /gi, "_");
     reg_exname = reg_exname.replace(/[\W]+/gi, "");
     reg_exname = reg_exname.toLowerCase();
+    while (reg_exname.indexOf('__') > 0) {
+      reg_exname = reg_exname.replace('__', '_');
+    }
+    if (reg_exname.length > 100) {
+      console.error("Name too Long!", reg_exname, reg_exname.length);
+      reg_exname = reg_exname.substr(0, 100);
+    }
     return reg_exname;
   }
 
