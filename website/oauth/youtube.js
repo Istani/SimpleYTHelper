@@ -23,7 +23,7 @@ module.exports = (passport) => {
     passport.use(new YoutubeV3Strategy({
       clientID: data[0].client_id,
       clientSecret: data[0].client_secret,
-      callbackURL: "http://127.0.0.1:3000/auth/youtube/callback"
+      callbackURL: "http://istani.serveo.net/auth/youtube/callback"
     },
       function (accessToken, refreshToken, profile, done) {
         var user = {

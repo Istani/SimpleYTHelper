@@ -59,7 +59,7 @@ async function check_modules(package,cb) {
     } catch (e) {
       console.error(debs[i]+': '+e.code);
       need_install=true;
-      exec('npm install --save '+debs[i]);
+      exec('npm install '+debs[i]);
     }
   }
   cb();

@@ -100,7 +100,7 @@ function Refresh_Token(token_data, org_function) {
     }
     var data = JSON.parse(res.body);
     if (typeof data.error !== "undefined") {
-      console.error("YOUTUBE", "REFRESH", data.error);
+      console.error("YOUTUBE", "REFRESH", data);
       return;
     }
     token_data.access_token = data.access_token;
