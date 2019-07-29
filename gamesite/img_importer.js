@@ -110,15 +110,20 @@ async function gen_banner() {
         //count_games = 0;
       }
       var path = await Game.query().where('name', l[count_games].name);
-      var gp = await Jimp.read(path[0].banner);
-      gp.scaleToFit(pic.bitmap.width, pic.bitmap.height / 4);
-      //gp.rotate(-20,false);
-      pic.composite(gp, count_width, count_height);
-      count_width += gp.bitmap.width;
-      if (count_width >= pic.bitmap.width) {
-        count_height += gp.bitmap.height;
+      if (path[0] != undefined) {
+        var gp = await Jimp.read(path[0].banner);
+        gp.scaleToFit(pic.bitmap.width, pic.bitmap.height / 4);
+        //gp.rotate(-20,false);
+        pic.composite(gp, count_width, count_height);
+        count_width += gp.bitmap.width;
+        if (count_width >= pic.bitmap.width) {
+          count_height += gp.bitmap.height;
+        }
+        count_games++;
+      } else {
+        count_height = pic.bitmap.height;
+        count_width = pic.bitmap.width;
       }
-      count_games++;
     }
     count_width = 0;
   }
