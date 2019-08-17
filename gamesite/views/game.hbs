@@ -11,13 +11,13 @@
       {{#each links}}
         <tr>
           <td width="100%">
-            <a href="{{link}}">
+            <a href="{{link}}" class="{{store}}">
               {{store}}
             </a>
           </td>
           <td class="price-container">
             <p class="price">
-              <a href="{{link}}">
+              <a href="{{link}}" class="{{store}}">
                 {{#checkPrice ../lowPrice formatPrice}}
                   <span class="">{{formatPrice}}&nbsp;€</span>
       {{else}}
@@ -37,13 +37,13 @@
       {{#each merch}}
         <tr>
           <td width="100%">
-            <a href="{{link}}">
+            <a href="{{link}}" class="{{store}}">
               {{display_name}}
             </a>
           </td>
           <td class="price-container">
             <p class="price">
-              <a href="{{link}}">
+              <a href="{{link}}" class="{{store}}">
                 <span class="">{{formatPrice}}&nbsp;€</span>
               </a>
             </p>

@@ -38,6 +38,7 @@ async function get_games() {
     if (text.length > Max_Text) { text = text.substring(0, text.indexOf('<br>')); }
     if (text.length < Max_Text) {
       text = details[0].description.replace('<br>', '');
+      text = text.replace(/<br \/>/g, '<br>');
       if (text.length > Max_Text) { text = text.substring(0, text.indexOf('<br>')); }
     }
     if (text.length < Max_Text) {
@@ -47,6 +48,7 @@ async function get_games() {
     }
     if (text.length < Max_Text) {
       text = details[0].description;
+      text = text.replace(/<br \/>/g, '<br>');
       text = text.replace(/<br>/g, '\n');
     }
     if (text.length > Max_Text) { text = text.substring(0, Max_Text) + '...'; }
@@ -71,8 +73,8 @@ async function get_games() {
     }
     await Check.query().insert(tmp_obj);
 
-    var tmp_tweet={};
-    tmp_tweet.user="GamesOnSaleDE";
+    var tmp_tweet = {};
+    tmp_tweet.user = "GamesOnSaleDE";
     tmp_tweet.message = "" + tmp_obj.display_title + " " + tmp_obj.link;
     await Tweets.query().insert(tmp_tweet);
 
@@ -92,8 +94,3 @@ async function get_games() {
 }
 
 get_games();
-
-async function get_link(link) {
-  
-}
-get_link('');

@@ -81,7 +81,8 @@ hr {
 }
 .news_list-container {
   justify-content : center;
-  width: 500px;
+  display: flex;
+  flex-wrap: wrap;
 }
 a {
   text-decoration: none;
@@ -97,6 +98,12 @@ a {
   position:relative;
   background-color: white;
   margin: 10px;
+}
+.news_list {
+  flex: 45%;
+  margin: 10px;
+  position:relative;
+  /*flex: 50%;*/
 }
 .game_description {
   text-align: justify;
@@ -126,19 +133,19 @@ a {
     border-radius: 4px ;
 }
 
-a[href^="https://www.amazon.de"] {
+a.Amazon {
   background: url("/img/service/amazon.png") no-repeat left; 
   background-position: 0px 0px;
   background-size: 16px 16px;
   padding-left: 18px;
 }
-a[href^="https://store.steampowered.com"] {
+a.Steam {
   background: url("/img/service/steam.png") no-repeat left; 
   background-position: 0px 0px;
   background-size: 16px 16px;
   padding-left: 18px;
 }
-a[href^="https://www.humblebundle.com"] {
+a.Humble {
   background: url("/img/service/humble.png") no-repeat left; 
   background-position: 0px 0px;
   background-size: 16px 16px;

@@ -47,6 +47,7 @@ class GameCheck extends Model {
     date.setDate(date.getDate() - 7);
     return date.toISOString();
   }
+  
   $beforeInsert() {
     this.$beforeUpdate();
   }

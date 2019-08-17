@@ -24,9 +24,12 @@ async function GetAllGames() {
   console.log("Total of", All_Games.length, "Games Loaded");
   require("./img_importer.js");
   Display_Games = [];
+
   for (var i = 0; i < All_Games.length; i++) {
     if (All_Games[i].links.length > 1) {
       Display_Games.push(All_Games[i]);
+      
+      // Adding Ads?
     }
   }
   console.log('Display: ', Display_Games.length);
