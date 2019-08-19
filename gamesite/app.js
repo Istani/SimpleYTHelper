@@ -89,10 +89,10 @@ app.set('view engine', '.hbs');
 app.use(express.static('public'));
 app.use(function (req, res, next) {
   if (fs.existsSync('./tmp/req.json') == false) {
-    fs.writeFileSync("./tmp/req.json", JSON.stringify(req));
+    //fs.writeFileSync("./tmp/req.json", JSON.stringify(req));
   }
   if (fs.existsSync('./tmp/res.json') == false) {
-    fs.writeFileSync("./tmp/res.json", JSON.stringify(res));
+    //fs.writeFileSync("./tmp/res.json", JSON.stringify(res));
   }
   console.log("REQ:", req.url);
   next();
