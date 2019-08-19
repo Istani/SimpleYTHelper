@@ -6,6 +6,7 @@ console.log("===");
 console.log();
 
 // Start Includes
+var fs = require('fs');
 var express = require('express');
 var exphbs = require('express-handlebars');
 
