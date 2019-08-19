@@ -28,7 +28,7 @@ async function GetAllGames() {
   for (var i = 0; i < All_Games.length; i++) {
     if (All_Games[i].links.length > 1) {
       Display_Games.push(All_Games[i]);
-      
+
       // Adding Ads?
     }
   }
@@ -87,6 +87,12 @@ app.set('view engine', '.hbs');
 //
 app.use(express.static('public'));
 app.use(function (req, res, next) {
+  if (fs.existsSync('./tmp/req.json') == false) {
+    fs.writeFileSync("./tmp/req.json", JSON.stringify(req));
+  }
+  if (fs.existsSync('./tmp/res.json') == false) {
+    fs.writeFileSync("./tmp/res.json", JSON.stringify(res));
+  }
   console.log("REQ:", req.url);
   next();
 });
