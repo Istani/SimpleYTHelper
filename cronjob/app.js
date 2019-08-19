@@ -28,7 +28,7 @@ cron.schedule('30 11 * * *', () => {
 
   console.log("Create Archive!");
   var TAR_COMMAND = process.env.PATH_TAR;
-  var ARCIVE_PATH = "backup\\" + timedate + '_' + process.env.DB_NAME + ".tar";
+  var ARCIVE_PATH = "backup\\" + timedate + '_' + process.env.DB_NAME + ".tar.gz";
   cmd = '' + TAR_COMMAND + ' ' + ARCIVE_PATH + " " + "backup\\" + timedate + '_' + process.env.DB_NAME + ".sql ..\\logs\\*";
   cmd = cmd.split("\\").join("/");
   exec(cmd);
