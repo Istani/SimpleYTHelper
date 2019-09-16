@@ -100,6 +100,8 @@ async function gen_banner() {
   var count_height = 0;
   var count_games = 0;
   const l = await Link.query().select('name').groupBy('name').orderBy('discount', 'DESC');
+  console.log("Banner: Game Discounts: ",l.length);
+
   while (count_height < pic.bitmap.height) {
     while (count_width < pic.bitmap.width) {
       if (count_games >= l.length) {
@@ -110,7 +112,9 @@ async function gen_banner() {
         //count_games = 0;
       }
       var path = await Game.query().where('name', l[count_games].name);
+      //console.log(l[count_games].name);
       if (path[0] != undefined) {
+	//console.log(path[0].banner);
         var gp = await Jimp.read(path[0].banner);
         gp.scaleToFit(pic.bitmap.width, pic.bitmap.height / 4);
         //gp.rotate(-20,false);
@@ -119,11 +123,12 @@ async function gen_banner() {
         if (count_width >= pic.bitmap.width) {
           count_height += gp.bitmap.height;
         }
-        count_games++;
+        //count_games++;
       } else {
-        count_height = pic.bitmap.height;
-        count_width = pic.bitmap.width;
+        //count_height = pic.bitmap.height;
+        //count_width = pic.bitmap.width;
       }
+      count_games++;
     }
     count_width = 0;
   }

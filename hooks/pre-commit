@@ -1,3 +1,4 @@
-#!/usr/bin/sh 
+#!/bin/sh
+
 chmod +x ./hooks/*
 git add ./hooks/
