@@ -52,7 +52,8 @@ module.exports = {
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       restart_delay: 1000,
       error_file: "logs/SYTH-Twitter.err",
-      out_file: "logs/SYTH-Twitter.log",                       },
+      out_file: "logs/SYTH-Twitter.log",
+    },
     /*
       name: "SYTH-Commands",
       script: "./chatcommands/app.js",
@@ -102,6 +103,13 @@ module.exports = {
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       error_file: "logs/SYTH-Humble.err",
       out_file: "logs/SYTH-Humble.log"
+    },
+    {
+      name: "SYTH-GOG",
+      script: "./gog/app.js",
+      log_date_format: "YYYY-MM-DD HH:mm:ss Z",
+      error_file: "logs/SYTH-GOG.err",
+      out_file: "logs/SYTH-GOG.log"
     }
   ]
 }

@@ -75,7 +75,7 @@ async function get_games() {
 
     var tmp_tweet = {};
     tmp_tweet.user = "GamesOnSaleDE";
-    tmp_tweet.message = "" + tmp_obj.display_title + " " + tmp_obj.link;
+    tmp_tweet.message = "" + tmp_obj.display_title + " " + tmp_obj.link + " #werbung";
     await Tweets.query().insert(tmp_tweet);
 
     // Adding Discord
