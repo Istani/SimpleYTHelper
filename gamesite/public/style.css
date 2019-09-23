@@ -151,6 +151,9 @@ a.Humble {
   background-size: 16px 16px;
   padding-left: 18px;
 }
+a.Humble::after { 
+  content: "*";
+}
 a.GOG {
   background: url("/img/service/gog.png") no-repeat left; 
   background-position: 0px 0px;
