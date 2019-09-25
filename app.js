@@ -27,6 +27,7 @@ if (fs.existsSync(".env")) {
 var need_install = false;
 async function install() {
   fs.readdir(__dirname, function (err, items) {
+    /*
     for (var i = 0; i < items.length; i++) {
       var item = items[i];
       if (fs.statSync(__dirname + '/' + item).isDirectory()) {
@@ -39,7 +40,7 @@ async function install() {
         }
       }
     }
-
+    */
     if (need_install) {
       exec('git add .');
       exec('git commit -am "Post Commit Update"');

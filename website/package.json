@@ -9,18 +9,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "async": "^2.6.1",
     "better-queue": "^3.8.10",
     "cookie-parser": "^1.4.4",
-    "dotenv": "^6.0.0",
-    "express": "^4.16.3",
-    "express-handlebars": "^3.0.0",
+    "express": "^4.17.1",
+    "express-handlebars": "^3.1.0",
     "express-session": "^1.16.2",
     "i18n": "^0.8.3",
-    "mysql": "^2.16.0",
-    "node-cron": "^1.2.1",
-    "nodemailer": "^4.7.0",
-    "objection": "^1.4.0",
+    "node-cron": "^2.0.3",
+    "nodemailer": "^6.3.0",
     "passport": "^0.4.0",
     "passport-youtube-v3": "^2.1.0"
   }
