@@ -51,7 +51,7 @@ async function install() {
   });
 }
 
-async function check_modules(current_path, cb) {
+async function check_modules(current_path, package, cb) {
   console.log("Changeing to ", current_path);
   process.chdir(current_path);
   var debs = Object.keys(package.dependencies);
