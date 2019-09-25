@@ -1,6 +1,1 @@
-#!/bin/sh
-
-node node_modules/knex/bin/cli.js migrate:latest
-pm2 startOrReload ecosystem.config.js
-pm2 save
-
+/root/SimpleYTHelper/node_modules/shared-git-hooks/hook.sh
