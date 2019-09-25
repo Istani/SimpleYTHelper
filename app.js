@@ -30,6 +30,7 @@ async function install() {
     for (var i = 0; i < items.length; i++) {
       var item = items[i];
       if (fs.statSync(__dirname + '/' + item).isDirectory()) {
+        process.chdir(__dirname + '/' + item);
         if (fs.existsSync(__dirname + '/' + item + '/package.json')) {
           var tmp_pck = require(__dirname + '/' + item + '/package.json');
           async.series([
@@ -38,11 +39,10 @@ async function install() {
         }
       }
     }
+    process.chdir(__dirname);
     if (need_install) {
-      exec('git add package.json');
-      exec('git add package-lock.json');
-      exec('git add .env.example');
-      exec('git commit -am "Package Update"');
+      exec('git add .');
+      exec('git commit -am "Post Commit Update"');
       exec('git push');
 
       exec('pm2 restart all');
