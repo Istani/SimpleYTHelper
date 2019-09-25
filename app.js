@@ -30,16 +30,16 @@ async function install() {
     for (var i = 0; i < items.length; i++) {
       var item = items[i];
       if (fs.statSync(__dirname + '/' + item).isDirectory()) {
-        process.chdir(__dirname + '/' + item);
         if (fs.existsSync(__dirname + '/' + item + '/package.json')) {
           var tmp_pck = require(__dirname + '/' + item + '/package.json');
+          var current_path = __dirname + '/' + item;
           async.series([
-            (cb) => { check_modules(tmp_pck, cb); }
+            (cb) => { check_modules(current_path, tmp_pck, cb); }
           ], () => { });
         }
       }
     }
-    process.chdir(__dirname);
+
     if (need_install) {
       exec('git add .');
       exec('git commit -am "Post Commit Update"');
@@ -51,7 +51,9 @@ async function install() {
   });
 }
 
-async function check_modules(package, cb) {
+async function check_modules(current_path, cb) {
+  console.log("Changeing to ", current_path);
+  process.chdir(current_path);
   var debs = Object.keys(package.dependencies);
   for (var i = 0; i < debs.length; i++) {
     try {
@@ -62,5 +64,6 @@ async function check_modules(package, cb) {
       exec('npm install ' + debs[i]);
     }
   }
+  process.chdir(__dirname);
   cb();
 }
