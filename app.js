@@ -37,21 +37,21 @@ async function install() {
           try {
             exec("npm install");
             exec("ln -s ../models");
+            //need_install = true;
           } catch (e) {
             console.error(e);
           }
-          need_install = true;
         }
       }
     }
     process.chdir(__dirname);
 
     if (need_install) {
-      console.log("git add .");
-      console.log('git commit -am "Post Commit Update"');
-      console.log("git push");
+      exec("git add .");
+      exec('git commit -am "Post Commit Update"');
+      exec("git push");
 
-      console.log("pm2 restart all");
+      exec("pm2 restart all");
     }
     process.exit(0);
   });
