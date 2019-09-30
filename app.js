@@ -48,11 +48,11 @@ async function install() {
 
     need_install = (exec("git status -s -uno | wc -l", function (error, stdout, stderr) { need_install = stdout; console.log("S", stdout); })[0]) - 0x30;
     if (need_install) {
-      //exec("git add .");
-      //exec('git commit -am "Post Commit Update"');
-      //exec("git push");
+      exec("git add .");
+      exec('git commit -am "Post Commit Update"');
+      exec("git push");
 
-      //exec("pm2 restart all");
+      exec("pm2 restart all");
       console.log("Restart all");
     }
     process.exit(0);
