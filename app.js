@@ -38,7 +38,7 @@ async function install() {
             exec("npm install");
             exec("ln -s ../models");
           } catch (e) {
-            console.error(e);
+            //console.error(e);
           }
         }
       }
