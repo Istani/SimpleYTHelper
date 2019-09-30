@@ -35,13 +35,12 @@ async function install() {
           var current_path = __dirname + '/' + item;
           process.chdir(current_path);
           console.log(current_path, "npm install", "ln -s ../models");
-          /*try {
+          try {
             exec("npm install");
             exec("ln -s ../models");
-            //need_install = true;
           } catch (e) {
             console.error(e);
-          }*/
+          }
         }
       }
     }
