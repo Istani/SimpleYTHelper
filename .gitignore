@@ -16,9 +16,10 @@ twitter/gos*.png
 */temp/
 !*/.gitkeep
 
-/test/client_secret.json
-
 sync/
 test/
+
+*/knexfile.js
+*/.env
 
 _heroku_humble/

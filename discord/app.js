@@ -1,10 +1,10 @@
 process.chdir(__dirname);
 const package_info = require('./package.json');
-var software=package_info.name+" (V "+package_info.version+")";
+var software = package_info.name + " (V " + package_info.version + ")";
 console.log(software);
 console.log("===");
 console.log();
-const config = require('dotenv').config({path: '../.env'});
+const config = require('dotenv').config({ path: '../.env' });
 
 const Discord = require('discord.js');
 const client = new Discord.Client();
@@ -42,10 +42,10 @@ client.on('disconnect', event => {
 /* Custom Stuff */
 client.on('message', msg => {
   var guild = msg.guild;
-  if (guild==null) {
-    guild={};
-    guild.id=msg.author.id;
-    guild.name='DM';
+  if (guild == null) {
+    guild = {};
+    guild.id = msg.author.id;
+    guild.name = 'DM';
   }
   AddGuild(guild);
   var channel = msg.channel;
@@ -56,45 +56,46 @@ client.on('message', msg => {
   AddMessage(msg, guild, channel, user);
 });
 
-async function AddMessage(msg, guild, channel,user) {
-  var tmp_message={};
+async function AddMessage(msg, guild, channel, user) {
+  var tmp_message = {};
 
   // Keys
-  tmp_message.service=package_info.name;
-  tmp_message.server=guild.id;
-  tmp_message.room=channel.id;
-  tmp_message.id=msg.id;
+  tmp_message.service = package_info.name;
+  tmp_message.server = guild.id;
+  tmp_message.room = channel.id;
+  tmp_message.id = msg.id;
 
   var m = await Chat_Message.query().where(tmp_message);
 
   // Additons
-  tmp_message.user=user.id;
-  tmp_message.timestamp=msg.createdAt;
-  tmp_message.content=msg.content;
+  tmp_message.user = user.id;
+  tmp_message.timestamp = msg.createdAt;
+  tmp_message.content = msg.content;
 
-  if (m.length==0) {
-    console.log('Message:',JSON.stringify(tmp_message));
+  if (m.length == 0) {
+    console.log('Message:', JSON.stringify(tmp_message));
     await Chat_Message.query().insert(tmp_message);
   } else {
-    await Chat_Message.query().patch(tmp_messge).where(m[0]);
+    //console.log('Message Repeat:', JSON.stringify(tmp_message));
+    await Chat_Message.query().patch(tmp_message).where(m[0]);
   }
 
 };
 
 async function AddGuild(guild) {
-  var tmp_server={};
+  var tmp_server = {};
 
   // Keys
-  tmp_server.service=package_info.name;
-  tmp_server.server=guild.id;
+  tmp_server.service = package_info.name;
+  tmp_server.server = guild.id;
 
   var g = await Chat_Server.query().where(tmp_server);
 
   // Additions
-  tmp_server.name=guild.name;
+  tmp_server.name = guild.name;
 
-  if (g.length==0) {
-    console.log('Server:',JSON.stringify(tmp_server));
+  if (g.length == 0) {
+    console.log('Server:', JSON.stringify(tmp_server));
     await Chat_Server.query().insert(tmp_server);
   } else {
     await Chat_Server.query().patch(tmp_server).where(g[0]);
@@ -102,20 +103,20 @@ async function AddGuild(guild) {
 }
 
 async function AddChannel(channel, guild) {
-  var tmp_room={};
+  var tmp_room = {};
 
   // Keys
-  tmp_room.service=package_info.name;
-  tmp_room.server=guild.id;
-  tmp_room.room=channel.id;
+  tmp_room.service = package_info.name;
+  tmp_room.server = guild.id;
+  tmp_room.room = channel.id;
 
   var c = await Chat_Room.query().where(tmp_room);
 
   // Additions
-  tmp_room.name=channel.name;
+  tmp_room.name = channel.name;
 
-  if (c.length==0) {
-    console.log('Room:',JSON.stringify(tmp_room));
+  if (c.length == 0) {
+    console.log('Room:', JSON.stringify(tmp_room));
     await Chat_Room.query().insert(tmp_room);
   } else {
     await Chat_Room.query().patch(tmp_room).where(c[0]);
@@ -123,20 +124,20 @@ async function AddChannel(channel, guild) {
 }
 
 async function AddUser(user, guild) {
-  var tmp_user={};
+  var tmp_user = {};
 
   // Keys
-  tmp_user.service=package_info.name;
-  tmp_user.server=guild.id;
-  tmp_user.user=user.id;
+  tmp_user.service = package_info.name;
+  tmp_user.server = guild.id;
+  tmp_user.user = user.id;
 
   var u = await Chat_User.query().where(tmp_user);
 
   // Additions
-  tmp_user.name=user.username;
+  tmp_user.name = user.username;
 
-  if (u.length==0) {
-    console.log('User:',JSON.stringify(tmp_user));
+  if (u.length == 0) {
+    console.log('User:', JSON.stringify(tmp_user));
     await Chat_User.query().insert(tmp_user);
   } else {
     await Chat_User.query().patch(tmp_user).where(u[0]);
