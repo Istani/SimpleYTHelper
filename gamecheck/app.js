@@ -11,6 +11,7 @@ const Game = require("./models/game.js");
 const Links = require("./models/game_link.js");
 const Merch = require("./models/game_merch.js");
 const Tweets = require("./models/send_tweets.js");
+const Outgoing_Message = require("./models/outgoing_messages.js");
 
 // Settings
 var Discount = 75;
@@ -79,7 +80,13 @@ async function get_games() {
     await Tweets.query().insert(tmp_tweet);
 
     // Adding Discord
-    
+    var tmp_chat = {};
+    tmp_chat.service = "syth-discord";
+    tmp_chat.server = "xxx";
+    tmp_chat.room = "633230125282099210";
+    tmp_chat.content = tmp_tweet.message;
+    await Outgoing_Message.query().insert(tmp_chat);
+
     console.log('New Discount', JSON.stringify(tmp_obj));
     await sleep(1000);
   }

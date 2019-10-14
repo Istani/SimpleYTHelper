@@ -10,6 +10,7 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 
 // DB Models
+const Outgoing_Message = require("./models/outgoing_messages.js");
 const Chat_Message = require("./models/chat_message.js");
 const Chat_Room = require("./models/chat_room.js");
 const Chat_Server = require("./models/chat_server.js");
@@ -27,6 +28,8 @@ client.login(process.env.DISCORD_TOKEN).catch(function (error) {
 client.on('ready', () => {
   console.log(`Logged in as <${client.user.tag}>!`);
   client.user.setActivity('SYTH').then(presence => { console.log(`Activity set to ${presence.game ? presence.game.name : 'none'}`); }).catch(console.error);
+  //SendMessage("225371711619465216", "test");
+  setTimeout(CheckForMessages, 1000);
 });
 
 client.on('error', error => {
@@ -55,6 +58,20 @@ client.on('message', msg => {
 
   AddMessage(msg, guild, channel, user);
 });
+
+async function CheckForMessages() {
+  var msgs = await Outgoing_Message.query().where('service', package_info.name);
+  if (msgs.length > 0) {
+    for (var i = 0; i < msgs.length; i++) {
+      await SendMessage(msgs[i].service, msgs[i].content);
+      await Outgoing_Message.query().delete().where(msgs[i]);
+    }
+  }
+  setTimeout(CheckForMessages, 1000);
+}
+async function SendMessage(channelID, msg) {
+  client.channels.get(channelID).send(msg);
+}
 
 async function AddMessage(msg, guild, channel, user) {
   var tmp_message = {};
