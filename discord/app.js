@@ -63,13 +63,14 @@ async function CheckForMessages() {
   var msgs = await Outgoing_Message.query().where('service', package_info.name);
   if (msgs.length > 0) {
     for (var i = 0; i < msgs.length; i++) {
-      await SendMessage(msgs[i].service, msgs[i].content);
+      await SendMessage(msgs[i].room, msgs[i].content);
       await Outgoing_Message.query().delete().where(msgs[i]);
     }
   }
   setTimeout(CheckForMessages, 1000);
 }
 async function SendMessage(channelID, msg) {
+  console.log("Try to Send Message");
   client.channels.get(channelID).send(msg);
 }
 
