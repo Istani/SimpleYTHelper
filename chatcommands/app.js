@@ -88,6 +88,14 @@ async function get_msg() {
 }
 get_msg();
 
+async function outgoing(msg_data, content) {
+  var tmp_chat = {};
+  tmp_chat.service = msg_data.service;
+  tmp_chat.server = msg_data.server;
+  tmp_chat.room = msg_data.room;
+  tmp_chat.content = content;
+  await Outgoing_Message.query().insert(tmp_chat);
+}
 
 function show_commands(msg_data) {
   var output_string = "__Bot-Befehle__\n\r";
@@ -102,12 +110,14 @@ function show_commands(msg_data) {
         output_string += "\n\r";
       }
       output_string += commands[i].description + "\n\r";
+      outgoing(msg_data, output_string);
+      output_string = "";
     }
   }
-  console.log(output_string);
 }
 function party_command(msg_data) {
   var output_string = "Party @everyone!";
-  console.log(output_string);
+  outgoing(msg_data, output_string);
+  output_string = "";
 }
 
