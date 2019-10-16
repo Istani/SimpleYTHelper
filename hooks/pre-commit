@@ -1,0 +1,10 @@
+#!/bin/sh
+chmod +x ./hooks/*
+git add ./hooks/
+
+# Prettify all files
+FILES=$(git diff --cached --name-only --diff-filter=ACMR "*.js" "*.jsx" | sed 's| |\\ |g')
+[ -z "$FILES" ] && exit 0
+echo "$FILES" | xargs ./node_modules/.bin/prettier --write
+echo "$FILES" | xargs git add
+
