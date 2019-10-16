@@ -54,14 +54,14 @@ module.exports = {
       error_file: "logs/SYTH-Twitter.err",
       out_file: "logs/SYTH-Twitter.log",
     },
-    /*
+    {
       name: "SYTH-Commands",
       script: "./chatcommands/app.js",
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       restart_delay: 1000,
       error_file: "logs/SYTH-Commands.err",
       out_file: "logs/SYTH-Commands.log",
-    },*/
+    },
     {
       name: "GAME-Web",
       script: "./gamesite/app.js",
