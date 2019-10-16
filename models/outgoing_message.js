@@ -1,7 +1,7 @@
 const { Model } = require('objection');
 const Knex = require('knex');
 
-const knex = Knex(require("../discord/knexfile.js"));
+const knex = Knex(require("../knexfile.js"));
 
 Model.knex(knex);
 
