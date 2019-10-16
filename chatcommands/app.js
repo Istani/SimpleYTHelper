@@ -58,6 +58,20 @@ commands[2] = {
   function: party_command,
   visible: true
 };
+commands[3] = {
+  name: "peel",
+  params: "",
+  description: "Zero Peel!",
+  function: peel_command,
+  visible: true
+};
+commands[4] = {
+  name: "gege",
+  params: "",
+  description: "Good Game!",
+  function: gege_command,
+  visible: true
+};
 
 async function get_msg() {
   //console.log(prefix, settings.last_time);
@@ -101,26 +115,38 @@ async function outgoing(msg_data, content) {
 }
 
 async function show_commands(msg_data) {
-  var output_string = "__Bot-Befehle__\n\r";
+  var output_string = "__Bot-Befehle__\n";
 
   for (var i = 0; i < commands.length; i++) {
     if (commands[i].visible == true) {
-      output_string += "\n\r"
+      output_string += "\n"
       output_string += "**" + prefix + commands[i].name + "** ";
       if (commands[i].params != "") {
-        output_string += "*" + commands[i].params + "*\n\r";
+        output_string += "*" + commands[i].params + "*\n";
       } else {
-        output_string += "\n\r";
+        output_string += "\n";
       }
-      output_string += commands[i].description + "\n\r";
+      output_string += commands[i].description + "\n";
       await outgoing(msg_data, output_string);
       output_string = "";
     }
   }
 }
+
 async function party_command(msg_data) {
   var output_string = "Party @everyone!";
   await outgoing(msg_data, output_string);
   output_string = "";
 }
+async function peel_command(msg_data) {
+  var output_string = "Zero Peel!";
+  await outgoing(msg_data, output_string);
+  output_string = "";
+}
+async function gege_command(msg_data) {
+  var output_string = "Ja GEGE! Klingt nach einer Runde Teemo Smite!";
+  await outgoing(msg_data, output_string);
+  output_string = "";
+}
+
 
