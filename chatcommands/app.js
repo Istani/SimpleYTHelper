@@ -11,6 +11,7 @@ const fs = require('fs');
 const Messages = require("./models/chat_message.js");
 const Rooms = require("./models/chat_room.js");
 const Server = require("./models/chat_server.js");
+const Outgoing_Message = require("./models/outgoing_messages.js");
 
 var prefix = '!';
 
