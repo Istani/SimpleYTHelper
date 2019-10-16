@@ -7,7 +7,7 @@ Model.knex(knex);
 
 class Chat_Message extends Model {
   static get tableName() {
-    return 'outgoing_message';
+    return 'outgoing_messages';
   }
   static get idColumn() {
     return 'service, server, room, id';
