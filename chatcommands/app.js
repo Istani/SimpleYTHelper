@@ -6,6 +6,7 @@ console.log("===");
 console.log();
 
 const fs = require('fs');
+const sleep = require('await-sleep');
 
 // DB-Models
 const Messages = require("./models/chat_message.js");
@@ -80,7 +81,7 @@ async function get_msg() {
     if (typeof commands[found_index].function == "function") {
       commands[found_index].function(msg_list[i]);
     }
-
+    await sleep(1000);
     settings.last_time = msg_list[i].created_at;
   }
 
