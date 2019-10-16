@@ -144,7 +144,7 @@ async function peel_command(msg_data) {
   output_string = "";
 }
 async function gege_command(msg_data) {
-  var output_string = "Ja GEGE! Klingt nach einer Runde Teemo Smite!";
+  var output_string = "Was für ein geiles Game! Das klingt nach einer Runde Teemo Smite! ;)";
   await outgoing(msg_data, output_string);
   output_string = "";
 }
