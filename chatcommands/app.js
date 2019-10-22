@@ -177,7 +177,7 @@ async function game_command(msg_data) {
   }
   const g = await Games.query().where("name", "like", game).eager("[links]");
 
-  if (methode == "") { methode = "get" };
+  if (typeof methode == "undefined") { methode = "get" };
 
   switch (methode) {
     case 'set':
@@ -196,7 +196,7 @@ async function game_command(msg_data) {
         output_string += "**" + g[0].display_name + "** \n";
         output_string += "http://games-on-sale.de/game/" + g[0].name + "\n";
         for (var l = 0; l < g[0].links.length; l++) {
-          output_string += g[0].links[l].store + " " + g[0].links[l].price + "\n";
+          output_string += g[0].links[l].store + ": " + g[0].links[l].formatPrice + " €\n";
         }
       }
       break;
