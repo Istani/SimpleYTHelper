@@ -195,7 +195,7 @@ async function game_command(msg_data) {
       } else {
         output_string += "**" + g[0].display_name + "** \n";
         output_string += "http://games-on-sale.de/game/" + g[0].name + "\n";
-        for (var l = 0; l = g[0].Links; l++) {
+        for (var l = 0; l = g[0].Links.length; l++) {
           output_string += g[0].Links[l].store + " " + g[0].Links[l].price + "\n";
         }
       }
