@@ -67,7 +67,7 @@ async function CheckForMessages() {
       await Outgoing_Message.query().delete().where(msgs[i]);
     }
   }
-  setTimeout(CheckForMessages, 1000);
+  setTimeout(CheckForMessages, 100);
 }
 async function SendMessage(channelID, msg) {
   console.log("Try to Send Message");

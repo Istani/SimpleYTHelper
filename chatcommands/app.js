@@ -13,6 +13,8 @@ const Messages = require("./models/chat_message.js");
 const Rooms = require("./models/chat_room.js");
 const Server = require("./models/chat_server.js");
 const Outgoing_Message = require("./models/outgoing_messages.js");
+const Games = require("./models/game.js");
+const Links = require("./models/game_link.js");
 
 var prefix = '!';
 
@@ -72,6 +74,13 @@ commands[4] = {
   function: gege_command,
   visible: true
 };
+commands[5] = {
+  name: "game",
+  params: "[set/get/remove] [GameName]",
+  description: "Setze/Bekomme/Entferne Spielzuweisung für diesen Channel!",
+  function: game_command,
+  visible: true
+}
 
 async function get_msg() {
   //console.log(prefix, settings.last_time);
@@ -80,6 +89,12 @@ async function get_msg() {
   //console.log(commands);
 
   for (var i = 0; i < msg_list.length; i++) {
+    settings.last_time = msg_list[i].created_at;
+    save_settings();
+
+    if (msg_list[i].content.startsWith(prefix) != true) {
+      continue;
+    }
     var temp_content = msg_list[i].content.split(" ");
     var found_index = commands.findIndex(function (element) {
       if (element.name == temp_content[0].replace(prefix, "")) {
@@ -93,14 +108,13 @@ async function get_msg() {
       continue;
     }
     if (typeof commands[found_index].function == "function") {
-      commands[found_index].function(msg_list[i]);
+      await commands[found_index].function(msg_list[i]);
     }
     await sleep(1000);
-    settings.last_time = msg_list[i].created_at;
   }
 
   save_settings();
-  setTimeout(get_msg, 1000);
+  setTimeout(get_msg, 100);
 }
 get_msg();
 
@@ -145,6 +159,53 @@ async function peel_command(msg_data) {
 }
 async function gege_command(msg_data) {
   var output_string = "Was für ein geiles Game! Das klingt nach einer Runde Teemo Smite! ;)";
+  await outgoing(msg_data, output_string);
+  output_string = "";
+}
+async function game_command(msg_data) {
+  var output_string = "";
+  var temp_content = msg_data.content.split(" ");
+  var methode = temp_content[1];
+  var game = temp_content.slice(2).join(' ');
+  var room = await Rooms.query().where({ room: msg_data.room });
+
+  if (game == "") { game = room[0].name; }
+  output_string += "__Suche:__ " + game + "\n";
+  if (game != "%") {
+    game = Games.getEncodedName(game);
+    game += "%";
+  }
+  const g = await Games.query().where({ name: game }).eager("[links]");
+
+  if (methode == "") { methode = "get" };
+
+  switch (methode) {
+    case 'set':
+      output_string += "Noch nicht implemtiert!";
+      break;
+    case 'get':
+      if (g.length > 1) {
+        output_string += "Für Welches Spiel möchtest du die Details wissen?\n";
+        var string_start = output_string.length;
+        for (var i = 0; i < g.length; i++) {
+          output_string += g[i].display_name + "\n";
+        }
+      } else if (g.length == 0) {
+        output_string += "Spiel nicht gefunden!\n";
+      } else {
+        output_string += "**" + g[0].display_name + "** \n";
+        output_string += "http://games-on-sale.de/game/" + g[0].name + "\n";
+        for (var l = 0; l = g[0].Links; l++) {
+          output_string += g[0].Links[l].store + " " + g[0].Links[l].price + "\n";
+        }
+      }
+      break;
+    case 'remove':
+      output_string += "Noch nicht implemtiert!";
+      break;
+    default:
+      output_string += "Unbekannter Parameter **" + methode + "**\n";
+  }
   await outgoing(msg_data, output_string);
   output_string = "";
 }
