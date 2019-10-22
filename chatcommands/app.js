@@ -175,7 +175,7 @@ async function game_command(msg_data) {
     game = Games.getEncodedName(game);
     game += "%";
   }
-  const g = await Games.query().where("name","lik",game).eager("[links]");
+  const g = await Games.query().where("name", "like", game).eager("[links]");
 
   if (methode == "") { methode = "get" };
 
