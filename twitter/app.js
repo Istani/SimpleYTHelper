@@ -6,7 +6,7 @@ console.log("===");
 console.log();
 const config = require('dotenv').config({ path: '../.env' });
 
-const Twitter = require('twitter');
+const Twitter = require('twit');
 const Jimp = require("jimp");
 const fs = require('fs');
 
@@ -17,13 +17,13 @@ const Tweets = require("./models/send_tweets.js");
 var client = new Twitter({  // Istani
   consumer_key: process.env.TWITTER_CONSUMER_KEY,
   consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
-  access_token_key: process.env.TWITTER_ACCESS_TOKEN_KEY,
+  access_token: process.env.TWITTER_ACCESS_TOKEN_KEY,
   access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET
 });
 var client_gos = new Twitter({  // Games on Sale
   consumer_key: process.env.TWITTER_CONSUMER_KEY,
   consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
-  access_token_key: process.env.GOS_TWITTER_TOKEN,
+  access_token: process.env.GOS_TWITTER_TOKEN,
   access_token_secret: process.env.GOS_TWITTER_SECRET
 });
 
@@ -57,18 +57,20 @@ async function tweet_gos() {
 
 async function bg_gos() {
   var img = await Jimp.read('../gamesite/public/img/background.png');
-  //img.scaleToFit(400, 400);
-  //img.contain(400, 400, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_CENTER);
+  img.scaleToFit(400, 400);
+  img.contain(400, 400, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_CENTER);
   img.getBase64(Jimp.AUTO, (err, res) => {
     if (err) {
       console.error(err);
       //return;
     }
-    client_gos.post('account/update_profile_banner', { banner: img }, async function (error, response) {
+
+    var data = res.split(",");
+    client_gos.post('account/update_profile_banner', { image: data[1], media: data[0] }, async function (error, response) {
       if (error) {
         console.error(error);
-        //return;
       }
+      console.log(response);
     });
   });
   img.write('gos_bg.png');
@@ -80,13 +82,13 @@ async function pp_gos() {
   await img.getBase64(Jimp.AUTO, (err, res) => {
     if (err) {
       console.error(err);
-      //return;
     }
-    client_gos.post('account/update_profile_image', { image: res }, async function (error, response) {
+    var data = res.split(",");
+    client_gos.post('account/update_profile_image', { image: data[1], media: data[0] }, async function (error, response) {
       if (error) {
         console.error(error);
-        //return;
       }
+      console.log(response);
     });
   });
   await img.write('gos_pp.png');
@@ -96,3 +98,5 @@ bg_gos();
 pp_gos();
 tweet_gos();
 tweet_main();
+
+
