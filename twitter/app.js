@@ -95,8 +95,8 @@ async function pp_gos() {
 }
 
 bg_gos();
-//pp_gos();
-//tweet_gos();
-//tweet_main();
+pp_gos();
+tweet_gos();
+tweet_main();
 
 
