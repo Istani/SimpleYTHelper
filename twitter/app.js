@@ -57,8 +57,8 @@ async function tweet_gos() {
 
 async function bg_gos() {
   var img = await Jimp.read('../gamesite/public/img/background.png');
-  img.scaleToFit(400, 400);
-  img.contain(400, 400, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_CENTER);
+  img.scaleToFit(700, 200);
+  img.contain(700, 200, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE);
   img.getBase64(Jimp.AUTO, (err, res) => {
     if (err) {
       console.error(err);
@@ -95,8 +95,8 @@ async function pp_gos() {
 }
 
 bg_gos();
-pp_gos();
-tweet_gos();
-tweet_main();
+//pp_gos();
+//tweet_gos();
+//tweet_main();
 
 
