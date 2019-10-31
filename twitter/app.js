@@ -38,7 +38,7 @@ async function tweet_main() {
       await Tweets.query().delete().where('id', pre_tweet[0].id);
     });
   }
-  setTimeout(tweet_main, 5 * 60 * 1000);
+  setTimeout(tweet_main, 1 * 60 * 1000);
 }
 
 async function tweet_gos() {
@@ -52,7 +52,7 @@ async function tweet_gos() {
       await Tweets.query().delete().where('id', pre_tweet[0].id);
     });
   }
-  setTimeout(tweet_gos, 5 * 60 * 1000);
+  setTimeout(tweet_gos, 10 * 60 * 1000);
 }
 
 async function bg_gos() {

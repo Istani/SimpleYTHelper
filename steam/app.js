@@ -14,6 +14,7 @@ const striptags = require('striptags');
 const Steam = require('./models/steam.js');
 const Games = require('./models/game.js');
 const GameLinks = require('./models/game_link.js');
+const GameGenre = require('./models/game_genre.js');
 
 async function main() {
   // get all unknown
@@ -125,6 +126,20 @@ async function getAppDetails(appid) {
                 await GameLinks.query().insert(store_data);
               } else {
                 await GameLinks.query().patch(store_data).where('name', store_data.name).where('store', store_data.store);
+              }
+
+              // GameGenre
+              for (var i = 0; i < app_data['genres'].length; i++) {
+                var genres = {
+                  genre: app_data['genres'][i]['description'],
+                  name: overview_data.name
+                };
+                var check_genre = await GameGenre.query().where('name', genres.name).where('genre', genres.genre);
+                if (check_genre.length == 0) {
+                  await GameGenre.query().insert(genres);
+                } else {
+                  await GameGenre.query().patch(genres).where('name', genres.name).where('genre', storgenrese_data.genre);
+                }
               }
 
             } else {

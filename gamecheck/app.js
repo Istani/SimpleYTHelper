@@ -10,6 +10,7 @@ const Check = require("./models/game_check.js");
 const Game = require("./models/game.js");
 const Links = require("./models/game_link.js");
 const Merch = require("./models/game_merch.js");
+const Genre = require("./models/game_genre.js");
 const Tweets = require("./models/send_tweets.js");
 const Outgoing_Message = require("./models/outgoing_messages.js");
 
@@ -84,7 +85,9 @@ async function get_games() {
     tmp_chat.service = "syth-discord";
     tmp_chat.server = "xxx";
     tmp_chat.room = "633230125282099210";
-    tmp_chat.content = tmp_tweet.message;
+    tmp_chat.content = tmp_tweet.message; 
+
+    // %
     await Outgoing_Message.query().insert(tmp_chat);
 
     console.log('New Discount', JSON.stringify(tmp_obj));
@@ -93,10 +96,11 @@ async function get_games() {
 
   console.log("Delete all older as " + Check.DeleteDate);
 
+  await Game.query().delete().where('updated_at', '<', Check.DeleteDate);
   await Check.query().delete().where('updated_at', '<', Check.DeleteDate);
   await Merch.query().delete().where('updated_at', '<', Check.DeleteDate);
   await Links.query().delete().where('updated_at', '<', Check.DeleteDate);
-  await Game.query().delete().where('updated_at', '<', Check.DeleteDate);
+  await Genre.query().delete().where('updated_at', '<', Check.DeleteDate);
 
   setTimeout(get_games, 1000 * 60 * 15); // 15 Minuten
 }

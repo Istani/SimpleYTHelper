@@ -63,6 +63,7 @@ class Game extends Model {
   static get relationMappings() {
     const Link = require('./game_link.js');
     const Merch = require('./game_merch.js');
+    const Genre = require('./game_genre.js');
 
     return {
       links: {
@@ -80,7 +81,15 @@ class Game extends Model {
           from: 'game_overview.name',
           to: 'game_merch.name'
         }
-      }
+      },
+      genre: {
+        relation: Model.HasManyRelation,
+        modelClass: Genre,
+        join: {
+          from: 'game_overview.name',
+          to: 'game_genres.name'
+        }
+      },
     }
   }
 

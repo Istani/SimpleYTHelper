@@ -20,7 +20,7 @@ var All_Games;
 var Display_Games;
 async function GetAllGames() {
   console.log("Loading Games");
-  const g = await Game.query().where({ type: 'game' }).eager("[links, merch]");
+  const g = await Game.query().where({ type: 'game' }).eager("[links, merch, genre]");
   All_Games = g;
   console.log("Total of", All_Games.length, "Games Loaded");
   require("./img_importer.js");
