@@ -50,6 +50,25 @@ function FindGame(name, callback) {
   }
   callback(error, game);
 }
+function FindCategory(name, callback) {
+  var error = null;
+  //console.log("FindGame",All_Games);
+  var game = All_Games.filter(function (element) {
+    var return_value = false;
+    for (var i = 0; i < element.genre.length; i++) {
+      if (element.genre[i].genre == name) {
+        return_value = true;
+      }
+    }
+    return return_value;
+  });
+  if (typeof game == "undefined") {
+    error = "Game not found";
+  }/* else {
+    game = game.toJSON();
+  }*/
+  callback(error, game);
+}
 
 // Start Site
 var hbs = exphbs.create({
@@ -126,6 +145,24 @@ app.get('/game/:gname', function (req, res) {
     }
   });
 });
+
+app.get('/category/:cname', function (req, res) {
+  var category_name = req.params.cname;
+  FindCategory(category_name, function (error, cat_games) {
+    if (error) {
+      console.error(req.url, error);
+      res.render('error', { error: error });
+    } else {
+      if (cat_games == undefined) {
+        console.error(req.url, 'Game Undefined?');
+        res.render('error', { error: 'Game Undefined?' });
+      } else {
+        res.render('list', { page_title: category_name + ' List', games: cat_games });
+      }
+    }
+  });
+});
+
 
 app.get('/games', function (req, res) {
   res.render('list', { page_title: 'Game List', games: Display_Games });
