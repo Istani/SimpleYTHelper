@@ -33,10 +33,25 @@ async function GetAllGames() {
       // Adding Ads?
     }
   }
+  GetAllCategorys(Display_Games);
   console.log('Display: ', Display_Games.length);
   setTimeout(GetAllGames, 1000 * 60 * 60);
 }
 GetAllGames();
+var All_Categorys;
+async function GetAllCategorys(AllGames) {
+  All_Categorys = [];
+  for (var i = 0; i < AllGames.length; i++) {
+    var this_genres = AllGames[i].genre;
+    for (var j = 0; j < this_genres.length; j++) {
+      var search = All_Categorys.find(e => { e == this_genres[j].genre });
+      if (typeof search == "undefined") {
+        this_genres[this_genres.length] = this_genres[j].genre;
+      }
+    }
+  }
+  console.log(All_Categorys);
+}
 function FindGame(name, callback) {
   var error = null;
   //console.log("FindGame",All_Games);
@@ -63,7 +78,7 @@ function FindCategory(name, callback) {
     return return_value;
   });
   if (typeof game == "undefined") {
-    error = "Game not found";
+    error = "Category not found";
   }/* else {
     game = game.toJSON();
   }*/
@@ -154,8 +169,8 @@ app.get('/category/:cname', function (req, res) {
       res.render('error', { error: error });
     } else {
       if (cat_games == undefined) {
-        console.error(req.url, 'Game Undefined?');
-        res.render('error', { error: 'Game Undefined?' });
+        console.error(req.url, 'Category Undefined?');
+        res.render('error', { error: 'Category Undefined?' });
       } else {
         res.render('list', { page_title: category_name + ' List', games: cat_games });
       }
