@@ -33,8 +33,8 @@ async function GetAllGames() {
       // Adding Ads?
     }
   }
-  GetAllCategorys(Display_Games);
   console.log('Display: ', Display_Games.length);
+  GetAllCategorys(Display_Games);
   setTimeout(GetAllGames, 1000 * 60 * 60);
 }
 GetAllGames();
@@ -46,7 +46,7 @@ async function GetAllCategorys(AllGames) {
     for (var j = 0; j < this_genres.length; j++) {
       var search = All_Categorys.find(e => { e == this_genres[j].genre });
       if (typeof search == "undefined") {
-        this_genres[this_genres.length] = this_genres[j].genre;
+        All_Categorys.push(this_genres[j].genre);
       }
     }
   }
