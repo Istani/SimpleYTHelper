@@ -44,12 +44,16 @@ async function GetAllCategorys(AllGames) {
   for (var i = 0; i < AllGames.length; i++) {
     var this_genres = AllGames[i].genre;
     for (var j = 0; j < this_genres.length; j++) {
-      var search = All_Categorys.find(e => { e == this_genres[j].genre });
+      if (typeof this_genres[j] == "undefined") {
+        continue;
+      }
+      var search = All_Categorys.find(e => { return e == this_genres[j].genre });
       if (typeof search == "undefined") {
         All_Categorys.push(this_genres[j].genre);
       }
     }
   }
+  All_Categorys=All_Categorys.sort();
   console.log(All_Categorys);
 }
 function FindGame(name, callback) {
