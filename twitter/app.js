@@ -36,6 +36,7 @@ async function tweet_main() {
         return;
       }
       await Tweets.query().delete().where('id', pre_tweet[0].id);
+      console.log(pre_tweet[0]);
     });
   }
   setTimeout(tweet_main, 1 * 60 * 1000);
@@ -47,12 +48,15 @@ async function tweet_gos() {
     await client_gos.post('statuses/update', { status: pre_tweet[0].message }, async function (error, tweet, response) {
       if (error) {
         console.error(error);
+        setTimeout(tweet_gos, 5 * 60 * 1000);
         return;
       }
       await Tweets.query().delete().where('id', pre_tweet[0].id);
+      console.log(pre_tweet[0]);
+      setTimeout(tweet_gos, 5 * 60 * 1000);
     });
   }
-  setTimeout(tweet_gos, 10 * 60 * 1000);
+  setTimeout(tweet_gos, 5 * 60 * 1000);
 }
 
 async function bg_gos() {
@@ -94,8 +98,8 @@ async function pp_gos() {
   await img.write('gos_pp.png');
 }
 
-bg_gos();
-pp_gos();
+//bg_gos();
+//pp_gos();
 tweet_gos();
 tweet_main();
 
