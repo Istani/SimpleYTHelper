@@ -1,4 +1,4 @@
-const game = require('./models/game.js');
+const game = require("./models/game.js");
 
 var name = "1__2__3__4__5__6__7__8__9__0___";
 while (name.length < 500) {

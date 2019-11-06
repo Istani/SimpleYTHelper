@@ -1,19 +1,19 @@
 module.exports = {
   apps: [
     {
-      name: 'SYTH-Core',
-      script: './app.js',
+      name: "SYTH-Core",
+      script: "./app.js",
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
-      error_file: 'logs/SYTH-Core.err',
-      out_file: 'logs/SYTH-Core.log',
+      error_file: "logs/SYTH-Core.err",
+      out_file: "logs/SYTH-Core.log",
       autorestart: false
     },
     {
-      name: 'SYTH-Backup',
-      script: './cronjob/app.js',
+      name: "SYTH-Backup",
+      script: "./cronjob/app.js",
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
-      error_file: 'logs/SYTH-Backup.err',
-      out_file: 'logs/SYTH-Backup.log',
+      error_file: "logs/SYTH-Backup.err",
+      out_file: "logs/SYTH-Backup.log",
       autorestart: false
     },
     /*{
@@ -36,7 +36,7 @@ module.exports = {
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       restart_delay: 1000,
       error_file: "logs/SYTH-Discord.err",
-      out_file: "logs/SYTH-Discord.log",
+      out_file: "logs/SYTH-Discord.log"
     },
     /*{
       name: "SYTH-YouTube",
@@ -52,7 +52,7 @@ module.exports = {
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       restart_delay: 1000,
       error_file: "logs/SYTH-Twitter.err",
-      out_file: "logs/SYTH-Twitter.log",
+      out_file: "logs/SYTH-Twitter.log"
     },
     {
       name: "SYTH-Commands",
@@ -60,7 +60,7 @@ module.exports = {
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       restart_delay: 1000,
       error_file: "logs/SYTH-Commands.err",
-      out_file: "logs/SYTH-Commands.log",
+      out_file: "logs/SYTH-Commands.log"
     },
     {
       name: "GAME-Web",
@@ -119,4 +119,4 @@ module.exports = {
       out_file: "logs/SYTH-GOG.log"
     }
   ]
-}
+};

@@ -1,12 +1,12 @@
 process.chdir(__dirname);
-const package_info = require('./package.json');
+const package_info = require("./package.json");
 var software = package_info.name + " (V " + package_info.version + ")";
 console.log(software);
 console.log("===");
 console.log();
-const config = require('dotenv').config({ path: '../.env' });
+const config = require("dotenv").config({ path: "../.env" });
 
-const Discord = require('discord.js');
+const Discord = require("discord.js");
 const client = new Discord.Client();
 
 // DB Models
@@ -18,37 +18,44 @@ const Chat_User = require("./models/chat_user.js");
 
 //console.log(process.env.DISCORD_TOKEN);
 
-client.login(process.env.DISCORD_TOKEN).catch(function (error) {
+client.login(process.env.DISCORD_TOKEN).catch(function(error) {
   if (error) {
     console.log("Client Login", error);
     process.exit(1);
   }
 });
 
-client.on('ready', () => {
+client.on("ready", () => {
   console.log(`Logged in as <${client.user.tag}>!`);
-  client.user.setActivity('SYTH').then(presence => { console.log(`Activity set to ${presence.game ? presence.game.name : 'none'}`); }).catch(console.error);
+  client.user
+    .setActivity("SYTH")
+    .then(presence => {
+      console.log(
+        `Activity set to ${presence.game ? presence.game.name : "none"}`
+      );
+    })
+    .catch(console.error);
   //SendMessage("225371711619465216", "test");
   setTimeout(CheckForMessages, 1000);
 });
 
-client.on('error', error => {
+client.on("error", error => {
   console.log("Client Error", error);
   process.exit(1);
 });
 
-client.on('disconnect', event => {
+client.on("disconnect", event => {
   console.log("Client Event", "Disconnect");
   process.exit(1);
 });
 
 /* Custom Stuff */
-client.on('message', msg => {
+client.on("message", msg => {
   var guild = msg.guild;
   if (guild == null) {
     guild = {};
     guild.id = msg.author.id;
-    guild.name = 'DM';
+    guild.name = "DM";
   }
   AddGuild(guild);
   var channel = msg.channel;
@@ -60,11 +67,13 @@ client.on('message', msg => {
 });
 
 async function CheckForMessages() {
-  var msgs = await Outgoing_Message.query().where('service', package_info.name);
+  var msgs = await Outgoing_Message.query().where("service", package_info.name);
   if (msgs.length > 0) {
     for (var i = 0; i < msgs.length; i++) {
       await SendMessage(msgs[i].room, msgs[i].content);
-      await Outgoing_Message.query().delete().where(msgs[i]);
+      await Outgoing_Message.query()
+        .delete()
+        .where(msgs[i]);
     }
   }
   setTimeout(CheckForMessages, 100);
@@ -91,14 +100,15 @@ async function AddMessage(msg, guild, channel, user) {
   tmp_message.content = msg.content;
 
   if (m.length == 0) {
-    console.log('Message:', JSON.stringify(tmp_message));
+    console.log("Message:", JSON.stringify(tmp_message));
     await Chat_Message.query().insert(tmp_message);
   } else {
     //console.log('Message Repeat:', JSON.stringify(tmp_message));
-    await Chat_Message.query().patch(tmp_message).where(m[0]);
+    await Chat_Message.query()
+      .patch(tmp_message)
+      .where(m[0]);
   }
-
-};
+}
 
 async function AddGuild(guild) {
   var tmp_server = {};
@@ -113,10 +123,12 @@ async function AddGuild(guild) {
   tmp_server.name = guild.name;
 
   if (g.length == 0) {
-    console.log('Server:', JSON.stringify(tmp_server));
+    console.log("Server:", JSON.stringify(tmp_server));
     await Chat_Server.query().insert(tmp_server);
   } else {
-    await Chat_Server.query().patch(tmp_server).where(g[0]);
+    await Chat_Server.query()
+      .patch(tmp_server)
+      .where(g[0]);
   }
 }
 
@@ -134,10 +146,12 @@ async function AddChannel(channel, guild) {
   tmp_room.name = channel.name;
 
   if (c.length == 0) {
-    console.log('Room:', JSON.stringify(tmp_room));
+    console.log("Room:", JSON.stringify(tmp_room));
     await Chat_Room.query().insert(tmp_room);
   } else {
-    await Chat_Room.query().patch(tmp_room).where(c[0]);
+    await Chat_Room.query()
+      .patch(tmp_room)
+      .where(c[0]);
   }
 }
 
@@ -155,9 +169,11 @@ async function AddUser(user, guild) {
   tmp_user.name = user.username;
 
   if (u.length == 0) {
-    console.log('User:', JSON.stringify(tmp_user));
+    console.log("User:", JSON.stringify(tmp_user));
     await Chat_User.query().insert(tmp_user);
   } else {
-    await Chat_User.query().patch(tmp_user).where(u[0]);
+    await Chat_User.query()
+      .patch(tmp_user)
+      .where(u[0]);
   }
 }

@@ -1,36 +1,41 @@
 process.chdir(__dirname);
-const package_info = require('./package.json');
-var software = package_info.name + ' (V ' + package_info.version + ')';
+const package_info = require("./package.json");
+var software = package_info.name + " (V " + package_info.version + ")";
 console.log(software);
-console.log('===');
+console.log("===");
 console.log();
 
-var envpath = __dirname + '/../.env';
-console.log('Settingspath:', envpath);
-var config = require('dotenv').config({ path: envpath });
+var envpath = __dirname + "/../.env";
+console.log("Settingspath:", envpath);
+var config = require("dotenv").config({ path: envpath });
 
-const puppeteer = require('puppeteer');
+const puppeteer = require("puppeteer");
 
 (async function main() {
   try {
     const browser = await puppeteer.launch({ headless: false });
     const page = await browser.newPage();
 
-    await page.goto('https://www.zod-clan.de', {
+    await page.goto("https://www.zod-clan.de", {
       timeout: 6000000
     });
 
-    await page.$eval('input[name=ws_user]', el => el.value = process.env.ZOD_USER);
-    await page.$eval('input[name=pwd]', el => el.value = process.env.ZOD_PASS);
-    await page.$eval('input[name=submit]', el => el.click());
+    await page.$eval(
+      "input[name=ws_user]",
+      el => (el.value = process.env.ZOD_USER)
+    );
+    await page.$eval(
+      "input[name=pwd]",
+      el => (el.value = process.env.ZOD_PASS)
+    );
+    await page.$eval("input[name=submit]", el => el.click());
     await page.waitForNavigation();
 
-    await page.goto('https://www.zod-clan.de/news.php?action=new', {
+    await page.goto("https://www.zod-clan.de/news.php?action=new", {
       timeout: 6000000
     });
 
     // They dont want to Post Humble Things, so i am not sure what to Post!
-
 
     /*
     [COLOR=#0000FF]
