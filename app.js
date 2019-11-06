@@ -26,12 +26,14 @@ if (fs.existsSync(".env")) {
 
 var need_install = 0;
 async function install() {
-  await fs.readdir(__dirname, function (err, items) {
+  exec("npm install");
+
+  await fs.readdir(__dirname, function(err, items) {
     for (var i = 0; i < items.length; i++) {
       var item = items[i];
-      if (fs.statSync(__dirname + '/' + item).isDirectory()) {
-        if (fs.existsSync(__dirname + '/' + item + '/package.json')) {
-          var current_path = __dirname + '/' + item;
+      if (fs.statSync(__dirname + "/" + item).isDirectory()) {
+        if (fs.existsSync(__dirname + "/" + item + "/package.json")) {
+          var current_path = __dirname + "/" + item;
           process.chdir(current_path);
           console.log(current_path, "npm install", "ln -s ../models");
           try {
@@ -45,8 +47,18 @@ async function install() {
     }
     process.chdir(__dirname);
 
-    need_install = (exec("git status -s -uno | wc -l", function (error, stdout, stderr) { need_install = stdout; console.log("S", stdout); })[0]) - 0x30;
+    need_install =
+      exec("git status -s -uno | wc -l", function(error, stdout, stderr) {
+        need_install = stdout;
+        console.log("S", stdout);
+      })[0] - 0x30;
     if (need_install) {
+      process.chdir(__dirname + "/.git");
+      exec("rm -r hooks");
+      exec("ln -s ../hooks");
+
+      process.chdir(__dirname);
+      exec("sh hooks/pre-commit");
       exec("git add .");
       exec('git commit -am "Post Commit Update"');
       exec("git push");
