@@ -51,28 +51,9 @@ async function install() {
       exec('git commit -am "Post Commit Update"');
       exec("git push");
 
-      exec("pm2 restart all");
       console.log("Restart all");
+      exec("pm2 restart all");
     }
     process.exit(0);
   });
-
-
-}
-
-async function check_modules(current_path, package, cb) {
-  console.log("Changeing to ", current_path);
-  process.chdir(current_path);
-  var debs = Object.keys(package.dependencies);
-  for (var i = 0; i < debs.length; i++) {
-    try {
-      var tmp_mods = require(debs[i]);
-    } catch (e) {
-      console.error(debs[i] + ": " + e.code);
-      need_install = true;
-      exec("npm install " + debs[i]);
-    }
-  }
-  process.chdir(__dirname);
-  cb();
 }
