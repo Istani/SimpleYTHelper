@@ -13,6 +13,7 @@ const sleep = require('await-sleep');
 
 const Games = require('./models/game.js');
 const GameLinks = require('./models/game_link.js');
+const GameGenre = require('./models/game_genre.js');
 
 
 const url = "https://embed.gog.com/games/ajax/filtered";
@@ -69,6 +70,7 @@ async function getGameData(page) {
       price: parseInt(entry.price.finalAmount * 100),
       discount: entry.price.discount
     };
+
     var check_store = await GameLinks.query().where('name', store_data.name).where('store', store_data.store);
     if (check_store.length == 0) {
       await GameLinks.query().insert(store_data);
@@ -76,10 +78,25 @@ async function getGameData(page) {
       await GameLinks.query().patch(store_data).where('name', store_data.name).where('store', store_data.store);
     }
     console.log('Found GOG', JSON.stringify(store_data));
+    // GameGenre
+    for (var j = 0; j < entry['genres'].length; j++) {
+      var genres = {
+        genre: Games.getEncodedName(entry['genres'][j]),
+        name: store_data.name
+      };
+      console.log(genres);
+      var check_genre = await GameGenre.query().where('name', genres.name).where('genre', genres.genre);
+      if (check_genre.length == 0) {
+        await GameGenre.query().insert(genres);
+      } else {
+        await GameGenre.query().patch(genres).where('name', genres.name).where('genre', genres.genre);
+      }
+    }
+
     await sleep(1000);
 
   }
   main_max_page = n_Data.totalPages;
-  await fs.unlinkSync('./tmp/overview-' + page + '.json');
+  //await fs.unlinkSync('./tmp/overview-' + page + '.json');
   await sleep(1000);
 }

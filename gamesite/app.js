@@ -71,8 +71,7 @@ function FindGame(name, callback) {
 }
 function FindCategory(name, callback) {
   var error = null;
-  //console.log("FindGame",All_Games);
-  var game = All_Games.filter(function (element) {
+  var game = Display_Games.filter(function (element) {
     var return_value = false;
     for (var i = 0; i < element.genre.length; i++) {
       if (element.genre[i].genre == name) {
@@ -83,9 +82,7 @@ function FindCategory(name, callback) {
   });
   if (typeof game == "undefined") {
     error = "Category not found";
-  }/* else {
-    game = game.toJSON();
-  }*/
+  }
   callback(error, game);
 }
 

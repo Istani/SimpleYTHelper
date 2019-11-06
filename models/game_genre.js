@@ -20,6 +20,7 @@ class Game_Genre extends Model {
   $beforeUpdate() {
     this.updated_at = new Date().toISOString();
     this.name = this.name.toLowerCase();
+    this.genre = this.genre.toLowerCase();
   }
 }
 

@@ -131,7 +131,7 @@ async function getAppDetails(appid) {
               // GameGenre
               for (var i = 0; i < app_data['genres'].length; i++) {
                 var genres = {
-                  genre: app_data['genres'][i]['description'],
+                  genre: Games.getEncodedName(app_data['genres'][i]['description']),
                   name: overview_data.name
                 };
                 var check_genre = await GameGenre.query().where('name', genres.name).where('genre', genres.genre);
