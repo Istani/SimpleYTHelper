@@ -1,12 +1,12 @@
 process.chdir(__dirname);
-const package_info = require('./package.json');
+const package_info = require("./package.json");
 var software = package_info.name + " (V " + package_info.version + ")";
 console.log(software);
 console.log("===");
 console.log();
 
-const fs = require('fs');
-const sleep = require('await-sleep');
+const fs = require("fs");
+const sleep = require("await-sleep");
 
 // DB-Models
 const Messages = require("./models/chat_message.js");
@@ -16,7 +16,7 @@ const Outgoing_Message = require("./models/outgoing_messages.js");
 const Games = require("./models/game.js");
 const Links = require("./models/game_link.js");
 
-var prefix = '!';
+var prefix = "!";
 
 var settings = {};
 function load_settings() {
@@ -80,11 +80,13 @@ commands[5] = {
   description: "Setze/Bekomme/Entferne Spielzuweisung für diesen Channel!",
   function: game_command,
   visible: true
-}
+};
 
 async function get_msg() {
   //console.log(prefix, settings.last_time);
-  var msg_list = await Messages.query().where('content', 'like', prefix + '%').where('created_at', '>', settings.last_time);
+  var msg_list = await Messages.query()
+    .where("content", "like", prefix + "%")
+    .where("created_at", ">", settings.last_time);
   //console.log(msg_list);
   //console.log(commands);
 
@@ -96,7 +98,7 @@ async function get_msg() {
       continue;
     }
     var temp_content = msg_list[i].content.split(" ");
-    var found_index = commands.findIndex(function (element) {
+    var found_index = commands.findIndex(function(element) {
       if (element.name == temp_content[0].replace(prefix, "")) {
         return true;
       } else {
@@ -133,7 +135,7 @@ async function show_commands(msg_data) {
 
   for (var i = 0; i < commands.length; i++) {
     if (commands[i].visible == true) {
-      output_string += "\n"
+      output_string += "\n";
       output_string += "**" + prefix + commands[i].name + "** ";
       if (commands[i].params != "") {
         output_string += "*" + commands[i].params + "*\n";
@@ -158,7 +160,8 @@ async function peel_command(msg_data) {
   output_string = "";
 }
 async function gege_command(msg_data) {
-  var output_string = "Was für ein geiles Game! Das klingt nach einer Runde Teemo Smite! ;)";
+  var output_string =
+    "Was für ein geiles Game! Das klingt nach einer Runde Teemo Smite! ;)";
   await outgoing(msg_data, output_string);
   output_string = "";
 }
@@ -166,24 +169,30 @@ async function game_command(msg_data) {
   var output_string = "";
   var temp_content = msg_data.content.split(" ");
   var methode = temp_content[1];
-  var game = temp_content.slice(2).join(' ');
+  var game = temp_content.slice(2).join(" ");
   var room = await Rooms.query().where({ room: msg_data.room });
 
-  if (game == "") { game = room[0].name; }
+  if (game == "") {
+    game = room[0].name;
+  }
   output_string += "__Suche:__ " + game + "\n";
   if (game != "%") {
     game = Games.getEncodedName(game);
     game += "%";
   }
-  const g = await Games.query().where("name", "like", game).eager("[links]");
+  const g = await Games.query()
+    .where("name", "like", game)
+    .eager("[links]");
 
-  if (typeof methode == "undefined") { methode = "get" };
+  if (typeof methode == "undefined") {
+    methode = "get";
+  }
 
   switch (methode) {
-    case 'set':
+    case "set":
       output_string += "Noch nicht implemtiert!";
       break;
-    case 'get':
+    case "get":
       if (g.length > 1) {
         output_string += "Für Welches Spiel möchtest du die Details wissen?\n";
         var string_start = output_string.length;
@@ -196,11 +205,12 @@ async function game_command(msg_data) {
         output_string += "**" + g[0].display_name + "** \n";
         output_string += "http://games-on-sale.de/game/" + g[0].name + "\n";
         for (var l = 0; l < g[0].links.length; l++) {
-          output_string += g[0].links[l].store + ": " + g[0].links[l].formatPrice + " €\n";
+          output_string +=
+            g[0].links[l].store + ": " + g[0].links[l].formatPrice + "€\n";
         }
       }
       break;
-    case 'remove':
+    case "remove":
       output_string += "Noch nicht implemtiert!";
       break;
     default:
@@ -209,5 +219,3 @@ async function game_command(msg_data) {
   await outgoing(msg_data, output_string);
   output_string = "";
 }
-
-

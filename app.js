@@ -38,6 +38,7 @@ async function install() {
           console.log(current_path, "npm install", "ln -s ../models");
           try {
             exec("npm install");
+            exec("rm -r models");
             exec("ln -s ../models");
           } catch (e) {
             //console.error(e);
@@ -52,6 +53,7 @@ async function install() {
         need_install = stdout;
         console.log("S", stdout);
       })[0] - 0x30;
+
     if (need_install) {
       process.chdir(__dirname + "/.git");
       exec("rm -r hooks");
