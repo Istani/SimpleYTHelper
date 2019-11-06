@@ -1,18 +1,18 @@
-
 <div class="game_list-container">
-{{#each games}}
-  <a href="/game/{{name}}" class="game_link">
-  <div class="game_list corner-all">
-    <img data-src="{{banner}}" src="img/games/no_pic.jpg" height="129" width="276" class="lazyload" /><br>
-    {{display_name}}<br>
-    <br><p class="price">
-    {{#checkPrice lowPrice highPrice}}
-      <span class="low">{{lowPrice}}&nbsp;€</span> <span class="high">{{highPrice}}&nbsp;€</span>
-    {{else}}
-      <span class="">{{lowPrice}}&nbsp;€</span>
-    {{/checkPrice}}
-    </p>
-  </div>
-  </a>
-{{/each}}
+  {{#each games}}
+    <a href="/game/{{name}}" class="game_link">
+      <div class="game_list corner-all">
+        <img data-src="{{banner}}" src="/img/games/no_pic.jpg" height="129" width="276" class="lazyload" /><br>
+        {{display_name}}<br>
+        <br>
+        <p class="price">
+          {{#checkPrice lowPrice highPrice}}
+            <span class="low">{{lowPrice}}&nbsp;€</span> <span class="high">{{highPrice}}&nbsp;€</span>
+  {{else}}
+    <span class="">{{lowPrice}}&nbsp;€</span>
+          {{/checkPrice}}
+        </p>
+      </div>
+    </a>
+  {{/each}}
 </div>
