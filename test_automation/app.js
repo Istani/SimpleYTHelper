@@ -13,16 +13,22 @@ const puppeteer = require("puppeteer");
 const sleep = require("await-sleep");
 
 console.log();
+var FL = process.env.FACEBOOK_LOGIN;
+var FP = process.env.FACEBOOK_PASS;
 
-async function main() {
+(async function main() {
   var browser = await puppeteer.launch({
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
     headless: false
   });
   var page = await browser.newPage();
 
-  await page.goto("https://www.humblebundle.com/store/search?sort=discount", {
+  await page.goto("https://facebook.com", {
     timeout: 600000
   });
-}
-main();
+
+  await page.$eval("input[name=email]", el => (el.value = FL));
+  await page.$eval("input[name=pass]", el => (el.value = FP));
+  await page.$eval("input[value=Anmelden]", el => el.click());
+  await page.waitForNavigation();
+})();
