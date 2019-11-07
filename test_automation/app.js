@@ -11,15 +11,17 @@ var tc = require("tinder-client");
   });
 
   const profile = await client.getProfile();
-  //console.log(profile);
+  console.log(profile);
+  //process.exit(0);
 
-  const recommendations = await client.getRecommendations();
-  console.log("Recom:", recommendations.results.length);
+  while (true) {
+    const recommendations = await client.getRecommendations();
+    console.log("Recom:", recommendations.results.length);
 
-  for (var i = 0; i < recommendations.results.length; i++) {
-    var perso = recommendations.results[i];
-    console.log(perso);
-    //console.log(perso._id);
-    process.exit(0);
+    for (var i = 0; i < recommendations.results.length; i++) {
+      var perso = recommendations.results[i];
+      await client.like(perso._id);
+    }
   }
+  process.exit(0);
 })();
