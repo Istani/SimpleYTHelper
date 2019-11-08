@@ -35,11 +35,11 @@ try {
     var min_age = my_year - my_birthday - 6;
     var max_age = my_year - my_birthday + 4;
 
-    //await client.changeLocation({ latitude: '50.4567742', longitude: '7.4893209' }); // Arbeit
+    //await client.changeLocation({ latitude: '50.4567742', longitude: '7.4893209' });
     await client.changeLocation({
       latitude: "50.714550",
       longitude: "7.557150"
-    }); // Zuhause
+    });
     await client.updateProfile({
       userGender: 0,
       searchPreferences: {

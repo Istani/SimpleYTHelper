@@ -83,13 +83,6 @@ module.exports = {
       error_file: "logs/GAME-CustomImport.err",
       out_file: "logs/GAME-CustomImport.log"
     },*/
-    {
-      name: "Istani-Achievements",
-      script: "./metagamerscore/app.js",
-      log_date_format: "YYYY-MM-DD HH:mm:ss Z",
-      error_file: "logs/Istani-Achievements.err",
-      out_file: "logs/Istani-Achievements.log"
-    },
     /*{
       name: 'SYTH-Amazon',
       script: "./amazon/app.js",
@@ -117,6 +110,20 @@ module.exports = {
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       error_file: "logs/SYTH-GOG.err",
       out_file: "logs/SYTH-GOG.log"
+    },
+    {
+      name: "Istani-Achievements",
+      script: "./metagamerscore/app.js",
+      log_date_format: "YYYY-MM-DD HH:mm:ss Z",
+      error_file: "logs/Istani-Achievements.err",
+      out_file: "logs/Istani-Achievements.log"
+    },
+    {
+      name: "Istani-Tinder",
+      script: "./tinder_automation/app.js",
+      log_date_format: "YYYY-MM-DD HH:mm:ss Z",
+      error_file: "logs/Istani-Tinder.err",
+      out_file: "logs/Istani-Tinder.log"
     }
   ]
 };
