@@ -39,7 +39,7 @@ async function install() {
           try {
             exec("npm install");
             exec("rm -r models");
-            exec("ln -s ../models");
+            exec("ln -s ../models/");
           } catch (e) {
             //console.error(e);
           }
