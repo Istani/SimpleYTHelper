@@ -13,6 +13,7 @@ var express = require("express");
 var exphbs = require("express-handlebars");
 
 var profiles = [];
+var dif = 0;
 
 // Start Site
 var hbs = exphbs.create({
@@ -50,9 +51,6 @@ try {
     });
 
     await set_location(client);
-    setInterval(() => {
-      set_location(client);
-    }, 1000 * 60 * 30);
 
     set_likes(client);
   })();
@@ -64,8 +62,8 @@ try {
     var profile = await client.getProfile();
     var my_year = new Date().getFullYear();
     var my_birthday = new Date(profile.birth_date).getFullYear();
-    var min_age = my_year - my_birthday - 6;
-    var max_age = my_year - my_birthday + 4;
+    var min_age = my_year - my_birthday - 8;
+    var max_age = my_year - my_birthday + 5;
 
     //await client.changeLocation({ latitude: '50.4567742', longitude: '7.4893209' });
     await client.changeLocation({
@@ -78,7 +76,7 @@ try {
         minimumAge: 0,
         maximumAge: max_age,
         genderPreference: 1,
-        maximumRangeInKilometers: 100
+        maximumRangeInKilometers: 1 + dif
       }
     });
 
@@ -110,6 +108,8 @@ try {
           }
         } else {
           console.error("Already: ", perso.name);
+          dif++;
+          await set_location(client);
         }
       }
     }
