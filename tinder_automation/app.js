@@ -104,6 +104,7 @@ try {
           console.log("Like: ", perso.name);
 
           if (resp.likes_remaining == 0) {
+            remove_file("P_" + perso._id);
             break;
           }
         } else {
@@ -137,6 +138,13 @@ try {
     }
     fs.writeFileSync(filename, JSON.stringify(data));
     return true;
+  }
+  async function remove_file(name) {
+    var filename = "./tmp/" + name + ".json";
+    var fs = require("fs");
+    if (fs.existsSync(filename)) {
+      fs.unlinkSync(filename);
+    }
   }
 } catch (e) {
   console.error(e);
