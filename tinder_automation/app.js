@@ -87,12 +87,36 @@ try {
     console.log("Update Profile End");
   }
 
+  async function set_next(client) {
+    dif++;
+    await set_location(client);
+    set_likes(client);
+    console.log("Send Likes Ende - Next");
+  }
   async function set_likes(client) {
     console.log("Send Likes Start");
     var resp = {};
     resp.likes_remaining = 1;
     while (resp.likes_remaining > 0) {
       const recommendations = await client.getRecommendations();
+      if (typeof recommendations == "undefined") {
+        setTimeout(() => {
+          set_next(client);
+        }, 100);
+        return;
+      }
+      if (typeof recommendations.results == "undefined") {
+        setTimeout(() => {
+          set_next(client);
+        }, 100);
+        return;
+      }
+      if (typeof recommendations.results.length == "undefined") {
+        setTimeout(() => {
+          set_next(client);
+        }, 100);
+        return;
+      }
       console.log("Like Recommendations:", recommendations.results.length);
 
       for (var i = 0; i < recommendations.results.length; i++) {
@@ -136,7 +160,7 @@ try {
       }
       fs.unlinkSync(filename);
     }
-    fs.writeFileSync(filename, JSON.stringify(data));
+    fs.writeFileSync(filename, JSON.stringify(data, null, 2));
     return true;
   }
   async function remove_file(name) {
