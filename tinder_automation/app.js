@@ -43,7 +43,6 @@ console.log();
 try {
   (async function main() {
     data();
-    return;
 
     const client = await tc.createClientFromFacebookLogin({
       emailAddress: process.env.FACEBOOK_LOGIN,
@@ -148,13 +147,11 @@ async function data() {
     var fs = require("fs");
     profiles = [];
     var dirname = "tmp/";
-    console.log("START READ");
     fs.readdir(dirname, function(err, filenames) {
       if (err) {
         console.error(err);
         return;
       }
-      console.log("START FOREACH");
       filenames.forEach(function(filename) {
         if (filename.startsWith("P_")) {
           fs.readFile(dirname + filename, "utf-8", function(err, content) {
@@ -162,7 +159,6 @@ async function data() {
               console.error(err);
               return;
             }
-            console.log("READ");
             profiles.push(JSON.parse(content));
           });
         }
