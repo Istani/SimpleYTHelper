@@ -115,6 +115,7 @@ try {
     }
     var d = new Date(resp.rate_limited_until) - new Date() + 1000;
     if (d > 0) {
+      console.log("Break Until", new Date(resp.rate_limited_until));
       setTimeout(() => {
         set_likes(client);
       }, d);
