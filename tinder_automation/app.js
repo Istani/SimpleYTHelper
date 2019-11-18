@@ -9,9 +9,42 @@ console.log("Settingspath:", envpath);
 var config = require("dotenv").config({ path: envpath });
 var tc = require("tinder-client");
 
+var express = require("express");
+var exphbs = require("express-handlebars");
+
+var profiles = [];
+
+// Start Site
+var hbs = exphbs.create({
+  helpers: {
+    checkPrice: function(low, high, options) {
+      if (low == high) {
+        return options.inverse(this);
+      } else {
+        return options.fn(this);
+      }
+    }
+  },
+  defaultLayout: "main",
+  extname: ".hbs"
+});
+
+var app = express();
+app.engine(".hbs", hbs.engine);
+app.set("view engine", ".hbs");
+app.use(express.static("public"));
+app.get("/", function(req, res) {
+  res.render("home", { page_title: "Home", profs: profiles });
+});
+
+app.listen(3003, () => console.log("Interface on 3003!"));
+
 console.log();
 try {
   (async function main() {
+    data();
+    return;
+
     const client = await tc.createClientFromFacebookLogin({
       emailAddress: process.env.FACEBOOK_LOGIN,
       password: process.env.FACEBOOK_PASS
@@ -20,7 +53,7 @@ try {
     await set_location(client);
     setInterval(() => {
       set_location(client);
-    }, 1000 * 60 * 15);
+    }, 1000 * 60 * 30);
 
     set_likes(client);
   })();
@@ -89,6 +122,7 @@ try {
     } else {
       set_likes(client);
     }
+    data();
     console.log("Send Likes Ende");
   }
 
@@ -107,4 +141,35 @@ try {
 } catch (e) {
   console.error(e);
   process.exit(1);
+}
+
+async function data() {
+  try {
+    var fs = require("fs");
+    profiles = [];
+    var dirname = "tmp/";
+    console.log("START READ");
+    fs.readdir(dirname, function(err, filenames) {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      console.log("START FOREACH");
+      filenames.forEach(function(filename) {
+        if (filename.startsWith("P_")) {
+          fs.readFile(dirname + filename, "utf-8", function(err, content) {
+            if (err) {
+              console.error(err);
+              return;
+            }
+            console.log("READ");
+            profiles.push(JSON.parse(content));
+          });
+        }
+      });
+    });
+  } catch (e) {
+    console.error(e);
+    process.exit(1);
+  }
 }
