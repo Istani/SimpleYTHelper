@@ -35,6 +35,9 @@ app.engine(".hbs", hbs.engine);
 app.set("view engine", ".hbs");
 app.use(express.static("public"));
 app.get("/", function(req, res) {
+  profiles.sort(function(a, b) {
+    return a.distance_mi - b.distance_mi;
+  });
   res.render("home", { page_title: "Home", profs: profiles });
 });
 
@@ -140,7 +143,13 @@ try {
     }
     var d = new Date(resp.rate_limited_until) - new Date() + 1000;
     if (d > 0) {
-      console.log("Break Until", new Date(resp.rate_limited_until));
+      console.log(
+        "Break Until",
+        new Date(resp.rate_limited_until),
+        ":",
+        d,
+        "Sec"
+      );
       setTimeout(() => {
         set_likes(client);
       }, d);
