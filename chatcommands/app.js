@@ -237,7 +237,7 @@ async function game_command(msg_data) {
       await Rooms.query()
         .patch(room[0])
         .where("room", room[0].room);
-      output_string += "Raum - Game zuweisung zurückgesetzt!";
+      output_string += "Raum - Game Zuweisung zurückgesetzt!";
       break;
     default:
       output_string += "Unbekannter Parameter **" + methode + "**\n";
