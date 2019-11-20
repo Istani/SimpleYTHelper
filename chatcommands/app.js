@@ -173,7 +173,10 @@ async function game_command(msg_data) {
   var room = await Rooms.query().where({ room: msg_data.room });
 
   if (game == "") {
-    game = room[0].linked_game | room[0].name;
+    game = room[0].linked_game;
+    if (game == null) {
+      game = room[0].name;
+    }
   }
   output_string += "__Suche:__ " + game + "\n";
   if (game != "%" && game.startsWith("$") != true) {
