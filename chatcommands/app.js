@@ -176,7 +176,7 @@ async function game_command(msg_data) {
     game = room[0].name;
   }
   output_string += "__Suche:__ " + game + "\n";
-  if (game != "%") {
+  if (game != "%" && game.startsWith("$") != true) {
     game = Games.getEncodedName(game);
     game += "%";
   }
@@ -190,12 +190,28 @@ async function game_command(msg_data) {
 
   switch (methode) {
     case "set":
-      output_string += "Noch nicht implemtiert!";
+      if (g.length == 1) {
+        room.linked_game = g.name;
+        await Romms.query()
+          .patch(room)
+          .where("room", room.room);
+        output_string += "Raum wurde auf: " + room.linked_game + " gesetzt!\n";
+      } else if (game.startsWith("$")) {
+        room.linked_game = g.name;
+        await Romms.query()
+          .patch(room)
+          .where("room", room.room);
+        output_string += "Raum wurde auf: " + room.linked_game + " gesetzt!\n";
+      } else {
+        output_string += "Kein explizietes Game gefunden! Wähle:\n";
+        for (var i = 0; i < g.length; i++) {
+          output_string += g[i].display_name + "\n";
+        }
+      }
       break;
     case "get":
       if (g.length > 1) {
         output_string += "Für Welches Spiel möchtest du die Details wissen?\n";
-        var string_start = output_string.length;
         for (var i = 0; i < g.length; i++) {
           output_string += g[i].display_name + "\n";
         }
