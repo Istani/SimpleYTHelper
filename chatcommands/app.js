@@ -227,7 +227,11 @@ async function game_command(msg_data) {
       }
       break;
     case "remove":
-      output_string += "Noch nicht implemtiert!";
+      room[0].linked_game = null;
+      await Rooms.query()
+        .patch(room[0])
+        .where("room", room[0].room);
+      output_string += "Raum - Game zuweisung zurückgesetzt!";
       break;
     default:
       output_string += "Unbekannter Parameter **" + methode + "**\n";
