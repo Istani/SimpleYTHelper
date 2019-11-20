@@ -191,17 +191,20 @@ async function game_command(msg_data) {
   switch (methode) {
     case "set":
       if (g.length == 1) {
-        room.linked_game = g.name;
-        await Romms.query()
-          .patch(room)
-          .where("room", room.room);
-        output_string += "Raum wurde auf: " + room.linked_game + " gesetzt!\n";
+        room[0].linked_game = g[0].name;
+        console.log(room[0]);
+        await Rooms.query()
+          .patch(room[0])
+          .where("room", room[0].room);
+        output_string +=
+          "Raum wurde auf: " + room[0].linked_game + " gesetzt!\n";
       } else if (game.startsWith("$")) {
-        room.linked_game = g.name;
-        await Romms.query()
-          .patch(room)
-          .where("room", room.room);
-        output_string += "Raum wurde auf: " + room.linked_game + " gesetzt!\n";
+        room[0].linked_game = game;
+        await Rooms.query()
+          .patch(room[0])
+          .where("room", room[0].room);
+        output_string +=
+          "Raum wurde auf: " + room[0].linked_game + " gesetzt!\n";
       } else {
         output_string += "Kein explizietes Game gefunden! Wähle:\n";
         for (var i = 0; i < g.length; i++) {
