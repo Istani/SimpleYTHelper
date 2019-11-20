@@ -67,6 +67,7 @@ cron.schedule("30 11 * * *", () => {
   exec(cmd);
 
   console.log("Delete Old Backups!");
+  exec("rm " + "backup/*.sql");
   async.series(
     [
       function(callback) {

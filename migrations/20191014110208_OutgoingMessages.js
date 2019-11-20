@@ -1,6 +1,5 @@
 exports.up = function(knex, Promise) {
   return knex.schema.createTable("outgoing_messages", function(t) {
-    //t.increments('id').primary();
     t.string("service", 50);
     t.string("server", 50);
     t.string("room", 50);

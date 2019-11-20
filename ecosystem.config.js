@@ -23,13 +23,6 @@ module.exports = {
       error_file: "logs/SYTH-Web.err",
       out_file: "logs/SYTH-Web.log"
     },*/
-    /*{
-      name: "SYTH-Backup",
-      script: "./cronjob/app.js",
-      log_date_format: "YYYY-MM-DD HH:mm:ss Z",
-      error_file: "logs/SYTH-Backup.err",
-      out_file: "logs/SYTH-Backup.log"
-    },*/
     {
       name: "SYTH-Discord",
       script: "./discord/app.js",
