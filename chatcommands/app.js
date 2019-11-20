@@ -112,7 +112,7 @@ async function get_msg() {
     if (typeof commands[found_index].function == "function") {
       await commands[found_index].function(msg_list[i]);
     }
-    await sleep(1000);
+    //await sleep(1000);
   }
 
   save_settings();
