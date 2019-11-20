@@ -13,6 +13,7 @@ const Merch = require("./models/game_merch.js");
 const Genre = require("./models/game_genre.js");
 const Tweets = require("./models/send_tweets.js");
 const Outgoing_Message = require("./models/outgoing_messages.js");
+const Rooms = require("./models/chat_room.js");
 
 // Settings
 var Discount = 75;
@@ -106,14 +107,18 @@ async function get_games() {
     await Tweets.query().insert(tmp_tweet);
 
     // Adding Discord
-    var tmp_chat = {};
-    tmp_chat.service = "syth-discord";
-    tmp_chat.server = "xxx";
-    tmp_chat.room = "633230125282099210";
-    tmp_chat.content = tmp_tweet.message;
-
-    // %
-    await Outgoing_Message.query().insert(tmp_chat);
+    var room_list = await Rooms.query()
+      .where({ linked_game: "$sale" })
+      .orWhere({ linked_game: tmp_obj.game });
+    for (let index = 0; index < room_list.length; index++) {
+      const element = room_list[index];
+      var tmp_chat = {};
+      tmp_chat.service = element.service;
+      tmp_chat.server = element.server;
+      tmp_chat.room = element.room;
+      tmp_chat.content = tmp_tweet.message;
+      await Outgoing_Message.query().insert(tmp_chat);
+    }
 
     console.log("New Discount", JSON.stringify(tmp_obj));
     await sleep(1000);
