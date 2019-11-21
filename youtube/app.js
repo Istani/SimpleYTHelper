@@ -1,40 +1,46 @@
+process.chdir(__dirname);
+const package_info = require("./package.json");
+var software = package_info.name + " (V " + package_info.version + ")";
+console.log(software);
+console.log("===");
+console.log();
+const config = require("dotenv").config({ path: "../.env" });
+
 var fs = require("fs");
+var Queue = require("better-queue");
+
 var readline = require("readline");
 var { google } = require("googleapis");
-var OAuth2 = google.auth.OAuth2;
 
-// If modifying these scopes, delete your previously saved credentials
-// at ~/.credentials/youtube-nodejs-quickstart.json
-var SCOPES = ["https://www.googleapis.com/auth/youtube.readonly"];
-var TOKEN_DIR =
-  (process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE) +
-  "/.credentials/";
+// TODO: Token aus DB
+var SCOPES = ["https://www.googleapis.com/auth/youtube"];
+var TOKEN_DIR = __dirname + "/.credentials/";
 var TOKEN_PATH = TOKEN_DIR + "youtube-nodejs-quickstart.json";
 
-// Load client secrets from a local file.
+var OAuth2 = google.auth.OAuth2;
+var service = google.youtube("v3");
+var q = new Queue(function(tpye, input, cb) {
+  console.log("Start Import: " + type);
+  input();
+  cb(null, result);
+});
+
+// TODO: Client Secret aus .ENV
 fs.readFile("client_secret.json", function processClientSecrets(err, content) {
   if (err) {
     console.log("Error loading client secret file: " + err);
     return;
   }
-  // Authorize a client with the loaded credentials, then call the YouTube API.
-  authorize(JSON.parse(content), getChannel);
+  authorize(JSON.parse(content), StartImport);
 });
 
-/**
- * Create an OAuth2 client with the given credentials, and then execute the
- * given callback function.
- *
- * @param {Object} credentials The authorization client credentials.
- * @param {function} callback The callback to call with the authorized client.
- */
 function authorize(credentials, callback) {
   var clientSecret = credentials.installed.client_secret;
   var clientId = credentials.installed.client_id;
   var redirectUrl = credentials.installed.redirect_uris[0];
   var oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl);
 
-  // Check if we have previously stored a token.
+  //  TODO: Token aus DB
   fs.readFile(TOKEN_PATH, function(err, token) {
     if (err) {
       getNewToken(oauth2Client, callback);
@@ -45,14 +51,7 @@ function authorize(credentials, callback) {
   });
 }
 
-/**
- * Get and store new token after prompting for user authorization, and then
- * execute the given callback with the authorized OAuth2 client.
- *
- * @param {google.auth.OAuth2} oauth2Client The OAuth2 client to get token for.
- * @param {getEventsCallback} callback The callback to call with the authorized
- *     client.
- */
+// TODO: Token Gen aus Website
 function getNewToken(oauth2Client, callback) {
   var authUrl = oauth2Client.generateAuthUrl({
     access_type: "offline",
@@ -77,11 +76,7 @@ function getNewToken(oauth2Client, callback) {
   });
 }
 
-/**
- * Store token to disk be used in later program executions.
- *
- * @param {Object} token The token to store to disk.
- */
+// TODO: Token Store in DB
 function storeToken(token) {
   try {
     fs.mkdirSync(TOKEN_DIR);
@@ -96,35 +91,122 @@ function storeToken(token) {
   });
 }
 
-/**
- * Lists the names and IDs of up to 10 files.
- *
- * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
- */
+var LiveVideoID = undefined; // TODO: Irgendwie über DB damit Multi User klappt!
+function StartImport(auth) {
+  fs.writeFileSync("tmp/auth.json", JSON.stringify(auth, null, 2));
+  // TODO: Cronjobs
 
-var LiveVideoID = undefined;
-function getChannel(auth) {
-  var service = google.youtube("v3");
-  /*service.channels.list({
-    auth: auth,
-    part: 'snippet,contentDetails,statistics',
-    forUsername: 'Defender833gaming'
-  }, function (err, response) {
-    if (err) {
-      console.log('The API returned an error: ' + err);
+  //q.push("Channels", () => { ListChannels(auth); });
+
+  //q.push("Playlists", () => { ListPlaylists(auth); });
+
+  q.push("Broadcasts", () => {
+    SearchBroadcasts(auth);
+  });
+}
+
+function ListChannels(auth, pageToken = "") {
+  service.channels.list(
+    {
+      auth: auth,
+      part:
+        "id, brandingSettings, contentDetails, snippet, statistics,status,topicDetails",
+      mine: true,
+      maxResults: 50,
+      pageToken: pageToken
+    },
+    function(err, response) {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      fs.writeFileSync(
+        "tmp/channels.json",
+        JSON.stringify(response.data, null, 2)
+      );
+      var data = response.data.items[0];
+      //data = data.contentDetails.relatedPlaylists.uploads;
+      //q.push("PlaylistsItems", () => { ListPlaylistItems(auth, data, response.data.nextPageToken); });
+      //return;
+      console.log(data);
+
       return;
+
+      for (let index = 0; index < data.length; index++) {
+        const element = data[index];
+        console.log(index + " : " + element.id + " : " + element.snippet.title);
+      }
+      if (typeof response.data.nextPageToken != "undefined") {
+        q.push("Channels", () => {
+          ListChannels(auth, response.data.nextPageToken);
+        });
+      }
     }
-    var channels = response.data.items;
-    if (channels.length == 0) {
-      console.log('No channel found.');
-    } else {
-      console.log('This channel\'s ID is %s. Its title is \'%s\', and ' +
-        'it has %s views.',
-        channels[0].id,
-        channels[0].snippet.title,
-        channels[0].statistics.viewCount);
+  );
+}
+function ListPlaylists(auth, pageToken = "") {
+  service.playlists.list(
+    {
+      auth: auth,
+      part: "snippet",
+      mine: true,
+      maxResults: 50,
+      pageToken: pageToken
+    },
+    function(err, response) {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      fs.writeFileSync(
+        "tmp/playlists.json",
+        JSON.stringify(response.data, null, 2)
+      );
+      var data = response.data.items;
+      for (let index = 0; index < data.length; index++) {
+        const element = data[index];
+        console.log(index + " : " + element.id + " : " + element.snippet.title);
+      }
+      if (typeof response.data.nextPageToken != "undefined") {
+        q.push("Playlists", () => {
+          ListPlaylists(auth, response.data.nextPageToken);
+        });
+      }
     }
-  });*/
+  );
+}
+function ListPlaylistItems(auth, playlist, pageToken = "") {
+  service.playlistItems.list(
+    {
+      auth: auth,
+      part: "snippet",
+      playlistId: playlist,
+      maxResults: 50,
+      pageToken: pageToken
+    },
+    function(err, response) {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      fs.writeFileSync(
+        "tmp/playlistsitems.json",
+        JSON.stringify(response.data, null, 2)
+      );
+      var data = response.data.items;
+      for (let index = 0; index < data.length; index++) {
+        const element = data[index];
+        console.log(index + " : " + element.id + " : " + element.snippet.title);
+      }
+      if (typeof response.data.nextPageToken != "undefined") {
+        q.push("PlaylistsItems", () => {
+          ListPlaylistItems(auth, playlist, response.data.nextPageToken);
+        });
+      }
+    }
+  );
+}
+function SearchBroadcasts(auth, pageToken = "") {
   service.search.list(
     {
       auth: auth,
@@ -134,23 +216,124 @@ function getChannel(auth) {
       type: "video"
     },
     function(err, response) {
-      try {
-        LiveVideoID = response.data.items[0].id.videoId;
-
-        service.liveBroadcasts.list(
-          {
-            auth: auth,
-            part: "snippet",
-            id: LiveVideoID
-          },
-          function(err, response) {
-            console.log(response.data.items[0]);
-            console.log(LiveVideoID);
-          }
-        );
-      } catch (e) {
-        LiveVideoID = undefined;
+      if (err) {
+        console.error(err);
+        return;
       }
+      try {
+        fs.writeFileSync(
+          "tmp/Search.json",
+          JSON.stringify(response.data, null, 2)
+        );
+        LiveVideoID = response.data.items[0].id.videoId;
+        q.push("Broadcasts-List", () => {
+          ListBroadcast(auth, LiveVideoID);
+        });
+      } catch (e) {
+        setTimeout(() => {
+          q.push("Broadcasts", () => {
+            SearchBroadcasts(auth);
+          });
+        }, 1000 * 60 * 5);
+      }
+    }
+  );
+}
+function ListBroadcast(auth, LiveVideoID) {
+  service.liveBroadcasts.list(
+    {
+      auth: auth,
+      part: "snippet",
+      id: LiveVideoID,
+      maxResults: 50
+    },
+    function(err, response) {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      fs.writeFileSync(
+        "tmp/Broadcasts.json",
+        JSON.stringify(response.data, null, 2)
+      );
+      var ChatID = response.data.items[0].snippet.liveChatId;
+      q.push("LiveChat", () => {
+        LiveChat(auth, ChatID);
+      });
+    }
+  );
+}
+function LiveChat(auth, liveChatId, pageToken = "") {
+  service.liveChatMessages.list(
+    {
+      auth: auth,
+      part: "snippet",
+      liveChatId: liveChatId,
+      pageToken: pageToken,
+      maxResults: 2000
+    },
+    function(err, response) {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      try {
+        fs.writeFileSync(
+          "tmp/chat.json",
+          JSON.stringify(response.data, null, 2)
+        );
+        var txt = response.data.items;
+        for (let index = 0; index < txt.length; index++) {
+          const element = txt[index].snippet;
+          //console.log(element.authorChannelId, ":", element.displayMessage);
+        }
+
+        if (pageToken == "") {
+          writeChat(auth, liveChatId, "Defender833 FTW!");
+        }
+        if (typeof response.data.nextPageToken != "undefined") {
+          setTimeout(() => {
+            q.push("Playlists", () => {
+              LiveChat(auth, liveChatId, response.data.nextPageToken);
+            });
+          }, 1000 * 5);
+        }
+      } catch (e) {
+        setTimeout(() => {
+          q.push("Broadcasts", () => {
+            SearchBroadcasts(auth);
+          });
+        }, 1000 * 60 * 5);
+      }
+    }
+  );
+}
+
+function writeChat(auth, chatId, Message) {
+  service.liveChatMessages.insert(
+    {
+      auth: auth,
+      part: "snippet",
+      resource: {
+        snippet: {
+          type: "textMessageEvent",
+          liveChatId: chatId,
+          textMessageDetails: {
+            messageText: Message
+          }
+        }
+      }
+    },
+    function(err, response) {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      fs.writeFileSync(
+        "tmp/chat_post.json",
+        JSON.stringify(response.data, null, 2)
+      );
+      console.log(response);
     }
   );
 }
