@@ -1,26 +1,39 @@
 .corner-all {
-  border: 1px solid #cccccc !important;
+  border: 1px solid #ccc !important;
   border-radius: 4px !important;
 }
 
 body {
   font-size: 100%;
-  padding: 5px;
+  padding: 0px;
   margin: 0px;
-  background-color:black;
-  color: white;
+  background-color: #0f0f0f;
+  color: #ccc;
   display: grid;
   grid-gap: 0px;
   grid-template-columns: auto;
   grid-template-areas:
-    'header'
-    'navigation'
-    'content'
-    'footer';
+    "header"
+    "navigation"
+    "content"
+    "footer";
 }
-p { 
-  margin-top: 0; 
-  margin-bottom: 0; 
+table {
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+h2 {
+  margin: 0px;
+  margin-bottom: 3px;
+  text-decoration: underline;
+}
+.fett {
+  font-weight: bold;
+  white-space: nowrap;
+}
+p {
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 ul {
@@ -28,9 +41,9 @@ ul {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: #0000CC;
-  border: 1px solid #0000ff;
-  border-radius: 4px ;
+  background-color: #007;
+  border: 1px solid #00f;
+  border-radius: 4px;
 }
 li {
   float: left;
@@ -44,13 +57,12 @@ li a {
   font-size: 150%;
 }
 li a:hover {
-  background-color: #1111FF;
+  background-color: #11f;
 }
 
 hr {
-  border-color: #0000CC;
+  border-color: #007;
 }
-
 
 #header {
   grid-area: header;
@@ -60,15 +72,18 @@ hr {
 }
 #content {
   grid-area: content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 #navigation {
   grid-area: navigation;
 }
 #footer {
   grid-area: footer;
-  background-color: #0000CC;
-  border: 1px solid #0000ff;
-  border-radius: 4px ;
+  background-color: #007;
+  border: 1px solid #00f;
+  border-radius: 4px;
 }
 #anzeige {
   grid-area: anzeige;
@@ -77,33 +92,42 @@ hr {
 .game_list-container {
   display: flex;
   flex-wrap: wrap;
-  justify-content : center;
+  justify-content: center;
 }
 .news_list-container {
-  justify-content : center;
+  justify-content: center;
   display: flex;
   flex-wrap: wrap;
 }
+.news_list-container table tr {
+  display: inline-block;
+}
 a {
   text-decoration: none;
-  color: white;
+  color: #ccc;
 }
 .game_list {
   text-decoration: none;
-  color: black; 
+  color: #111;
   margin: 5px;
   width: 276px;
   max-width: 276px;
   flex: 1;
-  position:relative;
+  position: relative;
   background-color: white;
   margin: 10px;
+  box-shadow: 3px 3px 1px #333;
 }
 .news_list {
   flex: 45%;
   margin: 10px;
-  position:relative;
-  /*flex: 50%;*/
+  position: relative;
+  background-image: linear-gradient(#111, #333 80%, #111);
+  box-shadow: 3px 3px 1px #333;
+  text-align: left;
+  width: 800px;
+  display: inline-block;
+  vertical-align: top;
 }
 .game_description {
   text-align: justify;
@@ -115,9 +139,9 @@ a {
   font-size: 120%;
   text-align: right;
   font-weight: bold;
-  position:absolute;
-  bottom:0;
-  right:0;
+  position: absolute;
+  bottom: 0;
+  right: 0;
 }
 .price .low {
   color: green;
@@ -126,42 +150,42 @@ a {
   color: red;
   text-decoration: line-through;
 }
- 
+
 .hinweis {
-    background-color: #b40404;
-    border: 1px solid #ff0000;
-    border-radius: 4px ;
+  background-color: #b40404;
+  border: 1px solid #ff0000;
+  border-radius: 4px;
 }
 
 a.Amazon {
-  background: url("/img/service/amazon.png") no-repeat left; 
+  background: url("/img/service/amazon.png") no-repeat left;
   background-position: 0px 0px;
   background-size: 16px 16px;
   padding-left: 18px;
 }
 a.Steam {
-  background: url("/img/service/steam.png") no-repeat left; 
+  background: url("/img/service/steam.png") no-repeat left;
   background-position: 0px 0px;
   background-size: 16px 16px;
   padding-left: 18px;
 }
 a.Humble {
-  background: url("/img/service/humble.png") no-repeat left; 
+  background: url("/img/service/humble.png") no-repeat left;
   background-position: 0px 0px;
   background-size: 16px 16px;
   padding-left: 18px;
 }
-a.Humble::after { 
+a.Humble::after {
   content: "*";
 }
 a.GOG {
-  background: url("/img/service/gog.png") no-repeat left; 
+  background: url("/img/service/gog.png") no-repeat left;
   background-position: 0px 0px;
   background-size: 16px 16px;
   padding-left: 18px;
 }
 .price a {
-  background: url('') !important;
+  background: url("") !important;
 }
 p.created {
   text-align: right;
