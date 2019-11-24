@@ -98,6 +98,7 @@ hr {
   justify-content: center;
   display: flex;
   flex-wrap: wrap;
+  width: 100% !important;
 }
 .news_list-container table tr {
   display: inline-block;
