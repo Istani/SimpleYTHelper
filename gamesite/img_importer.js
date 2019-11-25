@@ -5,8 +5,8 @@ const Jimp = require("jimp");
 const fs = require("fs");
 
 async function main() {
-  await gen_text();
-  await gen_no_pic();
+  //await gen_text();
+  //await gen_no_pic();
   await gen_banner();
   const g = await Game.query()
     .where({ type: "game" })

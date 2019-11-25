@@ -93,6 +93,7 @@ hr {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  width: 100% !important;
 }
 .news_list-container {
   justify-content: center;
@@ -109,7 +110,7 @@ a {
 }
 .game_list {
   text-decoration: none;
-  color: #111;
+  color: #111 !important;
   margin: 5px;
   width: 276px;
   max-width: 276px;
@@ -118,6 +119,11 @@ a {
   background-color: white;
   margin: 10px;
   box-shadow: 3px 3px 1px #333;
+  display: inline-block;
+  vertical-align: top;
+}
+a.game_link {
+  color: #111 !important;
 }
 .news_list {
   flex: 45%;
@@ -126,7 +132,8 @@ a {
   background-image: linear-gradient(#111, #333 80%, #111);
   box-shadow: 3px 3px 1px #333;
   text-align: left;
-  width: 800px;
+  min-width: 800px;
+  width: 48%;
   display: inline-block;
   vertical-align: top;
 }
