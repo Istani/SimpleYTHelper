@@ -19,7 +19,7 @@ var TOKEN_PATH = TOKEN_DIR + "youtube-nodejs-quickstart.json";
 
 var OAuth2 = google.auth.OAuth2;
 var service = google.youtube("v3");
-var q = new Queue(function(tpye, input, cb) {
+var q = new Queue(function(type, input, cb) {
   console.log("Start Import: " + type);
   input();
   cb(null, result);
@@ -100,8 +100,10 @@ function StartImport(auth) {
 
   //q.push("Playlists", () => { ListPlaylists(auth); });
 
-  q.push("Broadcasts", () => {
-    SearchBroadcasts(auth);
+  //q.push("Broadcasts", () => { SearchBroadcasts(auth, "UC5DOhI70dI3PnLPMkUsosgw"); });
+
+  q.push("Sponsors", () => {
+    ListSponsors(auth);
   });
 }
 
@@ -110,7 +112,7 @@ function ListChannels(auth, pageToken = "") {
     {
       auth: auth,
       part:
-        "id, brandingSettings, contentDetails, snippet, statistics,status,topicDetails",
+        "id, brandingSettings, contentDetails, snippet, statistics, topicDetails",
       mine: true,
       maxResults: 50,
       pageToken: pageToken
@@ -125,22 +127,28 @@ function ListChannels(auth, pageToken = "") {
         JSON.stringify(response.data, null, 2)
       );
       var data = response.data.items[0];
-      //data = data.contentDetails.relatedPlaylists.uploads;
-      //q.push("PlaylistsItems", () => { ListPlaylistItems(auth, data, response.data.nextPageToken); });
-      //return;
-      console.log(data);
-
-      return;
-
-      for (let index = 0; index < data.length; index++) {
-        const element = data[index];
-        console.log(index + " : " + element.id + " : " + element.snippet.title);
+      var channel_obj = {};
+      channel_obj.id = data.id;
+      channel_obj.title = data.snippet.title;
+      channel_obj.discription = data.snippet.discription;
+      channel_obj.publishedAt = data.snippet.publishedAt;
+      channel_obj.thumbnail = data.snippet.thumbnails.high.url;
+      channel_obj.playlistUploads =
+        data.contentDetails.relatedPlaylists.uploads;
+      channel_obj.playlistLikes = data.contentDetails.relatedPlaylists.likes;
+      channel_obj.viewCount = data.statistics.viewCount;
+      channel_obj.subscriberCount = data.statistics.subscriberCount;
+      channel_obj.videoCount = data.statistics.videoCount;
+      channel_obj.topics = [];
+      var tmp_topics = data.topicDetails.topicCategories;
+      for (let index = 0; index < tmp_topics.length; index++) {
+        const element = tmp_topics[index];
+        channel_obj.topics[index] = element;
       }
-      if (typeof response.data.nextPageToken != "undefined") {
-        q.push("Channels", () => {
-          ListChannels(auth, response.data.nextPageToken);
-        });
-      }
+      channel_obj.banner = data.brandingSettings.image.bannerTvHighImageUrl;
+
+      console.log(JSON.stringify(channel_obj));
+      //q.push("PlaylistsItems", () => { ListPlaylistItems(auth, channel_obj.playlistUploads); });
     }
   );
 }
@@ -148,7 +156,7 @@ function ListPlaylists(auth, pageToken = "") {
   service.playlists.list(
     {
       auth: auth,
-      part: "snippet",
+      part: "id, snippet",
       mine: true,
       maxResults: 50,
       pageToken: pageToken
@@ -165,7 +173,14 @@ function ListPlaylists(auth, pageToken = "") {
       var data = response.data.items;
       for (let index = 0; index < data.length; index++) {
         const element = data[index];
-        console.log(index + " : " + element.id + " : " + element.snippet.title);
+        var playlist_obj = {};
+        playlist_obj.channelId = element.snippet.channelId;
+        playlist_obj.id = element.id;
+        playlist_obj.title = element.snippet.title;
+        //console.log(JSON.stringify(playlist_obj));
+        q.push("PlaylistsItems", () => {
+          ListPlaylistItems(auth, playlist_obj.id);
+        });
       }
       if (typeof response.data.nextPageToken != "undefined") {
         q.push("Playlists", () => {
@@ -196,7 +211,10 @@ function ListPlaylistItems(auth, playlist, pageToken = "") {
       var data = response.data.items;
       for (let index = 0; index < data.length; index++) {
         const element = data[index];
-        console.log(index + " : " + element.id + " : " + element.snippet.title);
+        var playlistitem_obj = {};
+        playlistitem_obj.id = playlist;
+        playlistitem_obj.videoId = element.snippet.resourceId.videoId;
+        console.log(JSON.stringify(playlistitem_obj));
       }
       if (typeof response.data.nextPageToken != "undefined") {
         q.push("PlaylistsItems", () => {
@@ -206,12 +224,12 @@ function ListPlaylistItems(auth, playlist, pageToken = "") {
     }
   );
 }
-function SearchBroadcasts(auth, pageToken = "") {
+function SearchBroadcasts(auth, channelId, pageToken = "") {
   service.search.list(
     {
       auth: auth,
       part: "id",
-      channelId: "UC5DOhI70dI3PnLPMkUsosgw",
+      channelId: channelId,
       eventType: "live",
       type: "video"
     },
@@ -227,19 +245,19 @@ function SearchBroadcasts(auth, pageToken = "") {
         );
         LiveVideoID = response.data.items[0].id.videoId;
         q.push("Broadcasts-List", () => {
-          ListBroadcast(auth, LiveVideoID);
+          ListBroadcast(auth, channelId, LiveVideoID);
         });
       } catch (e) {
         setTimeout(() => {
           q.push("Broadcasts", () => {
-            SearchBroadcasts(auth);
+            SearchBroadcasts(auth, channelId);
           });
         }, 1000 * 60 * 5);
       }
     }
   );
 }
-function ListBroadcast(auth, LiveVideoID) {
+function ListBroadcast(auth, channelId, LiveVideoID) {
   service.liveBroadcasts.list(
     {
       auth: auth,
@@ -258,12 +276,12 @@ function ListBroadcast(auth, LiveVideoID) {
       );
       var ChatID = response.data.items[0].snippet.liveChatId;
       q.push("LiveChat", () => {
-        LiveChat(auth, ChatID);
+        LiveChat(auth, channelId, ChatID);
       });
     }
   );
 }
-function LiveChat(auth, liveChatId, pageToken = "") {
+function LiveChat(auth, channelId, liveChatId, pageToken = "") {
   service.liveChatMessages.list(
     {
       auth: auth,
@@ -278,10 +296,6 @@ function LiveChat(auth, liveChatId, pageToken = "") {
         return;
       }
       try {
-        fs.writeFileSync(
-          "tmp/chat.json",
-          JSON.stringify(response.data, null, 2)
-        );
         var txt = response.data.items;
         for (let index = 0; index < txt.length; index++) {
           const element = txt[index].snippet;
@@ -289,19 +303,66 @@ function LiveChat(auth, liveChatId, pageToken = "") {
         }
 
         if (pageToken == "") {
+          fs.writeFileSync(
+            "tmp/chat.json",
+            JSON.stringify(response.data, null, 2)
+          );
           writeChat(auth, liveChatId, "Defender833 FTW!");
         }
         if (typeof response.data.nextPageToken != "undefined") {
           setTimeout(() => {
-            q.push("Playlists", () => {
-              LiveChat(auth, liveChatId, response.data.nextPageToken);
+            q.push("LiveChats", () => {
+              LiveChat(
+                auth,
+                channelId,
+                liveChatId,
+                response.data.nextPageToken
+              );
             });
           }, 1000 * 5);
         }
       } catch (e) {
         setTimeout(() => {
           q.push("Broadcasts", () => {
-            SearchBroadcasts(auth);
+            SearchBroadcasts(auth, channelId);
+          });
+        }, 1000 * 60 * 5);
+      }
+    }
+  );
+}
+function ListSponsors(auth, pageToken = "") {
+  service.sponsors.list(
+    {
+      auth: auth,
+      part: "snippet",
+      maxResults: 50
+    },
+    function(err, response) {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      try {
+        fs.writeFileSync(
+          "tmp/sponsors.json",
+          JSON.stringify(response.data, null, 2)
+        );
+
+        var txt = response.data.items;
+        for (let index = 0; index < txt.length; index++) {
+          var element = txt[index].snippet;
+        }
+
+        setTimeout(() => {
+          q.push("Sponsors", () => {
+            ListSponsors(auth, response.data.nextPageToken);
+          });
+        }, 1000 * 60 * 5);
+      } catch (e) {
+        setTimeout(() => {
+          q.push("Sponsors", () => {
+            ListSponsors(auth);
           });
         }, 1000 * 60 * 5);
       }
