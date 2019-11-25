@@ -7,13 +7,15 @@ console.log("===");
 var envpath = __dirname + "/../.env";
 console.log("Settingspath:", envpath);
 var config = require("dotenv").config({ path: envpath });
-var tc = require("tinder-client");
 
+var tc = require("tinder-client");
 var express = require("express");
 var exphbs = require("express-handlebars");
+var exec = require("child_process").execSync;
 
 var profiles = [];
 var dif = 0;
+var save = false;
 
 // Start Site
 var hbs = exphbs.create({
@@ -145,6 +147,8 @@ try {
           if (resp.likes_remaining == 0) {
             remove_file("P_" + perso._id);
             break;
+          } else {
+            save = true;
           }
         } else {
           console.error("Already: ", perso.name);
@@ -162,8 +166,10 @@ try {
         d,
         "Sec"
       );
+      exec("git add .");
+      exec('git commit -m "Tinder Update"');
       setTimeout(() => {
-        set_likes(client);
+        process.exit(0);
       }, d);
     } else {
       set_likes(client);
