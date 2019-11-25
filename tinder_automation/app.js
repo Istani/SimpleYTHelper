@@ -16,6 +16,7 @@ var exec = require("child_process").execSync;
 var profiles = [];
 var dif = 0;
 var save = false;
+var timeout_error;
 
 // Start Site
 var hbs = exphbs.create({
@@ -48,6 +49,10 @@ app.listen(3003, () => console.log("Interface on 3003!"));
 console.log();
 try {
   (async function main() {
+    timeout_error = setTimeout(() => {
+      console.error("Nach Timeout noch keinen Like!");
+      process.exit(1);
+    }, 1000 * 60 * 5);
     data();
 
     const client = await tc.createClientFromFacebookLogin({
@@ -111,6 +116,7 @@ try {
     console.log("Send Likes Ende - Next");
   }
   async function set_likes(client) {
+    clearTimeout(timeout_error);
     console.log("Send Likes Start");
     var resp = {};
     resp.likes_remaining = 1;
@@ -166,8 +172,10 @@ try {
         d,
         "Sec"
       );
-      exec("git add .");
-      exec('git commit -m "Tinder Update"');
+      if (save == true) {
+        exec("git add .");
+        exec('git commit -m "Tinder Update"');
+      }
       setTimeout(() => {
         process.exit(0);
       }, d);
