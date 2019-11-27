@@ -5,8 +5,8 @@ const fs = require("fs");
 const async = require("async");
 
 const package = require("./package.json");
-const login = require("./models/login.js");
-const oauth = require("./models/login_oauth.js");
+//const login = require("./models/login.js");
+//const oauth = require("./models/login_oauth.js");
 const session_secret = new Buffer(package.name).toString("base64");
 
 /* Cronjob QUEUE */
@@ -31,7 +31,7 @@ var cookieParser = require("cookie-parser");
 var session = require("express-session");
 var i18n = require("i18n");
 var passport = require("passport");
-var youtube_auth = require("./oauth/youtube.js");
+//var youtube_auth = require("./oauth/youtube.js");
 
 var hbs = exphbs.create({
   helpers: {
@@ -78,8 +78,8 @@ i18n.configure({
 });
 app.use(i18n.init);
 
-youtube_auth(passport);
-app.get(
+//youtube_auth(passport);
+/*app.get(
   "/auth/youtube",
   passport.authenticate("youtube", {
     scope: ["https://www.googleapis.com/auth/youtube"]
@@ -117,7 +117,7 @@ app.get("/auth/youtube/callback", passport.authenticate("youtube"), function(
     }
   );
 });
-
+*/
 app.get("/Login", function(req, res) {
   var temp_data = {};
   res.render("login", { data: temp_data });
@@ -149,7 +149,7 @@ app.post("/Login", function(req, res) {
   );
 });
 
-app.get("/Register", function(req, res) {
+/*app.get("/Register", function(req, res) {
   var temp_data = {};
   res.render("register", { data: temp_data });
 });
@@ -214,7 +214,7 @@ app.get("/Dashboard", function(req, res) {
     res.render("error", { data: temp_data });
   }
 });
-
+*/
 app.get("/", function(req, res) {
   console.log("http://" + req.headers.host + req.url);
   var temp_data = {};
