@@ -52,7 +52,7 @@ try {
     timeout_error = setTimeout(() => {
       console.error("Nach Timeout noch keinen Like!");
       process.exit(1);
-    }, 1000 * 60 * 5);
+    }, 1000 * 60 * 60 * 6);
     data();
 
     const client = await tc.createClientFromFacebookLogin({
