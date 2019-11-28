@@ -9,9 +9,30 @@ const config = require("dotenv").config({ path: "../.env" });
 /* Node Functions */
 const async = require("async");
 
+<<<<<<< HEAD
 const Login = require("./models/syth_login.js");
 const Token = require("./models/syth_token.js");
 const session_secret = new Buffer(package_info.name).toString("base64");
+=======
+const package = require("./package.json");
+//const login = require("./models/login.js");
+//const oauth = require("./models/login_oauth.js");
+const session_secret = new Buffer(package.name).toString("base64");
+
+/* Cronjob QUEUE */
+var cron = require("node-cron");
+var queue_class = require("better-queue");
+var queue = new queue_class(function(func, cb) {
+  func();
+  cb(null, result);
+});
+cron.schedule("0 0 0 * * *", function() {
+  queue.push(() => {
+    console.log("Daily Backup");
+    // TODO: Backup!
+  });
+});
+>>>>>>> 1e958f77fb9adb4dc9b1631f5ea275a25ae7af1a
 
 /* Webserver */
 var express = require("express");
@@ -74,7 +95,7 @@ i18n.configure({
 app.use(i18n.init);
 
 //youtube_auth(passport);
-app.get(
+/*app.get(
   "/auth/youtube",
   passport.authenticate("youtube", {
     scope: ["https://www.googleapis.com/auth/youtube"]
@@ -112,7 +133,7 @@ app.get("/auth/youtube/callback", passport.authenticate("youtube"), function(
     }
   );
 });
-
+*/
 app.get("/Login", function(req, res) {
   var temp_data = {};
   res.render("login", { data: temp_data });
