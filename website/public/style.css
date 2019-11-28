@@ -16,6 +16,8 @@
 }
 */
 body {
+  transform: scale(0.75);
+  transform-origin: 50% 0;
   background-color:#f9f9f9;
   display: grid;
   grid-gap: 10px;

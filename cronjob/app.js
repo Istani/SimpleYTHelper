@@ -38,6 +38,14 @@ cron.schedule("30 11 * * *", () => {
   console.log("Create Dump!");
   exec(cmd);
 
+  console.log("Copy Apache!");
+  cmd =
+    "cp /etc/apache2/sites-available/games-on-sale.conf  " +
+    __dirname +
+    "\\backup\\";
+  cmd = cmd.split("\\").join("/");
+  exec(cmd);
+
   console.log("Create Archive!");
   var TAR_COMMAND = process.env.PATH_TAR;
   var ARCIVE_PATH =

@@ -1,27 +1,17 @@
 process.chdir(__dirname);
+const package_info = require("./package.json");
+var software = package_info.name + " (V " + package_info.version + ")";
+console.log(software);
+console.log("===");
+console.log();
+const config = require("dotenv").config({ path: "../.env" });
 
 /* Node Functions */
-const fs = require("fs");
 const async = require("async");
 
-const package = require("./package.json");
-const login = require("./models/login.js");
-const oauth = require("./models/login_oauth.js");
-const session_secret = new Buffer(package.name).toString("base64");
-
-/* Cronjob QUEUE */
-var cron = require("node-cron");
-var queue_class = require("better-queue");
-var queue = new queue_class(function(func, cb) {
-  func();
-  cb(null, result);
-});
-cron.schedule("0 0 0 * * *", function() {
-  queue.push(() => {
-    console.log("Daily Backup");
-    // TODO: Backup!
-  });
-});
+const Login = require("./models/syth_login.js");
+const Token = require("./models/syth_token.js");
+const session_secret = new Buffer(package_info.name).toString("base64");
 
 /* Webserver */
 var express = require("express");
@@ -31,7 +21,7 @@ var cookieParser = require("cookie-parser");
 var session = require("express-session");
 var i18n = require("i18n");
 var passport = require("passport");
-var youtube_auth = require("./oauth/youtube.js");
+//var youtube_auth = require("./oauth/youtube.js");
 
 var hbs = exphbs.create({
   helpers: {
@@ -68,6 +58,11 @@ app.use(
     }
   })
 );
+app.use(express.static("public"));
+app.use(function(req, res, next) {
+  console.log("REQ:", req.url);
+  next();
+});
 
 i18n.configure({
   defaultLocale: "de",
@@ -78,7 +73,7 @@ i18n.configure({
 });
 app.use(i18n.init);
 
-youtube_auth(passport);
+//youtube_auth(passport);
 app.get(
   "/auth/youtube",
   passport.authenticate("youtube", {
@@ -122,91 +117,83 @@ app.get("/Login", function(req, res) {
   var temp_data = {};
   res.render("login", { data: temp_data });
 });
-app.post("/Login", function(req, res) {
+app.post("/Login", async function(req, res) {
   var temp_data = {};
-  async.parallel(
-    [
-      function(callback) {
-        login.check_login(temp_data, callback, req.body);
-      }
-    ],
-    function(err) {
-      if (err) {
-        console.log("ERROR", err);
-        temp_data.error = {};
-        temp_data.error.code = err.code;
-        temp_data.error.text = err.sqlMessage;
-        res.render("error", { data: temp_data });
-      }
-      if (temp_data.login === undefined) {
-        res.render("login", { data: temp_data });
-      } else {
-        // TODO: Login Cookie Setzen?
-        req.session.user = temp_data.login;
-        res.redirect("/Dashboard");
-      }
-    }
-  );
+  temp_data.login = await Login.query()
+    .where("user", req.body.email)
+    .where("pass", req.body.password);
+  if (temp_data.login.length == 0) {
+    delete temp_data.login;
+  }
+
+  if (temp_data.login === undefined) {
+    temp_data.error = {};
+    temp_data.error.code = "Wrong Login!";
+    temp_data.error.text =
+      "Wrong Login Information! Please Check your E-Mail and Password!";
+    res.render("login", { data: temp_data });
+  } else {
+    req.session.user = temp_data.login;
+    res.redirect("/Dashboard");
+  }
 });
 
 app.get("/Register", function(req, res) {
   var temp_data = {};
   res.render("register", { data: temp_data });
 });
-app.post("/Register", function(req, res) {
+app.post("/Register", async function(req, res) {
   // TODO: Daten auswerten
   var temp_data = {};
-  async.parallel(
-    [
-      function(callback) {
-        login.register_new(temp_data, callback, req.body);
-      }
-    ],
-    function(err) {
-      if (err) {
-        console.log("ERROR", err);
-        temp_data.error = {};
-        temp_data.error.code = err.code;
-        temp_data.error.text = err.sqlMessage;
-      }
-      if (temp_data.register != true) {
-        res.render("register", { data: temp_data });
-      } else {
-        // TODO: Login Cookie Setzen?
-        req.session.user = temp_data.currentuser;
-        res.redirect("/Dashboard");
-      }
-    }
-  );
+  var data = req.body;
+  if (data.password != data.password_repeat || data.password == "") {
+    var err = {};
+    err.code = "Password did not Match!";
+    err.text = "Please Check you Passwords!";
+    temp_data.error = err;
+  }
+  if (data.email == "") {
+    var err = {};
+    err.code = "Email Empty!";
+    err.text = "Please Check you E-Mail!";
+    temp_data.error = err;
+  }
+  if (typeof data.AGB == "undefined") {
+    var err = {};
+    err.code = "AGB!";
+    err.text = "Please Check our AGB!";
+    temp_data.error = err;
+  }
+
+  var login = await Login.query().where("user", data.email);
+  if (typeof temp_data.error == "undefined" && login.length > 0) {
+    var err = {};
+    err.code = "In Use!";
+    err.text = "Your E-Mail Adress is already used!";
+    temp_data.error = err;
+  }
+  if (typeof temp_data.error != "undefined") {
+    console.log(req.originalUrl, ": ", temp_data.error.code);
+    res.render("register", { data: temp_data });
+    return;
+  }
+  var new_login = {};
+  new_login.user = data.email;
+  new_login.pass = data.password;
+  if (typeof data.newsletter != "undefined") {
+    new_login.is_newsletter = true;
+  }
+  new_login.activation_code = "";
+  var currentuser = await Login.query().insert(new_login);
+  req.session.user = currentuser;
+  res.redirect("/Dashboard");
 });
 
-app.get("/Dashboard", function(req, res) {
+app.get("/Dashboard", async function(req, res) {
   var temp_data = {};
   if (req.session.user && req.cookies.login_check) {
-    async.parallel(
-      [
-        function(callback) {
-          login.get_login(temp_data, callback, req.session.user);
-        },
-        function(callback) {
-          oauth.get_services(temp_data, callback);
-        },
-        function(callback) {
-          oauth.get_oauth_user(temp_data, callback, req.session.user.email);
-        }
-      ],
-      function(err) {
-        if (err) {
-          console.log("ERROR", err);
-          temp_data.error = {};
-          temp_data.error.code = err.code;
-          temp_data.error.text = err.sqlMessage;
-          res.render("error", { data: temp_data });
-        }
-        console.log(temp_data);
-        res.render("dashboard", { data: temp_data });
-      }
-    );
+    console.log(temp_data);
+    res.render("dashboard", { data: temp_data });
   } else {
     temp_data.error = {};
     temp_data.error.code = "Error";
@@ -221,20 +208,4 @@ app.get("/", function(req, res) {
   res.render("home", { data: temp_data });
 });
 
-app.use(function(req, res, next) {
-  fs.readFile(__dirname + "/www" + req.url, function(err, data) {
-    if (err) {
-      var temp_data = {};
-      err.text = "Could not open: " + req.url;
-      temp_data.error = err;
-      console.log("404 Error: ", JSON.stringify(temp_data));
-      console.log("Datei nicht Gefunden: " + __dirname + "/www" + req.url);
-      res.render("error", { data: temp_data });
-      return;
-    }
-    res.write(data);
-    return res.end();
-  });
-});
-
-app.listen(3000, () => console.log("Webinterface running!"));
+app.listen(3000, () => console.log("Webinterface running! Port: 3000"));
