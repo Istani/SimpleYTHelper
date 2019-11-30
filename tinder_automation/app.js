@@ -75,15 +75,15 @@ try {
     var min_age = my_year - my_birthday - 8;
     var max_age = my_year - my_birthday + 5;
 
-    /*await client.changeLocation({
+    await client.changeLocation({
       latitude: "50.714550",
       longitude: "7.557150"
-    });*/
-    await client.changeLocation({
+    });
+    /*await client.changeLocation({
       latitude: "50.4567742",
       longitude: "7.4893209"
-    });
-    /*await client.updateProfile({
+    });*/
+    await client.updateProfile({
       userGender: 0,
       searchPreferences: {
         minimumAge: 0,
@@ -91,8 +91,8 @@ try {
         genderPreference: 1,
         maximumRangeInKilometers: 1 + dif
       }
-    });*/
-    await client.updateProfile({
+    });
+    /*await client.updateProfile({
       userGender: 0,
       searchPreferences: {
         minimumAge: 0,
@@ -100,7 +100,7 @@ try {
         genderPreference: 1,
         maximumRangeInKilometers: 100
       }
-    });
+    });*/
 
     var profile = await client.getProfile();
     await save_file("_Profile", profile);
@@ -111,8 +111,13 @@ try {
 
   async function set_next(client) {
     dif++;
-    await set_location(client);
-    set_likes(client);
+    setTimeout(() => {
+      set_location(client);
+    }, 100);
+    setTimeout(() => {
+      set_likes(client);
+    }, 1000);
+
     console.log("Send Likes Ende - Next");
   }
   async function set_likes(client) {
@@ -165,6 +170,9 @@ try {
     }
     var d = new Date(resp.rate_limited_until) - new Date() + 1000;
     if (d > 0) {
+      diff = 100;
+      set_next(client);
+
       console.log(
         "Break Until",
         new Date(resp.rate_limited_until),
