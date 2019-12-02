@@ -71,14 +71,14 @@
   "rating": {
     "likes_remaining": 100,
     "super_likes": {
-      "remaining": 1,
+      "remaining": 0,
       "alc_remaining": 0,
       "new_alc_remaining": 0,
       "allotment": 1,
       "superlike_refresh_amount": 5,
       "superlike_refresh_interval": 1,
       "superlike_refresh_interval_unit": "d",
-      "resets_at": null
+      "resets_at": "2019-12-03T05:40:28.654Z"
     }
   },
   "travel": {
@@ -150,9 +150,9 @@
     "top_picks_local_daily_msg": "Your daily Top Picks are ready. 💎 Tap to view.",
     "top_picks_local_daily_offsets": {
       "offset0": -1,
-      "offset1": 30664013,
-      "offset2": 45064013,
-      "offset3": 63064013
+      "offset1": 29950783,
+      "offset2": 44350783,
+      "offset3": 62350783
     },
     "top_picks_free_daily": false,
     "top_picks_num_free_rated_limit": 1,
@@ -330,39 +330,17 @@
             "is_base_group": true
           }
         ]
-      },
-      "discount": {
-        "campaign": "intro_pricing_internal_ml",
-        "campaign_variant_name": "intro_pricing_v1_50_1sku",
-        "reminder_offset": 3600000,
-        "viewed_at": 1574577921323,
-        "expires_at": 1574664321323,
-        "grace_period_expires_at": 1575269121323,
-        "skus": [
-          {
-            "is_intro_price": true,
-            "product_type": "gold",
-            "purchase_type": "subscription",
-            "product_id": "gold_subscription_999_6m_50ip6",
-            "intro_price_duration": 6,
-            "terms": 6,
-            "discount_percentage": 50,
-            "original_product_id": "gold_subscription_999_6m_50d",
-            "is_primary": true,
-            "is_base_group": true
-          }
-        ]
       }
     }
   },
   "user": {
     "_id": "57601acf73d670581b696ec2",
-    "active_time": "2019-12-01T17:53:08.897Z",
+    "active_time": "2019-12-02T09:41:43.845Z",
     "age_filter_max": 36,
     "age_filter_min": 18,
-    "api_token": "22e7c46c-d5a6-4aad-8c26-073be2d4d321",
+    "api_token": "de9c5e6c-8c66-4196-a3c3-9e29023b2cd4",
     "bio": "Was schreibt Mann den am besten hier? Kontostand? Penisgröße? \n\nIch bin vermutlich eh viel zu uninteressant für dich aber meld dich ruhig ;)\n\n\nRock on",
-    "birth_date": "1987-12-04T17:53:19.328Z",
+    "birth_date": "1987-12-05T09:41:52.645Z",
     "blend": "optimal",
     "create_date": "2016-06-14T14:55:11.054Z",
     "top_picks_discoverable": true,
@@ -1260,7 +1238,7 @@
     ],
     "photos_processing": false,
     "photo_optimizer_enabled": true,
-    "ping_time": "2019-12-01T17:50:59.211Z",
+    "ping_time": "2019-12-02T09:41:17.182Z",
     "spotify_connected": false,
     "spotify_anthem": true,
     "jobs": [
