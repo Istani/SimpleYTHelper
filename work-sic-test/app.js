@@ -1,9 +1,16 @@
 process.chdir(__dirname);
+const package_info = require("./package.json");
+var software = package_info.name + " (V " + package_info.version + ")";
+console.log(software);
+console.log("===");
+console.log();
+
 var path_target = __dirname;
 var fs = require("fs");
 var queue = require("better-queue");
 var async = require("async");
 var exec = require("child_process").execSync;
+var cron = require("node-cron");
 
 var q = new queue(function(input, cb) {
   input(cb);
@@ -173,13 +180,27 @@ function checkMatchup(email, cb) {
 
 //q.push(cb => {backupVentronic("C:\\PRO\\HOEFER\\Cpu_200\\", true, cb);});
 // -- q.push(cb => {checkFolder("C:\\","sascha.u.kaufmann@googlemail.com",cb);});
-//q.push(cb => {checkFolder("C:\\PRO\\HOEFER\\", "skaufmann@ventronic.com", cb);});
-//q.push(cb => {checkFolder("Y:\\SimpleSoftwareStudioShare\\","sascha.u.kaufmann@googlemail.com",cb);});
-//q.push(cb => {checkFolder("C:\\ZoD\\","sascha.u.kaufmann@googlemail.com",cb);});
 
-// TODO: Later
-q.push(cb => {
-  checkMatchup("skaufmann@ventronic.com", cb);
+cron.schedule("00 01 * * *", () => {
+  q.push(cb => {
+    checkFolder("C:\\PRO\\HOEFER\\", "skaufmann@ventronic.com", cb);
+  });
+  q.push(cb => {
+    checkFolder(
+      "Y:\\SimpleSoftwareStudioShare\\",
+      "sascha.u.kaufmann@googlemail.com",
+      cb
+    );
+  });
+  q.push(cb => {
+    checkFolder("C:\\ZoD\\", "sascha.u.kaufmann@googlemail.com", cb);
+  });
+});
+
+cron.schedule("00 03 * * *", () => {
+  q.push(cb => {
+    checkMatchup("skaufmann@ventronic.com", cb);
+  });
 });
 
 exec('git config --global user.name "Sascha Kaufmann"');
