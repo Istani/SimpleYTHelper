@@ -172,7 +172,7 @@ function checkMatchup(email, cb) {
 }
 
 //q.push(cb => {backupVentronic("C:\\PRO\\HOEFER\\Cpu_200\\", true, cb);});
-//q.push(cb => {checkFolder("C:\\","sascha.u.kaufmann@googlemail.com",cb);});
+// -- q.push(cb => {checkFolder("C:\\","sascha.u.kaufmann@googlemail.com",cb);});
 //q.push(cb => {checkFolder("C:\\PRO\\HOEFER\\", "skaufmann@ventronic.com", cb);});
 //q.push(cb => {checkFolder("Y:\\SimpleSoftwareStudioShare\\","sascha.u.kaufmann@googlemail.com",cb);});
 //q.push(cb => {checkFolder("C:\\ZoD\\","sascha.u.kaufmann@googlemail.com",cb);});
