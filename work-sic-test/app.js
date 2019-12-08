@@ -164,13 +164,20 @@ function checkMatchup(email, cb) {
     datum_old++;
   }
   fs.writeFileSync("./tmp/work.json", JSON.stringify(all_log, null, 2));
+
+  process.chdir(__dirname);
+  exec("git add .");
+  exec('git commit -am "WorkCount Update"');
   cb();
 }
 
 //q.push(cb => {backupVentronic("C:\\PRO\\HOEFER\\Cpu_200\\", true, cb);});
+//q.push(cb => {checkFolder("C:\\","sascha.u.kaufmann@googlemail.com",cb);});
 //q.push(cb => {checkFolder("C:\\PRO\\HOEFER\\", "skaufmann@ventronic.com", cb);});
 //q.push(cb => {checkFolder("Y:\\SimpleSoftwareStudioShare\\","sascha.u.kaufmann@googlemail.com",cb);});
 //q.push(cb => {checkFolder("C:\\ZoD\\","sascha.u.kaufmann@googlemail.com",cb);});
+
+// TODO: Later
 q.push(cb => {
   checkMatchup("skaufmann@ventronic.com", cb);
 });
