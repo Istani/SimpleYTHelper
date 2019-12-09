@@ -361,20 +361,26 @@ function ListSponsors(auth, pageToken = "") {
           tmp_message.owner = element.channelId;
           tmp_message.member_id = element.sponsorDetails.channelId;
 
-          //var m = await sponsors.query().where(tmp_message);
+          var m = await sponsors
+            .query()
+            .where("service", tmp_message.service)
+            .where("owner", tmp_message.owner)
+            .where("member_id", tmp_message.member_id);
           tmp_message.member_name = element.sponsorDetails.displayName;
           tmp_message.since = element.sponsorSince;
 
           console.log(JSON.stringify(tmp_message));
-          /*
+
           if (m.length > 0) {
-              await sponsors.query()
-                .patch(tmp_message)
-                .where("service", tmp_message.service)
-                .where("owner", tmp_message.owner)
-                .where("meber_id", tmp_message.meber_id);
-            }
-            await sponsors.query().insert(tmp_message);*/
+            await sponsors
+              .query()
+              .patch(tmp_message)
+              .where("service", tmp_message.service)
+              .where("owner", tmp_message.owner)
+              .where("member_id", tmp_message.member_id);
+          } else {
+            await sponsors.query().insert(tmp_message);
+          }
         }
         /* if (
           typeof response.data.nextPageToken != "undefined" &&
