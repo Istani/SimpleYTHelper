@@ -15,6 +15,7 @@ var { google } = require("googleapis");
 
 const sponsors = require("./models/member.js");
 const ow_playlist = require("./models/playlists.js");
+const ow_playlistitems = require("./models/playlists_items.js");
 
 // TODO: Token aus DB
 var SCOPES = ["https://www.googleapis.com/auth/youtube"];
@@ -102,15 +103,17 @@ function StartImport(auth) {
 
   //q.push("Channels", () => { ListChannels(auth); });
 
-  q.push("Playlists", () => {
-    ListPlaylists(auth);
-  });
-
   //q.push("Broadcasts", () => { SearchBroadcasts(auth, "UC5DOhI70dI3PnLPMkUsosgw"); });
 
   cron.schedule("00 01 * * *", () => {
     q.push("Sponsors", () => {
       ListSponsors(auth);
+    });
+  });
+
+  cron.schedule("00 03 * * *", () => {
+    q.push("Playlists", () => {
+      ListPlaylists(auth);
     });
   });
 }
@@ -205,10 +208,10 @@ function ListPlaylists(auth, pageToken = "") {
             .where("pl_id", tmp_message.pl_id);
         } else {
           await ow_playlist.query().insert(tmp_message);
-          /*q.push("PlaylistsItems", () => {
-            ListPlaylistItems(auth, tmp_message.pl_id);
-          });*/
         }
+        q.push("PlaylistsItems", () => {
+          ListPlaylistItems(auth, tmp_message.pl_id);
+        });
       }
       if (typeof response.data.nextPageToken != "undefined") {
         q.push("Playlists", () => {
@@ -227,7 +230,7 @@ function ListPlaylistItems(auth, playlist, pageToken = "") {
       maxResults: 50,
       pageToken: pageToken
     },
-    function(err, response) {
+    async function(err, response) {
       if (err) {
         console.error(err);
         return;
@@ -239,10 +242,32 @@ function ListPlaylistItems(auth, playlist, pageToken = "") {
       var data = response.data.items;
       for (let index = 0; index < data.length; index++) {
         const element = data[index];
-        var playlistitem_obj = {};
-        playlistitem_obj.id = playlist;
-        playlistitem_obj.videoId = element.snippet.resourceId.videoId;
-        console.log(JSON.stringify(playlistitem_obj));
+        var tmp_message = {};
+        tmp_message.service = "youtube";
+        tmp_message.owner = element.snippet.channelId;
+        tmp_message.pl_id = playlist;
+        tmp_message.position = element.snippet.position;
+        tmp_message.video_Id = element.snippet.resourceId.videoId;
+
+        var m = await ow_playlistitems
+          .query()
+          .where("service", tmp_message.service)
+          .where("owner", tmp_message.owner)
+          .where("pl_id", tmp_message.pl_id)
+          .where("position", tmp_message.position);
+        console.log(JSON.stringify(tmp_message));
+
+        if (m.length > 0) {
+          await ow_playlistitems
+            .query()
+            .patch(tmp_message)
+            .where("service", tmp_message.service)
+            .where("owner", tmp_message.owner)
+            .where("pl_id", tmp_message.pl_id)
+            .where("position", tmp_message.position);
+        } else {
+          await ow_playlistitems.query().insert(tmp_message);
+        }
       }
       if (typeof response.data.nextPageToken != "undefined") {
         q.push("PlaylistsItems", () => {

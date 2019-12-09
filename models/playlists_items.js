@@ -5,12 +5,12 @@ const knex = Knex(require("../knexfile.js"));
 
 Model.knex(knex);
 
-class Member extends Model {
+class PlaylistItems extends Model {
   static get tableName() {
-    return "vip_member";
+    return "playlists_item";
   }
   static get idColumn() {
-    return "service, owner, meber_id";
+    return "service, owner, pl_id, position";
   }
 
   $beforeInsert() {
@@ -23,4 +23,4 @@ class Member extends Model {
   }
 }
 
-module.exports = Member;
+module.exports = PlaylistItems;
