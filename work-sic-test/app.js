@@ -7,15 +7,16 @@ console.log();
 
 var path_target = __dirname;
 var fs = require("fs");
-var queue = require("better-queue");
 var async = require("async");
 var exec = require("child_process").execSync;
+var queue = require("better-queue");
 var cron = require("node-cron");
 
 var q = new queue(function(input, cb) {
   input(cb);
 });
 
+var day_back = 1000;
 var matchup = {};
 var authors = {};
 try {
@@ -66,7 +67,7 @@ function checkGitLog(log, project) {
     var fields = line.split(" ");
     var dat = parseInt(fields[0] / 60 / 60 / 24);
     var author = fields[1];
-    var timeOld = parseInt(Date.now() / 1000 / 60 / 60 / 24 - 180);
+    var timeOld = parseInt(Date.now() / 1000 / 60 / 60 / 24 - day_back);
     if (timeOld > dat) {
       continue;
     }
@@ -153,7 +154,7 @@ function checkMatchup(email, cb) {
   var loadMatchup = require("./tmp/matchup.json");
   var all_log = [];
   var datum = parseInt(Date.now() / 1000 / 60 / 60 / 24); // HEUTE
-  var datum_old = datum - 180;
+  var datum_old = datum - day_back;
   while (datum_old <= datum) {
     var day_log = {};
     var workday = true;
@@ -181,7 +182,7 @@ function checkMatchup(email, cb) {
 //q.push(cb => {backupVentronic("C:\\PRO\\HOEFER\\Cpu_200\\", true, cb);});
 // -- q.push(cb => {checkFolder("C:\\","sascha.u.kaufmann@googlemail.com",cb);});
 
-cron.schedule("00 01 * * *", () => {
+cron.schedule("00 04 * * *", () => {
   q.push(cb => {
     checkFolder("C:\\PRO\\HOEFER\\", "skaufmann@ventronic.com", cb);
   });
@@ -197,7 +198,7 @@ cron.schedule("00 01 * * *", () => {
   });
 });
 
-cron.schedule("00 03 * * *", () => {
+cron.schedule("00 05 * * *", () => {
   q.push(cb => {
     checkMatchup("skaufmann@ventronic.com", cb);
   });
