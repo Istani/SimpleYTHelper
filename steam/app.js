@@ -188,7 +188,7 @@ async function getAppDetails(appid) {
                   await GameGenre.query()
                     .patch(genres)
                     .where("name", genres.name)
-                    .where("genre", storgenrese_data.genre);
+                    .where("genre", genres.genre);
                 }
               }
             } else {
