@@ -46,14 +46,16 @@ async function main() {
 }
 main();
 
-cron.schedule("00 */1 * * * ", () => {
+cron.schedule("*/15 * * * * ", () => {
+  console.log(new Date(), "Profile Ping");
   q.push(cb => {
-    NeustartUndSo();
+    set_location(client, cb); // Ping!
   });
 });
 
 function NeustartUndSo() {
-  console.log("Restart in 5 Min!");
+  console.log(new Date(), "Restart in 5 Min!");
+  data();
   setTimeout(() => {
     process.exit(0);
   }, 1000 * 60 * 5);
@@ -67,11 +69,16 @@ async function set_location(client, cb) {
   var my_birthday = new Date(profile.birth_date).getFullYear();
   var min_age = my_year - my_birthday - 8;
   var max_age = my_year - my_birthday + 5;
-
   await client.changeLocation({
     latitude: "50.714550",
     longitude: "7.557150"
   });
+  /*
+  await client.changeLocation({
+    latitude: "50.4567742",
+    longitude: "7.4893209"
+  });
+  */
   if (dif >= 100) {
     await client.updateProfile({
       userGender: 0,
@@ -79,7 +86,7 @@ async function set_location(client, cb) {
         minimumAge: 0,
         maximumAge: 99,
         genderPreference: 1,
-        maximumRangeInKilometers: 999
+        maximumRangeInKilometers: 200
       }
     });
   } else {
@@ -102,6 +109,7 @@ async function set_location(client, cb) {
 
   if (meta.rating.likes_remaining > 0) {
     if (dif >= 100) {
+      exec("rm tmp/P_*");
       dif = 0;
       q.push(cb => {
         set_location(client, cb);
@@ -111,6 +119,16 @@ async function set_location(client, cb) {
       set_likes(client, cb);
     });
   } else {
+    var d = new Date(meta.rating.rate_limited_until) - new Date() + 1000;
+    console.log(new Date(meta.rating.rate_limited_until));
+    if (d <= 0) {
+      NeustartUndSo();
+    } else {
+      setTimeout(() => {
+        NeustartUndSo();
+      }, d);
+    }
+
     if (dif < 100) {
       dif = 100;
       q.push(cb => {
