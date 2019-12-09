@@ -8,11 +8,13 @@ const config = require("dotenv").config({ path: "../.env" });
 
 var fs = require("fs");
 var Queue = require("better-queue");
+var cron = require("node-cron");
 
 var readline = require("readline");
 var { google } = require("googleapis");
 
 const sponsors = require("./models/member.js");
+const ow_playlist = require("./models/playlists.js");
 
 // TODO: Token aus DB
 var SCOPES = ["https://www.googleapis.com/auth/youtube"];
@@ -100,12 +102,16 @@ function StartImport(auth) {
 
   //q.push("Channels", () => { ListChannels(auth); });
 
-  //q.push("Playlists", () => { ListPlaylists(auth); });
+  q.push("Playlists", () => {
+    ListPlaylists(auth);
+  });
 
   //q.push("Broadcasts", () => { SearchBroadcasts(auth, "UC5DOhI70dI3PnLPMkUsosgw"); });
 
-  q.push("Sponsors", () => {
-    ListSponsors(auth);
+  cron.schedule("00 01 * * *", () => {
+    q.push("Sponsors", () => {
+      ListSponsors(auth);
+    });
   });
 }
 
@@ -163,7 +169,7 @@ function ListPlaylists(auth, pageToken = "") {
       maxResults: 50,
       pageToken: pageToken
     },
-    function(err, response) {
+    async function(err, response) {
       if (err) {
         console.error(err);
         return;
@@ -175,14 +181,34 @@ function ListPlaylists(auth, pageToken = "") {
       var data = response.data.items;
       for (let index = 0; index < data.length; index++) {
         const element = data[index];
-        var playlist_obj = {};
-        playlist_obj.channelId = element.snippet.channelId;
-        playlist_obj.id = element.id;
-        playlist_obj.title = element.snippet.title;
-        //console.log(JSON.stringify(playlist_obj));
-        q.push("PlaylistsItems", () => {
-          ListPlaylistItems(auth, playlist_obj.id);
-        });
+        var tmp_message = {};
+        tmp_message.service = "youtube";
+        tmp_message.owner = element.snippet.channelId;
+        tmp_message.pl_id = element.id;
+        tmp_message.pl_title = element.snippet.title;
+        tmp_message.publishedAt = element.snippet.publishedAt;
+        tmp_message.description = element.snippet.description;
+
+        var m = await ow_playlist
+          .query()
+          .where("service", tmp_message.service)
+          .where("owner", tmp_message.owner)
+          .where("pl_id", tmp_message.pl_id);
+        console.log(JSON.stringify(tmp_message));
+
+        if (m.length > 0) {
+          await ow_playlist
+            .query()
+            .patch(tmp_message)
+            .where("service", tmp_message.service)
+            .where("owner", tmp_message.owner)
+            .where("pl_id", tmp_message.pl_id);
+        } else {
+          await ow_playlist.query().insert(tmp_message);
+          /*q.push("PlaylistsItems", () => {
+            ListPlaylistItems(auth, tmp_message.pl_id);
+          });*/
+        }
       }
       if (typeof response.data.nextPageToken != "undefined") {
         q.push("Playlists", () => {
