@@ -10,8 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "better-queue": "^3.8.10",
     "express": "^4.17.1",
     "express-handlebars": "^3.1.0",
+    "node-cron": "^2.0.3",
     "tinder-client": "^4.1.1"
   }
 }

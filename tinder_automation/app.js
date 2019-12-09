@@ -9,213 +9,226 @@ console.log("Settingspath:", envpath);
 var config = require("dotenv").config({ path: envpath });
 
 var tc = require("tinder-client");
-var express = require("express");
-var exphbs = require("express-handlebars");
+var queue = require("better-queue");
+var cron = require("node-cron");
 var exec = require("child_process").execSync;
 
-var profiles = [];
+var q = new queue(function(input, cb) {
+  input(cb);
+});
+
 var dif = 0;
-var save = false;
-var timeout_error;
-
-// Start Site
-var hbs = exphbs.create({
-  helpers: {
-    checkPrice: function(low, high, options) {
-      if (low == high) {
-        return options.inverse(this);
-      } else {
-        return options.fn(this);
-      }
-    }
-  },
-  defaultLayout: "main",
-  extname: ".hbs"
-});
-
-var app = express();
-app.engine(".hbs", hbs.engine);
-app.set("view engine", ".hbs");
-app.use(express.static("public"));
-app.get("/", function(req, res) {
-  profiles.sort(function(a, b) {
-    return a.distance_mi - b.distance_mi;
-  });
-  res.render("home", { page_title: "Home", profs: profiles });
-});
-
-app.listen(3003, () => console.log("Interface on 3003!"));
-
-console.log();
+var profile = {};
 try {
-  (async function main() {
-    timeout_error = setTimeout(() => {
-      console.error("Nach Timeout noch keinen Like!");
-      process.exit(1);
-    }, 1000 * 60 * 60 * 6);
-    data();
+  profile = require("./tmp/_Profile.json");
+} catch (e) {}
+var meta = {};
+try {
+  meta = require("./tmp/_Meta.json");
+} catch (e) {}
 
+async function main() {
+  try {
     const client = await tc.createClientFromFacebookLogin({
       emailAddress: process.env.FACEBOOK_LOGIN,
       password: process.env.FACEBOOK_PASS
     });
 
-    await set_location(client);
-
-    set_likes(client);
-  })();
-
-  async function set_location(client) {
-    var tc = require("tinder-client");
-    console.log("Update Profile Start");
-
-    var profile = await client.getProfile();
-    var my_year = new Date().getFullYear();
-    var my_birthday = new Date(profile.birth_date).getFullYear();
-    var min_age = my_year - my_birthday - 8;
-    var max_age = my_year - my_birthday + 5;
-
-    await client.changeLocation({
-      latitude: "50.714550",
-      longitude: "7.557150"
+    q.push(cb => {
+      set_location(client, cb);
     });
-    /*await client.changeLocation({
-      latitude: "50.4567742",
-      longitude: "7.4893209"
-    });*/
+  } catch (e) {
+    console.error(e);
+    q.push(cb => {
+      NeustartUndSo();
+    });
+  }
+}
+main();
+
+cron.schedule("00 */1 * * * ", () => {
+  q.push(cb => {
+    NeustartUndSo();
+  });
+});
+
+function NeustartUndSo() {
+  console.log("Restart in 5 Min!");
+  setTimeout(() => {
+    process.exit(0);
+  }, 1000 * 60 * 5);
+}
+
+async function set_location(client, cb) {
+  console.log("Update Profile Start");
+
+  profile = await client.getProfile();
+  var my_year = new Date().getFullYear();
+  var my_birthday = new Date(profile.birth_date).getFullYear();
+  var min_age = my_year - my_birthday - 8;
+  var max_age = my_year - my_birthday + 5;
+
+  await client.changeLocation({
+    latitude: "50.714550",
+    longitude: "7.557150"
+  });
+  if (dif >= 100) {
     await client.updateProfile({
-      userGender: 0,
-      searchPreferences: {
-        minimumAge: 0,
-        maximumAge: max_age,
-        genderPreference: 1,
-        maximumRangeInKilometers: 1 + dif
-      }
-    });
-    /*await client.updateProfile({
       userGender: 0,
       searchPreferences: {
         minimumAge: 0,
         maximumAge: 99,
         genderPreference: 1,
-        maximumRangeInKilometers: 100
+        maximumRangeInKilometers: 999
       }
-    });*/
-
-    var profile = await client.getProfile();
-    await save_file("_Profile", profile);
-    const myMetadata = await client.getMetadata();
-    await save_file("_Meta", myMetadata);
-    console.log("Update Profile End");
+    });
+  } else {
+    await client.updateProfile({
+      userGender: 0,
+      searchPreferences: {
+        minimumAge: min_age,
+        maximumAge: max_age,
+        genderPreference: 1,
+        maximumRangeInKilometers: 1 + dif
+      }
+    });
   }
 
-  async function set_next(client) {
-    dif++;
-    setTimeout(() => {
-      set_location(client);
-    }, 100);
-    setTimeout(() => {
-      set_likes(client);
-    }, 1000);
+  profile = await client.getProfile();
+  await save_file("_Profile", profile);
+  meta = await client.getMetadata();
+  await save_file("_Meta", meta);
+  console.log("Update Profile End");
 
-    console.log("Send Likes Ende - Next");
+  if (meta.rating.likes_remaining > 0) {
+    if (dif >= 100) {
+      dif = 0;
+      q.push(cb => {
+        set_location(client, cb);
+      });
+    }
+    q.push(cb => {
+      set_likes(client, cb);
+    });
+  } else {
+    if (dif < 100) {
+      dif = 100;
+      q.push(cb => {
+        set_location(client, cb);
+      });
+    }
   }
-  async function set_likes(client) {
-    clearTimeout(timeout_error);
-    console.log("Send Likes Start");
-    var resp = {};
-    resp.likes_remaining = 1;
-    while (resp.likes_remaining > 0) {
-      const recommendations = await client.getRecommendations();
-      if (typeof recommendations == "undefined") {
-        setTimeout(() => {
-          set_next(client);
-        }, 100);
-        return;
-      }
-      if (typeof recommendations.results == "undefined") {
-        setTimeout(() => {
-          set_next(client);
-        }, 100);
-        return;
-      }
-      if (typeof recommendations.results.length == "undefined") {
-        setTimeout(() => {
-          set_next(client);
-        }, 100);
-        return;
-      }
-      console.log("Like Recommendations:", recommendations.results.length);
+  cb();
+}
 
-      for (var i = 0; i < recommendations.results.length; i++) {
-        var perso = recommendations.results[i];
-        var is_new = await save_file("P_" + perso._id, perso, true);
+async function set_next(client, cb) {
+  console.log("Send Likes - Next");
+  dif++;
+  q.push(cb => {
+    set_location(client, cb);
+  });
+  q.push(cb => {
+    set_likes(client, cb);
+  });
+  cb();
+}
 
-        if (is_new) {
-          resp = await client.like(perso._id);
-          console.log("Like: ", perso.name);
+async function set_likes(client, cb) {
+  console.log("Send Likes Start");
+  var resp = {};
+  resp.likes_remaining = 1;
+  while (resp.likes_remaining > 0) {
+    const recommendations = await client.getRecommendations();
+    if (typeof recommendations == "undefined") {
+      q.push(cb => {
+        set_next(client, cb);
+      });
+      cb();
+      return;
+    }
+    if (typeof recommendations.results == "undefined") {
+      q.push(cb => {
+        set_next(client, cb);
+      });
+      cb();
+      return;
+    }
+    if (typeof recommendations.results.length == "undefined") {
+      q.push(cb => {
+        set_next(client, cb);
+      });
+      cb();
+      return;
+    }
+    console.log("Like Recommendations:", recommendations.results.length);
 
-          if (resp.likes_remaining == 0) {
-            remove_file("P_" + perso._id);
-            break;
-          } else {
-            save = true;
-          }
+    for (var i = 0; i < recommendations.results.length; i++) {
+      var perso = recommendations.results[i];
+      var is_new = await save_file("P_" + perso._id, perso, true);
+
+      if (is_new) {
+        resp = await client.like(perso._id);
+        console.log("Like: ", perso.name);
+
+        if (resp.likes_remaining == 0) {
+          remove_file("P_" + perso._id);
+          break;
         } else {
-          console.error("Already: ", perso.name);
-          dif++;
-          await set_location(client);
+          save = true;
         }
+      } else {
+        console.error("Already: ", perso.name);
+        q.push(cb => {
+          set_next(client, cb);
+        });
+        q.push(cb => {
+          set_likes(client, cb);
+        });
       }
     }
-    var d = new Date(resp.rate_limited_until) - new Date() + 1000;
-    if (d > 0) {
-      diff = 100;
-      set_next(client);
-
-      console.log(
-        "Break Until",
-        new Date(resp.rate_limited_until),
-        ":",
-        d,
-        "Sec"
-      );
-      if (save == true) {
-        exec("git add .");
-        exec('git commit -m "Tinder Update"');
-      }
-      setTimeout(() => {
-        process.exit(0);
-      }, d);
-    } else {
-      set_likes(client);
-    }
-    data();
-    console.log("Send Likes Ende");
   }
 
-  async function save_file(name, data, only_new = false) {
-    var filename = "./tmp/" + name + ".json";
-    var fs = require("fs");
-    if (fs.existsSync(filename)) {
-      if (only_new) {
-        return false;
-      }
-      fs.unlinkSync(filename);
+  var d = new Date(resp.rate_limited_until) - new Date() + 1000;
+  if (d > 0) {
+    q.push(cb => {
+      set_next(client, cb);
+    });
+
+    console.log(
+      "Break Until" + new Date(resp.rate_limited_until) + ":" + d + "Sec"
+    );
+    if (save == true) {
+      exec("git add .");
+      exec('git commit -m "Tinder Update"');
     }
-    fs.writeFileSync(filename, JSON.stringify(data, null, 2));
-    return true;
+  } else {
+    q.push(cb => {
+      set_likes(client, cb);
+    });
   }
-  async function remove_file(name) {
-    var filename = "./tmp/" + name + ".json";
-    var fs = require("fs");
-    if (fs.existsSync(filename)) {
-      fs.unlinkSync(filename);
+  data();
+  console.log("Send Likes Ende");
+  cb();
+}
+
+async function save_file(name, data, only_new = false) {
+  var filename = "./tmp/" + name + ".json";
+  var fs = require("fs");
+  if (fs.existsSync(filename)) {
+    if (only_new) {
+      return false;
     }
+    fs.unlinkSync(filename);
   }
-} catch (e) {
-  console.error(e);
-  process.exit(1);
+  fs.writeFileSync(filename, JSON.stringify(data, null, 2));
+  return true;
+}
+async function remove_file(name) {
+  var filename = "./tmp/" + name + ".json";
+  var fs = require("fs");
+  if (fs.existsSync(filename)) {
+    fs.unlinkSync(filename);
+  }
 }
 
 async function data() {
