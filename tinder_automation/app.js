@@ -46,24 +46,26 @@ async function main() {
 }
 main();
 
-cron.schedule("*/15 * * * * ", () => {
+setInterval(() => {
   console.log(new Date(), "Profile Ping");
   q.push(cb => {
     set_location(client, cb); // Ping!
   });
-});
+  q.resume();
+}, 1000 * 60 * 15);
 
 function NeustartUndSo() {
-  console.log(new Date(), "Restart in 5 Min!");
+  console.log(new Date(), "Restart in 60 Min!");
   data();
+  q.pause();
   setTimeout(() => {
     process.exit(0);
-  }, 1000 * 60 * 5);
+  }, 1000 * 60 * 60);
 }
 
 async function set_location(client, cb) {
   console.log("Update Profile Start");
-
+  save_file("Client", client, true);
   profile = await client.getProfile();
   var my_year = new Date().getFullYear();
   var my_birthday = new Date(profile.birth_date).getFullYear();
@@ -80,13 +82,14 @@ async function set_location(client, cb) {
   });
   */
   if (dif >= 100) {
+    dif = 100;
     await client.updateProfile({
       userGender: 0,
       searchPreferences: {
         minimumAge: 0,
         maximumAge: 99,
         genderPreference: 1,
-        maximumRangeInKilometers: 200
+        maximumRangeInKilometers: dif
       }
     });
   } else {
@@ -184,7 +187,7 @@ async function set_likes(client, cb) {
       var perso = recommendations.results[i];
       var is_new = await save_file("P_" + perso._id, perso, true);
 
-      if (is_new) {
+      if (1) {
         resp = await client.like(perso._id);
         console.log("Like: ", perso.name);
 
@@ -216,8 +219,13 @@ async function set_likes(client, cb) {
       "Break Until" + new Date(resp.rate_limited_until) + ":" + d + "Sec"
     );
     if (save == true) {
-      exec("git add .");
-      exec('git commit -m "Tinder Update"');
+      try {
+        exec("git add .");
+        exec('git commit -m "Tinder Update"');
+        save = false;
+      } catch (e) {
+        console.error(e);
+      }
     }
   } else {
     q.push(cb => {
