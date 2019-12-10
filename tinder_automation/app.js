@@ -230,22 +230,31 @@ async function set_likes(client, cb) {
 }
 
 async function save_file(name, data, only_new = false) {
-  var filename = "./tmp/" + name + ".json";
-  var fs = require("fs");
-  if (fs.existsSync(filename)) {
-    if (only_new) {
-      return false;
+  try {
+    var filename = "./tmp/" + name + ".json";
+    var fs = require("fs");
+    if (fs.existsSync(filename)) {
+      if (only_new) {
+        return false;
+      }
+      fs.unlinkSync(filename);
     }
-    fs.unlinkSync(filename);
+    fs.writeFileSync(filename, JSON.stringify(data, null, 2));
+    return true;
+  } catch (e) {
+    console.error(e);
+    return false;
   }
-  fs.writeFileSync(filename, JSON.stringify(data, null, 2));
-  return true;
 }
 async function remove_file(name) {
-  var filename = "./tmp/" + name + ".json";
-  var fs = require("fs");
-  if (fs.existsSync(filename)) {
-    fs.unlinkSync(filename);
+  try {
+    var filename = "./tmp/" + name + ".json";
+    var fs = require("fs");
+    if (fs.existsSync(filename)) {
+      fs.unlinkSync(filename);
+    }
+  } catch (e) {
+    console.error(e);
   }
 }
 
