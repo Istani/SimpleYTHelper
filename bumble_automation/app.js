@@ -20,6 +20,8 @@ var q = new queue(function(input, cb) {
   input(cb);
 });
 cron.schedule("00 01 * * *", () => {
+  exec("git add .");
+  exec('git commit -m "Bumble Update"');
   process.exit(0);
 });
 
@@ -45,6 +47,7 @@ async function GetUser(cb) {
     BumAPI.getEncounters().then(data => {
       for (let i = 0; i < data.results.length; i++) {
         if (count > 0) {
+          count--;
           const element = data.results[i].user;
           console.log(element);
           save_file("P_" + element.user_id, element);
