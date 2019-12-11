@@ -101,7 +101,9 @@ function StartImport(auth) {
   fs.writeFileSync("tmp/auth.json", JSON.stringify(auth, null, 2));
   // TODO: Cronjobs
 
-  //q.push("Channels", () => { ListChannels(auth); });
+  q.push("Channels", () => {
+    ListChannels(auth);
+  });
 
   //q.push("Broadcasts", () => { SearchBroadcasts(auth, "UC5DOhI70dI3PnLPMkUsosgw"); });
 
@@ -139,6 +141,7 @@ function ListChannels(auth, pageToken = "") {
       );
       var data = response.data.items[0];
       var channel_obj = {};
+      channel_obj.owner = auth.credentials.syth_user;
       channel_obj.id = data.id;
       channel_obj.title = data.snippet.title;
       channel_obj.discription = data.snippet.discription;
@@ -159,6 +162,7 @@ function ListChannels(auth, pageToken = "") {
       channel_obj.banner = data.brandingSettings.image.bannerTvHighImageUrl;
 
       console.log(JSON.stringify(channel_obj));
+      console.log(auth.credentials);
       //q.push("PlaylistsItems", () => { ListPlaylistItems(auth, channel_obj.playlistUploads); });
     }
   );

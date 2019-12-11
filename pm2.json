@@ -1,0 +1,22 @@
+[
+  {
+    "name": "App-Install",
+    "script": "app.js",
+    "instances": "1"
+  },
+  {
+    "name": "GoS-Mysql",
+    "script": "sync/app.js",
+    "instances": "1"
+  },
+  {
+    "name": "Tinder",
+    "script": "tinder_automation/app.js",
+    "instances": "1"
+  },
+  {
+    "name": "Bumble",
+    "script": "bumble_automation/app.js",
+    "instances": "1"
+  }
+]
