@@ -11,4 +11,4 @@ COPY .env SimpleYTHelper/.env
 RUN npm install 
 RUN pm2 install pm2-server-monit
 
-CMD [ "pm2-runtime", "start", "ecosystem.config.local.js" ]
+CMD [ "pm2-runtime", "start", "ecosystem.local.config.js" ]
