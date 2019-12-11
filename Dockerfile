@@ -1,15 +1,14 @@
 FROM keymetrics/pm2:latest-alpine
 
-# Bundle APP files
-COPY . .
-
 # Install app dependencies
-ENV NPM_CONFIG_LOGLEVEL warn
-RUN npm install --production
-RUN pm2 install pm2-auto-pull
+RUN apt-get update && apt-get install -y git
+RUN git pull https://github.com/Istani/SimpleYTHelper.git
+
+RUN cd SimpleYTHelper
+RUN git checkout rewrite_node
+
+COPY .env SimpleYTHelper/.env
+RUN npm install 
 RUN pm2 install pm2-server-monit
 
-# Show current folder structure in logs
-RUN ls -al -R
-
-CMD [ "pm2-runtime", "start", "pm2.json" ]
+CMD [ "pm2-runtime", "start", "ecosystem.config.local.js" ]
