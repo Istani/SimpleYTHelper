@@ -13,9 +13,12 @@ var queue = require("better-queue");
 var cron = require("node-cron");
 var exec = require("child_process").execSync;
 
-var q = new queue(function(input, cb) {
-  input(cb);
-});
+var q = new queue(
+  function(input, cb) {
+    input(cb);
+  },
+  { afterProcessDelay: 1000 * 60 }
+);
 
 var dif = 0;
 var profile = {};
@@ -46,21 +49,12 @@ async function main() {
 }
 main();
 
-setInterval(() => {
-  console.log(new Date(), "Profile Ping");
-  q.push(cb => {
-    set_location(client, cb); // Ping!
-  });
-  q.resume();
-}, 1000 * 60 * 15);
-
-function NeustartUndSo() {
-  console.log(new Date(), "Restart in 60 Min!");
+function NeustartUndSo(Zeit = 60) {
+  console.log(new Date(), "Restart in " + Zeit + " Min!");
   data();
-  q.pause();
   setTimeout(() => {
     process.exit(0);
-  }, 1000 * 60 * 60);
+  }, 1000 * 60 * Zeit);
 }
 
 async function set_location(client, cb) {
@@ -122,22 +116,13 @@ async function set_location(client, cb) {
       set_likes(client, cb);
     });
   } else {
+    dif = 100;
     var d = new Date(meta.rating.rate_limited_until) - new Date() + 1000;
     console.log(new Date(meta.rating.rate_limited_until));
-    if (d <= 0) {
-      NeustartUndSo();
-    } else {
-      setTimeout(() => {
-        NeustartUndSo();
-      }, d);
-    }
-
-    if (dif < 100) {
-      dif = 100;
-      q.push(cb => {
-        set_location(client, cb);
-      });
-    }
+    NeustartUndSo(parseInt(d / 1000 / 60));
+    q.push(cb => {
+      set_location(client, cb);
+    });
   }
   cb();
 }
@@ -220,6 +205,7 @@ async function set_likes(client, cb) {
     );
     if (save == true) {
       try {
+        console.log("Send Likes Ende");
         exec("git add .");
         exec('git commit -m "Tinder Update"');
         save = false;

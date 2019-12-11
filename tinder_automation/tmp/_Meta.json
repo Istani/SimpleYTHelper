@@ -69,17 +69,16 @@
     }
   ],
   "rating": {
-    "likes_remaining": 0,
-    "rate_limited_until": 1576054729734,
+    "likes_remaining": 100,
     "super_likes": {
-      "remaining": 0,
+      "remaining": 1,
       "alc_remaining": 0,
       "new_alc_remaining": 0,
       "allotment": 1,
       "superlike_refresh_amount": 5,
       "superlike_refresh_interval": 1,
       "superlike_refresh_interval_unit": "d",
-      "resets_at": "2019-12-11T08:50:28.946Z"
+      "resets_at": null
     }
   },
   "travel": {
@@ -151,9 +150,9 @@
     "top_picks_local_daily_msg": "Your daily Top Picks are ready. 💎 Tap to view.",
     "top_picks_local_daily_offsets": {
       "offset0": -1,
-      "offset1": 29442373,
-      "offset2": 43842373,
-      "offset3": 61842373
+      "offset1": 29933966,
+      "offset2": 44333966,
+      "offset3": 62333966
     },
     "top_picks_free_daily": false,
     "top_picks_num_free_rated_limit": 1,
@@ -362,12 +361,12 @@
   },
   "user": {
     "_id": "57601acf73d670581b696ec2",
-    "active_time": "2019-12-10T20:58:52.999Z",
-    "age_filter_max": 99,
-    "age_filter_min": 18,
+    "active_time": "2019-12-11T11:54:29.471Z",
+    "age_filter_max": 36,
+    "age_filter_min": 23,
     "api_token": "8dabd398-f131-4622-858e-bdc77714be01",
     "bio": "Was schreibt Mann den am besten hier? Kontostand? Penisgröße? \n\nIch bin vermutlich eh viel zu uninteressant für dich aber meld dich ruhig ;)\n\n\nRock on",
-    "birth_date": "1987-12-13T20:58:58.934Z",
+    "birth_date": "1987-12-14T12:01:37.180Z",
     "blend": "optimal",
     "create_date": "2016-06-14T14:55:11.054Z",
     "top_picks_discoverable": true,
@@ -866,7 +865,7 @@
         "name": "American Pie"
       }
     ],
-    "distance_filter": 100,
+    "distance_filter": 21,
     "full_name": "Sascha Kaufmann",
     "gender": 0,
     "gender_filter": 1,
@@ -1264,7 +1263,7 @@
     ],
     "photos_processing": false,
     "photo_optimizer_enabled": true,
-    "ping_time": "2019-12-10T20:30:17.559Z",
+    "ping_time": "2019-12-11T11:02:30.431Z",
     "spotify_connected": false,
     "spotify_anthem": true,
     "jobs": [
