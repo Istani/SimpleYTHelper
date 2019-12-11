@@ -16,9 +16,12 @@ var BumAPI = require("bumbleapi")(
   process.env.BUMBLE_PASS
 );
 
-var q = new queue(function(input, cb) {
-  input(cb);
-});
+var q = new queue(
+  function(input, cb) {
+    input(cb);
+  },
+  { afterProcessDelay: 1000 * 60 }
+);
 cron.schedule("00 01 * * *", () => {
   exec("git add .");
   exec('git commit -m "Bumble Update"');
