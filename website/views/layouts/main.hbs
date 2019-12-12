@@ -16,25 +16,31 @@
 
 <body>
     <div id="header" class="ui-accordion ui-widget ui-helper-reset" width="100%">
-        <h3 class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">Simple YoutubeHelper</h3>
+        <h3
+            class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">
+            Simple YoutubeHelper</h3>
         <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
             <img src="/banner.png">
         </div>
     </div>
 
     <div id="content" class="ui-accordion ui-widget ui-helper-reset">
-        <h3 class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">Content</h3>
+        <h3
+            class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">
+            Content</h3>
         <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
             {{{body}}}
         </div>
     </div>
 
     <div id="navigation">
-        {{#if data.login.email}}
+        {{#if data.login.user}}
             User eingeloggt!
         {{else}}
             <div id="page_login" class="ui-accordion ui-widget ui-helper-reset">
-                <h3 class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">Login</h3>
+                <h3
+                    class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">
+                    Login</h3>
                 <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
                     <form method="POST" action="/Login">
                         <label>{{{i18n "E-Mail"}}}:</label>
@@ -47,7 +53,8 @@
                         <input type="password" name="password">
                         <br>
                         <br>
-                        <input type="submit" name="button" value="{{{i18n "Login"}}}">&nbsp;{{{i18n "Login or Register . Or"}}}
+                        <input type="submit" name="button"
+                            value="{{{i18n "Login"}}}">&nbsp;{{{i18n "Login or Register . Or"}}}
                         <a href="/Register">{{{i18n "Regsiter"}}}</a>
                         <br>
                     </form>
@@ -57,7 +64,9 @@
         <br>
         <br>
         <div id="page_info" class="ui-accordion ui-widget ui-helper-reset">
-            <h3 class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">About</h3>
+            <h3
+                class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">
+                About</h3>
             <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
                 <a href="/AGB">{{{i18n "ABGs"}}}</a>
                 <br>
