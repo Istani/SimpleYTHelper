@@ -105,7 +105,7 @@ app.get("/auth/youtube/callback", passport.authenticate("youtube"), function(
           }
         ],
         function(err) {
-          console.log(req.user);
+          //console.log(req.user);
           res.redirect("/Dashboard");
         }
       );
@@ -173,7 +173,7 @@ app.post("/Register", async function(req, res) {
     temp_data.error = err;
   }
   if (typeof temp_data.error != "undefined") {
-    console.log(req.originalUrl, ": ", temp_data.error.code);
+    //console.log(req.originalUrl, ": ", temp_data.error.code);
     res.render("register", { data: temp_data });
     return;
   }
@@ -191,9 +191,10 @@ app.post("/Register", async function(req, res) {
 
 app.get("/Dashboard", async function(req, res) {
   var temp_data = {};
-  if (req.session.user && req.cookies.login_check) {
+  if (req.session.user) {
+    // Schauen ob der User auch Existiert?
     temp_data.login = req.session.user[0];
-    console.log(temp_data);
+    //console.log(temp_data);
     res.render("dashboard", { data: temp_data });
   } else {
     temp_data.error = {};
