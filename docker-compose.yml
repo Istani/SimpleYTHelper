@@ -1,0 +1,11 @@
+version: "3"
+services:
+  node:
+    image: oberonamsterdam/pm2-git:8-alpine
+    restart: always
+    network_mode: "bridge"
+    volumes:
+      - /y/SimpleSoftwareStudioShare/SimpleYTH/:/app
+      - /y/Zertifikate/ssh:/root/.ssh/
+    #entrypoint: ["sh", "/app/start.sh"]
+    entrypoint: ["ls", "/app", "-a"]
