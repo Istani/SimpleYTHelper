@@ -21,7 +21,7 @@ var cookieParser = require("cookie-parser");
 var session = require("express-session");
 var i18n = require("i18n");
 var passport = require("passport");
-//var youtube_auth = require("./oauth/youtube.js");
+var youtube_auth = require("./oauth/youtube.js");
 
 var hbs = exphbs.create({
   helpers: {
@@ -73,8 +73,8 @@ i18n.configure({
 });
 app.use(i18n.init);
 
-//youtube_auth(passport);
-/*app.get(
+youtube_auth(passport);
+app.get(
   "/auth/youtube",
   passport.authenticate("youtube", {
     scope: ["https://www.googleapis.com/auth/youtube"]
@@ -112,7 +112,7 @@ app.get("/auth/youtube/callback", passport.authenticate("youtube"), function(
     }
   );
 });
-*/
+
 app.get("/Login", function(req, res) {
   var temp_data = {};
   res.render("login", { data: temp_data });
@@ -192,6 +192,7 @@ app.post("/Register", async function(req, res) {
 app.get("/Dashboard", async function(req, res) {
   var temp_data = {};
   if (req.session.user && req.cookies.login_check) {
+    temp_data.login = req.session.user[0];
     console.log(temp_data);
     res.render("dashboard", { data: temp_data });
   } else {

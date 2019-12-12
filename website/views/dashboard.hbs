@@ -1,12 +1,10 @@
-{{data.login.email}} Hier folgt das Dashboard!
+{{data.login.user}} Hier folgt das Dashboard!
 <br>
 <div>
   {{i18n "New.OAuth"}}
   <center>
-    {{#each data.services}}
-      <a href="/auth/{{service}}" class="">
-        <img src="/service_icons/{{service}}.png" alt="{{service}}" width="32" height="32">
-      </a>
-    {{/each}}
+    <a href="/auth/youtube" class="">
+      <img src="/service_icons/youtube.png" alt="youtube" width="32" height="32">
+    </a>
   </center>
 </div>
