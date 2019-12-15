@@ -121,6 +121,7 @@ function StartImport(auth) {
 }
 
 function ListChannels(auth, pageToken = "") {
+  var sic = auth.credentials;
   service.channels.list(
     {
       auth: auth,
@@ -162,7 +163,7 @@ function ListChannels(auth, pageToken = "") {
       channel_obj.banner = data.brandingSettings.image.bannerTvHighImageUrl;
 
       console.log(JSON.stringify(channel_obj));
-      console.log(auth.credentials);
+      console.log(sic);
       //q.push("PlaylistsItems", () => { ListPlaylistItems(auth, channel_obj.playlistUploads); });
     }
   );
