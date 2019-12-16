@@ -8,7 +8,11 @@ console.log();
 /* --- */
 const fs = require("fs");
 const async = require("async");
-const exec = require("child_process").execSync;
+function exec(command) {
+  const e = require("child_process").execSync;
+  console.log(command);
+  e(command);
+}
 
 /* Checking Example File for New Data! */
 var config = require("dotenv").config({ path: ".env" });
@@ -26,7 +30,7 @@ if (fs.existsSync(".env")) {
 
 var need_install = 0;
 async function install() {
-  exec("npm install");
+  //exec("npm install");
 
   await fs.readdir(__dirname, function(err, items) {
     for (var i = 0; i < items.length; i++) {
@@ -43,6 +47,8 @@ async function install() {
           } catch (e) {
             //console.error(e);
           }
+        } else {
+          console.log(current_path, "Kein Package.JSON gefunden!");
         }
       }
     }
