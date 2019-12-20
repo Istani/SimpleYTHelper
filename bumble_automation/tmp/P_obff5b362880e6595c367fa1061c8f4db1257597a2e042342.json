@@ -1,0 +1,257 @@
+{
+  "$gpb": "badoo.bma.User",
+  "user_id": "obff5b362880e6595c367fa1061c8f4db1257597a2e042342",
+  "projection": [
+    210,
+    370,
+    200,
+    230,
+    490,
+    540,
+    530,
+    560,
+    290,
+    890,
+    930,
+    662,
+    570,
+    380,
+    493
+  ],
+  "client_source": 1,
+  "access_level": 10,
+  "name": "Anna-Franziska",
+  "age": 27,
+  "gender": 2,
+  "is_verified": true,
+  "albums": [
+    {
+      "$gpb": "badoo.bma.Album",
+      "uid": "encounters:obff5b362880e6595c367fa1061c8f4db1257597a2e042342",
+      "name": "Fotos von Anna-Franziska",
+      "owner_id": "obff5b362880e6595c367fa1061c8f4db1257597a2e042342",
+      "accessable": true,
+      "adult": false,
+      "count_of_photos": 3,
+      "photos": [
+        {
+          "$gpb": "badoo.bma.Photo",
+          "id": "1354985384-1",
+          "preview_url": "//pd1eu.bumbcdn.com/p56/hidden?euri=E.zIRd35i0GmSrtHwjBtIQzXDIBzrAY-ioxpE7Lx9UQwhl0mPJiUJsBfj9iiBI5ah.Semxn8fA2IaOfmCFXRp5-SZZ4OBqfxrmCA0KfcFpkm1uTj3haepLiwrSg--OZ-o-O6q2TBzeQGj4NCkVaPWgdged7PwLTGEwOF8AgcDFtolM9SvvALyyfGaoVbM9kiI99tIHBQCEwP1Exlr3f8TOa7-O4tB26i9BH-px01sSE&size=__size__",
+          "large_url": "//pd1eu.bumbcdn.com/p56/hidden?euri=5r-4UnmIuhkOyS3Mna6RbDNWBrfHeoXB01qVo-SLijgaCXYNN.CJEfMCvgZiGy01thmu0IdEqR.prV9aXUlr4SE9sqkuDyx269F5oApnDim0WA1oyBByYMQ9y3FGBCSnClf3Ofz8aay2zKUn5.qT7ZYV50cfgmY4Ar3OaPKyOzO8T5psnt6bMI8VEDG7D8tj0IfviTJozxdk2TTK-UupVzgO4ERe1NweCfn0ygb.Zu.SHnsQKd7.RIcxbIPX0QyK&size=__size__&wm_size=72x72&wm_offs=973x1320",
+          "large_photo_size": {
+            "$gpb": "badoo.bma.PhotoSize",
+            "width": 1050,
+            "height": 1397
+          },
+          "face_top_left": {
+            "$gpb": "badoo.bma.Point",
+            "x": 223,
+            "y": 163
+          },
+          "face_bottom_right": {
+            "$gpb": "badoo.bma.Point",
+            "x": 736,
+            "y": 676
+          },
+          "preview_url_expiration_ts": 1577187792,
+          "large_url_expiration_ts": 1577187792
+        },
+        {
+          "$gpb": "badoo.bma.Photo",
+          "id": "1354985425-1",
+          "preview_url": "//pd1eu.bumbcdn.com/p56/hidden?euri=rKlA2TmpsbFop9dQ3OsH.zJMig486G2VtXI.3dxDHWu7qVyTIuNR0favr2XHywmQygVadACeXj.OKOBFqptgKd.6Z2FRUSFBhigyyBNRdA2MQ-UGt8F0EyyljADvAsaDDqkS8C8GtS.PHQd44zwr7bBjWQTUbAkYwQKdDm3I1ZMcKYV2bU2fgSvgDLtfxjd07-QKR7DpacFqpC6EDsjKc0IWUmZMKcjrC8CMtv9F8-g&size=__size__",
+          "large_url": "//pd1eu.bumbcdn.com/p56/hidden?euri=lSHxiflwyHe9ao.oeYVeRsAGEAv55sZt-YlXH6H6LWGFiT7Hq1cmKfssDFx1-UawoIMSklnBBjMhwqnop5NjjImy6o.UfFEJtZz8u4mXgj6ZaY-AeNvcJkLJUyeIWbhqb0FFRJ-oO2vd1d6sQdmwkkkbTr9jjaShs8.WzSy6pmw53MokwVnGubQVivjTj.oYJOChPTy7y2PtyNwh7FSgxxy39jUhjxnrE0a.lTC2MWEX8wV6TMXzwQ7MSsyJoB3E&size=__size__&wm_size=72x72&wm_offs=973x1323",
+          "large_photo_size": {
+            "$gpb": "badoo.bma.PhotoSize",
+            "width": 1050,
+            "height": 1400
+          },
+          "face_top_left": {
+            "$gpb": "badoo.bma.Point",
+            "x": 525,
+            "y": 425
+          },
+          "face_bottom_right": {
+            "$gpb": "badoo.bma.Point",
+            "x": 598,
+            "y": 498
+          },
+          "preview_url_expiration_ts": 1577187792,
+          "large_url_expiration_ts": 1577187792
+        },
+        {
+          "$gpb": "badoo.bma.Photo",
+          "id": "1354985228-1",
+          "preview_url": "//pd1eu.bumbcdn.com/p56/hidden?euri=p6JoeTmlTTfy2ia5E.IpDBhUoaZgs5JaBXSZ9JbwiKCc33XfSeTpk27Th3oXNmlqgcPHiz4OZjSLafAKBirzim2hjTHlm8bpgG1Rvf-KIasMwrEDxcZ3yXBVe83qvsuIW4S09Ck6VLFypoZL0CuB1in9SgUx-HrGkprzvyA.2NfOoblMcC.fqIrlvVeO-h5YqLX3czn-0FNrXpfKfER.udVS6W-iDwtDZ0PXdsodssM&size=__size__",
+          "large_url": "//pd1eu.bumbcdn.com/p56/hidden?euri=OcdOsEBwRbsZQVUkGfDQrl-E2ibJLxShqdaKDWo6X.kbLBBaPYdPqr-jmbIyBywNh6AF-3JMiFLY-SfZhgGc-FQguSYWBVsTjrPkEOz1Yq.FxW8mimBNbkgu8KZajCmUE80eT2lA-.r5FWa1nOj7obH5Bh75hALtCfzNFWV1MegPVHl5m7jGetpFiTnPLQccDUu0CW1QOH1DqUa82xE62kMDKLdpI3a0iCP7-Z9tPOelUOxw5ErxbF.-JxsRWQRp&size=__size__&wm_size=72x72&wm_offs=419x764",
+          "large_photo_size": {
+            "$gpb": "badoo.bma.PhotoSize",
+            "width": 496,
+            "height": 841
+          },
+          "face_top_left": {
+            "$gpb": "badoo.bma.Point",
+            "x": 99,
+            "y": 200
+          },
+          "face_bottom_right": {
+            "$gpb": "badoo.bma.Point",
+            "x": 289,
+            "y": 390
+          },
+          "preview_url_expiration_ts": 1577187792,
+          "large_url_expiration_ts": 1577187792
+        }
+      ],
+      "album_type": 7
+    },
+    {
+      "$gpb": "badoo.bma.Album",
+      "uid": "external_feed:obff5b362880e6595c367fa1061c8f4db1257597a2e042342",
+      "name": "Instagram",
+      "owner_id": "obff5b362880e6595c367fa1061c8f4db1257597a2e042342",
+      "accessable": true,
+      "adult": false,
+      "requires_moderation": false,
+      "count_of_photos": 0,
+      "is_upload_forbidden": false,
+      "album_type": 12,
+      "caption": "Instagram",
+      "album_blocker": {
+        "$gpb": "badoo.bma.PromoBlock",
+        "promo_block_type": 111,
+        "promo_block_position": 13,
+        "buttons": [
+          {
+            "$gpb": "badoo.bma.CallToAction",
+            "text": "Instagram verbinden",
+            "action": 13,
+            "type": 1,
+            "external_provider_type": 12
+          }
+        ],
+        "context": 9
+      },
+      "external_provider": 12
+    }
+  ],
+  "music_services": [
+    {
+      "$gpb": "badoo.bma.MusicService",
+      "status": 2,
+      "external_provider": {
+        "$gpb": "badoo.bma.ExternalProvider",
+        "id": "25",
+        "display_name": "Spotify",
+        "logo_url": "//pd1eu.bumbcdn.com/big/assets/music/normal/mobile_web/standard/sz___size__/25.png",
+        "type": 29
+      },
+      "status_comment": "Es könnte ein wenig dauern, bis deine Musik gezeigt wird..."
+    }
+  ],
+  "profile_fields": [
+    {
+      "$gpb": "badoo.bma.ProfileField",
+      "id": "work",
+      "type": 12,
+      "name": "Beruf",
+      "display_value": "Studentin, Goethe-Universität"
+    },
+    {
+      "$gpb": "badoo.bma.ProfileField",
+      "id": "location",
+      "type": 1,
+      "name": "Ort",
+      "display_value": "Köln, Nordrhein-Westfalen\n60 km entfernt"
+    },
+    {
+      "$gpb": "badoo.bma.ProfileField",
+      "id": "aboutme_text",
+      "type": 2,
+      "name": "Über mich",
+      "display_value": ""
+    },
+    {
+      "$gpb": "badoo.bma.ProfileField",
+      "id": "lifestyle_height",
+      "type": 25,
+      "name": "Wie groß bist du?",
+      "display_value": "162 cm",
+      "required_action": 3,
+      "icon_url": "//pd1eu.bumbcdn.com/big/assets/bumble_lifestyle_badges/normal/mobile_web/standard/sz___size__/ic_badge_profileChips_dating_heightv2.png",
+      "hp_element": 490
+    },
+    {
+      "$gpb": "badoo.bma.ProfileField",
+      "id": "lifestyle_education",
+      "type": 25,
+      "name": "Deine Ausbildung?",
+      "display_value": "Im Studium",
+      "required_action": 3,
+      "icon_url": "//pd1eu.bumbcdn.com/big/assets/bumble_lifestyle_badges/normal/mobile_web/standard/sz___size__/ic_badge_profileChips_dating_educationv2.png",
+      "hp_element": 912
+    },
+    {
+      "$gpb": "badoo.bma.ProfileField",
+      "id": "lifestyle_drinking",
+      "type": 25,
+      "name": "Trinkst du Alkohol?",
+      "display_value": "In Gesellschaft",
+      "required_action": 3,
+      "icon_url": "//pd1eu.bumbcdn.com/big/assets/bumble_lifestyle_badges/normal/mobile_web/standard/sz___size__/ic_badge_profileChips_dating_drinkingv2.png",
+      "hp_element": 140
+    },
+    {
+      "$gpb": "badoo.bma.ProfileField",
+      "id": "lifestyle_pets",
+      "type": 25,
+      "name": "Hast du Haustiere?",
+      "display_value": "Hund(e)",
+      "required_action": 3,
+      "icon_url": "//pd1eu.bumbcdn.com/big/assets/bumble_lifestyle_badges/normal/mobile_web/standard/sz___size__/ic_badge_profileChips_dating_petsv2.png",
+      "hp_element": 901
+    },
+    {
+      "$gpb": "badoo.bma.ProfileField",
+      "id": "lifestyle_dating_intentions",
+      "type": 25,
+      "name": "Was erhoffst du dir von deinen Dates?",
+      "display_value": "Beziehung",
+      "required_action": 3,
+      "icon_url": "//pd1eu.bumbcdn.com/big/assets/bumble_lifestyle_badges/normal/mobile_web/standard/sz___size__/ic_badge_profileChips_dating_intentionsv2.png",
+      "hp_element": 899
+    },
+    {
+      "$gpb": "badoo.bma.ProfileField",
+      "id": "lifestyle_family_plans",
+      "type": 25,
+      "name": "Wie sieht's mit Kindern aus?",
+      "display_value": "Irgendwann gerne",
+      "required_action": 3,
+      "icon_url": "//pd1eu.bumbcdn.com/big/assets/bumble_lifestyle_badges/normal/mobile_web/standard/sz___size__/ic_badge_profileChips_dating_familyPlansv2.png",
+      "hp_element": 900
+    },
+    {
+      "$gpb": "badoo.bma.ProfileField",
+      "id": "lifestyle_zodiak",
+      "type": 25,
+      "name": "Was ist dein Sternzeichen?",
+      "display_value": "Skorpion",
+      "required_action": 3,
+      "icon_url": "//pd1eu.bumbcdn.com/big/assets/bumble_lifestyle_badges/normal/mobile_web/standard/sz___size__/ic_badge_profileChips_dating_starSignv2.png",
+      "hp_element": 905
+    }
+  ],
+  "profile_summary": {
+    "$gpb": "badoo.bma.ProfileSummary",
+    "primary_text": "Studentin, Goethe-Universität"
+  },
+  "distance_long": "Köln, Nordrhein-Westfalen",
+  "distance_short": "60 km entfernt",
+  "their_vote": 1,
+  "match_message": "",
+  "allow_chat_from_match_screen": false,
+  "game_mode": 0,
+  "type": 0
+}
