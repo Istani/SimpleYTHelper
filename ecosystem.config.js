@@ -30,14 +30,14 @@ module.exports = {
       error_file: "logs/SYTH-Discord.err",
       out_file: "logs/SYTH-Discord.log"
     },
-    /*{
+    {
       name: "SYTH-YouTube",
       script: "./youtube/app.js",
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       restart_delay: 1000,
       error_file: "logs/SYTH-YouTube.err",
-      out_file: "logs/SYTH-YouTube.log",
-    },*/
+      out_file: "logs/SYTH-YouTube.log"
+    },
     {
       name: "SYTH-Twitter",
       script: "./twitter/app.js",
