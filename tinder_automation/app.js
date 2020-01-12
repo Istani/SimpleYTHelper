@@ -36,7 +36,7 @@ async function main() {
       emailAddress: process.env.FACEBOOK_LOGIN,
       password: process.env.FACEBOOK_PASS
     });
-
+    console.log(client);
     q.push(cb => {
       set_location(client, cb);
     });

@@ -20,6 +20,21 @@ class Channel extends Model {
   $beforeUpdate() {
     this.updated_at = new Date().toISOString();
   }
+
+  static get relationMappings() {
+    const Livestream = require("./broadcast.js");
+
+    return {
+      Livestream: {
+        relation: Model.HasManyRelation,
+        modelClass: Livestream,
+        join: {
+          from: "channel.channel_id",
+          to: "broadcasts.owner"
+        }
+      }
+    };
+  }
 }
 
 module.exports = Channel;

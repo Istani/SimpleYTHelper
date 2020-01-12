@@ -16,7 +16,7 @@ var q = new queue(function(input, cb) {
   input(cb);
 });
 
-var day_back = 1000;
+var day_back = 200;
 var matchup = {};
 var authors = {};
 try {
@@ -47,11 +47,14 @@ function doGitLog(path, email, cb) {
   var project = folders[folders.length - 2];
   var output = path_target + "\\tmp\\" + project + ".txt";
   process.chdir(path);
-  exec('git config user.name "Sascha Kaufmann"');
+  /*exec('git config user.name "Sascha Kaufmann"');
   exec('git config user.email "' + email + '"');
   try {
     exec("git pull");
   } catch (e) {}
+  */
+  //exec("git add .");
+  //exec('git commit -am "sic"');
   exec('git log --format="%at %ae %f" > ' + output);
   process.chdir(__dirname);
   checkGitLog(output, project);
@@ -88,10 +91,11 @@ function checkGitLog(log, project) {
     matchup[dat][author][project]++;
   }
   fs.writeFileSync("./tmp/matchup.json", JSON.stringify(matchup, null, 2));
-  fs.unlinkSync(log);
+  //fs.unlinkSync(log);
 }
 
 function backupVentronic(path, file_backup, cb) {
+  return;
   var datum = new Date()
     .toISOString()
     .replace("-", "")
@@ -174,14 +178,21 @@ function checkMatchup(email, cb) {
   fs.writeFileSync("./tmp/work.json", JSON.stringify(all_log, null, 2));
 
   process.chdir(__dirname);
-  exec("git add .");
-  exec('git commit -am "WorkCount Update"');
+  //exec("git add .");
+  //exec('git commit -am "WorkCount Update"');
   cb();
 }
 
 //q.push(cb => {backupVentronic("C:\\PRO\\HOEFER\\Cpu_200\\", true, cb);});
 // -- q.push(cb => {checkFolder("C:\\","sascha.u.kaufmann@googlemail.com",cb);});
 
+/*
+checkFolder("C:\\PRO\\HOEFER\\", "skaufmann@ventronic.com", () => {
+  console.log("Done");
+});
+*/
+
+/*
 cron.schedule("00 04 * * *", () => {
   q.push(cb => {
     checkFolder("C:\\PRO\\HOEFER\\", "skaufmann@ventronic.com", cb);
@@ -197,12 +208,18 @@ cron.schedule("00 04 * * *", () => {
     checkFolder("C:\\ZoD\\", "sascha.u.kaufmann@googlemail.com", cb);
   });
 });
+*/
 
+checkMatchup("skaufmann@ventronic.com", () => {
+  console.log("Done");
+});
+
+/*
 cron.schedule("00 05 * * *", () => {
   q.push(cb => {
     checkMatchup("skaufmann@ventronic.com", cb);
   });
 });
-
-exec('git config --global user.name "Sascha Kaufmann"');
-exec('git config --global user.email "sascha.u.kaufmann@googlemail.com"');
+*/
+//exec('git config --global user.name "Sascha Kaufmann"');
+//exec('git config --global user.email "sascha.u.kaufmann@googlemail.com"');
