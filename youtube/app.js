@@ -79,7 +79,7 @@ function StartImport(auth) {
     CheckForMessages(auth);
   });
 
-  cron.schedule("0 23 * * *", () => {
+  cron.schedule("50 21 * * *", () => {
     q.push("Channels", () => {
       auth.credentials = sic;
       ListChannels(auth);
