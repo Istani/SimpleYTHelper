@@ -79,7 +79,7 @@ function StartImport(auth) {
     CheckForMessages(auth);
   });
 
-  cron.schedule("0 0 * * *", () => {
+  cron.schedule("0 23 * * *", () => {
     q.push("Channels", () => {
       auth.credentials = sic;
       ListChannels(auth);
@@ -88,10 +88,13 @@ function StartImport(auth) {
       auth.credentials = sic;
       ListSponsors(auth);
     });
-    q.push("Playlists", () => {
-      auth.credentials = sic;
-      ListPlaylists(auth);
-    });
+    setTimeout(() => {
+      // Damit dann Channels und Sponsors vielleicht schon fertig ist
+      q.push("Playlists", () => {
+        auth.credentials = sic;
+        ListPlaylists(auth);
+      });
+    }, RepeatDealy);
   });
 }
 
