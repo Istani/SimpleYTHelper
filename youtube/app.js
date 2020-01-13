@@ -25,12 +25,8 @@ const Chat_Server = require("./models/chat_server.js");
 const Chat_User = require("./models/chat_user.js");
 const tokens = require("./models/syth_token.js");
 
-// TODO: Token aus DB
+var RepeatDealy = 15 * 1000;
 var SCOPES = ["https://www.googleapis.com/auth/youtube"];
-var TOKEN_DIR = __dirname + "/.credentials/";
-var TOKEN_PATH = TOKEN_DIR + "youtube-nodejs-quickstart.json";
-
-var liveChatTimeout;
 var OAuth2 = google.auth.OAuth2;
 var service = google.youtube("v3");
 var q = new Queue(function(type, input, cb) {
@@ -55,44 +51,48 @@ async function authorize(callback) {
 }
 
 function StartImport(auth) {
+  var sic = auth.credentials;
   fs.writeFileSync("tmp/auth.json", JSON.stringify(auth, null, 2));
-  // TODO: Cronjobs
 
   q.push("Channels", () => {
+    auth.credentials = sic;
     ListChannels(auth);
   });
-  cron.schedule("0 */1 * * *", () => {
-    q.push("Channels", () => {
-      ListChannels(auth);
+
+  cron.schedule("*/1 * * * *", () => {
+    q.push("Uploads", () => {
+      auth.credentials = sic;
+      ListNewUploads(auth);
     });
   });
 
-  q.push("Broadcasts", () => {
-    SearchBroadcasts(auth);
-  });
   cron.schedule("*/15 * * * *", () => {
     q.push("Broadcasts", () => {
+      auth.credentials = sic;
       SearchBroadcasts(auth);
     });
   });
-
-  cron.schedule("00 01 * * *", () => {
-    q.push("Sponsors", () => {
-      ListSponsors(auth);
-    });
+  q.push("LiveChat", () => {
+    auth.credentials = sic;
+    LiveChat(auth);
+    auth.credentials = sic;
+    CheckForMessages(auth);
   });
 
-  cron.schedule("00 03 * * *", () => {
+  cron.schedule("0 0 * * *", () => {
+    q.push("Channels", () => {
+      auth.credentials = sic;
+      ListChannels(auth);
+    });
+    q.push("Sponsors", () => {
+      auth.credentials = sic;
+      ListSponsors(auth);
+    });
     q.push("Playlists", () => {
+      auth.credentials = sic;
       ListPlaylists(auth);
     });
   });
-
-  q.push("LiveChat", () => {
-    LiveChat(auth);
-  });
-
-  CheckForMessages(auth);
 }
 
 function ListChannels(auth, pageToken = "") {
@@ -100,8 +100,7 @@ function ListChannels(auth, pageToken = "") {
   service.channels.list(
     {
       auth: auth,
-      part:
-        "id, brandingSettings, contentDetails, snippet, statistics, topicDetails",
+      part: "id, brandingSettings, contentDetails, snippet, statistics",
       mine: true,
       maxResults: 50,
       pageToken: pageToken
@@ -130,14 +129,6 @@ function ListChannels(auth, pageToken = "") {
       channel_obj.views = data.statistics.viewCount;
       channel_obj.subscriber = data.statistics.subscriberCount;
       channel_obj.videos = data.statistics.videoCount;
-      /*
-      channel_obj.topics = [];
-      var tmp_topics = data.topicDetails.topicCategories;
-      for (let index = 0; index < tmp_topics.length; index++) {
-        const element = tmp_topics[index];
-        channel_obj.topics[index] = element;
-      }
-      */
 
       var m = await ow_channel
         .query()
@@ -155,15 +146,17 @@ function ListChannels(auth, pageToken = "") {
       } else {
         await ow_channel.query().insert(channel_obj);
         console.log(JSON.stringify(channel_obj));
-      }
 
-      q.push("PlaylistsItems", () => {
-        ListPlaylistItems(auth, channel_obj.main_playlist);
-      });
+        q.push("PlaylistsItems", () => {
+          auth.credentials = sic;
+          ListPlaylistItems(auth, channel_obj.main_playlist);
+        });
+      }
     }
   );
 }
 function ListPlaylists(auth, pageToken = "") {
+  var sic = auth.credentials;
   service.playlists.list(
     {
       auth: auth,
@@ -210,18 +203,33 @@ function ListPlaylists(auth, pageToken = "") {
           console.log(JSON.stringify(tmp_message));
         }
         q.push("PlaylistsItems", () => {
+          auth.credentials = sic;
           ListPlaylistItems(auth, tmp_message.pl_id);
         });
       }
       if (typeof response.data.nextPageToken != "undefined") {
         q.push("Playlists", () => {
+          auth.credentials = sic;
           ListPlaylists(auth, response.data.nextPageToken);
         });
       }
     }
   );
 }
-function ListPlaylistItems(auth, playlist, pageToken = "") {
+async function ListNewUploads(auth) {
+  var sic = auth.credentials;
+  var data = await ow_channel
+    .query()
+    .where("user_id", auth.credentials.user_id);
+  if (data.length == 0) return;
+  if (data[0].main_playlist == "") return;
+  q.push("PlaylistsItems Upload", () => {
+    auth.credentials = sic;
+    ListPlaylistItems(auth, data[0].main_playlist, "", false);
+  });
+}
+function ListPlaylistItems(auth, playlist, pageToken = "", loadAll = true) {
+  var sic = auth.credentials;
   service.playlistItems.list(
     {
       auth: auth,
@@ -269,8 +277,12 @@ function ListPlaylistItems(auth, playlist, pageToken = "") {
           console.log(JSON.stringify(tmp_message));
         }
       }
-      if (typeof response.data.nextPageToken != "undefined") {
+      if (
+        typeof response.data.nextPageToken != "undefined" &&
+        loadAll == true
+      ) {
         q.push("PlaylistsItems", () => {
+          auth.credentials = sic;
           ListPlaylistItems(auth, playlist, response.data.nextPageToken);
         });
       }
@@ -278,6 +290,7 @@ function ListPlaylistItems(auth, playlist, pageToken = "") {
   );
 }
 function SearchBroadcasts(auth, pageToken = "") {
+  var sic = auth.credentials;
   service.liveBroadcasts.list(
     {
       auth: auth,
@@ -313,7 +326,7 @@ function SearchBroadcasts(auth, pageToken = "") {
             obj.actualEndTime = element.snippet.actualEndTime;
           }
           if (typeof element.snippet.liveChatId == "undefined") {
-            obj.liveChatId = null;
+            obj.liveChatId = "";
           } else {
             obj.liveChatId = element.snippet.liveChatId;
           }
@@ -352,18 +365,18 @@ async function LiveChat(auth, pageToken = "") {
     .eager("Livestream")
     .modifyEager("Livestream", builder => {
       // Order children by age and only select id.
-      builder.where("liveChatId", "!=", "");
+      builder.where("liveChatId", "!=", "").whereNotNull("liveChatId");
     });
   if (
     typeof data[0].Livestream == "undefined" ||
     typeof data[0].Livestream[0] == "undefined"
   ) {
     setTimeout(() => {
-      auth.credentials = sic;
       q.push("LiveChat", () => {
+        auth.credentials = sic;
         LiveChat(auth);
       });
-    }, 1000 * 5);
+    }, RepeatDealy);
     return;
   }
   service.liveChatMessages.list(
@@ -378,14 +391,15 @@ async function LiveChat(auth, pageToken = "") {
       if (err) {
         console.error(err);
         setTimeout(() => {
-          auth.credentials = sic;
           q.push("Broadcasts", () => {
+            auth.credentials = sic;
             SearchBroadcasts(auth);
           });
           q.push("LiveChat", () => {
+            auth.credentials = sic;
             LiveChat(auth);
           });
-        }, 1000 * 5);
+        }, RepeatDealy);
         return;
       }
       try {
@@ -420,6 +434,68 @@ async function LiveChat(auth, pageToken = "") {
               console.error(e);
             }
           }
+
+          var tmp_server = {};
+
+          // Keys
+          tmp_server.service = "youtube";
+          tmp_server.server = data[0].channel_id;
+
+          var g = await Chat_Server.query().where(tmp_server);
+
+          // Additions
+          tmp_server.name = "Livestream";
+
+          if (g.length == 0) {
+            console.log("Server:", JSON.stringify(tmp_server));
+            await Chat_Server.query().insert(tmp_server);
+          } else {
+            await Chat_Server.query()
+              .patch(tmp_server)
+              .where(g[0]);
+          }
+        }
+
+        var tmp_room = {};
+
+        // Keys
+        tmp_room.service = "youtube";
+        tmp_room.server = data[0].channel_id;
+        tmp_room.room = data[0].Livestream[0].liveChatId;
+
+        var c = await Chat_Room.query().where(tmp_room);
+
+        // Additions
+        tmp_room.name = data[0].Livestream[0].b_title;
+
+        if (c.length == 0) {
+          console.log("Room:", JSON.stringify(tmp_room));
+          await Chat_Room.query().insert(tmp_room);
+        } else {
+          await Chat_Room.query()
+            .patch(tmp_room)
+            .where(c[0]);
+        }
+
+        var tmp_user = {};
+
+        // Keys
+        tmp_user.service = "youtube";
+        tmp_user.server = data[0].channel_id;
+        tmp_user.user = element.snippet.authorChannelId;
+
+        var u = await Chat_User.query().where(tmp_user);
+
+        // Additions
+        tmp_user.name = "";
+
+        if (u.length == 0) {
+          console.log("User:", JSON.stringify(tmp_user));
+          await Chat_User.query().insert(tmp_user);
+        } else {
+          await Chat_User.query()
+            .patch(tmp_user)
+            .where(u[0]);
         }
 
         if (pageToken == "") {
@@ -430,25 +506,26 @@ async function LiveChat(auth, pageToken = "") {
         }
         if (typeof response.data.nextPageToken != "undefined") {
           setTimeout(() => {
-            auth.credentials = sic;
             q.push("LiveChat", () => {
+              auth.credentials = sic;
               LiveChat(auth, response.data.nextPageToken);
             });
-          }, 1000 * 5);
+          }, RepeatDealy);
         }
       } catch (e) {
         console.error(e);
         setTimeout(() => {
-          auth.credentials = sic;
           q.push("LiveChat", () => {
+            auth.credentials = sic;
             LiveChat(auth);
           });
-        }, 1000 * 5);
+        }, RepeatDealy);
       }
     }
   );
 }
 function ListSponsors(auth, pageToken = "") {
+  var sic = auth.credentials;
   service.sponsors.list(
     {
       auth: auth,
@@ -501,6 +578,7 @@ function ListSponsors(auth, pageToken = "") {
           console.log(response.data.nextPageToken);
           setTimeout(() => {
             q.push("Sponsors", () => {
+              auth.credentials = sic;
               ListSponsors(auth, response.data.nextPageToken);
             });
           }, 1000 * 5);
@@ -509,6 +587,7 @@ function ListSponsors(auth, pageToken = "") {
         console.error(e);
         setTimeout(() => {
           q.push("Sponsors", () => {
+            auth.credentials = sic;
             ListSponsors(auth);
           });
         }, 1000 * 60 * 5);
@@ -545,6 +624,7 @@ async function SendMessage(auth, channelID, msg) {
 }
 
 function writeChat(auth, chatId, Message) {
+  var sic = auth.credentials;
   service.liveChatMessages.insert(
     {
       auth: auth,
