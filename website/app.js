@@ -11,6 +11,7 @@ const async = require("async");
 
 const Login = require("./models/syth_login.js");
 const Token = require("./models/syth_token.js");
+const User_Channel = require("./models/channel.js");
 const session_secret = new Buffer(package_info.name).toString("base64");
 
 /* Webserver */
@@ -202,6 +203,54 @@ app.get("/Dashboard", async function(req, res) {
     temp_data.error.text = i18n.__("Something went wrong!");
     res.render("error", { data: temp_data });
   }
+});
+
+app.get("/HUD/:channel/:category", async function(req, res, next) {
+  var temp_data = {};
+  temp_data.error = {};
+  temp_data.error.code = "Error";
+  temp_data.error.text = i18n.__("Something went wrong!");
+
+  req.app.locals.layout = "hud";
+  var param_channel = req.params.channel;
+  var param_category = req.params.category;
+
+  var data = await User_Channel.query()
+    .where("channel_id", param_channel)
+    .eager(param_category);
+
+  if (data.length > 0) {
+    var temp_data = {};
+    temp_data.data = [];
+    for (let index = 0; index < data.length; index++) {
+      const element = data[index];
+      for (let index = 0; index < element[param_category].length; index++) {
+        const element2 = element[param_category][index];
+        var tmp_data = {
+          name: element2.member_name,
+          since: element2.since,
+          length_month:
+            parseInt((new Date() - element2.since) / 1000 / 60 / 60 / 24 / 30) +
+            1
+        };
+        temp_data.data.push(tmp_data);
+      }
+      temp_data.data.sort((a, b) => {
+        if (a.since < b.since) {
+          return -1;
+        }
+        if (a.since > b.since) {
+          return 1;
+        }
+        return 0;
+      });
+    }
+    console.log(temp_data);
+    res.render("hub_" + param_category, { data: temp_data });
+    return;
+  }
+
+  res.render("error", { data: temp_data });
 });
 
 app.get("/", function(req, res) {

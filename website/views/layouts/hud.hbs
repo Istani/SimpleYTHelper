@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script type="text/javascript" src="/jquery-ui/external/jquery/jquery.js"></script>
+  <script type="text/javascript" src="/jquery-ui/jquery-ui.js"></script>
+
+  <!---
+  <link rel="stylesheet" type="text/css" href="/jquery-ui/jquery-ui.css" />
+  <link rel="stylesheet" type="text/css" href="/jquery-ui/jquery-ui.structure.css" />
+  <link rel="stylesheet" type="text/css" href="/jquery-ui/jquery-ui.theme.css" />
+  <link rel="stylesheet" type="text/css" href="/style.css" />
+!--->
+
+  <style type="text/css">
+    @import url('https://fonts.googleapis.com/css?family=Montserrat');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: #eee;
+      color: #111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    :root {
+      --marquee-width: 100vw;
+      --marquee-elements-displayed: 5;
+      --marquee-element-width: calc(var(--marquee-width) / var(--marquee-elements-displayed));
+      --marquee-animation-duration: calc(var(--marquee-elements) * 3s);
+    }
+
+    .marquee {
+      width: var(--marquee-width);
+      height: var(--marquee-height);
+      background-color: #111;
+      color: #eee;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .marquee:before,
+    .marquee:after {
+      position: absolute;
+      top: 0;
+      width: 10rem;
+      height: 100%;
+      content: "";
+      z-index: 1;
+    }
+
+    .marquee:before {
+      left: 0;
+      background: linear-gradient(to right, #111 0%, transparent 100%);
+    }
+
+    .marquee:after {
+      right: 0;
+      background: linear-gradient(to left, #111 0%, transparent 100%);
+    }
+
+    .marquee-content {
+      list-style: none;
+      height: 100%;
+      display: flex;
+      animation: scrolling var(--marquee-animation-duration) linear infinite;
+    }
+
+    /* .marquee-content:hover {
+  animation-play-state: paused;
+} */
+    @keyframes scrolling {
+      0% {
+        transform: translateX(0);
+      }
+
+      100% {
+        transform: translateX(calc(-1 * var(--marquee-element-width) * var(--marquee-elements)));
+      }
+    }
+
+    .marquee-content li {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      /* text-align: center; */
+      flex-shrink: 0;
+      width: var(--marquee-element-width);
+      max-height: 100%;
+      font-size: calc(var(--marquee-height)*3/4);
+      /* 5rem; */
+      white-space: nowrap;
+    }
+
+    .marquee-content li img {
+      width: 100%;
+      /* height: 100%; */
+      border: 2px solid #eee;
+    }
+
+    @media (max-width: 600px) {
+      html {
+        font-size: 12px;
+      }
+
+      :root {
+        --marquee-width: 100vw;
+        --marquee-height: 16vh;
+        --marquee-elements-displayed: 3;
+      }
+
+      .marquee:before,
+      .marquee:after {
+        width: 5rem;
+      }
+    }
+
+    * {
+      text-shadow:
+        1px 1px 0 rgba(0, 0, 0, 1),
+        1px -1px 0 rgba(0, 0, 0, 1),
+        -1px 1px 0 rgba(0, 0, 0, 1),
+        -1px -1px 0 rgba(0, 0, 0, 1);
+
+      font-weight: normal;
+      color: #FFFFFF;
+      letter-spacing: 1pt;
+      word-spacing: 2pt;
+      font-size: 12px;
+      font-family: arial black, sans-serif;
+      line-height: 1;
+    }
+
+    .username {
+      color: #D84759;
+    }
+
+    .special {
+      color: #46e65a;
+    }
+  </style>
+
+
+  <meta charset="utf-8">
+  <title>SimpleYTH - HUD</title>
+</head>
+
+<body>
+  {{{body}}}
+
+
+  <script type="text/javascript">
+    const root = document.documentElement;
+    const marqueeElementsDisplayed = getComputedStyle(root).getPropertyValue("--marquee-elements-displayed");
+    const marqueeContent = document.querySelector("ul.marquee-content");
+
+    root.style.setProperty("--marquee-elements", marqueeContent.children.length);
+
+    for (var i = 0; i < marqueeElementsDisplayed; i++) {
+      marqueeContent.appendChild(marqueeContent.children[i].cloneNode(true));
+    } 
+  </script>
+</body>
+
+</html>
