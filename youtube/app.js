@@ -145,7 +145,7 @@ function ListChannels(auth, pageToken = "") {
           .where("channel_id", channel_obj.channel_id);
       } else {
         await ow_channel.query().insert(channel_obj);
-        console.log(JSON.stringify(channel_obj));
+        console.log("Channel: ", JSON.stringify(channel_obj));
 
         q.push("PlaylistsItems", () => {
           auth.credentials = sic;
@@ -200,7 +200,7 @@ function ListPlaylists(auth, pageToken = "") {
             .where("pl_id", tmp_message.pl_id);
         } else {
           await ow_playlist.query().insert(tmp_message);
-          console.log(JSON.stringify(tmp_message));
+          console.log("PlayList: ", JSON.stringify(tmp_message));
         }
         q.push("PlaylistsItems", () => {
           auth.credentials = sic;
@@ -274,7 +274,7 @@ function ListPlaylistItems(auth, playlist, pageToken = "", loadAll = true) {
             .where("position", tmp_message.position);
         } else {
           await ow_playlistitems.query().insert(tmp_message);
-          console.log(JSON.stringify(tmp_message));
+          console.log("PlayList Item: ", JSON.stringify(tmp_message));
         }
       }
       if (
@@ -345,7 +345,7 @@ function SearchBroadcasts(auth, pageToken = "") {
               .where("owner", obj.owner)
               .where("b_id", obj.b_id);
           } else {
-            console.log(obj);
+            console.log("Broadcast: ", obj);
             await ow_broadcasts.query().insert(obj);
           }
         }
@@ -422,7 +422,7 @@ async function LiveChat(auth, pageToken = "") {
           tmp_message.content = element.snippet.displayMessage;
 
           if (m.length == 0) {
-            console.log("Message:", JSON.stringify(tmp_message));
+            console.log("Message: ", JSON.stringify(tmp_message));
             await Chat_Message.query().insert(tmp_message);
           } else {
             //console.log('Message Repeat:', JSON.stringify(tmp_message));
@@ -447,7 +447,7 @@ async function LiveChat(auth, pageToken = "") {
           tmp_server.name = "Livestream";
 
           if (g.length == 0) {
-            console.log("Server:", JSON.stringify(tmp_server));
+            console.log("Server: ", JSON.stringify(tmp_server));
             await Chat_Server.query().insert(tmp_server);
           } else {
             await Chat_Server.query()
@@ -469,7 +469,7 @@ async function LiveChat(auth, pageToken = "") {
         tmp_room.name = data[0].Livestream[0].b_title;
 
         if (c.length == 0) {
-          console.log("Room:", JSON.stringify(tmp_room));
+          console.log("Room: ", JSON.stringify(tmp_room));
           await Chat_Room.query().insert(tmp_room);
         } else {
           await Chat_Room.query()
@@ -490,8 +490,8 @@ async function LiveChat(auth, pageToken = "") {
         tmp_user.name = "";
 
         if (u.length == 0) {
-          console.log("User:", JSON.stringify(tmp_user));
           await Chat_User.query().insert(tmp_user);
+          console.log("User: ", JSON.stringify(tmp_user));
         } else {
           await Chat_User.query()
             .patch(tmp_user)
@@ -568,7 +568,7 @@ function ListSponsors(auth, pageToken = "") {
               .where("member_id", tmp_message.member_id);
           } else {
             await sponsors.query().insert(tmp_message);
-            console.log(JSON.stringify(tmp_message));
+            console.log("Sponsor: ", JSON.stringify(tmp_message));
           }
         }
         /* if (
@@ -648,7 +648,7 @@ function writeChat(auth, chatId, Message) {
         "tmp/chat_post.json",
         JSON.stringify(response.data, null, 2)
       );
-      console.log(response);
+      console.log("Post: ", response);
     }
   );
 }
