@@ -59,7 +59,7 @@ function StartImport(auth) {
     ListChannels(auth);
   });
 
-  cron.schedule("*/1 * * * *", () => {
+  cron.schedule("*/30 * * * *", () => {
     q.push("Uploads", () => {
       auth.credentials = sic;
       ListNewUploads(auth);
