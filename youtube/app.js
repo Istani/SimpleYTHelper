@@ -490,7 +490,7 @@ async function LiveChat(auth, pageToken = "") {
         var u = await Chat_User.query().where(tmp_user);
 
         // Additions
-        tmp_user.name = "";
+        tmp_user.name = element.snippet.authorChannelId;
 
         if (u.length == 0) {
           await Chat_User.query().insert(tmp_user);
