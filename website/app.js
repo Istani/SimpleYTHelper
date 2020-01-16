@@ -245,7 +245,7 @@ app.get("/HUD/:channel/:category", async function(req, res, next) {
         return 0;
       });
     }
-    console.log(temp_data);
+    //console.log(temp_data);
     res.render("hub_" + param_category, { data: temp_data });
     return;
   }
