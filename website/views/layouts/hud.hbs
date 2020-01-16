@@ -13,6 +13,14 @@
 !--->
 
   <style type="text/css">
+    :root {
+      --color_1: #B2B1AD;
+      --color_2: #1F2041;
+      --color_3: #39AEE0;
+      --color_4: #E7E247;
+      --color_5: #FE9FCB;
+    }
+
     @import url('https://fonts.googleapis.com/css?family=Montserrat');
 
     * {
@@ -32,7 +40,8 @@
 
     :root {
       --marquee-width: 100vw;
-      --marquee-elements-displayed: 5;
+      --marquee-height: 4vh;
+      --marquee-elements-displayed: 4;
       --marquee-element-width: calc(var(--marquee-width) / var(--marquee-elements-displayed));
       --marquee-animation-duration: calc(var(--marquee-elements) * 3s);
     }
@@ -40,7 +49,7 @@
     .marquee {
       width: var(--marquee-width);
       height: var(--marquee-height);
-      background-color: #111;
+      background-color: var(--color_1);
       color: #eee;
       overflow: hidden;
       position: relative;
@@ -58,12 +67,12 @@
 
     .marquee:before {
       left: 0;
-      background: linear-gradient(to right, #111 0%, transparent 100%);
+      background: linear-gradient(to right, var(--color_1) 0%, transparent 100%);
     }
 
     .marquee:after {
       right: 0;
-      background: linear-gradient(to left, #111 0%, transparent 100%);
+      background: linear-gradient(to left, var(--color_1) 0%, transparent 100%);
     }
 
     .marquee-content {
@@ -112,7 +121,7 @@
 
       :root {
         --marquee-width: 100vw;
-        --marquee-height: 16vh;
+        --marquee-height: 32vh;
         --marquee-elements-displayed: 3;
       }
 
@@ -124,13 +133,13 @@
 
     * {
       text-shadow:
-        1px 1px 0 rgba(0, 0, 0, 1),
-        1px -1px 0 rgba(0, 0, 0, 1),
-        -1px 1px 0 rgba(0, 0, 0, 1),
-        -1px -1px 0 rgba(0, 0, 0, 1);
+        1px 1px 0 var(--color_2),
+        1px -1px 0 var(--color_2),
+        -1px 1px 0 var(--color_2),
+        -1px -1px 0 var(--color_2);
 
       font-weight: normal;
-      color: #FFFFFF;
+      color: var(--color_4);
       letter-spacing: 1pt;
       word-spacing: 2pt;
       font-size: 12px;
@@ -139,11 +148,11 @@
     }
 
     .username {
-      color: #D84759;
+      color: var(--color_5);
     }
 
     .special {
-      color: #46e65a;
+      color: var(--color_3);
     }
   </style>
 

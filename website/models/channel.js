@@ -23,6 +23,7 @@ class Channel extends Model {
 
   static get relationMappings() {
     const Livestream = require("./broadcast.js");
+    const VIPs = require("./member.js");
 
     return {
       Livestream: {
@@ -31,6 +32,14 @@ class Channel extends Model {
         join: {
           from: "channel.channel_id",
           to: "broadcasts.owner"
+        }
+      },
+      VIPs: {
+        relation: Model.HasManyRelation,
+        modelClass: VIPs,
+        join: {
+          from: "channel.channel_id",
+          to: "vip_member.owner"
         }
       }
     };
