@@ -12,3 +12,19 @@
     {{/each}}
   </ul>
 </div>
+
+
+
+<script type="text/javascript">
+  const root = document.documentElement;
+  const marqueeElementsDisplayed = getComputedStyle(root).getPropertyValue("--marquee-elements-displayed");
+  const marqueeContent = document.querySelector("ul.marquee-content");
+
+  $(document).ready(function () {
+    root.style.setProperty("--marquee-elements", marqueeContent.children.length);
+
+    for (var i = 0; i < marqueeElementsDisplayed; i++) {
+      marqueeContent.appendChild(marqueeContent.children[i].cloneNode(true));
+    }
+  });
+</script>

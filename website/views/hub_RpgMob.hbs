@@ -1,0 +1,66 @@
+<div class="border_box" style="width: 187px; height: 187px; background-image: url('/rpg.png');text-align: center;">
+  <div id="comming_soon">
+    Comming Soon...
+  </div>
+
+  <div id="mob_fight" style="display:none;">
+    <span class="username">Dark Captain_Manstone</span><br><br>
+    <img style="filter: invert(1);"
+      src="https://yt3.ggpht.com/-uCK1GNG7JSE/AAAAAAAAAAI/AAAAAAAAAAA/wtdWLIL77GI/s88-c-k-no-mo-rj-c0xffffff/photo.jpg">
+
+    <div class="health-box">
+      <div class="health-bar-red"></div>
+      <div class="health-bar-blue"></div>
+      <div class="health-bar"></div>
+      <div class="health-bar-text"></div>
+    </div>
+    <br>
+
+    <span class="username">Istani</span>
+    <div class="health-box">
+      <div class="health-bar-red"></div>
+      <div class="health-bar-blue"></div>
+      <div class="health-bar"></div>
+      <div class="health-bar-text"></div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+<script type="text/javascript">
+  $ = jQuery;
+  var maxHealth = 500;
+  var curHealth = maxHealth;
+  $('.total').html(maxHealth + "/" + maxHealth);
+  $(".health-bar-text").html("100%");
+  $(".health-bar").css({
+    "width": "100%"
+  });
+
+  function applyChange(curHealth) {
+    var a = curHealth * (100 / maxHealth);
+    $(".health-bar-text").html(Math.round(a) + "%");
+    $(".health-bar-red").animate({
+      'width': a + "%"
+    }, 700);
+    $(".health-bar").animate({
+      'width': a + "%"
+    }, 500);
+    $(".health-bar-blue").animate({
+      'width': a + "%"
+    }, 300);
+    $('.total').html(curHealth + "/" + maxHealth);
+  }
+
+  function restart() {
+    //Was going to have a game over/restart function here. 
+    $('.health-bar-red, .health-bar');
+    $('.message-box').html("You've been knocked down! Thing's are looking bad.");
+  }
+  $(document).ready(function () {
+    applyChange(maxHealth);
+  });
+</script>

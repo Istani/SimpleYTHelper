@@ -10,8 +10,9 @@
   <link rel="stylesheet" type="text/css" href="/jquery-ui/jquery-ui.structure.css" />
   <link rel="stylesheet" type="text/css" href="/jquery-ui/jquery-ui.theme.css" />
   <link rel="stylesheet" type="text/css" href="/style.css" />
-!--->
 
+  <link rel="stylesheet" type="text/css" href="https://raw.githubusercontent.com/iamstarkov/css-initials/master/all.css" />
+!--->
   <style type="text/css">
     :root {
       --color_1: #B2B1AD;
@@ -154,6 +155,49 @@
     .special {
       color: var(--color_3);
     }
+
+    .border_box {
+      background-color: var(--color_1);
+      border-color: var(--color_2);
+      border-style: solid;
+    }
+
+
+
+    .health-box {
+      background-color: #ccc;
+      height: 12px;
+      width: 80%;
+      margin: 0 auto;
+      border: solid 1px var(--color_2);
+    }
+
+    .health-bar {
+      background-color: #007f00;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      bottom: 20px;
+    }
+
+    .health-bar-red {
+      width: 100%;
+      height: 100%;
+      background-color: #cc0000;
+    }
+
+    .health-bar-blue {
+      width: 100%;
+      height: 100%;
+      background-color: #3bd3df;
+      bottom: 10px;
+      position: relative;
+    }
+
+    .health-bar-text {
+      position: relative;
+      bottom: 32px;
+    }
   </style>
 
 
@@ -164,18 +208,6 @@
 <body>
   {{{body}}}
 
-
-  <script type="text/javascript">
-    const root = document.documentElement;
-    const marqueeElementsDisplayed = getComputedStyle(root).getPropertyValue("--marquee-elements-displayed");
-    const marqueeContent = document.querySelector("ul.marquee-content");
-
-    root.style.setProperty("--marquee-elements", marqueeContent.children.length);
-
-    for (var i = 0; i < marqueeElementsDisplayed; i++) {
-      marqueeContent.appendChild(marqueeContent.children[i].cloneNode(true));
-    } 
-  </script>
 </body>
 
 </html>
