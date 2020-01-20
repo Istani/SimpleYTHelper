@@ -11,7 +11,12 @@ const async = require("async");
 function exec(command) {
   const e = require("child_process").execSync;
   console.log(command);
-  return e(command);
+  try {
+    return e(command);
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
 }
 
 /* Checking Example File for New Data! */
@@ -39,21 +44,9 @@ async function install() {
           var current_path = __dirname + "/" + item;
           process.chdir(current_path);
           console.log(current_path, "npm install", "ln -s ../models");
-          try {
-            exec("npm install");
-          } catch (e) {
-            //console.error(e);
-          }
-          try {
-            exec("rm -r models");
-          } catch (e) {
-            //console.error(e);
-          }
-          try {
-            exec("ln -s ../models/");
-          } catch (e) {
-            //console.error(e);
-          }
+          exec("npm install");
+          exec("rm -r models");
+          exec("ln -s ../models/");
         } else {
           console.log(current_path, "Kein Package.JSON gefunden!");
         }
