@@ -41,7 +41,15 @@ async function install() {
           console.log(current_path, "npm install", "ln -s ../models");
           try {
             exec("npm install");
+          } catch (e) {
+            //console.error(e);
+          }
+          try {
             exec("rm -r models");
+          } catch (e) {
+            //console.error(e);
+          }
+          try {
             exec("ln -s ../models/");
           } catch (e) {
             //console.error(e);
