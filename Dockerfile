@@ -11,7 +11,7 @@ RUN npm install -g pm2
 #RUN cd SimpleYTHelper && git checkout rewrite_node && npm install 
 #COPY .env SimpleYTHelper/.env
 
-COPY . SimpleYTHelper
+#COPY . SimpleYTHelper
 
-RUN pm2 start SimpleYTHelper/ecosystem.local.config.js
+#RUN pm2 start SimpleYTHelper/ecosystem.local.config.js
 CMD /bin/sh
