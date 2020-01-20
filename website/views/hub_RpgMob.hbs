@@ -1,27 +1,64 @@
+<style type="text/css">
+  .health-box {
+    background-color: #ccc;
+    height: 12px;
+    width: 80%;
+    margin: 0 auto;
+    border: solid 1px var(--color_2);
+  }
+
+  .health-bar {
+    background-color: #007f00;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    bottom: 20px;
+  }
+
+  .health-bar-red {
+    width: 100%;
+    height: 100%;
+    background-color: #cc0000;
+  }
+
+  .health-bar-blue {
+    width: 100%;
+    height: 100%;
+    background-color: #3bd3df;
+    bottom: 10px;
+    position: relative;
+  }
+
+  .health-bar-text {
+    position: relative;
+    bottom: 32px;
+  }
+</style>
+
 <div class="border_box" style="width: 187px; height: 187px; background-image: url('/rpg.png');text-align: center;">
   <div id="comming_soon">
     Comming Soon...
   </div>
 
-  <div id="mob_fight" style="display:none;">
-    <span class="username">Dark Captain_Manstone</span><br><br>
-    <img style="filter: invert(1);"
+  <div id="mob" style="display:none;">
+    <span class="username mob name">Dark Captain_Manstone</span><br><br>
+    <img style="filter: invert(1);" class="mob picture"
       src="https://yt3.ggpht.com/-uCK1GNG7JSE/AAAAAAAAAAI/AAAAAAAAAAA/wtdWLIL77GI/s88-c-k-no-mo-rj-c0xffffff/photo.jpg">
 
-    <div class="health-box">
-      <div class="health-bar-red"></div>
-      <div class="health-bar-blue"></div>
-      <div class="health-bar"></div>
-      <div class="health-bar-text"></div>
+    <div class="mob health-box">
+      <div class="mob health-bar-red"></div>
+      <div class="mob health-bar-blue"></div>
+      <div class="mob health-bar"></div>
+      <div class="mob health-bar-text"></div>
     </div>
     <br>
 
     <span class="username">Istani</span>
-    <div class="health-box">
-      <div class="health-bar-red"></div>
-      <div class="health-bar-blue"></div>
-      <div class="health-bar"></div>
-      <div class="health-bar-text"></div>
+    <div class="tank health-box">
+      <div class="tank health-bar-red"></div>
+      <div class="tank health-bar-blue"></div>
+      <div class="tank health-bar"></div>
+      <div class="tank health-bar-text"></div>
     </div>
   </div>
 </div>
@@ -32,27 +69,29 @@
 
 <script type="text/javascript">
   $ = jQuery;
-  var maxHealth = 500;
-  var curHealth = maxHealth;
-  $('.total').html(maxHealth + "/" + maxHealth);
+  var mob = {};
+  mob.maxHealth = 0;
+  mob.curHealth = mob.maxHealth;
+  var tank = {};
+  tank.maxHealth = 0;
+  tank.curHealth = tank.maxHealth;
   $(".health-bar-text").html("100%");
   $(".health-bar").css({
     "width": "100%"
   });
 
-  function applyChange(curHealth) {
+  function applyChange(target, curHealth, maxHealth) {
     var a = curHealth * (100 / maxHealth);
-    $(".health-bar-text").html(Math.round(a) + "%");
-    $(".health-bar-red").animate({
+    $("." + target + ".health-bar-text").html(curHealth + "/" + maxHealth); //Math.round(a) + "%");
+    $("." + target + ".health-bar-red").animate({
       'width': a + "%"
     }, 700);
-    $(".health-bar").animate({
+    $("." + target + ".health-bar").animate({
       'width': a + "%"
     }, 500);
-    $(".health-bar-blue").animate({
+    $("." + target + ".health-bar-blue").animate({
       'width': a + "%"
     }, 300);
-    $('.total').html(curHealth + "/" + maxHealth);
   }
 
   function restart() {
@@ -61,6 +100,45 @@
     $('.message-box').html("You've been knocked down! Thing's are looking bad.");
   }
   $(document).ready(function () {
-    applyChange(maxHealth);
+    applyChange("mob", mob.curHealth, mob.maxHealth);
+    applyChange("tank", tank.curHealth, tank.maxHealth);
+
+    var socket = io('http://127.0.0.1:3004/');
+    socket.on('connect', function () {
+      $('#comming_soon').css({display: 'none'});
+      socket.send("join", "{{data.user}}");
+
+      socket.on('mob', function (data) {
+        if (data.hp > 0) {
+          $('#mob').css({display: ''});
+          $('.mob.name').html(data.name);
+          $('.mob.picture').attr("src", data.picture);
+        } else {
+          $('#mob').css({display: 'none'});
+        }
+        if (mob.curHealth != data.hp) {
+          mob.curHealth = data.hp;
+          mob.maxHealth = data.hp_max;
+
+          applyChange("mob", data.hp, data.hp_max);
+          socket.send('mob', data);
+        }
+      });
+
+      socket.on('tank', function (data) {
+        if (tank.curHealth != data.hp) {
+          tank.curHealth = data.hp;
+          tank.maxHealth = data.hp_max;
+
+          applyChange("tank", data.hp, data.hp_max);
+          socket.send('tank', data);
+        }
+      });
+    });
+    socket.on('disconnect', function () {
+      setTimeout(() => {
+        location.reload();
+      }, 100);
+    });
   });
 </script>

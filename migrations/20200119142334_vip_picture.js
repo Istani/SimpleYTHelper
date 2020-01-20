@@ -1,6 +1,6 @@
 exports.up = function(knex, Promise) {
   return knex.schema.alterTable("vip_member", function(t) {
-    t.string("picture", 180).alter();
+    t.string("picture", 180);
   });
 };
 

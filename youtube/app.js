@@ -96,6 +96,7 @@ function StartImport(auth) {
       });
     }, RepeatDealy);
   });
+  ListSponsors(auth);
 }
 
 function ListChannels(auth, pageToken = "") {
@@ -561,6 +562,7 @@ function ListSponsors(auth, pageToken = "") {
             .where("member_id", tmp_message.member_id);
           tmp_message.member_name = element.sponsorDetails.displayName;
           tmp_message.since = element.sponsorSince;
+          tmp_message.picture = element.sponsorDetails.profileImageUrl;
 
           if (m.length > 0) {
             await sponsors
@@ -586,6 +588,13 @@ function ListSponsors(auth, pageToken = "") {
             });
           }, 1000 * 5);
         }*/
+        var date = new Date();
+        date.setDate(date.getDate() - 7);
+
+        await sponsors
+          .query()
+          .delete()
+          .where("updated_at", "<", date.toISOString());
       } catch (e) {
         console.error(e);
         setTimeout(() => {

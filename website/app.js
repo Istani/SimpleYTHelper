@@ -217,14 +217,30 @@ app.get("/HUD/:channel/:category", async function(req, res, next) {
 
   if (param_category.startsWith("Rpg")) {
     // RPG HUD
+    try {
+      var data = await User_Channel.query().where("channel_id", param_channel);
+    } catch (e) {
+      console.error(e);
+      var data = [];
+    }
+    if (data.length == 0) {
+      res.render("error", { data: temp_data });
+      return;
+    }
+    var temp_data = {};
+    temp_data.user = data[0].user_id;
     res.render("hub_" + param_category, { data: temp_data });
     return;
   } else {
     // Service HUD
-    var data = await User_Channel.query()
-      .where("channel_id", param_channel)
-      .eager(param_category);
-
+    try {
+      var data = await User_Channel.query()
+        .where("channel_id", param_channel)
+        .eager(param_category);
+    } catch (e) {
+      console.error(e);
+      var data = [];
+    }
     if (data.length > 0) {
       var temp_data = {};
       temp_data.data = [];
