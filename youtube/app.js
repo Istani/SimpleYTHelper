@@ -486,12 +486,12 @@ async function LiveChat(auth, pageToken = "") {
         // Keys
         tmp_user.service = "youtube";
         tmp_user.server = data[0].channel_id;
-        tmp_user.user = data[0].snippet.authorChannelId;
+        tmp_user.user = element.snippet.authorChannelId;
 
         var u = await Chat_User.query().where(tmp_user);
 
         // Additions
-        tmp_user.name = data[0].snippet.authorChannelId;
+        tmp_user.name = element.snippet.authorChannelId;
 
         if (u.length == 0) {
           await Chat_User.query().insert(tmp_user);
