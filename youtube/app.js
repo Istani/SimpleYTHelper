@@ -386,7 +386,7 @@ async function LiveChat(auth, pageToken = "") {
   service.liveChatMessages.list(
     {
       auth: auth,
-      part: "snippet",
+      part: "snippet, authorDetails",
       liveChatId: data[0].Livestream[0].liveChatId,
       pageToken: pageToken,
       maxResults: 2000
@@ -490,7 +490,7 @@ async function LiveChat(auth, pageToken = "") {
           var u = await Chat_User.query().where(tmp_user);
 
           // Additions
-          tmp_user.name = element.snippet.authorChannelId;
+          tmp_user.name = element.authorDetails.displayName;
 
           if (u.length == 0) {
             await Chat_User.query().insert(tmp_user);
