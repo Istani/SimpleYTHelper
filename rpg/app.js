@@ -97,7 +97,6 @@ async function get_msg() {
       genMonster(syth_user);
     }
 
-    
     console.log(msg_list[i]);
     send_mob(syth_user);
   }
@@ -107,43 +106,41 @@ async function get_msg() {
 }
 get_msg();
 
-
-function genMonster(syth_user) {
-    var monsters = await RPG_Monster.query().where("owner", syth_user);
-      if (monsters.length > 0) {
-        if (monsters[0].hp <= 0) {
-          await RPG_Monster.query()
-            .delete()
-            .where("owner", Check.syth_user);
-        }
+async function genMonster(syth_user) {
+  var monsters = await RPG_Monster.query().where("owner", syth_user);
+  if (monsters.length > 0) {
+    if (monsters[0].hp <= 0) {
+      await RPG_Monster.query()
+        .delete()
+        .where("owner", Check.syth_user);
+    }
+  }
+  monsters = await RPG_Monster.query().where("owner", syth_user);
+  if (monsters.length == 0) {
+    // Generate New Monster!
+    var data = await User_Channel.query()
+      .where("user_id", syth_user)
+      .eager("VIPs");
+    var vips = [];
+    for (let cindex = 0; cindex < data.length; cindex++) {
+      const element = data[cindex];
+      for (let vindex = 0; vindex < element.VIPs.length; vindex++) {
+        const element2 = element.VIPs[vindex];
+        vips[vips.length] = element2;
       }
-      monsters = await RPG_Monster.query().where("owner", syth_user);
-      if (monsters.length == 0) {
-        // Generate New Monster!
-        var data = await User_Channel.query()
-          .where("user_id", syth_user)
-          .eager("VIPs");
-        var vips = [];
-        for (let cindex = 0; cindex < data.length; cindex++) {
-          const element = data[cindex];
-          for (let vindex = 0; vindex < element.VIPs.length; vindex++) {
-            const element2 = element.VIPs[vindex];
-            vips[vips.length] = element2;
-          }
-        }
-        var rand = getRandomInt(vips.length);
-        //vips[rand]
-        var tmp_monster = {};
-        tmp_monster.owner = syth_user;
-        tmp_monster.name = "Dark " + vips[rand].member_name;
-        tmp_monster.picture = vips[rand].picture;
-        tmp_monster.atk = settings.min_dmg;
-        tmp_monster.hp_max =
-          parseInt(
-            (new Date() - vips[rand].since) / 1000 / 60 / 60 / 24 / 30 + 1
-          ) * settings.min_hp;
-        tmp_monster.hp = tmp_monster.hp_max;
-        await RPG_Monster.query().insert(tmp_monster);
-        send_mob(syth_user);
-      }
+    }
+    var rand = getRandomInt(vips.length);
+    //vips[rand]
+    var tmp_monster = {};
+    tmp_monster.owner = syth_user;
+    tmp_monster.name = "Dark " + vips[rand].member_name;
+    tmp_monster.picture = vips[rand].picture;
+    tmp_monster.atk = settings.min_dmg;
+    tmp_monster.hp_max =
+      parseInt((new Date() - vips[rand].since) / 1000 / 60 / 60 / 24 / 30 + 1) *
+      settings.min_hp;
+    tmp_monster.hp = tmp_monster.hp_max;
+    await RPG_Monster.query().insert(tmp_monster);
+    send_mob(syth_user);
+  }
 }
