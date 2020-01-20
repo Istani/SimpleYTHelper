@@ -11,7 +11,7 @@ const async = require("async");
 function exec(command) {
   const e = require("child_process").execSync;
   console.log(command);
-  e(command);
+  return e(command);
 }
 
 /* Checking Example File for New Data! */
@@ -31,7 +31,6 @@ if (fs.existsSync(".env")) {
 var need_install = 0;
 async function install() {
   //exec("npm install");
-
   await fs.readdir(__dirname, function(err, items) {
     for (var i = 0; i < items.length; i++) {
       var item = items[i];
@@ -53,12 +52,18 @@ async function install() {
       }
     }
     process.chdir(__dirname);
-
-    need_install =
-      exec("git status -s -uno | wc -l", function(error, stdout, stderr) {
-        need_install = stdout;
-        console.log("S", stdout);
-      })[0] - 0x30;
+    need_install = 0;
+    var exec_return = exec("git status -s -uno | wc -l", function(
+      error,
+      stdout,
+      stderr
+    ) {
+      need_install = stdout;
+      console.log("S", stdout);
+    });
+    need_install = exec_return[0] - 0x30;
+    //console.log(need_install);
+    //return;
 
     if (need_install) {
       process.chdir(__dirname + "/.git");
