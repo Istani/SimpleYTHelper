@@ -458,48 +458,48 @@ async function LiveChat(auth, pageToken = "") {
               .patch(tmp_server)
               .where(g[0]);
           }
-        }
 
-        var tmp_room = {};
+          var tmp_room = {};
 
-        // Keys
-        tmp_room.service = "youtube";
-        tmp_room.server = data[0].channel_id;
-        tmp_room.room = data[0].Livestream[0].liveChatId;
+          // Keys
+          tmp_room.service = "youtube";
+          tmp_room.server = data[0].channel_id;
+          tmp_room.room = data[0].Livestream[0].liveChatId;
 
-        var c = await Chat_Room.query().where(tmp_room);
+          var c = await Chat_Room.query().where(tmp_room);
 
-        // Additions
-        tmp_room.name = data[0].Livestream[0].b_title;
+          // Additions
+          tmp_room.name = data[0].Livestream[0].b_title;
 
-        if (c.length == 0) {
-          console.log("Room: ", JSON.stringify(tmp_room));
-          await Chat_Room.query().insert(tmp_room);
-        } else {
-          await Chat_Room.query()
-            .patch(tmp_room)
-            .where(c[0]);
-        }
+          if (c.length == 0) {
+            console.log("Room: ", JSON.stringify(tmp_room));
+            await Chat_Room.query().insert(tmp_room);
+          } else {
+            await Chat_Room.query()
+              .patch(tmp_room)
+              .where(c[0]);
+          }
 
-        var tmp_user = {};
+          var tmp_user = {};
 
-        // Keys
-        tmp_user.service = "youtube";
-        tmp_user.server = data[0].channel_id;
-        tmp_user.user = element.snippet.authorChannelId;
+          // Keys
+          tmp_user.service = "youtube";
+          tmp_user.server = data[0].channel_id;
+          tmp_user.user = element.snippet.authorChannelId;
 
-        var u = await Chat_User.query().where(tmp_user);
+          var u = await Chat_User.query().where(tmp_user);
 
-        // Additions
-        tmp_user.name = element.snippet.authorChannelId;
+          // Additions
+          tmp_user.name = element.snippet.authorChannelId;
 
-        if (u.length == 0) {
-          await Chat_User.query().insert(tmp_user);
-          console.log("User: ", JSON.stringify(tmp_user));
-        } else {
-          await Chat_User.query()
-            .patch(tmp_user)
-            .where(u[0]);
+          if (u.length == 0) {
+            await Chat_User.query().insert(tmp_user);
+            console.log("User: ", JSON.stringify(tmp_user));
+          } else {
+            await Chat_User.query()
+              .patch(tmp_user)
+              .where(u[0]);
+          }
         }
 
         if (pageToken == "") {
