@@ -386,7 +386,7 @@ async function LiveChat(auth, pageToken = "") {
   service.liveChatMessages.list(
     {
       auth: auth,
-      part: "snippet",
+      part: "snippet, authorDetails",
       liveChatId: data[0].Livestream[0].liveChatId,
       pageToken: pageToken,
       maxResults: 2000
