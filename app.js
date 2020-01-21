@@ -80,6 +80,7 @@ async function install() {
       console.log("Restart all");
       exec("pm2 restart all");
     }
+    console.log("Done");
     process.exit(0);
   });
 }

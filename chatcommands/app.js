@@ -7,9 +7,11 @@ console.log();
 
 const fs = require("fs");
 const sleep = require("await-sleep");
+const cron = require("node-cron");
 
 // DB-Models
 const Messages = require("./models/chat_message.js");
+const Users = require("./models/chat_user.js");
 const Rooms = require("./models/chat_room.js");
 const Server = require("./models/chat_server.js");
 const Outgoing_Message = require("./models/outgoing_messages.js");
@@ -37,8 +39,63 @@ function save_settings() {
 }
 load_settings();
 
-var commands = [];
+cron.schedule("00 00 * * * ", () => {
+  makeStats();
+});
 
+async function makeStats() {
+  console.log("User Statistik");
+  var date = new Date();
+  date.setDate(date.getDate() - 30);
+
+  var user = await Users.query();
+  for (let uindex = 0; uindex < user.length; uindex++) {
+    const element = user[uindex];
+
+    var message = await Messages.query()
+      .where("created_at", ">", date)
+      .where("user", element.user)
+      .where("server", element.server)
+      .orderBy("created_at");
+
+    var day_stat = {};
+    for (let mindex = 0; mindex < message.length; mindex++) {
+      const element2 = message[mindex];
+      element.msg_sum++;
+      var tmp_dat = element2.created_at
+        .toISOString()
+        .replace("T", " ")
+        .substr(0, 10);
+      if (typeof day_stat[tmp_dat] == "undefined") {
+        day_stat[tmp_dat] = 0;
+      }
+      day_stat[tmp_dat]++;
+    }
+
+    element.msg_avg = 0;
+    if (element.msg_sum > 0) {
+      element.msg_avg = parseInt(
+        element.msg_sum / Object.keys(day_stat).length
+      );
+      console.log(
+        "User Statistik - " + element.user,
+        "Sum",
+        element.msg_sum,
+        "Avg",
+        element.msg_avg,
+        "Days",
+        Object.keys(day_stat).length
+      );
+    }
+    await Users.query()
+      .patch(element)
+      .where("service", element.service)
+      .where("server", element.server)
+      .where("user", element.user);
+  }
+}
+
+var commands = [];
 commands[0] = {
   name: "commands",
   params: "",
