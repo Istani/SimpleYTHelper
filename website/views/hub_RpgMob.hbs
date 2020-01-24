@@ -103,7 +103,8 @@
     applyChange("mob", mob.curHealth, mob.maxHealth);
     applyChange("tank", tank.curHealth, tank.maxHealth);
 
-    var socket_rpg = io('http://127.0.0.1:3004/');
+    console.log(location.origin.replace('3000', '3004'))
+    var socket = io(location.origin.replace('3000', '3004'));
     socket_rpg.on('connect', function () {
       $('#comming_soon').css({display: 'none'});
       socket_rpg.send("join", "{{data.user}}");
