@@ -53,7 +53,7 @@
     </div>
     <br>
 
-    <span class="username">Istani</span>
+    <span class="username tank name">Istani</span>
     <div class="tank health-box">
       <div class="tank health-bar-red"></div>
       <div class="tank health-bar-blue"></div>
@@ -127,6 +127,7 @@
 
       socket.on('tank', function (data) {
         if (tank.curHealth != data.hp) {
+          $('.tank.name').html(data.displayname);
           tank.curHealth = data.hp;
           tank.maxHealth = data.hp_max;
 
