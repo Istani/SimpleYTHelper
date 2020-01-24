@@ -92,9 +92,9 @@
     </div>
 
     <script type="text/javascript">
-        $ = jQuery;
         $(document).ready(function () {
-            var socket = io(location.href);
+            console.log(location.origin)
+            var socket = io(location.origin);
             socket.on('connect', function () {
                 socket.on('debug', function (data) {
                     console.log(data);

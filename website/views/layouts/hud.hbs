@@ -77,6 +77,22 @@
 <body>
   {{{body}}}
 
+  <script type="text/javascript">
+    $(document).ready(function () {
+      console.log(location.origin)
+      var socket = io(location.origin);
+      socket.on('connect', function () {
+        socket.on('debug', function (data) {
+          console.log(data);
+        })
+        socket.on('disconnect', function () {
+          setTimeout(() => {
+            location.reload();
+          }, 100);
+        });
+      });
+    });
+  </script>
 </body>
 
 </html>

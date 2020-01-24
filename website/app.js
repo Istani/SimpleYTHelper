@@ -48,6 +48,7 @@ var server = require("http").createServer(app);
 var io = require("socket.io")(server);
 
 io.on("connection", function(socket) {
+  console.log("Connection");
   socket.emit("debug", { text: "connection" });
   socket.on("message", function(func, data) {
     console.log(func, ":", data);
@@ -73,6 +74,7 @@ app.use(
 );
 app.use(express.static("public"));
 app.use(function(req, res, next) {
+  req.app.locals.layout = "main";
   console.log("REQ:", req.url);
   next();
 });
