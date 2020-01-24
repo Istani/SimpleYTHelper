@@ -1,102 +1,63 @@
-<style type="text/css">
-  :root {
-    --marquee-width: 100vw;
-    --marquee-height: 3vh;
-    --marquee-elements-displayed: 4;
-    --marquee-element-width: calc(var(--marquee-width) / var(--marquee-elements-displayed));
-    --marquee-animation-duration: calc(var(--marquee-elements) * 3s);
-  }
-
-  .marquee {
-    width: var(--marquee-width);
-    height: var(--marquee-height);
+<style>
+  .animatedText {
+    animation: FadeAndScale 7.1s ease-in;
+    transform-origin: center bottom;
+    padding: 10px;
+    margin: 10px;
+    border-color: var(--color_2);
+    border-width: 1px;
+    border-style: solid;
     background-color: var(--color_1);
-    color: #eee;
-    overflow: hidden;
-    position: relative;
   }
 
-  .marquee:before,
-  .marquee:after {
-    position: absolute;
-    top: 0;
-    width: 10rem;
-    height: 100%;
-    content: "";
-    z-index: 1;
-  }
-
-  .marquee:before {
-    left: 0;
-    background: linear-gradient(to right, var(--color_1) 0%, transparent 100%);
-  }
-
-  .marquee:after {
-    right: 0;
-    background: linear-gradient(to left, var(--color_1) 0%, transparent 100%);
-  }
-
-  .marquee-content {
-    list-style: none;
-    height: 100%;
-    display: flex;
-    animation: scrolling var(--marquee-animation-duration) linear infinite;
-  }
-
-  @keyframes scrolling {
+  @keyframes FadeAndScale {
     0% {
-      transform: translateX(0);
+      opacity: 0;
+      transform: scale3d(0.5, 0.5, 1);
+    }
+
+    20% {
+      opacity: 1;
+      transform: scale3d(1, 1, 1);
+    }
+
+    80% {
+      opacity: 1;
+      transform: scale3d(1, 1, 1);
+    }
+
+    90% {
+      opacity: 0;
+      transform: scale3d(0.5, 0.5, 1);
     }
 
     100% {
-      transform: translateX(calc(-1 * var(--marquee-element-width) * var(--marquee-elements)));
+      opacity: 0;
+      transform: scale3d(0.5, 0.5, 1);
     }
-  }
-
-  .marquee-content li {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    /* text-align: center; */
-    flex-shrink: 0;
-    width: var(--marquee-element-width);
-    max-height: 100%;
-    font-size: calc(var(--marquee-height)*3/4);
-    /* 5rem; */
-    white-space: nowrap;
-  }
-
-  .marquee-content li img {
-    width: 100%;
-    /* height: 100%; */
-    border: 2px solid #eee;
   }
 </style>
-
-<div class="marquee">
-  <ul class="marquee-content">
-    {{#each data.data}}
-      <li>
-        <b class="fab">
-          <span class="username">{{name}}</span>
-          <span class="special">{{length_month}}</span>
-          Monat(e)
-        </b>
-      </li>
-    {{/each}}
-  </ul>
-</div>
+<center>
+  <div id="show_subs"></div>
+</center>
 
 <script type="text/javascript">
-  const root = document.documentElement;
-  const marqueeElementsDisplayed = getComputedStyle(root).getPropertyValue("--marquee-elements-displayed");
-  const marqueeContent = document.querySelector("ul.marquee-content");
+var data = [
+  {{#each data.data}}
+    { name: "{{name}}", time: {{length_month}} },
+  {{/each}}
+  ];
 
-  $(document).ready(function () {
-    root.style.setProperty("--marquee-elements", marqueeContent.children.length);
+  var current_sub = 0;
+  function animateSubs() {
+    var div = document.getElementById("show_subs");
+    div.innerHTML = "<div class='animatedText'><span class='username'>" + data[current_sub].name + "</span> <span class='special'>" + data[current_sub].time + "</span> Monate</div>";
 
-    for (var i = 0; i < marqueeElementsDisplayed; i++) {
-      marqueeContent.appendChild(marqueeContent.children[i].cloneNode(true));
+    current_sub++;
+    if (current_sub >= data.length) {
+      current_sub = 0;
     }
-  });
+    setTimeout(animateSubs, 7000);
+  }
+  animateSubs();
 </script>
