@@ -104,7 +104,7 @@
     applyChange("tank", tank.curHealth, tank.maxHealth);
 
     console.log(location.origin.replace('3000', '3004'))
-    var socket = io(location.origin.replace('3000', '3004'));
+    var socket_rpg = io(location.origin.replace('3000', '3004'));
     socket_rpg.on('connect', function () {
       $('#comming_soon').css({display: 'none'});
       socket_rpg.send("join", "{{data.user}}");
