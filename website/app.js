@@ -5,6 +5,7 @@ console.log(software);
 console.log("===");
 console.log();
 const config = require("dotenv").config({ path: "../.env" });
+const PORT = 3000;
 
 /* Node Functions */
 const async = require("async");
@@ -43,6 +44,17 @@ var hbs = exphbs.create({
 });
 
 var app = express();
+var server = require("http").createServer(app);
+var io = require("socket.io")(server);
+
+io.on("connection", function(socket) {
+  socket.emit("debug", { text: "connection" });
+  socket.on("message", function(func, data) {
+    console.log(func, ":", data);
+  });
+  socket.on("disconnect", function() {});
+});
+
 app.engine(".hbs", hbs.engine);
 app.set("view engine", ".hbs");
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -282,4 +294,4 @@ app.get("/", function(req, res) {
   res.render("home", { data: temp_data });
 });
 
-app.listen(3000, () => console.log("Webinterface running! Port: 3000"));
+server.listen(PORT, () => console.log("Webinterface running! Port: " + PORT));

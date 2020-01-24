@@ -4,6 +4,7 @@
 <head>
     <script type="text/javascript" src="/jquery-ui/external/jquery/jquery.js"></script>
     <script type="text/javascript" src="/jquery-ui/jquery-ui.js"></script>
+    <script type="text/javascript" src="/socket-io/socket.io.js"></script>
 
     <link rel="stylesheet" type="text/css" href="/jquery-ui/jquery-ui.css" />
     <link rel="stylesheet" type="text/css" href="/jquery-ui/jquery-ui.structure.css" />
@@ -89,6 +90,23 @@
             Soon!
         </div>
     </div>
+
+    <script type="text/javascript">
+        $ = jQuery;
+        $(document).ready(function () {
+            var socket = io(location.href);
+            socket.on('connect', function () {
+                socket.on('debug', function (data) {
+                    console.log(data);
+                })
+                socket.on('disconnect', function () {
+                    setTimeout(() => {
+                        location.reload();
+                    }, 100);
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>
