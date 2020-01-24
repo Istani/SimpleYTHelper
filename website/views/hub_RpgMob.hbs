@@ -103,12 +103,12 @@
     applyChange("mob", mob.curHealth, mob.maxHealth);
     applyChange("tank", tank.curHealth, tank.maxHealth);
 
-    var socket = io('http://127.0.0.1:3004/');
-    socket.on('connect', function () {
+    var socket_rpg = io('http://127.0.0.1:3004/');
+    socket_rpg.on('connect', function () {
       $('#comming_soon').css({display: 'none'});
-      socket.send("join", "{{data.user}}");
+      socket_rpg.send("join", "{{data.user}}");
 
-      socket.on('mob', function (data) {
+      socket_rpg.on('mob', function (data) {
         if (data.hp > 0) {
           $('#mob').css({display: ''});
           $('.mob.name').html(data.name);
@@ -121,22 +121,22 @@
           mob.maxHealth = data.hp_max;
 
           applyChange("mob", data.hp, data.hp_max);
-          socket.send('mob', data);
+          socket_rpg.send('mob', data);
         }
       });
 
-      socket.on('tank', function (data) {
+      socket_rpg.on('tank', function (data) {
         if (tank.curHealth != data.hp) {
           $('.tank.name').html(data.displayname);
           tank.curHealth = data.hp;
           tank.maxHealth = data.hp_max;
 
           applyChange("tank", data.hp, data.hp_max);
-          socket.send('tank', data);
+          socket_rpg.send('tank', data);
         }
       });
     });
-    socket.on('disconnect', function () {
+    socket_rpg.on('disconnect', function () {
       setTimeout(() => {
         location.reload();
       }, 100);
