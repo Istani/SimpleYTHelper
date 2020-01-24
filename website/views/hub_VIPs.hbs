@@ -3,7 +3,7 @@
     animation: FadeAndScale 7.1s ease-in;
     transform-origin: center bottom;
     padding: 10px;
-    margin: 10px;
+    margin: 30px;
     border-color: var(--color_2);
     border-width: 1px;
     border-style: solid;
@@ -18,12 +18,12 @@
 
     20% {
       opacity: 1;
-      transform: scale3d(1, 1, 1);
+      transform: scale3d(1.5, 1.5, 1);
     }
 
     80% {
       opacity: 1;
-      transform: scale3d(1, 1, 1);
+      transform: scale3d(1.5, 1.5, 1);
     }
 
     90% {
@@ -51,7 +51,7 @@ var data = [
   var current_sub = 0;
   function animateSubs() {
     var div = document.getElementById("show_subs");
-    div.innerHTML = "<div class='animatedText'><span class='username'>" + data[current_sub].name + "</span> <span class='special'>" + data[current_sub].time + "</span> Monate</div>";
+    div.innerHTML = "<div class='animatedText'><img src='/hud/crown.png' width='16' height='16'>&nbsp;VIPs:<br><span class='username'>" + data[current_sub].name + "</span> <span class='special'>" + data[current_sub].time + "</span> Monate</div>";
 
     current_sub++;
     if (current_sub >= data.length) {
