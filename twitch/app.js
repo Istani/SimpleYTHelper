@@ -45,7 +45,7 @@ client.on("message", (channel, tags, message, self) => {
   var user_data = { id: tags["user-id"], name: tags["display-name"] };
   var message_data = {
     id: tags.id,
-    timestamp: moment(parseInt(tags["tmi-sent-ts"])),
+    createdAt: moment(parseInt(tags["tmi-sent-ts"])).format(),
     content: message
   };
   AddGuild(server_data);
