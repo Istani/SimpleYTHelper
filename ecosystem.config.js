@@ -39,6 +39,14 @@ module.exports = {
       out_file: "logs/SYTH-YouTube.log"
     },
     {
+      name: "SYTH-Twitch",
+      script: "./twitch/app.js",
+      log_date_format: "YYYY-MM-DD HH:mm:ss Z",
+      restart_delay: 1000,
+      error_file: "logs/SYTH-Twitch.err",
+      out_file: "logs/SYTH-Twitch.log"
+    },
+    {
       name: "SYTH-Twitter",
       script: "./twitter/app.js",
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",

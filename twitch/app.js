@@ -6,10 +6,16 @@ console.log("===");
 console.log();
 const config = require("dotenv").config({ path: "../.env" });
 
-const moment = require("moment");
-const cron = require("node-cron");
-const fs = require("fs");
 const tmi = require("tmi.js");
+const moment = require("moment");
+
+// DB Models
+const Outgoing_Message = require("./models/outgoing_messages.js");
+const Chat_Message = require("./models/chat_message.js");
+const Chat_Room = require("./models/chat_room.js");
+const Chat_Server = require("./models/chat_server.js");
+const Chat_User = require("./models/chat_user.js");
+
 const client = new tmi.Client({
   options: { debug: false },
   connection: {
@@ -18,50 +24,154 @@ const client = new tmi.Client({
   },
   identity: {
     // https://twitchapps.com/tmi/
-    username: "istani",
-    password: "oauth:8fo5eh9oaalekytdjscjxnkvfx7wcr"
-    //username: process.env.TWITCH_Login,
-    //password: process.env.TWITCH_Passwort
+    username: process.env.TWITCH_Login,
+    password: process.env.TWITCH_Passwort
   },
-  channels: ["#schaffi"]
+  channels: ["#Istani"]
 });
 client.connect();
-client.on("message", (channel, tags, message, self) => {
-  var channel = channel.replace("#", "");
-  if (message == "!fail") {
-    if (typeof settings.deathcounter == "undefined") {
-      settings.deathcounter = {};
-    }
-    if (typeof settings.deathcounter[channel] == "undefined") {
-      settings.deathcounter[channel] = 0;
-    }
-    settings.deathcounter[channel]++;
-    save_settings();
-    setTimeout(() => {
-      client.say(channel, "FailCounter: " + settings.deathcounter[channel]);
-    }, 1000);
-  }
-  console.log(channel.replace("#", ""), message);
-});
-var settings = {};
-function load_settings() {
-  try {
-    settings = require("./temp/settings.json");
-  } catch (error) {
-    console.error("Settings", "Couldn't load!");
-    settings = {};
-  }
-}
-function save_settings() {
-  var data = JSON.stringify(settings);
-  console.log(settings, data);
-  fs.writeFileSync("./temp/settings.json", data);
-  //load_settings();
-}
-load_settings();
 
-cron.schedule("*/5 * * * *", () => {
-  var dat = moment().format("H:mm");
-  console.log(dat);
-  client.say("schaffi", dat + " schaffHype Du schaffst es!");
+client.on("message", (channel, tags, message, self) => {
+  if (self == true) {
+    // Missiong informations
+    //console.log(channel, message, tags);
+    tags.id = moment() + "";
+    tags["tmi-sent-ts"] = moment();
+    tags["user-id"] = "BOT";
+    tags["room-id"] = "WHY Twitch/TMI?";
+  }
+  var server_data = { id: channel, name: channel.replace("#", "") };
+  var channel_data = { id: tags["room-id"], name: tags["message-type"] }; // ?
+  var user_data = { id: tags["user-id"], name: tags["display-name"] };
+  var message_data = {
+    id: tags.id,
+    timestamp: moment(parseInt(tags["tmi-sent-ts"])),
+    content: message
+  };
+  AddGuild(server_data);
+  AddChannel(channel_data, server_data);
+  AddUser(user_data, server_data);
+  AddMessage(message_data, server_data, channel_data, user_data);
 });
+
+client.on("connected", (adress, port) => {
+  setTimeout(CheckForMessages, 100);
+  //console.log(client);
+});
+client.on("disconnected", () => {
+  // is that a thing?
+  process.exit(1);
+});
+
+async function AddGuild(guild) {
+  var tmp_server = {};
+
+  // Keys
+  tmp_server.service = package_info.name;
+  tmp_server.server = guild.id;
+
+  var g = await Chat_Server.query().where(tmp_server);
+
+  // Additions
+  tmp_server.name = guild.name;
+
+  if (g.length == 0) {
+    console.log("Server:", JSON.stringify(tmp_server));
+    await Chat_Server.query().insert(tmp_server);
+  } else {
+    await Chat_Server.query()
+      .patch(tmp_server)
+      .where(g[0]);
+  }
+}
+
+async function AddChannel(channel, guild) {
+  var tmp_room = {};
+
+  // Keys
+  tmp_room.service = package_info.name;
+  tmp_room.server = guild.id;
+  tmp_room.room = channel.id;
+
+  var c = await Chat_Room.query().where(tmp_room);
+
+  // Additions
+  tmp_room.name = channel.name;
+
+  if (c.length == 0) {
+    console.log("Room:", JSON.stringify(tmp_room));
+    await Chat_Room.query().insert(tmp_room);
+  } else {
+    await Chat_Room.query()
+      .patch(tmp_room)
+      .where(c[0]);
+  }
+}
+
+async function AddUser(user, guild) {
+  var tmp_user = {};
+
+  // Keys
+  tmp_user.service = package_info.name;
+  tmp_user.server = guild.id;
+  tmp_user.user = user.id;
+
+  var u = await Chat_User.query().where(tmp_user);
+
+  // Additions
+  tmp_user.name = user.username;
+
+  if (u.length == 0) {
+    console.log("User:", JSON.stringify(tmp_user));
+    await Chat_User.query().insert(tmp_user);
+  } else {
+    await Chat_User.query()
+      .patch(tmp_user)
+      .where(u[0]);
+  }
+}
+
+async function AddMessage(msg, guild, channel, user) {
+  var tmp_message = {};
+
+  // Keys
+  tmp_message.service = package_info.name;
+  tmp_message.server = guild.id;
+  tmp_message.room = channel.id;
+  tmp_message.id = msg.id;
+
+  var m = await Chat_Message.query().where(tmp_message);
+
+  // Additons
+  tmp_message.user = user.id;
+  tmp_message.timestamp = msg.createdAt;
+  tmp_message.content = msg.content;
+
+  if (m.length == 0) {
+    console.log("Message:", JSON.stringify(tmp_message));
+    await Chat_Message.query().insert(tmp_message);
+  } else {
+    //console.log('Message Repeat:', JSON.stringify(tmp_message));
+    await Chat_Message.query()
+      .patch(tmp_message)
+      .where(m[0]);
+  }
+}
+
+async function CheckForMessages() {
+  var msgs = await Outgoing_Message.query().where("service", package_info.name);
+
+  if (msgs.length > 0) {
+    for (var i = 0; i < msgs.length; i++) {
+      await SendMessage(msgs[i].server, msgs[i].content);
+      await Outgoing_Message.query()
+        .delete()
+        .where(msgs[i]);
+    }
+  }
+  setTimeout(CheckForMessages, 100);
+}
+
+async function SendMessage(channelID, msg) {
+  client.say(channelID.replace("#", ""), msg);
+}
