@@ -9,6 +9,7 @@ const config = require("dotenv").config({ path: "../.env" });
 const fs = require("fs");
 const io = require("socket.io")(3004);
 const sleep = require("await-sleep");
+const moment = require("moment");
 
 const Messages = require("./models/chat_message.js");
 const Rooms = require("./models/chat_room.js");
@@ -20,6 +21,7 @@ const User_Channel = require("./models/channel.js");
 
 const RPG_Monster = require("./models/rpg_monster.js");
 const RPG_Char = require("./models/rpg_char.js");
+const RPG_Logs = require("./models/rpg_log.js");
 
 var settings = {};
 function load_settings() {
@@ -52,10 +54,10 @@ io.on("connection", function(socket) {
       setTimeout(() => {
         send_mob(data);
         send_tank(data);
-        send_log(data);
+        send_old_log(data, socket);
       }, 1000);
     }
-    console.log(func, ":", data);
+    //console.log(func, ":", data);
   });
   socket.on("disconnect", function() {});
 });
@@ -64,12 +66,52 @@ function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max));
 }
 
+async function send_log(user, text, org_message, users, numbers) {
+  // Prepare Text!
+  var output_text = text;
+  if (typeof users != "udnefined") {
+    for (var r_index = 0; r_index < users.length; r_index++) {
+      output_text = output_text.replace(
+        users[r_index],
+        "<span class='username'>" + users[r_index] + "</span>"
+      );
+    }
+  }
+  if (typeof numbers != "udnefined") {
+    for (var r_index = 0; r_index < numbers.length; r_index++) {
+      output_text = output_text.replace(
+        numbers[r_index],
+        "<span class='special'>" + numbers[r_index] + "</span>"
+      );
+    }
+  }
+  org_message.service = org_message.service.repalce("syth-", ""); // Because i did an error at discord input
+  var data = {
+    id: moment() + "",
+    owner: user,
+    display_text: output_text,
+    service: org_message.service,
+    created_at: moment().format("YYYY-MM-DD HH:mm")
+  };
+  await RPG_Logs.query().insert(data);
+  io.to(user).emit("log", data);
+  console.log(data);
+}
+async function send_old_log(user, socket) {
+  var logs = await RPG_Logs.query()
+    .orderBy("created_at", "DESC")
+    .limit(15);
+  var reverse_logs = logs.reverse();
+  for (let l_index = 0; l_index < reverse_logs.length; l_index++) {
+    const element = reverse_logs[l_index];
+    element.created_at = moment(element.created_at).format("YYYY-MM-DD HH:mm");
+    socket.emit("log", element);
+  }
+}
 async function send_mob(user) {
   var monsters = await RPG_Monster.query().where("owner", user);
   if (monsters.length > 0) {
     io.to(user).emit("mob", monsters[0]);
-  } else {
-    console.error("No Monster for " + user + "!");
   }
 }
 async function send_tank(user) {
@@ -79,9 +121,6 @@ async function send_tank(user) {
   if (tanks.length > 0) {
     io.to(user).emit("tank", tanks[0]);
   }
-}
-function send_log(user) {
-  io.to(user).emit("log", { hp: getRandomInt(500), hp_max: 500 });
 }
 
 async function get_msg() {
@@ -117,13 +156,18 @@ async function get_msg() {
     if (temp_content == settings.prefix + "attack") {
       await attackMosnter(syth_user, msg_list[i]);
     }
+    if (temp_content == settings.prefix + "charinfo") {
+      await showChar(syth_user, msg_list[i]);
+    }
+    if (temp_content == settings.prefix + "mobinfo") {
+      await showMosnter(syth_user, msg_list[i]);
+    }
 
     if (temp_content == settings.prefix + "bot") {
       await sleep(1000);
       await outgoing(msg_list[i], "?spawn");
       await outgoing(msg_list[i], "?attack");
     }
-    console.log(msg_list[i]);
     send_mob(syth_user);
   }
 
@@ -168,14 +212,24 @@ async function genMonster(syth_user, msg) {
     tmp_monster.hp = tmp_monster.hp_max;
     await RPG_Monster.query().insert(tmp_monster);
     send_mob(syth_user);
-    await outgoing(
-      msg,
+    var output_string =
       "👾 Ein wildes " +
-        tmp_monster.name +
-        " erscheint! (" +
-        tmp_monster.hp_max +
-        " HP)"
+      tmp_monster.name +
+      " erscheint! (" +
+      tmp_monster.hp_max +
+      " HP)";
+    await outgoing(msg, output_string);
+    send_log(
+      syth_user,
+      output_string,
+      msg,
+      [tmp_monster.name],
+      [tmp_monster.hp_max]
     );
+
+    await RPG_Char.query()
+      .delete()
+      .where("owner", syth_user);
   }
 }
 
@@ -230,10 +284,10 @@ async function attackMosnter(syth_user, msg) {
   }
 
   if (char[0].hp <= 0) {
-    await outgoing(
-      msg,
-      "💀 " + msg.username + ": Ist Tot und kann nicht mehr angreifen!"
-    );
+    var output_string =
+      "💀 " + msg.username + ": Ist Tot und kann nicht mehr angreifen!";
+    await outgoing(msg, output_string);
+    send_log(syth_user, output_string, msg, [msg.username]);
     return;
   }
 
@@ -247,15 +301,21 @@ async function attackMosnter(syth_user, msg) {
   char[0].threat += tmp_dmg;
   monsters[0].atk += tmp_dmg;
   monsters[0].counter_attacks++;
-  await outgoing(
-    msg,
+  var output_string =
     "⚔ " +
-      msg.username +
-      " hat " +
-      tmp_dmg +
-      " Schaden an " +
-      monsters[0].name +
-      " gemacht!"
+    msg.username +
+    " hat " +
+    tmp_dmg +
+    " Schaden an " +
+    monsters[0].name +
+    " gemacht!";
+  await outgoing(msg, output_string);
+  send_log(
+    syth_user,
+    output_string,
+    msg,
+    [msg.username, monsters[0].name],
+    [tmp_dmg]
   );
 
   // Update Monster, Char, Tank
@@ -277,15 +337,21 @@ async function attackMosnter(syth_user, msg) {
       tanks[0].threat = 0;
     }
     var tank_name = await Chat_User;
-    await outgoing(
-      msg,
+    var output_string =
       "⚔ " +
-        monsters[0].name +
-        " hat " +
-        mob_dmg +
-        " Schaden an " +
-        tanks[0].displayname +
-        " gemacht!"
+      monsters[0].name +
+      " hat " +
+      mob_dmg +
+      " Schaden an " +
+      tanks[0].displayname +
+      " gemacht!";
+    await outgoing(msg, output_string);
+    send_log(
+      syth_user,
+      output_string,
+      msg,
+      [monsters[0].name, tanks[0].displayname],
+      [mob_dmg]
     );
     await RPG_Char.query()
       .patch(tanks[0])
@@ -298,6 +364,57 @@ async function attackMosnter(syth_user, msg) {
 
   send_tank(syth_user);
   send_mob(syth_user);
+}
+
+async function showMosnter(syth_user, msg) {
+  var monsters = await RPG_Monster.query()
+    .where("owner", syth_user)
+    .where("hp", ">", 0);
+  if (monsters.length == 0) {
+    await outgoing(msg, "🔍 " + msg.username + ": Kein Monster in Sicht!");
+    return;
+  }
+  var monster = monsters[0];
+  var hp_text = monster.hp + "/" + monster.hp_max;
+  var hp_details = ""; //██░░░░░░░ 23%"
+  var hp_prozent = parseInt((monster.hp * 100) / monster.hp_max);
+  var step_prozent = 5;
+  var tmp_prozent = 0;
+  while (tmp_prozent < 100) {
+    tmp_prozent += step_prozent;
+    if (tmp_prozent <= hp_prozent) {
+      hp_details += "█";
+    } else {
+      hp_details += "░";
+    }
+  }
+  hp_details += " " + hp_prozent + "%";
+  var text = "❤ HP " + monster.name + " (" + hp_text + "): " + hp_details;
+  outgoing(msg, text);
+}
+
+async function showChar(syth_user, msg) {
+  var chars = await RPG_Char.query()
+    .where("owner", syth_user)
+    .where("id", msg.user);
+
+  var char = chars[0];
+  var hp_text = char.hp + "/" + char.hp_max;
+  var hp_details = ""; //██░░░░░░░ 23%"
+  var hp_prozent = parseInt((char.hp * 100) / char.hp_max);
+  var step_prozent = 5;
+  var tmp_prozent = 0;
+  while (tmp_prozent < 100) {
+    tmp_prozent += step_prozent;
+    if (tmp_prozent <= hp_prozent) {
+      hp_details += "█";
+    } else {
+      hp_details += "░";
+    }
+  }
+  hp_details += " " + hp_prozent + "%";
+  var text = "❤ HP " + char.displayname + " (" + hp_text + "): " + hp_details;
+  outgoing(msg, text);
 }
 
 async function outgoing(msg_data, content) {
