@@ -23,6 +23,13 @@ module.exports = {
       out_file: "logs/SYTH-Web.log"
     },
     {
+      name: "SYTH-Rpg",
+      script: "./rpg/app.js",
+      log_date_format: "YYYY-MM-DD HH:mm:ss Z",
+      error_file: "logs/SYTH-Rpg.err",
+      out_file: "logs/SYTH-Rpg.log"
+    },
+    {
       name: "SYTH-Discord",
       script: "./discord/app.js",
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
