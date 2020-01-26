@@ -67,7 +67,9 @@ client.on("message", msg => {
 });
 
 async function CheckForMessages() {
-  var msgs = await Outgoing_Message.query().where("service", package_info.name);
+  var msgs = await Outgoing_Message.query()
+    .where("service", package_info.name)
+    .orWhere("service", package_info.name.replace("syth-", ""));
   if (msgs.length > 0) {
     for (var i = 0; i < msgs.length; i++) {
       await SendMessage(msgs[i].room, msgs[i].content);
