@@ -20,7 +20,7 @@ class Logs extends Model {
 
   $beforeUpdate() {
     //this.updated_at = new Date().toISOString();
-    //this.display_text = emoji.unemojify(this.display_text);
+    this.display_text = emoji.unemojify(this.display_text);
   }
 }
 
