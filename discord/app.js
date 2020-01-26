@@ -8,6 +8,7 @@ const config = require("dotenv").config({ path: "../.env" });
 
 const Discord = require("discord.js");
 const client = new Discord.Client();
+const emoji = require("node-emoji");
 
 // DB Models
 const Outgoing_Message = require("./models/outgoing_messages.js");
@@ -72,7 +73,7 @@ async function CheckForMessages() {
     .orWhere("service", package_info.name.replace("syth-", ""));
   if (msgs.length > 0) {
     for (var i = 0; i < msgs.length; i++) {
-      await SendMessage(msgs[i].room, msgs[i].content);
+      await SendMessage(msgs[i].room, emoji.emojify(msgs[i].content));
       await Outgoing_Message.query()
         .delete()
         .where(msgs[i]);

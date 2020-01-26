@@ -10,6 +10,7 @@ const fs = require("fs");
 const io = require("socket.io")(3004);
 const sleep = require("await-sleep");
 const moment = require("moment");
+const emoji = require("node-emoji");
 
 const Messages = require("./models/chat_message.js");
 const Rooms = require("./models/chat_room.js");
@@ -99,12 +100,15 @@ async function send_log(user, text, org_message, users, numbers) {
 }
 async function send_old_log(user, socket) {
   var logs = await RPG_Logs.query()
+    .where("owner", user)
     .orderBy("created_at", "DESC")
+    .orderBy("id", "DESC")
     .limit(15);
   var reverse_logs = logs.reverse();
   for (let l_index = 0; l_index < reverse_logs.length; l_index++) {
     const element = reverse_logs[l_index];
     element.created_at = moment(element.created_at).format("YYYY-MM-DD HH:mm");
+    element.display_text = emoji.emojify(element.display_text);
     socket.emit("log", element);
   }
 }
@@ -381,7 +385,7 @@ async function attackMosnter(syth_user, msg) {
     var outgoing_messages = "👑 Ihr habt das Monster besiegt!";
     await outgoing(msg, outgoing_messages);
     send_log(
-      send_log,
+      syth_user,
       outgoing_messages + " MVP: " + mvps[0].displayname,
       msg,
       [mvps[0].displayname],

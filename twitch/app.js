@@ -8,6 +8,7 @@ const config = require("dotenv").config({ path: "../.env" });
 
 const tmi = require("tmi.js");
 const moment = require("moment");
+const emoji = require("node-emoji");
 
 // DB Models
 const Outgoing_Message = require("./models/outgoing_messages.js");
@@ -164,7 +165,7 @@ async function CheckForMessages() {
 
   if (msgs.length > 0) {
     for (var i = 0; i < msgs.length; i++) {
-      await SendMessage(msgs[i].server, msgs[i].content);
+      await SendMessage(msgs[i].server, emoji.emojify(msgs[i].content));
       await Outgoing_Message.query()
         .delete()
         .where(msgs[i]);

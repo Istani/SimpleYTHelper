@@ -9,6 +9,7 @@ const config = require("dotenv").config({ path: "../.env" });
 var fs = require("fs");
 var Queue = require("better-queue");
 var cron = require("node-cron");
+const emoji = require("node-emoji");
 
 var readline = require("readline");
 var { google } = require("googleapis");
@@ -619,7 +620,7 @@ async function CheckForMessages(auth) {
     .where("server", data[0].channel_id);
   if (msgs.length > 0) {
     for (var i = 0; i < msgs.length; i++) {
-      await SendMessage(auth, msgs[i].room, msgs[i].content);
+      await SendMessage(auth, msgs[i].room, emoji.emojify(msgs[i].content));
       await Outgoing_Message.query()
         .delete()
         .where(msgs[i]);

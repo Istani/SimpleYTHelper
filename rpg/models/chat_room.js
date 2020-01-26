@@ -1,17 +1,16 @@
 const { Model } = require("objection");
 const Knex = require("knex");
-const emoji = require("node-emoji");
 
 const knex = Knex(require("../knexfile.js"));
 
 Model.knex(knex);
 
-class Chat_Message extends Model {
+class Chat_Room extends Model {
   static get tableName() {
-    return "chat_message";
+    return "chat_room";
   }
   static get idColumn() {
-    return "service, server, room, id";
+    return "service, server, room";
   }
 
   $beforeInsert() {
@@ -20,8 +19,7 @@ class Chat_Message extends Model {
 
   $beforeUpdate() {
     this.updated_at = new Date().toISOString();
-    this.content = emoji.unemojify(this.content);
   }
 }
 
-module.exports = Chat_Message;
+module.exports = Chat_Room;
