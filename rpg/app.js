@@ -85,7 +85,7 @@ async function send_log(user, text, org_message, users, numbers) {
       );
     }
   }
-  org_message.service = org_message.service.repalce("syth-", ""); // Because i did an error at discord input
+  org_message.service = org_message.service.replace("syth-", ""); // Because i did an error at discord input
   var data = {
     id: moment() + "",
     owner: user,
@@ -95,7 +95,7 @@ async function send_log(user, text, org_message, users, numbers) {
   };
   await RPG_Logs.query().insert(data);
   io.to(user).emit("log", data);
-  console.log(data);
+  //console.log(data);
 }
 async function send_old_log(user, socket) {
   var logs = await RPG_Logs.query()
@@ -121,6 +121,10 @@ async function send_tank(user) {
   if (tanks.length > 0) {
     io.to(user).emit("tank", tanks[0]);
   }
+}
+
+async function send_mvp(user, mvps) {
+  io.to(user).emit("mvps", mvps);
 }
 
 async function get_msg() {
@@ -187,6 +191,12 @@ async function genMonster(syth_user, msg) {
   }
   monsters = await RPG_Monster.query().where("owner", syth_user);
   if (monsters.length == 0) {
+    await RPG_Char.query()
+      .delete()
+      .where("owner", syth_user);
+    await RPG_Logs.query()
+      .delete()
+      .where("owner", syth_user);
     // Generate New Monster!
     var data = await User_Channel.query()
       .where("user_id", syth_user)
@@ -226,10 +236,6 @@ async function genMonster(syth_user, msg) {
       [tmp_monster.name],
       [tmp_monster.hp_max]
     );
-
-    await RPG_Char.query()
-      .delete()
-      .where("owner", syth_user);
   }
 }
 
@@ -298,6 +304,7 @@ async function attackMosnter(syth_user, msg) {
     tmp_dmg += monsters[0].hp;
     monsters[0].hp = 0;
   }
+  char[0].total_dmg += tmp_dmg;
   char[0].threat += tmp_dmg;
   monsters[0].atk += tmp_dmg;
   monsters[0].counter_attacks++;
@@ -364,6 +371,27 @@ async function attackMosnter(syth_user, msg) {
 
   send_tank(syth_user);
   send_mob(syth_user);
+
+  if (monsters[0].hp == 0) {
+    var mvps = await RPG_Char.query()
+      .where("owner", syth_user)
+      .orderBy("total_dmg", "DESC")
+      .limit(5);
+    send_mvp(syth_user, mvps);
+    var outgoing_messages = "👑 Ihr habt das Monster besiegt!";
+    await outgoing(msg, outgoing_messages);
+    send_log(
+      send_log,
+      outgoing_messages + " MVP: " + mvps[0].displayname,
+      msg,
+      [mvps[0].displayname],
+      []
+    );
+    for (let m_index = 0; m_index < mvps.length; m_index++) {
+      const element = mvps[m_index];
+      await outgoing(msg, m_index + 1 + ". " + element.displayname);
+    }
+  }
 }
 
 async function showMosnter(syth_user, msg) {
@@ -423,6 +451,7 @@ async function outgoing(msg_data, content) {
   tmp_chat.server = msg_data.server;
   tmp_chat.room = msg_data.room;
   tmp_chat.content = content;
+  console.log(msg_data.server + ": " + content);
   await Outgoing_Message.query().insert(tmp_chat);
   await sleep(1000);
 }

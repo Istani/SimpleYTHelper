@@ -61,6 +61,10 @@
       <div class="tank health-bar-text"></div>
     </div>
   </div>
+
+  <div id="mvps" style="display:none;">
+
+  </div>
 </div>
 
 
@@ -107,10 +111,13 @@
       socket_rpg.on('mob', function (data) {
         if (data.hp > 0) {
           $('#mob').css({display: ''});
+          $('#mvps').css({display: 'none'});
+
           $('.mob.name').html(data.name);
           $('.mob.picture').attr("src", data.picture);
         } else {
           $('#mob').css({display: 'none'});
+          $('#mvps').css({display: ''});
         }
         if (mob.curHealth != data.hp) {
           mob.curHealth = data.hp;
@@ -119,6 +126,15 @@
           applyChange("mob", data.hp, data.hp_max);
           socket_rpg.send('mob', data);
         }
+      });
+
+      socket_rpg.on('mvps', function (mvps) {
+        var output = "<img src='/hud/crown.png' width='16' height='16'>&nbsp;Ihr habt das Monster besiegt!<br><br>";
+        for (let m_index = 0; m_index < mvps.length; m_index++) {
+          const element = mvps[m_index];
+          output += "<span class='special'>" + m_index + 1 + "</span>. <span class='username'>" + element.displayname + "</span><br>";
+        }
+        $('#mvps').html(output);
       });
 
       socket_rpg.on('tank', function (data) {

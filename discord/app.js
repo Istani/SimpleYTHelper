@@ -67,7 +67,9 @@ client.on("message", msg => {
 });
 
 async function CheckForMessages() {
-  var msgs = await Outgoing_Message.query().where("service", package_info.name);
+  var msgs = await Outgoing_Message.query()
+    .where("service", package_info.name)
+    .orWhere("service", package_info.name.replace("syth-", ""));
   if (msgs.length > 0) {
     for (var i = 0; i < msgs.length; i++) {
       await SendMessage(msgs[i].room, msgs[i].content);
@@ -87,7 +89,7 @@ async function AddMessage(msg, guild, channel, user) {
   var tmp_message = {};
 
   // Keys
-  tmp_message.service = package_info.name;
+  tmp_message.service = package_info.name.replace("syth-", "");
   tmp_message.server = guild.id;
   tmp_message.room = channel.id;
   tmp_message.id = msg.id;
@@ -114,7 +116,7 @@ async function AddGuild(guild) {
   var tmp_server = {};
 
   // Keys
-  tmp_server.service = package_info.name;
+  tmp_server.service = package_info.name.replace("syth-", "");
   tmp_server.server = guild.id;
 
   var g = await Chat_Server.query().where(tmp_server);
@@ -136,7 +138,7 @@ async function AddChannel(channel, guild) {
   var tmp_room = {};
 
   // Keys
-  tmp_room.service = package_info.name;
+  tmp_room.service = package_info.name.replace("syth-", "");
   tmp_room.server = guild.id;
   tmp_room.room = channel.id;
 
@@ -159,7 +161,7 @@ async function AddUser(user, guild) {
   var tmp_user = {};
 
   // Keys
-  tmp_user.service = package_info.name;
+  tmp_user.service = package_info.name.replace("syth-", "");
   tmp_user.server = guild.id;
   tmp_user.user = user.id;
 
