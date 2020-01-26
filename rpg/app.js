@@ -86,6 +86,8 @@ async function send_log(user, text, org_message, users, numbers) {
       );
     }
   }
+  output_text = emoji.unemojify(output_textt);
+  output_text = emoji.emojify(output_textt);
   org_message.service = org_message.service.replace("syth-", ""); // Because i did an error at discord input
   var data = {
     id: moment() + "",
