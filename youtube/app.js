@@ -377,12 +377,7 @@ function SearchBroadcasts(auth, pageToken = "") {
               await Chat_Room.query().insert(tmp_room);
 
               // Add Spawn?
-              var tmp_chat = {};
-              tmp_chat.service = "youtube";
-              tmp_chat.server = obj.owner;
-              tmp_chat.room = obj.liveChatId;
-              tmp_chat.content = "?spawn";
-              await Outgoing_Message.query().insert(tmp_chat);
+              FakeMsg(tmp_room.server, tmp_room.room, "?spawn");
             } else {
               await Chat_Room.query()
                 .patch(tmp_room)
@@ -680,3 +675,27 @@ function writeChat(auth, chatId, Message) {
     }
   );
 }
+
+async function FakeMsg(server, room, content) {
+  var tmp_message = {};
+
+  // Keys
+  tmp_message.service = "youtube";
+  tmp_message.server = server;
+  tmp_message.room = room;
+  tmp_message.id = new Date();
+
+  var m = await Chat_Message.query().where(tmp_message);
+  // Additons
+  tmp_message.user = server;
+  tmp_message.timestamp = new Date();
+  tmp_message.content = content;
+
+  if (m.length == 0) {
+    console.log("Fake-Message: ", JSON.stringify(tmp_message));
+    await Chat_Message.query().insert(tmp_message);
+  } else {
+    FakeMsg(server, room, content);
+  }
+}
+FakeMsg("a", "b", "c");
