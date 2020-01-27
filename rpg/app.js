@@ -23,12 +23,17 @@ const User_Channel = require("./models/channel.js");
 const RPG_Monster = require("./models/rpg_monster.js");
 const RPG_Char = require("./models/rpg_char.js");
 const RPG_Logs = require("./models/rpg_log.js");
+const RPG_Items = require("./data/items.json");
+const RPG_Inventory = require("./models/rpg_inventory.js");
 
 var settings = {};
 function load_settings() {
   try {
     settings = require("./temp/settings.json");
     settings.last_time = new Date(settings.last_time);
+    if (typeof settings.inventory_space == "undefined") {
+      settings.inventory_space = 30;
+    }
   } catch (error) {
     console.error("Settings", "Couldn't load!");
     settings = {};
@@ -39,14 +44,43 @@ function load_settings() {
     settings.min_hp = 100;
     settings.prefix = "?";
     settings.min_cooldown = 30;
+    settings.inventory_space = 30;
   }
 }
 function save_settings() {
-  var data = JSON.stringify(settings);
+  var data = JSON.stringify(settings, null, 2);
   fs.writeFileSync("./temp/settings.json", data);
   load_settings();
 }
 load_settings();
+
+async function Check_ItemData() {
+  var uniq_key = [];
+  for (let i_index = 0; i_index < RPG_Items.length; i_index++) {
+    const element = RPG_Items[i_index];
+    var keys = Object.keys(element);
+    for (let k_index = 0; k_index < keys.length; k_index++) {
+      const element2 = keys[k_index];
+      if (uniq_key.indexOf(element2) == -1) {
+        uniq_key.push(element2);
+      }
+    }
+  }
+  //console.log(uniq_key);
+  for (let i_index = 0; i_index < RPG_Items.length; i_index++) {
+    const element = RPG_Items[i_index];
+    for (let k_index = 0; k_index < uniq_key.length; k_index++) {
+      const element2 = uniq_key[k_index];
+      if (typeof element[element2] == "undefined") {
+        element[element2] = null;
+      }
+    }
+  }
+  var data = JSON.stringify(RPG_Items, null, 2);
+  fs.writeFileSync("./data/items.json", data);
+  // Noch nicht sicher ob das so eine gute Idee ist
+}
+Check_ItemData();
 
 io.on("connection", function(socket) {
   socket.on("message", function(func, data) {
@@ -86,8 +120,8 @@ async function send_log(user, text, org_message, users, numbers) {
       );
     }
   }
-  output_text = emoji.unemojify(output_textt);
-  output_text = emoji.emojify(output_textt);
+  output_text = emoji.unemojify(output_text);
+  output_text = emoji.emojify(output_text);
   org_message.service = org_message.service.replace("syth-", ""); // Because i did an error at discord input
   var data = {
     id: moment() + "",
@@ -158,7 +192,7 @@ async function get_msg() {
     // ToDo: Get SYTH-User out of DB
     var syth_user = 4;
     var temp_content = msg_list[i].content.split(" ");
-
+    console.log(temp_content);
     if (temp_content == settings.prefix + "spawn") {
       await genMonster(syth_user, msg_list[i]);
       await genChar(syth_user, msg_list[i]);
@@ -166,11 +200,17 @@ async function get_msg() {
     if (temp_content == settings.prefix + "attack") {
       await attackMosnter(syth_user, msg_list[i]);
     }
-    if (temp_content == settings.prefix + "charinfo") {
+    if (temp_content[0].startsWith(settings.prefix + "charinfo")) {
       await showChar(syth_user, msg_list[i]);
     }
     if (temp_content == settings.prefix + "mobinfo") {
       await showMosnter(syth_user, msg_list[i]);
+    }
+    if (temp_content == settings.prefix + "harvest") {
+      await collectRessource(syth_user, msg_list[i], "Heilkraut");
+    }
+    if (temp_content[0].startsWith(settings.prefix + "heal")) {
+      await consumeItem(syth_user, msg_list[i], "heal");
     }
 
     if (temp_content == settings.prefix + "bot") {
@@ -186,6 +226,110 @@ async function get_msg() {
 }
 get_msg();
 
+async function consumeItem(syth_user, msg, itemressource) {
+  await genChar(syth_user, msg);
+  var char = await RPG_Char.query()
+    .where("owner", syth_user)
+    .where("id", msg.user);
+  var output_text = "";
+  for (let item_index = 0; item_index < RPG_Items.length; item_index++) {
+    const element = RPG_Items[item_index];
+    if (element[itemressource] > 0) {
+      var used_item = await removeItemToInventory(syth_user, msg, element);
+      if (used_item) {
+        switch (itemressource) {
+          case "heal":
+            var temp_heal = element.heal;
+            char[0].hp += temp_heal;
+            if (char[0].hp > char[0].hp_max) {
+              temp_heal -= char[0].hp - char[0].hp_max;
+              char[0].hp = char[0].hp_max;
+            }
+            await RPG_Char.query()
+              .patch(char[0])
+              .where("owner", char[0].owner)
+              .where("id", char[0].id);
+            output_text =
+              "💊 " + char[0].displayname + " heilt sich um " + temp_heal + "!";
+            if (temp_heal > 0) {
+              send_log(
+                syth_user,
+                output_text,
+                msg,
+                [char[0].displayname],
+                [temp_heal]
+              );
+            }
+            break;
+          default:
+            addItemToInventory(syth_user, msg, item);
+        }
+        break;
+      }
+    }
+  }
+  if (output_text == "") {
+    output_text = "❌ " + char[0].displayname + ": Kein Item gefunden!";
+  }
+  await outgoing(msg, output_text);
+}
+async function collectRessource(syth_user, msg, itemname) {
+  var isCollected = false;
+  var item = RPG_Items.find(e => {
+    if (e.name == itemname) return true;
+    return false;
+  });
+  await genChar(syth_user, msg);
+  var char = await RPG_Char.query()
+    .where("owner", syth_user)
+    .where("id", msg.user);
+  if (typeof item != "undefined") {
+    isCollected = await addItemToInventory(syth_user, msg, item);
+  }
+  if (isCollected) {
+    var text =
+      "⛏ " +
+      char[0].displayname +
+      " sammelt " +
+      item.icon +
+      " " +
+      item.name +
+      "!";
+  } else {
+    var text =
+      "❌ " + char[0].displayname + ": Item konnte nicht aufgesammelt werde!";
+  }
+  await outgoing(msg, text);
+}
+async function addItemToInventory(syth_user, msg, item) {
+  var isAdded = false;
+  var inventory = await RPG_Inventory.query()
+    .where("owner", syth_user)
+    .where("char_id", msg.user);
+  if (inventory.length < settings.inventory_space) {
+    await RPG_Inventory.query().insert({
+      owner: syth_user,
+      char_id: msg.user,
+      item_name: item.name
+    });
+    isAdded = true;
+  }
+  return isAdded;
+}
+async function removeItemToInventory(syth_user, msg, item) {
+  var isRemoved = false;
+  var inventory = await RPG_Inventory.query()
+    .where("owner", syth_user)
+    .where("char_id", msg.user)
+    .where("item_name", item.name);
+  if (inventory.length > 0) {
+    await RPG_Inventory.query()
+      .delete()
+      .where({ id: inventory[0].id });
+    isRemoved = true;
+  }
+  return isRemoved;
+}
 async function genMonster(syth_user, msg) {
   var monsters = await RPG_Monster.query().where("owner", syth_user);
   if (monsters.length > 0) {
@@ -428,6 +572,7 @@ async function showMosnter(syth_user, msg) {
 }
 
 async function showChar(syth_user, msg) {
+  await genChar(syth_user, msg);
   var chars = await RPG_Char.query()
     .where("owner", syth_user)
     .where("id", msg.user);
