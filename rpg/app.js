@@ -10,7 +10,7 @@ const fs = require("fs");
 const io = require("socket.io")(3004);
 const sleep = require("await-sleep");
 const moment = require("moment");
-const emoji = require("node-emoji");
+const emoji = require("node-emoji"); // https://raw.githubusercontent.com/omnidan/node-emoji/master/lib/emoji.json
 
 const Messages = require("./models/chat_message.js");
 const Rooms = require("./models/chat_room.js");
@@ -192,31 +192,30 @@ async function get_msg() {
     // ToDo: Get SYTH-User out of DB
     var syth_user = 4;
     var temp_content = msg_list[i].content.split(" ");
-    console.log(temp_content);
-    if (temp_content == settings.prefix + "spawn") {
+    //console.log(temp_content);
+    if (temp_content[0].startsWith(settings.prefix + "spawn")) {
       await genMonster(syth_user, msg_list[i]);
       await genChar(syth_user, msg_list[i]);
     }
-    if (temp_content == settings.prefix + "attack") {
+    if (temp_content[0].startsWith(settings.prefix + "attack")) {
       await attackMosnter(syth_user, msg_list[i]);
     }
     if (temp_content[0].startsWith(settings.prefix + "charinfo")) {
       await showChar(syth_user, msg_list[i]);
     }
-    if (temp_content == settings.prefix + "mobinfo") {
+    if (temp_content[0].startsWith(settings.prefix + "mobinfo")) {
       await showMosnter(syth_user, msg_list[i]);
     }
-    if (temp_content == settings.prefix + "harvest") {
+    if (temp_content[0].startsWith(settings.prefix + "harvest")) {
       await collectRessource(syth_user, msg_list[i], "Heilkraut");
     }
     if (temp_content[0].startsWith(settings.prefix + "heal")) {
       await consumeItem(syth_user, msg_list[i], "heal");
     }
 
-    if (temp_content == settings.prefix + "bot") {
+    if (temp_content[0].startsWith(settings.prefix + "bot")) {
       await sleep(1000);
-      await outgoing(msg_list[i], "?spawn");
-      await outgoing(msg_list[i], "?attack");
+      await outgoing(msg_list[i], "?" + temp_content[1]);
     }
     send_mob(syth_user);
   }
@@ -240,6 +239,7 @@ async function consumeItem(syth_user, msg, itemressource) {
         switch (itemressource) {
           case "heal":
             var temp_heal = element.heal;
+            char[0].threat += temp_heal * 0.5;
             char[0].hp += temp_heal;
             if (char[0].hp > char[0].hp_max) {
               temp_heal -= char[0].hp - char[0].hp_max;
@@ -260,6 +260,7 @@ async function consumeItem(syth_user, msg, itemressource) {
                 [temp_heal]
               );
             }
+            send_tank(syth_user);
             break;
           default:
             addItemToInventory(syth_user, msg, item);
