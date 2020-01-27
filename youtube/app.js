@@ -375,6 +375,14 @@ function SearchBroadcasts(auth, pageToken = "") {
             if (c.length == 0) {
               console.log("Room: ", JSON.stringify(tmp_room));
               await Chat_Room.query().insert(tmp_room);
+
+              // Add Spawn?
+              var tmp_chat = {};
+              tmp_chat.service = "youtube";
+              tmp_chat.server = obj.owner;
+              tmp_chat.room = obj.liveChatId;
+              tmp_chat.content = "?spawn";
+              await Outgoing_Message.query().insert(tmp_chat);
             } else {
               await Chat_Room.query()
                 .patch(tmp_room)
