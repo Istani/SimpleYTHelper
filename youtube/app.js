@@ -135,6 +135,28 @@ function ListChannels(auth, pageToken = "") {
       channel_obj.subscriber = data.statistics.subscriberCount;
       channel_obj.videos = data.statistics.videoCount;
 
+      {
+        // Add Server
+        var tmp_server = {};
+
+        // Keys
+        tmp_server.service = "youtube";
+        tmp_server.server = channel_obj.channel_id;
+
+        var g = await Chat_Server.query().where(tmp_server);
+
+        // Additions
+        tmp_server.name = "Livestream";
+        if (g.length == 0) {
+          console.log("Server: ", JSON.stringify(tmp_server));
+          await Chat_Server.query().insert(tmp_server);
+        } else {
+          await Chat_Server.query()
+            .patch(tmp_server)
+            .where(g[0]);
+        }
+      }
+
       var m = await ow_channel
         .query()
         .where("service", channel_obj.service)
@@ -336,6 +358,30 @@ function SearchBroadcasts(auth, pageToken = "") {
             obj.liveChatId = element.snippet.liveChatId;
           }
 
+          {
+            // Add Room
+            var tmp_room = {};
+
+            // Keys
+            tmp_room.service = "youtube";
+            tmp_room.server = obj.owner;
+            tmp_room.room = obj.liveChatId;
+
+            var c = await Chat_Room.query().where(tmp_room);
+
+            // Additions
+            tmp_room.name = obj.b_title;
+
+            if (c.length == 0) {
+              console.log("Room: ", JSON.stringify(tmp_room));
+              await Chat_Room.query().insert(tmp_room);
+            } else {
+              await Chat_Room.query()
+                .patch(tmp_room)
+                .where(c[0]);
+            }
+          }
+
           var m = await ow_broadcasts
             .query()
             .where("service", obj.service)
@@ -440,66 +486,28 @@ async function LiveChat(auth, pageToken = "") {
             }
           }
 
-          var tmp_server = {};
+          {
+            // USER
+            var tmp_user = {};
 
-          // Keys
-          tmp_server.service = "youtube";
-          tmp_server.server = data[0].channel_id;
+            // Keys
+            tmp_user.service = "youtube";
+            tmp_user.server = data[0].channel_id;
+            tmp_user.user = element.snippet.authorChannelId;
 
-          var g = await Chat_Server.query().where(tmp_server);
+            var u = await Chat_User.query().where(tmp_user);
 
-          // Additions
-          tmp_server.name = "Livestream";
+            // Additions
+            tmp_user.name = element.authorDetails.displayName;
 
-          if (g.length == 0) {
-            console.log("Server: ", JSON.stringify(tmp_server));
-            await Chat_Server.query().insert(tmp_server);
-          } else {
-            await Chat_Server.query()
-              .patch(tmp_server)
-              .where(g[0]);
-          }
-
-          var tmp_room = {};
-
-          // Keys
-          tmp_room.service = "youtube";
-          tmp_room.server = data[0].channel_id;
-          tmp_room.room = data[0].Livestream[0].liveChatId;
-
-          var c = await Chat_Room.query().where(tmp_room);
-
-          // Additions
-          tmp_room.name = data[0].Livestream[0].b_title;
-
-          if (c.length == 0) {
-            console.log("Room: ", JSON.stringify(tmp_room));
-            await Chat_Room.query().insert(tmp_room);
-          } else {
-            await Chat_Room.query()
-              .patch(tmp_room)
-              .where(c[0]);
-          }
-
-          var tmp_user = {};
-
-          // Keys
-          tmp_user.service = "youtube";
-          tmp_user.server = data[0].channel_id;
-          tmp_user.user = element.snippet.authorChannelId;
-
-          var u = await Chat_User.query().where(tmp_user);
-
-          // Additions
-          tmp_user.name = element.authorDetails.displayName;
-
-          if (u.length == 0) {
-            await Chat_User.query().insert(tmp_user);
-            console.log("User: ", JSON.stringify(tmp_user));
-          } else {
-            await Chat_User.query()
-              .patch(tmp_user)
-              .where(u[0]);
+            if (u.length == 0) {
+              await Chat_User.query().insert(tmp_user);
+              console.log("User: ", JSON.stringify(tmp_user));
+            } else {
+              await Chat_User.query()
+                .patch(tmp_user)
+                .where(u[0]);
+            }
           }
         }
 
@@ -635,7 +643,6 @@ async function SendMessage(auth, channelID, msg) {
   console.log("Try to Send Message");
   writeChat(auth, channelID, msg);
 }
-
 function writeChat(auth, chatId, Message) {
   var sic = auth.credentials;
   service.liveChatMessages.insert(
