@@ -426,6 +426,7 @@ async function showMosnter(syth_user, msg) {
 }
 
 async function showChar(syth_user, msg) {
+  await genChar(syth_user, msg);
   var chars = await RPG_Char.query()
     .where("owner", syth_user)
     .where("id", msg.user);
