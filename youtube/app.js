@@ -698,4 +698,3 @@ async function FakeMsg(server, room, content) {
     FakeMsg(server, room, content);
   }
 }
-FakeMsg("a", "b", "c");
