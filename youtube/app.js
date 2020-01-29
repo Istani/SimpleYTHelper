@@ -10,6 +10,7 @@ var fs = require("fs");
 var Queue = require("better-queue");
 var cron = require("node-cron");
 const emoji = require("node-emoji");
+const sleep = require("await-sleep");
 
 var readline = require("readline");
 var { google } = require("googleapis");
@@ -36,6 +37,9 @@ var q = new Queue(function(type, input, cb) {
   cb(null, result);
 });
 
+//const apis = google.getSupportedAPIs();
+//console.log(apis);
+//return;
 authorize(StartImport);
 async function authorize(callback) {
   var clientSecret = process.env.YOUTUBE_CLIENT_SECRET;
@@ -488,6 +492,7 @@ async function LiveChat(auth, pageToken = "") {
               console.error(e);
             }
           }
+          await sleep(1000);
 
           {
             // USER
