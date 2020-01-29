@@ -170,7 +170,8 @@ async function send_mvp(user, mvps) {
 async function get_msg() {
   var msg_list = await Messages.query()
     .where("content", "like", settings.prefix + "%")
-    .where("created_at", ">", settings.last_time);
+    .where("created_at", ">", settings.last_time)
+    .orderBy("created_at");
 
   for (var i = 0; i < msg_list.length; i++) {
     settings.last_time = msg_list[i].created_at;
@@ -387,6 +388,8 @@ async function genMonster(syth_user, msg) {
       [tmp_monster.name],
       [tmp_monster.hp_max]
     );
+  } else {
+    msg.content = settings.prefix + "mobinfo";
   }
 }
 
