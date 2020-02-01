@@ -38,12 +38,14 @@ async function tweet_main() {
       async function(error, tweet, response) {
         if (error) {
           console.error(error);
+          setTimeout(tweet_main, 1 * 60 * 1000);
           return;
         }
         await Tweets.query()
           .delete()
           .where("id", pre_tweet[0].id);
         console.log(pre_tweet[0]);
+        setTimeout(tweet_main, 1 * 60 * 1000);
       }
     );
   }
