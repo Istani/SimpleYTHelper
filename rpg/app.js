@@ -199,6 +199,11 @@ async function get_msg() {
       await genChar(syth_user, msg_list[i]);
     }
     if (temp_content[0].startsWith(settings.prefix + "attack")) {
+      var hasCooldown = await check_cooldown(syth_user, msg_list[i]);
+      if (hasCooldown) {
+        setTimeout(get_msg, 100);
+        return;
+      }
       await attackMosnter(syth_user, msg_list[i]);
     }
     if (temp_content[0].startsWith(settings.prefix + "charinfo")) {
@@ -208,9 +213,19 @@ async function get_msg() {
       await showMosnter(syth_user, msg_list[i]);
     }
     if (temp_content[0].startsWith(settings.prefix + "harvest")) {
+      var hasCooldown = await check_cooldown(syth_user, msg_list[i]);
+      if (hasCooldown) {
+        setTimeout(get_msg, 100);
+        return;
+      }
       await collectRessource(syth_user, msg_list[i], "Heilkraut");
     }
     if (temp_content[0].startsWith(settings.prefix + "heal")) {
+      var hasCooldown = await check_cooldown(syth_user, msg_list[i]);
+      if (hasCooldown) {
+        setTimeout(get_msg, 100);
+        return;
+      }
       await consumeItem(syth_user, msg_list[i], "heal");
     }
 
@@ -262,6 +277,7 @@ async function consumeItem(syth_user, msg, itemressource) {
               );
             }
             send_tank(syth_user);
+            await add_cooldown(syth_user, msg, settings.min_cooldown);
             break;
           default:
             addItemToInventory(syth_user, msg, item);
@@ -297,6 +313,7 @@ async function collectRessource(syth_user, msg, itemname) {
       " " +
       item.name +
       "!";
+    await add_cooldown(syth_user, msg, settings.min_cooldown);
   } else {
     var text =
       "❌ " + char[0].displayname + ": Item konnte nicht aufgesammelt werde!";
@@ -471,6 +488,7 @@ async function attackMosnter(syth_user, msg) {
     monsters[0].name +
     " gemacht!";
   await outgoing(msg, output_string);
+  await add_cooldown(syth_user, msg, settings.min_cooldown);
   send_log(
     syth_user,
     output_string,
@@ -598,6 +616,43 @@ async function showChar(syth_user, msg) {
   hp_details += " " + hp_prozent + "%";
   var text = "❤ HP " + char.displayname + " (" + hp_text + "): " + hp_details;
   outgoing(msg, text);
+}
+
+async function check_cooldown(syth_user, msg) {
+  var hasCooldown = false;
+  await genChar(syth_user, msg);
+  var chars = await RPG_Char.query()
+    .where("owner", syth_user)
+    .where("id", msg.user);
+
+  var this_moment = moment();
+  var next_moment = moment(chars[0].cooldown);
+
+  if (next_moment > this_moment) {
+    hasCooldown = true;
+  }
+
+  if (hasCooldown == true) {
+    var text = "❌ " + chars[0].displayname + ": Cooldown!";
+    await outgoing(msg, text);
+  }
+  return hasCooldown;
+}
+async function add_cooldown(syth_user, msg, time) {
+  var chars = await RPG_Char.query()
+    .where("owner", syth_user)
+    .where("id", msg.user);
+  var dat = moment()
+    .add(time, "seconds")
+    .format();
+  console.log(dat);
+
+  chars[0].cooldown = dat;
+
+  await RPG_Char.query()
+    .patch(chars[0])
+    .where("owner", chars[0].owner)
+    .where("id", chars[0].id);
 }
 
 async function outgoing(msg_data, content) {
