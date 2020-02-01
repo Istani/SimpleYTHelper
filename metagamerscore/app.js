@@ -89,11 +89,10 @@ async function main() {
       }
       save_settings();
     }
-
-    console.log("Game Import Done, Wating 1 Hour for Restart");
-    setTimeout(() => {
-      main();
-    }, 1000 * 60 * 60);
   });
+  console.log("Game Import Done, Wating 1 Hour for Restart");
+  setTimeout(() => {
+    main();
+  }, 1000 * 60);
 }
 main();
