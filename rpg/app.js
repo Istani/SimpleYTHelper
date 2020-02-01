@@ -488,7 +488,6 @@ async function attackMosnter(syth_user, msg) {
     monsters[0].name +
     " gemacht!";
   await outgoing(msg, output_string);
-  await add_cooldown(syth_user, msg, settings.min_cooldown);
   send_log(
     syth_user,
     output_string,
@@ -502,6 +501,7 @@ async function attackMosnter(syth_user, msg) {
     .patch(char[0])
     .where("owner", syth_user)
     .where("id", msg.user);
+  await add_cooldown(syth_user, msg, settings.min_cooldown);
   var tanks = await RPG_Char.query()
     .where("owner", syth_user)
     .orderBy("threat", "DESC");
