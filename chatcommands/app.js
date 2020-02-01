@@ -42,6 +42,7 @@ load_settings();
 cron.schedule("00 00 * * * ", () => {
   makeStats();
 });
+//makeStats();
 
 async function makeStats() {
   console.log("User Statistik");
@@ -77,6 +78,9 @@ async function makeStats() {
       element.msg_avg = parseInt(
         element.msg_sum / Object.keys(day_stat).length
       );
+      if (Object.keys(day_stat).length == 0) {
+        element.msg_avg = 0;
+      }
       console.log(
         "User Statistik - " + element.user,
         "Sum",
@@ -140,6 +144,7 @@ commands[5] = {
 };
 
 async function get_msg() {
+  //return;
   //console.log(prefix, settings.last_time);
   var msg_list = await Messages.query()
     .where("content", "like", prefix + "%")
