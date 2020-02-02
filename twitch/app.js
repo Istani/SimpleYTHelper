@@ -42,7 +42,10 @@ client.on("message", (channel, tags, message, self) => {
     tags["room-id"] = "WHY Twitch/TMI?";
   }
   console.log(tags);
-  var server_data = { id: channel, name: channel.replace("#", "") };
+  var server_data = {
+    id: channel.replace("#", ""),
+    name: channel.replace("#", "")
+  };
   var channel_data = { id: tags["room-id"], name: tags["message-type"] }; // ?
   var user_data = { id: tags["user-id"], username: tags["display-name"] };
   var message_data = {
