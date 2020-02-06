@@ -1,0 +1,1390 @@
+* Trying Adding ChangeLog
+* Post Commit Update
+* Changing to Master?
+* Be Gone Old Master
+* Post Commit Update
+* Twitch Sever Name
+* Post Commit Update
+* Sub Goal HUD
+* Post Commit Update
+* Post Commit Update
+* MetaScore Changes?
+* Post Commit Update
+* Racing Condion Overwrite RPG Attack
+* Post Commit Update
+* RPG Cooldown
+* Post Commit Update
+* Update ChatStats Fix
+* Twitter Test
+* Post Commit Update
+* CleanUp
+* Post Commit Update
+* Trying get all Chat Messages
+* Show Mobinfo if Spawn failed
+* Post Commit Update
+* cleanup
+* Post Commit Update
+* Fix
+* Better Fake Message
+* Try Spawn On StreamStart
+* Change YouTube Import Chat
+* Rpg Text Check + Bot Commands
+* Post Commit Update
+* Post Commit Update
+* RPG Harvest/Heal
+* Post Commit Update
+* Icons!
+* Post Commit Update
+* RpgPull
+* Start RPG-Ecosystem
+* Post Commit Update
+* Post Commit Update
+* Emotes
+* Post Commit Update
+* Vergessen zu Commiten -.-
+* Post Commit Update
+* Post Commit Update
+* First RPG-Log
+* Post Commit Update
+* Set Twtich User Name
+* Post Commit Update
+* Post Commit Update
+* Twitch Missing Timestamp
+* Twitch Integration
+* VipView Scale
+* Neues SubView
+* Delete Temp Files
+* Fucking Typo
+* Post Commit Update
+* Test Socket RPG
+* Post Commit Update
+* Websocket Test RPG
+* Syth-Websocket
+* Socket in Normal SYTH-Website
+* Post Commit Update
+* rpg ?attack
+* Chat Stats
+* Test More Better
+* Post Commit Update
+* Thats not Good but Better then before
+* Post Commit Update
+* Testing
+* BugFixing ServerUpdates?
+* Server Changes
+* Fu Server
+* youtube - author details
+* Next Try 2#
+* Next Try
+* Import User
+* Missing Changes
+* RPG-Overlay/Gen Mob
+* RPG-Overlay
+* Size Change
+* Link Models
+* Update Server
+* CI Defender833
+* Try YoutubeChatUsers
+* Fu Windows
+* HUD VIPs
+* Server Changes
+* Change Time
+* Uff PlayListItems split? HOW?
+* Better ConsoleLog
+* Change Timing Upload Update
+* Try Youtube Better Quota
+* Fu Windows
+* Post Commit Update
+* YouTube Active
+* Bumble Sic
+* YouTube Update
+* Bumble Update
+* Docker Build Test
+* Cleanup
+* Tinder Update
+* Bumble Update
+* Post Commit Update
+* SYTH Page
+* Post Commit Update
+* X
+* YouTube Test
+* Post Commit Update
+* WTF warum klappt docker nicht
+* WTF warum klappt docker nicht
+* Docker Change?
+* Tinder
+* Bubmle
+* Tinder Update
+* Bumble Update
+* Docker 2 Test New
+* Docker 2 Ecosystem
+* Docker Test 2
+* Docker Test
+* Tinder Update
+* Bumble Update
+* Tinder Update
+* Update Bumble
+* Bumble Automation
+* Tinder Update
+* Tinder Update
+* Post Commit Update
+* Whatever
+* PlayList Items
+* Table Definition Playlists
+* Sponsors Import & PlayLists Import"
+* Post Commit Update
+* SIC 4
+* SIC 3
+* SIC 2
+* SIC
+* Tinder Test
+* Bugfixing
+* Lokal Work Count
+* WorkCount Update
+* WorkCount Update
+* Prepare Test
+* Work Sic Test
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Post Commit Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Merge Fix
+* SIC
+* Tinder Update
+* Post Commit Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Tinder Update
+* Youtube Sponsors Test
+* Gamesite Paging & Search 2?
+* Tinder Update
+* Backup
+* New Files
+* Daily Tinder Update
+* YouTube Rework 1
+* Daily Tinder Update?
+* Try YouTube
+* Tinder Backup
+* Post Commit Update
+* Posting Game to setup Channel
+* Remove Game from Room?
+* Fixing Game Set
+* Try Set Channel Game
+* Fixing Outgoing PK
+* Try Outgoing PK
+* Change Place
+* Post Commit Update
+* Daily? Tinder Data Update
+* Daily? Tinder Data Update
+* Format Profiles
+* Format JSON
+* Dont Know
+* Rmove Last Try
+* Test Range Modifier
+* Like Timeout Display
+* Active Bot Again
+* Adding Current Tinder Content
+* Tinder Automation WebKiosk
+* PopAds
+* Post Commit Update
+* Klappt nicht auf Server
+* Post Commit Update
+* Post Commit Update
+* Post Commit Update
+* Post Commit Update
+* Post Commit Update
+* Remove because no need
+* Rename Folder & Ecosystem
+* Test Automation Tinder Finish
+* Tinder Automation
+* Getting Recommendations
+* TClient
+* AAH
+* FU
+* WTF Automation
+* Prettier All the things (No not all)
+* Gamesite Continue
+* Post Commit Update
+* Cronjob for Update?
+* Fixing Hooks Hopefully
+* Trying
+* Game Genres Steam & GOG
+* Sync
+* Post Commit Update
+* Test Genres
+* Post Commit Update
+* Test Category
+* Post Commit Update
+* Game Genre Test
+* Uncomment Functions
+* Change Banner Dimensions
+* Twitter Profil Picture & Banner?
+* Price Format Fix
+* game store typo 2
+* game store typo
+* game store fix?
+* game typo
+* Test !game
+* !game Command
+* Fixed !gege
+* More Commands
+* Getting Chat Commands Running on Server!
+* Install await-sleep
+* Renew Models Link
+* Missing Require
+* Test Commands
+* Renew Hooks
+* Post Commit Update
+* Post Commit Update
+* Post Commit Update
+* Adding ChatCommands to Ecosystem
+* ChatCommands
+* Dont know
+* Now Posting Works
+* Typo
+* Rename File
+* Missing File
+* First Try Discord Output
+* FU - Missing Module
+* Comment
+* Post Commit Update
+* UnUsefull Debug
+* Uncomment
+* Test 3
+* Restart&Commit Only With Changes
+* Test 2
+* Test
+* Restart All Cant Work like that
+* Post Commit Update
+* CleanUp
+* Try Prettier
+* GamesSite Name
+* Running?
+* Reorg Node Modules?
+* Post Commit Update
+* Post Commit Update
+* Typo
+* Current Path
+* ReOrg Node_Modules
+* Change Node_Modul Folder
+* Package Update
+* Trying to remove the lock Files
+* Missing Folders
+* Declare Affiliate Links
+* MetaGamerScore Achievements Tweet
+* Sylte Changes
+* Defender Werbung Test
+* Discord und Affiliate
+* Package Update
+* GOG-Import
+* Server Fix Pre-Commit Hook
+* Image Importer BugFix for Banner
+* fu
+* Forget Include
+* I dont know
+* TrySettings
+* target _blank
+* Game Site Fixing Layount & Icons
+* Package New for Main
+* Error Message Development Machine
+* Twitter Link
+* Tar.GZ Archiv
+* Adding Twitter Tracking
+* Package Update
+* for historical reason
+* Not Stop Cronjob
+* Package Update
+* trying shorter index
+* dont know
+* Server Changed Migrations
+* Split PKs
+* Next Try
+* Next Try
+* Trying Shortlink URL in GameLink
+* Fixing PKs?
+* Prepare YT
+* Fix Linux Update Script
+* Test Cronjob
+* Package Update
+* Package Update
+* GitIgnore
+* Dont Know
+* FU Windoof
+* Package Update
+* Neu auf Server
+* Whatever
+* Git Link
+* Package Update
+* Center Text
+* Twitter is bad
+* Something went wrong
+* Dont work. why?
+* Adding Twitter Pics Text
+* Short Url<Request Bug
+* Fixing Twitter
+* Adding Twitter to Ecosystem
+* ups... adding tweet
+* Test Short URL Tweet
+* Shortlink Games-on-Sale.de/s/$
+* Bugfix Shorturl
+* Package Update
+* Prepare Short Links
+* Google Analytics?
+* Start DiscrodBot for further Doings
+* Package Update
+* I hate Windows 2
+* I hate my Windows
+* ReChange Dev Function
+* Package Update
+* Status Humble
+* Changes?
+* Humble Trigger
+* Init Shorter
+* Test Preview
+* humble file import linux
+* Humble Windows
+* Preview Picture?
+* Humble Import File Directly
+* Fast Bugfix Created At Fild
+* Delete Delay
+* Link Preview?
+* Debug for Humble
+* test
+* Fu Windows
+* Humble File Import
+* Server Fixes
+* Package Update
+* Test Game Import Fucking Windows
+* Fixing Links
+* Hating Windows
+* Prepare Commands Better
+* Prepare Commands
+* Prepare 5 Seconds waiting
+* Cleanup and Stuff
+* Disable Humble Scan an Amazon
+* Humble Import all 24h zur Sicherheit
+* Delay Already Importet Steam
+* Aufbau Text
+* Encoded Name Lowercase
+* link with lower case only
+* Adding Game-Sale to EcoSystem
+* Game Sale News
+* Sync
+* link folders
+* Fixing Gitignore Stuff?
+* Maybe Fix Update Script
+* Fixing JS Path
+* Fixing Humble Links Style
+* Adding Page Title
+* Rename Things and Working on Windows
+* Impressum & Prepare Sales Check
+* Lazzy Load Images
+* Adding Partner Link
+* Display Games with more then 1 shop
+* Starting AmazonAPI on Server
+* test
+* Rewrite Update.sh
+* Updated at
+* Amazon macht Error
+* Change Linking Files Back
+* Update Amazon
+* Edit Output
+* Adding HumbleBundel after Server Check
+* Fixing Typos
+* Irgendwas vergessen bei Humble?
+* Mehr Probleme
+* Server Probleme
+* Changing Update
+* Package Update
+* Disable Backup in Ecosystem
+* Adding GIT Commands to Update
+* Cleanup for Server
+* PreCommit Test
+* Trying PostUpdate Hook
+* Prepare DevDocs in _readme
+* Preparing Server Update
+* BugFix Update
+* DM Channel
+* Imort Discord Chat
+* Change Package JSON?
+* Change Humble
+* Edit Layout
+* disable ads
+* Merch Import Order Random
+* Preparing links
+* Display Merch
+* AMAZON MERCH IMPORT
+* Oh YEAH Queue Callback
+* BUGGY Queue?
+* Rework Finished on Steam Import
+* clean
+* Merch Definition
+* sic before merge
+* Prepare Amazon Queue
+* Start Amazon Import
+* SYTH Core Package
+* Links Windows
+* Steam Overview Import
+* ReFix RSS
+* ReFix Twitter
+* Refix Amazon
+* ReFix Cronjob/Discord
+* Prepare All the Things
+* Testin Linked NodeModules
+* Commit moved Files & Edit
+* New Link Files
+* New Steam Import
+* Add Steam Model for Import
+* Prepare Rewrite Steam Import
+* Prepare Rewrite Steam Import
+* prepare syth website
+* adding logs to gitignore
+* adding notice
+* better knexfile
+* change app working path
+* Display Background instead of Banner
+* Fixing Picture Import
+* New Layout
+* Add Banner Generator
+* Add No Pic Generator
+* Add Logo Text Generator
+* Ignore Game Pics For Git
+* Delet Pics
+* Adding Image Importer
+* Disable Automatic User Report
+* games overview list
+* First Look GameSite
+* Adding SQLITE to GitIgnore
+* TRY Envirment for Dev DB
+* First Import the Unkown!
+* Try Starting GameSite with new 'Objection.js' as Model-ORM for MySQL
+* Adding ZoD Test to SYTH Commit
+* Adding Amazon Test to SYTH Commit
+* Testing Twitter
+* To be sure?
+* Maybee Humble dont need to restart?
+* Cronjob did wait for check of old files
+* Disable Steam Import
+* RPG Cronjob
+* Delete RPG commands
+* Disable RPG
+* Sic old handy
+* Create Cronjob for MYSQL Database/Windows
+* Adding Steam Cleanup - Wrong Type, Missing Games
+* delete wrong folder
+* jimp test
+* First RSS Test
+* Steam & Humble Import Improvement
+* Test ZOD-Function
+* Write YT Channel in DB
+* Optimize Steam Import?
+* Add Steam Link
+* Steam Import BugFix
+* Stream Ads only once per hour
+* TRY to Better Steam Import
+* Create Log Folder
+* Start Fixing Website
+* Fixing Discord
+* Fixing YouTube
+* Create Local Package for Humble/Steam
+* delete logs
+* ReOrg Folders
+* Start Humble Game Import
+* switch db-migrate to knex
+* Steam Game Import
+* Rename DB-Migration Tables
+* Fixing DB-Migration for Games
+* Continue Steam Import
+* Start Steam Games Import
+* First Try Cronjob
+* Refresh Token Update
+* PREPARE Refresh Token
+* Change WorkFlow
+* Save YouTube Token
+* YouTube Auth
+* Oauth Webpage isnt easy - Part 1
+* Youtube Data API Sample Get Channel
+* Prepare YouTube Api
+* Adding more Fields to Login Data
+* Prepare Daily Backup
+* Login Error Page
+* Login Count
+* Test E-Mail
+* Cronjob Example
+* Prepare Mail
+* First Login/Register Complete
+* Add Register Complete Redirect
+* Prepare Register Request
+* Fix Minor Typos
+* Add Route POST Register && AGB Link Main
+* Register Page Layout
+* Start Grid Layout
+* Start Layout
+* Better 404 Error
+* Install & Prepare Jquery-ui
+* Discord Set Activity
+* Optimize Discord Login/Error
+* Update Script
+* Install & Configure PM2 Ecosystem
+* Install & Init Discord
+* Install JQuery UI
+* Login Data Clear
+* Login Table & More Tests MultiQuery
+* Multi Query
+* Example SQL
+* Got it! Translate Text and ReRender it
+* Test Call with Params
+* Call it SimpleYTH
+* Add 404 Page
+* Somehow .hbs don't work... Change it back
+* Check for .env file & Change .handlebars to .hbs
+* Install MySQL & DB-Migrate
+* Install DotEnv
+* Change Formating
+* Install i18n for multi language
+* Install Express & Handlebars
+* Install Express & Handlebars
+* Patreon Connect
+* Refresh Streamlabs Token - Test
+* Irgendwie klappt meine SubDomain nicht mehr
+* StreamLabs Donation
+* Sponsors Import Typo
+* Sponsors Monate if(isset($_SESSION['hud']))
+* !yt sponsors Month Calculation at import
+* Streamlabs Auth
+* Prune Debug
+* !discord prune test
+* Steam Details import Fix?
+* !vip wenn kein YT User
+* !vip
+* !rage didnt work. delete
+* !rage command
+* !rage sonderzeichen next try
+* !rage sonderzeichen test
+* !rage
+* !bio command
+* TODO: Ask for 'Prune ' Right
+* Steam Details Import Error
+* sebga coffee
+* !patreon -> JS to PHP
+* !merch -> JS to PHP
+* warum gab es noch die !yt js?
+* !twitter -> JS to PHP
+* Add Twitch Owner
+* !discord prune Error
+* !vote war eh noch nicht fertig!
+* !kaffee Joke
+* !kaffee
+* Start Wordpress Post Again!
+* Twitch Supscriber // TODO: ReMake if NEW Twitch API works better...
+* Overlay ohne letzte zeichen
+* Typo
+* YT Community '
+* TRY: YT Community Fragezeichen entfernen
+* Monate als Zahl nicht als Text
+* Twitch Farbe gefunden
+* Umalute auf Server
+* Overlay & Umlaute
+* typo
+* hoffentlich jetzt keine Ads mehr
+* Möglichkeit Ads abzuschalten?!?
+* Twitch Chat Admin
+* Text Weg
+* Twitch Channel
+* Bessere Fehlermeldung
+* hat leider nicht functioniert
+* Twitch Connect Delay
+* Twitch Bot!
+* Zu viele Falsche Games!
+* zentrierung
+* css
+* correction html
+* hud sponsors
+* Monat/Monate
+* Sponsors Monat Anzeige
+* !yt community
+* next try
+* ups
+* !yt
+* YT in PHP
+* Error Missing Parameter
+* Cooldown optimierung bei Community Tab
+* falsche sprache
+* typo
+* Community Tab
+* Community Channel
+* !scan_youtube_communitytab CHANNEL
+* !twitch wieder aktiv
+* Livestream Twitch
+* Das Twitch Ding klappt wohl noch nicht so gut
+* Fehler und SebGa geht gleich live...
+* ich hasse mich
+* User Identify
+* typo
+* Fehlermeldung
+* !twitch livestream Command
+* Damit der Import wieder läuft
+* Prepare Post Livestream Twitch
+* try try try
+* Prepare Twitch Post Livestream
+* Sorry aber keine unnötigen Accounts mehr erstellen
+* Twitch Channel Import
+* Twitch Token Refresh ?!?
+* Behinderter 1 Zeichen Typo
+* Start Twitch World Domination
+* BR After Amazon Data
+* Steam Details, zu viele DLCs
+* try import
+* Ups
+* Untersuchung Fehler Steam Details
+* Irgendwie klappt der Steam Import gerade nicht...
+* added ignore for game amazon links
+* Game Werbung Amazon
+* Mysql wird scheinbar nicht ausgefüht
+* Humble Scan Page
+* Ups auskommentiert
+* Add Humble Screen
+* Hoffentlich so besser
+* next try
+* next
+* naeschter versuch
+* Try
+* Fixing Merge
+* rewrite humble scan
+* HumbleScan Timeout
+* Versuch Video Count Games
+* Damit der das noch updaten kann
+* Calc Discount MYSQL
+* Humble Discount 100%
+* die() vergessen raus zu nehmen
+* Price in GameList
+* Ich möchte das umbenennen!
+* Fehler wenn SteamApp nicht existiert
+* Get Game Details from Steam
+* Generate Game List
+* Getting Steam App IDs
+* TODO: Add Git Submodule
+* Nerviger Text erstmal raus!
+* Man sollte seine eigene Klasse schon kennen!!!111einself
+* So Besser
+* !discord mit Discord einladungslink!
+* TRY Playlist Import Page Token
+* Post on All Channels + Remove old Ads
+* Only Used 'processed' Videos
+* !yt lastvideo Condition
+* Wrong Condition
+* Humble Scan only runs Once!
+* Don't post future Streams
+* Post Livestream as User
+* Set Humble Sale Post to >75%
+* Sponsor CleanUp Old
+* Sponsores auch wieder entfernen
+* Sponsor Seit
+* Timings geändert
+* Post in 60 Sec
+* Post Humble Sale
+* Update Time on Entry
+* Humble Sale Easy Setup Pages
+* Rename Humble Sale to Humble Scan for future update
+* url fix
+* Versuch 6 Seiten Scan
+* Humble_Sale Test
+* NPM Package Install
+* Weiß nicht ob das besser wäre?
+* Test
+* Super wenn man die Variable nicht mitnimmt...
+* Datei speichern wäre voll gut
+* MaxReq sollte eigentlich nicht abgefragt werden... weil
+* BUGFIX: Rpg
+* Video Import Order
+* Video Import
+* Videos_Nochmal_Posten
+* Einhornliebe
+* !einhornliebe für alle
+* String verketten - nicht js sondern php
+* Update PHP User
+* !hug & !hug_me
+* BugFix: !discord - Hat bei YT immer den Bot gekillt!
+* test.php Generate Ad entfernt
+* PHP: !bug_report
+* PHP: !peel
+* PHP: !party
+* TTS natürlich nur wenn Discord
+* PHP TTS Test
+* ad reset
+* ad wiederhohlung
+* zu viele zeichen
+* Command Typo
+* split versuch 2
+* versuch ad text split
+* typo
+* falscher user?
+* upsi
+* Diffrent Ads
+* Fail Post Start
+* Nicht die Neuen Ads Posten
+* !rpg start auf Discord versuchen
+* Amazon Key gelöscht und in private_settings.php hinzugefügt
+* test
+* -1  User & Posten ohne Video Channel
+* klammern vergessen
+* versuch rpg wieder in ytlive
+* ach deswegen hatte das drop table nicht geklappt
+* Ading Error Handling and second eMail
+* BackupMail Test
+* hat irgendwie nicht geklappt
+* Fehlermeldung Fix: Wenn keine Sponsoren vorhanden
+* Clean deleted Videos
+* MySQL -> MySQLi Fehler nicht loggen
+* Ups Tabelle wurde nie erstellt
+* Cleanup & Error
+* Change Error Dir for Server
+* Ignore Error Dict
+* Minor PHP Error Fixes
+* Verbesserte Fehlermeldungen?
+* Error Handling
+* Ad 7 Tage nicht 7 Stunden ;)
+* ADs auf Discord alle 7 Tage. Auf YT alle 30Minuten.
+* php commands optimiert
+* encode decode das kann man ja mal verwechseln
+* umlaute test
+* gege nicht tts
+* test !gege
+* Maybee better (RPG No - Fight)
+* Personal OCD Thing
+* Hm wenigstens keine Fehlermeldung anzeigen^^
+* Irgendwann
+* ups
+* Hopefully Fixed
+* Alte YT Sende Funktion
+* test
+* typo
+* Token?
+* Bei Livestream hatte der Import ein Problem
+* Ich vermute der hat vorher keine Livestream chats abgefragt
+* Broadcastid
+* TRY Add LiveCuepoint
+* Reset Add Output Counter
+* aaah
+* Ups... Livestream natürlich nur zeigen wenn Livestream vorhanden!
+* Hoffentlich Ads nicht mehr klein
+* Change to PHP Ads
+* update user
+* var namen
+* Falls Feld nicht gefüllt?
+* add php ad
+* PHP Ad zum testen wieder hinzugefügt
+* Post Ads mit Cronjob Cooldown
+* Keine Ahnung was ich hier geändert haben soll
+* Versuch umlaute
+* Ups
+* Nochmal versuchen XD
+* No Ads
+* Hopefully nicht so oft ADs
+* Try Again AD
+* Post Livestream?
+* Stop
+* Hopefully
+* Ad wie bisher
+* New Update
+* Do More Ads!
+* Weitere Fixes die mir aufgefallen sind
+* RPG Anpassungen
+* missing file cronjob check
+* YT Commands geändert
+* Mal zwischendurch commiten
+* BugFix Bot Login
+* Rename/Fix More Cornjobs
+* Alle YT Importe aktualisiert
+* YouTube Importe
+* ggf. Umlaute
+* New Import Playlists
+* New Import Channel
+* Plan Update Video Import
+* Amazon & PHP Mailer!
+* Sponsors nur einmal je Stunde Checken
+* More Sponsors
+* !yt sponsors
+* Cronjob YT Sponsors (Revist at more Sponsors)
+* Tag_Test
+* add !twitter
+* !equip
+* Equip auch mit Short Link
+* BackupScript
+* Screen Start Script
+* nächste versuch videos posten
+* stop it
+* bitte nochmal
+* Nochmal testen XD
+* back
+* test2
+* test
+* Stop It
+* Post Video once a minute
+* Post new Videos on Discord
+* Hopefully starts rpg again!
+* ohne bild pfad
+* rahmen weg
+* seite angelegt
+* unnötige ausgabe entfernt
+* nachste versuch
+* vote for fehler
+* gewichtung beim voten
+* roles check
+* versuch sql fehler finden
+* SQL Error
+* Meldung set_Role youtube gaming
+* give user to vote
+* debug user on vote
+* kommentar
+* Sachen
+* nur 1 umfrage gleichzeitig aktiv
+* } nach hinten
+* type
+* du hast schon gevotet
+* nur defender darf beenden
+* message wenn vote erfolgreich
+* frage nicht wiederholen
+* User dürfen nur noch einmal voten
+* <br> to \r\n
+* explode fix
+* typo
+* typo
+* Vote
+* test
+* role add on mvp
+* Richtiger Text ausgeben
+* so vielleicht
+* member
+* debug console
+* so vielleicht
+* undefined
+* test
+* name_lower case
+* lalal
+* nameing
+* Set_Role Test!
+* asugabe gefixt
+* set_role versuch
+* test
+* git auto rpg spawn
+* Irgendwie will der das nicht
+* next typo
+* typo
+* Rgp text
+* noch ein versuch
+* versuch
+* ich weiß nicht weiter... php befehle sind zu langsam
+* bugfix
+* maaaan
+* versuch
+* versuch fehlermeldung ausgeben
+* typo url
+* umsortieren php
+* Fix php process
+* special cronjob only once
+* vielleicht besser
+* test
+* fixifix
+* fix try 1
+* debug2
+* debug
+* wtf
+* nächster versuch
+* Limit PHP Verarbeitung
+* Versuch PHP Befehle
+* test
+* No Tts
+* einhornliebe2
+* Update !einhornliebe
+* collum
+* !rss Host/Service Abfrage
+* !rss test
+* Prepare RSS-News
+* Track Clicks
+* trick 17 ms
+* da steht die id
+* natürlich id und nicht name
+* Klammern vergessen
+* Prune nur bei Owner?!?
+* Test Pruned!
+* sec vs milisec
+* Clean Lost Host/User
+* !discord for Discord Stats Update (User/Hosts)
+* fehler wenn keine videos vorhanden
+* start video overview
+* Links Table creat change
+* Login Fehler
+* neue link url
+* http weiterleitung
+* Owne Shorter Test
+* Online Test - RPG-HUD
+* Einfache HUD
+* HUD Abfragen
+* RpgHUD Check Begin
+* Rpg nun auhc YouTube
+* RPG Text fertig?
+* Neue Monster stärke
+* wrong row
+* Add Player AVG
+* Git Versuch Attk
+* kampf state
+* bad copy & paste
+* ODER = ORDER
+* Game ID ist natürlich ein String -.-
+* States verrutscht
+* we call it function
+* Online Test
+* Für heute genug gemacht!
+* Check Calc Online
+* Calc AVG Test
+* Damit der Cronjob Online läuft
+* state = game_state
+* man man man
+* AAAH
+* Ups Nochmal Hash verwendet!
+* Arg Hash = GameID
+* Teste SendFunc
+* Start mit !rpg ablauf
+* typo
+* Prepare !rpg FOR all HOST/USER
+* !ad nicht mehr direkt beim stream start
+* EDIT !rpg settings
+* !secret Rename to !rpg
+* Datei nicht gespeichert!
+* RPG-HUD Test Counter
+* Starting Real HUD
+* Start HUD _ Magic
+* Maybee Save Chatlog?
+* Add CleanUp Database for old Data!
+* safecheck
+* So besser?
+* Doofi
+* Online Test
+* 3 Tage in der Chat Stats berechnen
+* Disable Ad - Dicsord & Secret - Youtube
+* Versuch Own Ad
+* Vielleicht so besser
+* Try More Jobs
+* New Unused Fields
+* !ad Regel
+* hat bestimmt einen sinn das ich die datei geändert habe
+* eben falsche datei genommen^^
+* 5!
+* !peel
+* !ad fehler wegen Links
+* Users Paging
+* Add !merch & !patreon
+* ah linux -.-
+* Add My_Links
+* Owner festgelegt auf 'Admin'
+* Could double post same AD
+* typo
+* typo
+* Better Ads & Equip
+* Kein leeres Equip Posten
+* copy paste error
+* vergessen zu speichern
+* Test AD
+* Typo
+* Add Ads&Equip Forms
+* Prepare AD
+* Start Secret with Livestream
+* MYSQL Error
+* Next Stage Text
+* typo 2
+* typo
+* Test Js OBJ 3
+* Test Js OBJ2
+* Test JS Obj
+* Test JS Array
+* Begin Secret
+* SK Special
+* Hopefully Fixed Chat Error if not exists anymore
+* Livestream Posten
+* Uppsi Livestream raus genommen statt video
+* Disable Post Video
+* Falsche Variable
+* add helper class and post livestream/video
+* TOPLIST Pos +1
+* Bugfix
+* test
+* BOT COMMAND: TOP_CONTRIBUTOR
+* MYSQL_Close erstmal wieder entfernt
+* Save Settings for all Roles at once
+* MySQL Error Fix
+* Bot Chat Stats - Weniger Tage auf einmal berechnen!
+* Versuch Einhornliebe
+* Close MySQL Connection After Cronjob
+* BadWordListe Anzeige
+* Start to do Wordpress Posts
+* So macht das fuer online mehr Sinn momentan
+* New XMLRPC Class for Wordpress
+* Normalen cronjob wieder repariert
+* Irgendwie klappt curl nicht
+* W
+* Test XML RPC
+* ID to STRING
+* Change id with Godmod
+* Godmode replace
+* "
+* SetChannel GodMode
+* Prepare Godmode
+* Prepare Permission for each Command
+* XML_RPC klappt irgendwie noch nicht so
+* Prepare Wordpress Again
+* Wordpress Include entfernt
+* Wordpress Include geändert
+* Eigentlich dachte ich, das wäre schon behoben
+* Prepare Wordpress
+* Dann halt erstmal ohne Tags
+* Test
+* ADD Tag Count
+* So Maybee? - No local Webserver :(
+* Falsche Klammern
+* YT:TRY Import Tags
+* Wrong Counter Var
+* Typo
+* YT-TRY Import PlaylistItems
+* YT-Import PlaylistsSnippet
+* TRY FIX: lastvideo
+* Next Typo
+* Typo
+* Published Date Update
+* Bot Chatspam Fix
+* Fixed Issue #1
+* Warum klappt das nicht
+* Irgendwie klappt das nicht
+* Test Cronjob
+* Workarround PostNewVideos
+* Cronjob wieder aktiviert
+* ADD Datatables
+* Borders
+* Youtube Gaming Livechat Fixed
+* User koennen eigene Videos posten (wenn erlaubt)
+* More Errors
+* Fix: do.php
+* Typo
+* Hopefully Fixed Bot with new OAuth
+* Send To Server#
+* Test
+* Logout Link richtig
+* Bugfix?
+* AuthToken umgestellt
+* ADD: Bot !info
+* BOT: !yt video ID
+* TEST
+* TEST: LivestreamingDetails
+* Berechnung Spam Anzahl der Nachrichten
+* Check for Spam
+* Spam MSG auf 10
+* UnReport User
+* Wieso fallen mir so kleine Fehler erst nach einen Commit auf?
+* In dem Bestimmten Fall, darf da kein return sein
+* Rechte per Page einstellen
+* Irgendwas ging da nicht richtig
+* Typo
+* Typo
+* Irgendwie noch einen Fehler bei Set Channel
+* Set Shame Channel
+* Chat Msg Stats
+* No More Bot Reporting
+* Test Umlaute 4
+* Test Umlaute 3
+* Test Umlaute 2
+* Test Umlaute
+* Page: My Accounts
+* Bot: Remove Owner Role, Add Owner to Host
+* Bot: Add Role Owner
+* Bot Roles Import
+* Yeah Discrod Login klappt
+* Discord Login Test
+* Komme nicht weiter mit Discord Login
+* Discrod Login
+* Prepare Discrod Auth
+* Prepare Login
+* Fixed Spam Protect?
+* Disable Spam Check
+* TEST FIX
+* Schon besser
+* BugFix Spam
+* Test Timestamp runden
+* Change MySQL
+* Try Spam
+* TEST
+* MSG ID REPORT
+* Bot Chat_Spam Bugfix
+* Cronjob anpassungen + Chat Spam Check
+* Prepare Cornjob Chat Spam - Good Night
+* Verwarnung Timestamp
+* Bot Report_User fix
+* Bot !report_user TEST - Irgendwie macht replace Probleme, macht des nur das erste vorkommen?
+* Add Host & User to !yt
+* Bot Rename !defender => !yt
+* Bot Bad Word Function
+* Eval Fix
+* Bah
+* Try Moment
+* New Timestamp Try
+* Irgendwie klappt das mit den 200 zeichen noch nicht so
+* Not String.size, String.length
+* BugFix Discrod Username
+* Time darf kein replace haben
+* Test 200 Zeichen
+* Replace '
+* Party Cooldown change
+* Kein Debug
+* Debug
+* Party Bug
+* Typo
+* Try to Run Fixes
+* Command Description
+* Try to Run Fixes
+* Party Cooldown und MaxUse
+* More Ideas as Comments
+* More Bot_Chat 'Logs'
+* Discord - Restart & Status
+* Klappt wohl am Server
+* Server Test TTS
+* Fix Order
+* Klein Groß schreibung FIX again!
+* Update with Discord_Shame_Bot
+* Bot-Command: bug_report
+* Bot lowercase Test
+* Klein/Gross Schreibung
+* Besser aber noch nicht so wie gewünscht...
+* Optimize Cronjob - Maybee
+* Reset GoogleAuth in Bot
+* Change Bot Login to MySQL
+* First Bot Commands To Google Gaming
+* Disable Chat Spam
+* Bot Google Chat lesen!
+* Bot Read DB
+* Live Stream Chat Import
+* Bugfix Import Lokal Import Error
+* UNSYNCT UPDATE
+* Do Commands festgelegt auf Defender Channel
+* Page Login
+* videoID = videoid
+* falls kein Video vorhanden ist
+* Bugfix Empty Output
+* Fehlerbehebung
+* IMPORTANT: Change MySQL Feld: channelid in subscriptions_subscribersnippet to VARCHAR
+* Klein Schreibung von Feldern!
+* Hoffentlich nun richtig
+* Need More Debug
+* channelId = channelid
+* Unknown column 'channelId' in 'field list'
+* schlechter test
+* test
+* TRY Fix Server
+* tabellen jetzt immer klein - wegen einheitlich
+* Bugfixes
+* Cronjob Fehler beim Server
+* Activate Chat Cronjob
+* Commands Change to MySQL
+* Cronjob Change to MySQL
+* Load Channels Update
+* MySQL Cronjob LoadChannel
+* More MySQL Prepare
+* Cronjob Mysql würde jetzt klappen, aber mit Daten duplizieren
+* Prepare Mysql Cronjob
+* Mehr kann ich im Moment nicht machen
+* Unmöglich die ganzen Änderungen ohne Internet zu machen
+* First Login Create Channel_Token List
+* New Register with MySQL
+* Change DB.php Functions
+* Prepare MySQL
+* Create Node Package.Json
+* Bot Reboot Command
+* Das passt besser XD
+* Author nicht User
+* User sagt
+* Arg aus ner promise returnen bringt nichts
+* Bäh Fehler
+* Ohne Compiler fallen mir manchmal noch TYPOS auf
+* Vergessen Test zu aktivieren
+* Was ausprobieren
+* ADD tts Command to Discord Bot
+* ADD: Command to Check Cronjob Updates
+* BugFix Cornjob Typo
+* UPDATE Start_Bot.sh
+* UNSYNCT UPDATE
+* Datei kann nicht geschrieben werden
+* Fix
+* denkfehler
+* Fehler bei übernahme
+* SH Bot Start
+* SH SimpleYTH-UPDATE
+* Edit Bash 2
+* Edit Bash Scripts
+* Weiter Google Bot
+* entfernt
+* Start YTApi Bot
+* Irgendwas hab ich falsch gemacht
+* ADD Youtube API to Bot
+* klein/groß
+* buh
+* öh
+* Nav_Helper Auth Token JSON
+* testen
+* Umstellung auf Randompeople
+* Ich muss mir unbedingt angewöhnen immer richtig zu Syncen!
+* Adresse ändern wegen Problemen ;)
+* Banner Hinzugefügt
+* test3
+* test2
+* test
+* flasch geklammert
+* ich muss echt mal node.js lernen
+* bugfix
+* typo2
+* typo
+* Try Repeat Party
+* active normal cronjob
+* START Cronjob Chat
+* Live Chat YT
+* .
+* Try BugFix Token
+* ADD TTS PARTY
+* GetLiveChatId
+* Livestream Ceck Test
+* Bugfix Token File?
+* TEST
+* UPDATE Google API 2.0.3
+* Bugfix
+* Enable Cronjob again
+* Google API 1.1.7 + LiveStreamChat in Cronjob
+* clean
+* Missing Update files
+* HOPEFULLY UPDATE GOOGLE API
+* START LIVESTREAM CHAT
+* Message on Connect
+* TRY StartScript Bot
+* BOT: AutoRestart Test
+* test
+* ADD lastvideo
+* EDIT: cronjob.php
+* ADD videos_status.php
+* ADD videos_liveStreamingDetails.php
+* ADD: Load Video Statistics
+* ADD Channels ContentDetails
+* Subs Thumb Import
+* Thumb Import Try
+* Bug
+* BOT Url Parameter
+* Prepare Param for Defender Commands
+* Edit all to SQLITE
+* Edit .gitignore
+* Remove Data
+* CHANGE lastsub to sqlite
+* UPDATR Subscriber SQL & Cron job
+* SQLITE SUBS BUGFIX
+* TRY SQLITE SUBSCRIBED
+* FORMAT durch ATOM
+* SQLITE BUGFIX
+* SQLITE Crinjob
+* SQLite add Data
+* Prepare SQLITE Data
+* 
+* sqlite start but server error
+* test
+* Dont know
+* Mobile gerade keine Lust mehr
+* URL Change
+* New URL
+* Did Bot Things
+* Rewrite Bot Command System
+* changes
+* Clean Bot + Changes
+* PREPARE Database
+* EDIT Things#
+* wtf
+* BUGIFX APP NAME
+* INSERT pullanddeploy Func FROM DiscordBot
+* BUGFIX Bot Defender Command
+* TRY Clean Bot
+* ADD Node.JS Bot
+* BUGFIX date for daily subs
+* ADD random sub & subs of the day
+* Bugfix Subs continues loading at next call
+* Refresh PageToken for Subscriber
+* BUGFIX lastsub name?
+* CHANGE oauth & token refresh
+* DEL formating because of YT
+* ADD command streamplan
+* ADD html2markdown func
+* ADD Blackmagic XD
+* CHANGE API Type & SWITCHED to my Channel
+* TEST für CHANGE
+* MERGE with old project
+* CHANGE new index and do files
+* ADD Devkey COMMENT Output Private Devkey
+* ADD commands command CHANGE Folder scripts->commands
+* FIXED Empty Command
+* Give Hint on "How to use"
+* Change Commands Call
+* Prepaid Script/Bot Commands
+* First Debug Script
+* structure things
+* Add GoogleAPI Files
+* TEST Android
+* Initial commit

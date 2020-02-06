@@ -2,8 +2,9 @@
 chmod +x ./hooks/*
 git add ./hooks/
 
-git log --format="  * %s" --no-merges >> ./CHANGELOG.txt
-git add ./CHANGELOG.txt
+rm ./CHANGELOG.md
+git log --format="* %s" --no-merges $(git describe --tags --abbrev=0 @^)..@ >> ./CHANGELOG.md
+git add ./CHANGELOG.md
 
 # Prettify all files
 FILES=$(git diff --cached --name-only --diff-filter=ACMR "*.js" "*.jsx" "*.json" | sed 's| |\\ |g')
