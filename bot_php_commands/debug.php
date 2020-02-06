@@ -1,4 +1,0 @@
-<?php
-//debug_log($this_msg);
-echo 'TEST';
-?>
