@@ -1,0 +1,201 @@
+.corner-all {
+  border: 1px solid #ccc !important;
+  border-radius: 4px !important;
+}
+
+body {
+  font-size: 100%;
+  padding: 0px;
+  margin: 0px;
+  background-color: #0f0f0f;
+  color: #ccc;
+  display: grid;
+  grid-gap: 0px;
+  grid-template-columns: auto;
+  grid-template-areas:
+    "header"
+    "navigation"
+    "content"
+    "footer";
+}
+table {
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+h2 {
+  margin: 0px;
+  margin-bottom: 3px;
+  text-decoration: underline;
+}
+.fett {
+  font-weight: bold;
+  white-space: nowrap;
+}
+p {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #007;
+  border: 1px solid #00f;
+  border-radius: 4px;
+}
+li {
+  float: left;
+}
+li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 150%;
+}
+li a:hover {
+  background-color: #11f;
+}
+
+hr {
+  border-color: #007;
+}
+
+#header {
+  grid-area: header;
+  background-image: url("/img/background.png");
+  background-repeat: repeat;
+  vertical-align: top;
+}
+#content {
+  grid-area: content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#navigation {
+  grid-area: navigation;
+}
+#footer {
+  grid-area: footer;
+  background-color: #007;
+  border: 1px solid #00f;
+  border-radius: 4px;
+}
+#anzeige {
+  grid-area: anzeige;
+}
+
+.game_list-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100% !important;
+}
+.news_list-container {
+  justify-content: center;
+  display: flex;
+  flex-wrap: wrap;
+  width: 100% !important;
+}
+.news_list-container table tr {
+  display: inline-block;
+}
+a {
+  text-decoration: none;
+  color: #ccc;
+}
+.game_list {
+  text-decoration: none;
+  color: #111 !important;
+  margin: 5px;
+  width: 276px;
+  max-width: 276px;
+  flex: 1;
+  position: relative;
+  background-color: white;
+  margin: 10px;
+  box-shadow: 3px 3px 1px #333;
+  display: inline-block;
+  vertical-align: top;
+}
+a.game_link {
+  color: #111 !important;
+}
+.news_list {
+  flex: 45%;
+  margin: 10px;
+  position: relative;
+  background-image: linear-gradient(#111, #333 80%, #111);
+  box-shadow: 3px 3px 1px #333;
+  text-align: left;
+  min-width: 800px;
+  width: 48%;
+  display: inline-block;
+  vertical-align: top;
+}
+.game_description {
+  text-align: justify;
+}
+.price-container {
+  position: relative;
+}
+.price {
+  font-size: 120%;
+  text-align: right;
+  font-weight: bold;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+.price .low {
+  color: green;
+}
+.price .high {
+  color: red;
+  text-decoration: line-through;
+}
+
+.hinweis {
+  background-color: #b40404;
+  border: 1px solid #ff0000;
+  border-radius: 4px;
+}
+
+a.Amazon {
+  background: url("/img/service/amazon.png") no-repeat left;
+  background-position: 0px 0px;
+  background-size: 16px 16px;
+  padding-left: 18px;
+}
+a.Steam {
+  background: url("/img/service/steam.png") no-repeat left;
+  background-position: 0px 0px;
+  background-size: 16px 16px;
+  padding-left: 18px;
+}
+a.Humble {
+  background: url("/img/service/humble.png") no-repeat left;
+  background-position: 0px 0px;
+  background-size: 16px 16px;
+  padding-left: 18px;
+}
+a.Humble::after {
+  content: "*";
+}
+a.GOG {
+  background: url("/img/service/gog.png") no-repeat left;
+  background-position: 0px 0px;
+  background-size: 16px 16px;
+  padding-left: 18px;
+}
+.price a {
+  background: url("") !important;
+}
+p.created {
+  text-align: right;
+  font-size: 60%;
+}

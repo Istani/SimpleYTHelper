@@ -1,0 +1,32 @@
+{
+  "name": "SimpleYTH",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "dependencies": {
+    "async": "^3.1.0",
+    "dotenv": "^8.1.0",
+    "knex": "^0.19.4",
+    "mysql": "^2.17.1",
+    "node-emoji": "^1.10.0",
+    "objection": "^1.6.11",
+    "prettier": "^1.18.2",
+    "shortid": "^2.2.15"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node app.js",
+    "prettier-watch": "onchange '**/*.js' -- prettier --write {{changed}}"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://Istani:s1s3h1_github@github.com/Istani/SimpleYTHelper.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Istani/SimpleYTHelper/issues"
+  },
+  "homepage": "https://github.com/Istani/SimpleYTHelper#readme"
+}

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script type="text/javascript" src="/jquery-ui/external/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/jquery-ui/jquery-ui.js"></script>
+    <script type="text/javascript" src="/socket-io/socket.io.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/jquery-ui/jquery-ui.css" />
+    <link rel="stylesheet" type="text/css" href="/jquery-ui/jquery-ui.structure.css" />
+    <link rel="stylesheet" type="text/css" href="/jquery-ui/jquery-ui.theme.css" />
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+
+    <meta charset="utf-8">
+    <title>SimpleYTH</title>
+</head>
+
+<body>
+    <div id="header" class="ui-accordion ui-widget ui-helper-reset" width="100%">
+        <h3
+            class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">
+            Simple YoutubeHelper</h3>
+        <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
+            <img src="/banner.png">
+        </div>
+    </div>
+
+    <div id="content" class="ui-accordion ui-widget ui-helper-reset">
+        <h3
+            class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">
+            Content</h3>
+        <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
+            {{{body}}}
+        </div>
+    </div>
+
+    <div id="navigation">
+        {{#if data.login.user}}
+            User eingeloggt!
+        {{else}}
+            <div id="page_login" class="ui-accordion ui-widget ui-helper-reset">
+                <h3
+                    class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">
+                    Login</h3>
+                <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
+                    <form method="POST" action="/Login">
+                        <label>{{{i18n "E-Mail"}}}:</label>
+                        <br>
+                        <input type="email" name="email">
+                        <br>
+                        <br>
+                        <label>{{{i18n "Password"}}}:</label>
+                        <br>
+                        <input type="password" name="password">
+                        <br>
+                        <br>
+                        <input type="submit" name="button"
+                            value="{{{i18n "Login"}}}">&nbsp;{{{i18n "Login or Register . Or"}}}
+                        <a href="/Register">{{{i18n "Regsiter"}}}</a>
+                        <br>
+                    </form>
+                </div>
+            </div>
+        {{/if}}
+        <br>
+        <br>
+        <div id="page_info" class="ui-accordion ui-widget ui-helper-reset">
+            <h3
+                class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">
+                About</h3>
+            <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
+                <a href="/AGB">{{{i18n "ABGs"}}}</a>
+                <br>
+                <a href="/Impressum">{{{i18n "Impressum"}}}</a>
+                <br>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer" class="ui-accordion ui-widget ui-helper-reset" width="100%">
+        <div class="ui-accordion-content ui-helper-reset ui-widget-content sk_ui-corner-all">
+            <center>
+                &copy;: Sascha Kaufmann
+            </center>
+        </div>
+    </div>
+
+    <div id="random_content" class="ui-accordion ui-widget ui-helper-reset" width="100%">
+        <div class="ui-accordion-content ui-helper-reset ui-widget-content sk_ui-corner-all">
+            Soon!
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            console.log(location.origin)
+            var socket = io(location.origin);
+            socket.on('connect', function () {
+                socket.on('debug', function (data) {
+                    console.log(data);
+                })
+                socket.on('disconnect', function () {
+                    setTimeout(() => {
+                        location.reload();
+                    }, 100);
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

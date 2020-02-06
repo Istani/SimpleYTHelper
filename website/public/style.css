@@ -1,0 +1,52 @@
+/* JQuery UI Manipulate */
+.ui-widget-content {
+  background: #FFFFFF url('') !important;
+}
+
+.sk_ui-corner-all {
+  border: 1px solid #cccccc !important;
+  border-radius: 4px !important;
+}
+
+
+
+/* Own Style 
+* {
+  opacity: 0.95;
+}
+*/
+body {
+  transform: scale(0.75);
+  transform-origin: 50% 0;
+  background-color:#f9f9f9;
+  display: grid;
+  grid-gap: 10px;
+  grid-template-columns: 325px auto 200px;
+  grid-template-areas:
+    'header header header'
+    'navigation content anzeige'
+    'footer footer footer';
+}
+
+#header {
+  grid-area: header;
+}
+#content {
+  grid-area: content;
+}
+#navigation {
+  grid-area: navigation;
+}
+#footer {
+  grid-area: footer;
+}
+#anzeige {
+  grid-area: anzeige;
+}
+
+.service-twitch {
+  background: url("/img/service/twitch.png") no-repeat left;
+  background-position: 0px 0px;
+  background-size: 16px 16px;
+  padding-left: 18px;
+}

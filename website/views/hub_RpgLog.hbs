@@ -1,0 +1,60 @@
+<style type="text/css">
+  .border_box {
+    width: 100vw;
+    height: 100vh;
+    background-image: url('/rpg.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    position: relative;
+  }
+
+  /*.log_box {
+    -webkit-mask-image: -webkit-gradient(linear, right top, right bottom,
+        from(rgba(0, 0, 0, 0.75)), to(rgba(0, 0, 0, 1)));
+  }*/
+
+  #log {
+    position: absolute;
+    bottom: 0;
+  }
+</style>
+
+<div class="border_box log_box" style="">
+  <div id="comming_soon">
+    Comming Soon...
+  </div>
+  <div id="log">Das passierte bisher:<br></div>
+</div>
+
+<script type="text/javascript">
+  $ = jQuery;
+
+  $(document).ready(function () {
+    console.log(location.origin.replace(':3000', '') + ":3004");
+    var socket_rpg = io(location.origin.replace(':3000', '') + ":3004");
+    socket_rpg.on('connect', function () {
+      $('#comming_soon').css({display: 'none'});
+      socket_rpg.send("join", "{{data.user}}");
+
+      socket_rpg.on('log', function (data) {
+        console.log(data);
+        $('#log').append("<span class='time'>" + data.created_at + ":</span>&nbsp;<span class='logline service-" + data.service + "'>" + data.display_text + '</span><br>');
+      });
+
+      socket_rpg.on('disconnect', function () {
+        setTimeout(() => {
+          location.reload();
+        }, 100);
+      });
+    });
+  });
+
+  // For Dev
+  /*
+  setTimeout(() => location.reload(), 1000 * 30);
+  setInterval(() => {
+    console.log("Should Next Line");
+    $('#log').append('Next Line <br>');
+  }, 200);
+  */
+</script>

@@ -1,0 +1,41 @@
+<table class="news_list-container">
+  <thead>
+    <tr>
+      <td></td>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each news}}
+      <tr class="news_list corner-all">
+        <td>
+          <table>
+            <tr>
+              <td>
+                <img data-src="{{banner}}" src="img/games/no_pic.jpg" height="129" width="276"
+                  class="lazyload corner-all" />
+              </td>
+              <td>
+                <h2>{{display_title}}</h2>
+                <p>{{display_text}}</p>
+                <br>
+                <table width="100%" class="fett">
+                  <tr>
+                    <td width="100%">
+                      <p><a href="{{link}}" class="{{category}}" target="_blank">{{category}}</a></p>
+                    </td>
+                    <td>
+                      &nbsp;&nbsp;
+                    </td>
+                    <td>
+                      <p><a href="/game/{{game}}">Zum&nbsp;Game</a></p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>

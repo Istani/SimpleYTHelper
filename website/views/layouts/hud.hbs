@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script type="text/javascript" src="/jquery-ui/external/jquery/jquery.js"></script>
+  <script type="text/javascript" src="/jquery-ui/jquery-ui.js"></script>
+  <script type="text/javascript" src="/socket-io/socket.io.js"></script>
+
+  <!---
+  <link rel="stylesheet" type="text/css" href="/jquery-ui/jquery-ui.css" />
+  <link rel="stylesheet" type="text/css" href="/jquery-ui/jquery-ui.structure.css" />
+  <link rel="stylesheet" type="text/css" href="/jquery-ui/jquery-ui.theme.css" />
+  <link rel="stylesheet" type="text/css" href="/style.css" />
+
+  <link rel="stylesheet" type="text/css" href="https://raw.githubusercontent.com/iamstarkov/css-initials/master/all.css" />
+!--->
+  <style type="text/css">
+    @import url('https://fonts.googleapis.com/css?family=Montserrat');
+
+    :root {
+      --color_1: #B2B1AD;
+      --color_2: #1F2041;
+      --color_3: #39AEE0;
+      --color_4: #E7E247;
+      --color_5: #FE9FCB;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+
+      text-shadow:
+        1px 1px 0 var(--color_2),
+        1px -1px 0 var(--color_2),
+        -1px 1px 0 var(--color_2),
+        -1px -1px 0 var(--color_2);
+
+      font-weight: normal;
+      color: var(--color_4);
+      letter-spacing: 1pt;
+      word-spacing: 2pt;
+      font-size: 12px;
+      font-family: arial black, sans-serif;
+      line-height: 1;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: #eee;
+      color: #111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .username {
+      color: var(--color_5);
+    }
+
+    .special {
+      color: var(--color_3);
+    }
+
+    .border_box {
+      background-color: var(--color_1);
+      border-color: var(--color_2);
+      border-style: solid;
+    }
+
+
+    .service-twitch {
+      background: url("/service_icons/twitch.png") no-repeat left;
+      background-position: 0px 0px;
+      background-size: 14px 14px;
+      padding-left: 15px;
+    }
+
+    .service-discord {
+      background: url("/service_icons/discord.png") no-repeat left;
+      background-position: 0px 0px;
+      background-size: 14px 14px;
+      padding-left: 15px;
+    }
+
+    .service-youtube {
+      background: url("/service_icons/youtube.png") no-repeat left;
+      background-position: 0px 0px;
+      background-size: 14px 14px;
+      padding-left: 15px;
+    }
+  </style>
+
+
+  <meta charset="utf-8">
+  <title>SimpleYTH - HUD</title>
+</head>
+
+<body>
+  {{{body}}}
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      console.log(location.origin)
+      var socket = io(location.origin);
+      socket.on('connect', function () {
+        socket.on('debug', function (data) {
+          console.log(data);
+        })
+        socket.on('disconnect', function () {
+          setTimeout(() => {
+            location.reload();
+          }, 100);
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>

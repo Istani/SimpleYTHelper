@@ -1,0 +1,83 @@
+<style>
+  .animatedText {
+    animation: FadeAndScale 7.1s ease-in;
+  }
+  .animatedSubGoal {
+    animation: FadeAndScale 14.1s ease-in;
+  }
+  .animatedText, .animatedSubGoal {
+    transform-origin: center bottom;
+    padding: 10px;
+    margin: 30px;
+    border-color: var(--color_2);
+    border-width: 1px;
+    border-style: solid;
+    background-color: var(--color_1);
+  }
+
+  @keyframes FadeAndScale {
+    0% {
+      opacity: 0;
+      transform: scale3d(0.5, 0.5, 1);
+    }
+
+    20% {
+      opacity: 1;
+      transform: scale3d(1.5, 1.5, 1);
+    }
+
+    80% {
+      opacity: 1;
+      transform: scale3d(1.5, 1.5, 1);
+    }
+
+    90% {
+      opacity: 0;
+      transform: scale3d(0.5, 0.5, 1);
+    }
+
+    100% {
+      opacity: 0;
+      transform: scale3d(0.5, 0.5, 1);
+    }
+  }
+</style>
+<center>
+  <div id="show_subs"></div>
+</center>
+
+<script type="text/javascript">
+var data = [
+  {{#each data.data}}
+    { name: "{{name}}", time: {{length_month}} },
+  {{/each}}
+  ];
+
+  var current_sub = 0;
+  function animateSubs() {
+    var div = document.getElementById("show_subs");
+    div.innerHTML = "<div class='animatedText'><img src='/hud/crown.png' width='16' height='16'>&nbsp;VIPs:<br><span class='username'>" + data[current_sub].name + "</span> <span class='special'>" + data[current_sub].time + "</span> Monate</div>";
+
+    current_sub++;
+    if (current_sub >= data.length) {
+      current_sub = 0;
+      setTimeout(subGoal, 7000);
+    } else {
+      setTimeout(animateSubs, 7000);
+    }
+  }
+  function subGoal() {
+    var subfaktor=1;
+    if (data.length>5) { subfaktor=10;}
+    if (data.length>50) { subfaktor=100;}
+    if (data.length>500) { subfaktor=1000;}
+
+    var multi = parseInt(data.length/subfaktor)+1;
+
+    var div = document.getElementById("show_subs");
+    div.innerHTML = "<div class='animatedSubGoal'><img src='/hud/crown.png' width='16' height='16'>&nbsp;VIPs:<br><span class='username'>Goal:</span> <span class='special'>" + data.length + "/" + (multi*subfaktor) + "</span></div>";
+
+    setTimeout(animateSubs, 14000);
+  }
+  animateSubs();
+</script>

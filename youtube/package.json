@@ -1,0 +1,19 @@
+{
+  "name": "syth-youtube",
+  "version": "1.0.0",
+  "description": "",
+  "main": "youtube_bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "await-sleep": "0.0.1",
+    "better-queue": "^3.8.10",
+    "google-auth-library": "^5.5.1",
+    "googleapis": "^45.0.0",
+    "node-cron": "^2.0.3",
+    "node-emoji": "^1.10.0"
+  }
+}

@@ -1,0 +1,12 @@
+https://stackoverflow.com/questions/5917249/git-symlinks-in-windows
+
+
+	add-symlink = "!__git_add_symlink(){\n    argv=($@)\n    argc=${#argv[@]}\n\n    # Look for options\n    options=(\" -h\")\n    o_help=\"false\"\n    case \"${argv[@]}\" in *\" -h\"*) o_help=\"true\" ;; esac\n    if [ \"$o_help\" == \"true\" -o \"$argc\" -lt \"2\" ]; then\n        echo \"\\\nUsage: git add-symlink <target> <link>\n\n* <target> is a RELATIVE PATH, respective to <link>.\n* <link> is a RELATIVE PATH, respective to the repository's root dir.\n* Command must be run from the repository's root dir.\"\n        return 0\n    fi\n\n    target_arg=${argv[0]}\n    link_arg=${argv[1]}\n\n    if [ ! -e \"$target_arg\" ]; then\n        echo \"ERROR: Target $target_arg does not exist; not creating invalid symlink.\"\n        return 1\n    fi\n\n    hash=$(echo -n \"$target_arg\" | git hash-object -w --stdin)\n    git update-index --add --cacheinfo 120000 \"$hash\" \"$link_arg\"\n    git checkout -- \"$link_arg\"\n\n}; __git_add_symlink \"$@\""
+	rm-symlink = "!__git_rm_symlink(){\n    git checkout -- \"$1\"\n    link=$(echo \"$1\")\n    POS=$'/'\n    DOS=$'\\\\\\\\'\n    doslink=${link//$POS/$DOS}\n    dest=$(dirname \"$link\")/$(cat \"$link\")\n    dosdest=${dest//$POS/$DOS}\n    if [ -f \"$dest\" ]; then\n        rm -f \"$link\"\n        cmd //C mklink //H \"$doslink\" \"$dosdest\"\n    elif [ -d \"$dest\" ]; then\n        rm -f \"$link\"\n        cmd //C mklink //J \"$doslink\" \"$dosdest\"\n    else\n        echo \"ERROR: Something went wrong when processing $1 . . .\"\n        echo \"       $dest may not actually exist as a valid target.\"\n    fi\n}; __git_rm_symlink \"$1\""
+	rm-symlinks = "!__git_rm_symlinks(){\n    for symlink in $(git ls-files -s | egrep \"^120000\" | cut -f2); do\n        git rm-symlink \"$symlink\"\n        git update-index --assume-unchanged \"$symlink\"\n    done\n}; __git_rm_symlinks"
+	checkout-symlinks = "!__git_checkout_symlinks(){\n    POS=$'/'\n    DOS=$'\\\\\\\\'\n    for symlink in $(git ls-files -s | egrep \"^120000\" | cut -f2); do\n        git update-index --no-assume-unchanged \"$symlink\"\n        dossymlink=${symlink//$POS/$DOS}\n        cmd //C rmdir //Q \"$dossymlink\" 2>/dev/null\n        git  checkout -- \"$symlink\"\n        echo \"Restored git symlink $symlink <<===>> $(cat $symlink)\"\n    done\n}; __git_checkout_symlinks"
+
+Unter Windows 
+git rm-symlinks
+ausführen zum links auf git repo zu benutzen!
+
