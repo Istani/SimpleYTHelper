@@ -18,8 +18,6 @@ const Outgoing_Message = require("./models/outgoing_messages.js");
 const Games = require("./models/game.js");
 const Links = require("./models/game_link.js");
 
-var prefix = "!";
-
 var settings = {};
 function load_settings() {
   try {
@@ -30,10 +28,11 @@ function load_settings() {
     settings = {};
     settings.last_time = new Date();
     settings.last_time.setDate(settings.last_time.getDate() - 7);
+    settings.prefix = "!";
   }
 }
 function save_settings() {
-  var data = JSON.stringify(settings);
+  var data = JSON.stringify(settings, null, 2);
   fs.writeFileSync("./temp/settings.json", data);
   load_settings();
 }
@@ -156,12 +155,19 @@ commands[7] = {
   function: channel_unset,
   visible: false
 };
+commands[8] = {
+  name: "announcement",
+  params: "[text]",
+  description: "Bekanntgebung!",
+  function: announcement_command,
+  visible: false
+};
 
 async function get_msg() {
   //return;
   //console.log(prefix, settings.last_time);
   var msg_list = await Messages.query()
-    .where("content", "like", prefix + "%")
+    .where("content", "like", settings.prefix + "%")
     .where("created_at", ">", settings.last_time);
   //console.log(msg_list);
   //console.log(commands);
@@ -170,12 +176,12 @@ async function get_msg() {
     settings.last_time = msg_list[i].created_at;
     save_settings();
 
-    if (msg_list[i].content.startsWith(prefix) != true) {
+    if (msg_list[i].content.startsWith(settings.prefix) != true) {
       continue;
     }
     var temp_content = msg_list[i].content.split(" ");
     var found_index = commands.findIndex(function(element) {
-      if (element.name == temp_content[0].replace(prefix, "")) {
+      if (element.name == temp_content[0].replace(settings.prefix, "")) {
         return true;
       } else {
         return false;
@@ -212,7 +218,7 @@ async function show_commands(msg_data) {
   for (var i = 0; i < commands.length; i++) {
     if (commands[i].visible == true) {
       output_string += "\n";
-      output_string += "**" + prefix + commands[i].name + "** ";
+      output_string += "**" + settings.prefix + commands[i].name + "** ";
       if (commands[i].params != "") {
         output_string += "*" + commands[i].params + "*\n";
       } else {
@@ -225,6 +231,21 @@ async function show_commands(msg_data) {
   }
 }
 
+async function announcement_command(msg_data) {
+  // is_announcement
+  var room = await Rooms.query().where({ is_announcement: true });
+  var temp_content = msg_data.content.split(" ");
+  var output_string = temp_content.slice(1).join(" ");
+
+  for (let room_index = 0; room_index < room.length; room_index++) {
+    const element = room[room_index];
+    msg_data.service = element.service;
+    msg_data.server = element.server;
+    msg_data.room = element.room;
+    await outgoing(msg_data, output_string);
+  }
+  output_string = "";
+}
 async function party_command(msg_data) {
   var output_string = "Party @everyone!";
   await outgoing(msg_data, output_string);

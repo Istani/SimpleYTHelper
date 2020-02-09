@@ -382,7 +382,14 @@ function SearchBroadcasts(auth, pageToken = "") {
               await Chat_Room.query().insert(tmp_room);
 
               // Add Spawn?
-              FakeMsg(tmp_room.server, tmp_room.room, "?spawn");
+              await FakeMsg(tmp_room.server, tmp_room.room, "?spawn");
+              await FakeMsg(
+                tmp_room.server,
+                tmp_room.room,
+                "!announcement Livestream: https://www.youtube.com/watch?v=" +
+                  obj.b_id +
+                  ""
+              );
             } else {
               await Chat_Room.query()
                 .patch(tmp_room)
@@ -700,6 +707,7 @@ async function FakeMsg(server, room, content) {
   if (m.length == 0) {
     console.log("Fake-Message: ", JSON.stringify(tmp_message));
     await Chat_Message.query().insert(tmp_message);
+    await sleep(1000);
   } else {
     FakeMsg(server, room, content);
   }
