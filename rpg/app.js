@@ -397,7 +397,7 @@ async function genMonster(syth_user, msg) {
       " erscheint! (" +
       tmp_monster.hp_max +
       " HP)";
-    await outgoing(msg, output_string);
+    await outgoing_multi(msg, output_string);
     send_log(
       syth_user,
       output_string,
@@ -551,7 +551,7 @@ async function attackMosnter(syth_user, msg) {
       .limit(5);
     send_mvp(syth_user, mvps);
     var outgoing_messages = "👑 Ihr habt das Monster besiegt!";
-    await outgoing(msg, outgoing_messages);
+    await outgoing_multi(msg, outgoing_messages);
     send_log(
       syth_user,
       outgoing_messages + " MVP: " + mvps[0].displayname,
@@ -561,7 +561,7 @@ async function attackMosnter(syth_user, msg) {
     );
     for (let m_index = 0; m_index < mvps.length; m_index++) {
       const element = mvps[m_index];
-      await outgoing(msg, m_index + 1 + ". " + element.displayname);
+      await outgoing_multi(msg, m_index + 1 + ". " + element.displayname);
     }
   }
 }
@@ -664,4 +664,20 @@ async function outgoing(msg_data, content) {
   console.log(msg_data.server + ": " + content);
   await Outgoing_Message.query().insert(tmp_chat);
   await sleep(1000);
+}
+
+async function outgoing_multi(msg_data, content) {
+  // ToDo: User Filter
+  var room = await Rooms.query().where({ is_rpg: true });
+  var temp_content = msg_data.content.split(" ");
+  var output_string = temp_content.slice(1).join(" ");
+
+  for (let room_index = 0; room_index < room.length; room_index++) {
+    const element = room[room_index];
+    msg_data.service = element.service;
+    msg_data.server = element.server;
+    msg_data.room = element.room;
+    await outgoing(msg_data, output_string);
+  }
+  output_string = "";
 }

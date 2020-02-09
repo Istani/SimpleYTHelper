@@ -232,7 +232,7 @@ async function show_commands(msg_data) {
 }
 
 async function announcement_command(msg_data) {
-  // is_announcement
+  // ToDo: User Filter
   var room = await Rooms.query().where({ is_announcement: true });
   var temp_content = msg_data.content.split(" ");
   var output_string = temp_content.slice(1).join(" ");
