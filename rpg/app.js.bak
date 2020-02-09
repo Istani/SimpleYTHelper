@@ -669,13 +669,15 @@ async function outgoing(msg_data, content) {
 async function outgoing_multi(msg_data, content) {
   // ToDo: User Filter
   var room = await Rooms.query().where({ is_rpg: true });
+  var temp_content = msg_data.content.split(" ");
+  var output_string = temp_content.slice(1).join(" ");
 
   for (let room_index = 0; room_index < room.length; room_index++) {
     const element = room[room_index];
     msg_data.service = element.service;
     msg_data.server = element.server;
     msg_data.room = element.room;
-    await outgoing(msg_data, content);
+    await outgoing(msg_data, output_string);
   }
   output_string = "";
 }
