@@ -375,6 +375,7 @@ function SearchBroadcasts(auth, pageToken = "") {
 
             // Additions
             tmp_room.name = obj.b_title;
+            tmp_room.is_rpg = true;
 
             if (c.length == 0) {
               console.log("Room: ", JSON.stringify(tmp_room));

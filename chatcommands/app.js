@@ -142,6 +142,20 @@ commands[5] = {
   function: game_command,
   visible: true
 };
+commands[6] = {
+  name: "set",
+  params: "[rpg/announcement]",
+  description: "Setze Channel!",
+  function: channel_set,
+  visible: false
+};
+commands[7] = {
+  name: "unset",
+  params: "[rpg/announcement]",
+  description: "UnSetze Channel!",
+  function: channel_unset,
+  visible: false
+};
 
 async function get_msg() {
   //return;
@@ -227,6 +241,41 @@ async function gege_command(msg_data) {
   await outgoing(msg_data, output_string);
   output_string = "";
 }
+async function channel_set(msg_data) {
+  channel_status(msg_data, true);
+}
+async function channel_unset(msg_data) {
+  channel_status(msg_data, false);
+}
+async function channel_status(msg_data, vaule) {
+  var output_string = "";
+  var room = await Rooms.query().where({ room: msg_data.room });
+  var temp_content = msg_data.content.split(" ");
+  var methode = temp_content[1];
+
+  switch (methode) {
+    case "rpg":
+      room[0].is_rpg = vaule;
+      console.log(room[0]);
+      await Rooms.query()
+        .patch(room[0])
+        .where("room", room[0].room);
+      output_string += room[0].name + " " + methode + ": " + value + "\n";
+      break;
+    case "announcement":
+      room[0].is_announcement = vaule;
+      console.log(room[0]);
+      await Rooms.query()
+        .patch(room[0])
+        .where("room", room[0].room);
+      output_string += room[0].name + " " + methode + ": " + value + "\n";
+      break;
+    default:
+      output_string += "Unbekannter Parameter **" + methode + "**\n";
+  }
+  await outgoing(msg_data, output_string);
+  output_string = "";
+}
 async function game_command(msg_data) {
   var output_string = "";
   var temp_content = msg_data.content.split(" ");
@@ -236,7 +285,7 @@ async function game_command(msg_data) {
 
   if (game == "") {
     game = room[0].linked_game;
-    if (game == null) {
+    if (game == null || game == "") {
       game = room[0].name;
     }
   }
