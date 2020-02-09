@@ -247,7 +247,7 @@ async function channel_set(msg_data) {
 async function channel_unset(msg_data) {
   channel_status(msg_data, false);
 }
-async function channel_status(msg_data, vaule) {
+async function channel_status(msg_data, value) {
   var output_string = "";
   var room = await Rooms.query().where({ room: msg_data.room });
   var temp_content = msg_data.content.split(" ");
@@ -255,7 +255,7 @@ async function channel_status(msg_data, vaule) {
 
   switch (methode) {
     case "rpg":
-      room[0].is_rpg = vaule;
+      room[0].is_rpg = value;
       console.log(room[0]);
       await Rooms.query()
         .patch(room[0])
@@ -263,7 +263,7 @@ async function channel_status(msg_data, vaule) {
       output_string += room[0].name + " " + methode + ": " + value + "\n";
       break;
     case "announcement":
-      room[0].is_announcement = vaule;
+      room[0].is_announcement = value;
       console.log(room[0]);
       await Rooms.query()
         .patch(room[0])
