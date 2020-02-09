@@ -196,7 +196,7 @@ async function get_msg() {
     //console.log(temp_content);
     if (temp_content[0].startsWith(settings.prefix + "spawn")) {
       await genMonster(syth_user, msg_list[i]);
-      await genChar(syth_user, msg_list[i]);
+      //      await genChar(syth_user, msg_list[i]);
     }
     if (temp_content[0].startsWith(settings.prefix + "attack")) {
       var hasCooldown = await check_cooldown(syth_user, msg_list[i]);
