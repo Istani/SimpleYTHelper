@@ -196,11 +196,7 @@ async function get_msg() {
     //console.log(temp_content);
     if (temp_content[0].startsWith(settings.prefix + "spawn")) {
       await genMonster(syth_user, msg_list[i]);
-<<<<<<< HEAD
-      //      await genChar(syth_user, msg_list[i]);
-=======
       //await genChar(syth_user, msg_list[i]);
->>>>>>> eec2ba07e5b38baf4e87844b743df2c20226922f
     }
     if (temp_content[0].startsWith(settings.prefix + "attack")) {
       var hasCooldown = await check_cooldown(syth_user, msg_list[i]);
@@ -382,6 +378,14 @@ async function genMonster(syth_user, msg) {
         vips[vips.length] = element2;
       }
     }
+    var getCaps = await Chat_User.query()
+      .where("service", msg.service)
+      .where("server", msg.server)
+      .avg("msg_avg")
+      .avg("msg_sum");
+    var dmg_cap = parseInt(getCaps[0]["avg(`msg_avg`)"]) + settings.min_dmg;
+    var hp_cap = parseInt(getCaps[0]["avg(`msg_sum`)"]) + settings.min_hp;
+
     var rand = getRandomInt(vips.length);
     //vips[rand]
     var tmp_monster = {};
@@ -393,6 +397,8 @@ async function genMonster(syth_user, msg) {
       parseInt((new Date() - vips[rand].since) / 1000 / 60 / 60 / 24 / 30 + 1) *
       settings.min_hp;
     tmp_monster.hp = tmp_monster.hp_max;
+    tmp_monster.dmg_cap = dmg_cap;
+    tmp_monster.hp_cap = hp_cap;
     await RPG_Monster.query().insert(tmp_monster);
     send_mob(syth_user);
     var output_string =
@@ -410,7 +416,7 @@ async function genMonster(syth_user, msg) {
       [tmp_monster.hp_max]
     );
   } else {
-    msg.content = settings.prefix + "mobinfo";
+    await showMosnter(syth_user, msg);
   }
 }
 
@@ -436,6 +442,15 @@ async function genChar(syth_user, msg) {
     .where("server", msg.server)
     .where("user", msg.user);
   if (chat_user.length > 0) {
+    var monsters = await RPG_Monster.query()
+      .where("owner", syth_user)
+      .where("hp", ">", 0);
+    if (chat_user[0].msg_sum > monsters[0].hp_cap) {
+      chat_user[0].msg_sum = monsters[0].hp_cap;
+    }
+    if (chat_user[0].msg_avg > monsters[0].dmg_cap) {
+      chat_user[0].msg_avg = monsters[0].dmg_cap;
+    }
     my_char.displayname = chat_user[0].name;
     my_char.hp_max += chat_user[0].msg_sum;
     my_char.atk += chat_user[0].msg_avg;
@@ -666,7 +681,7 @@ async function outgoing(msg_data, content) {
   tmp_chat.room = msg_data.room;
   tmp_chat.content = content;
   console.log(msg_data.server + ": " + content);
-  await Outgoing_Message.query().insert(tmp_chat);
+  //await Outgoing_Message.query().insert(tmp_chat);
   await sleep(1000);
 }
 

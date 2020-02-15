@@ -50,7 +50,7 @@ const client = new tmi.Client({
     username: process.env.TWITCH_Login,
     password: process.env.TWITCH_Passwort
   },
-  channels: []
+  channels: ["#istani", "#defender833"]
 });
 client.connect();
 
@@ -225,11 +225,13 @@ async function ReadToken() {
         }
       }
     );
+    var temp = await twitchClient.getTokenInfo();
+    console.log(temp);
     //GetStream(twitchClient, element.user_id);
     GetChannel(twitchClient, element.user_id);
   }
 }
-ReadToken();
+//ReadToken();
 
 async function GetStream(twitchClient, syth_user) {
   var TokenInfo = await twitchClient.getTokenInfo();
@@ -315,7 +317,7 @@ async function GetChannel(twitchClient, syth_user) {
   channel_obj.banner = User.offlinePlaceholderUrl;
 
   //channel_obj.main_playlist = data.contentDetails.relatedPlaylists.uploads;
-  channel_obj.views = User.views;
+  channel_obj.views = User.view_count;
   //channel_obj.subscriber = data.statistics.subscriberCount;
   //channel_obj.videos = data.statistics.videoCount;
   console.log(channel_obj);

@@ -90,7 +90,7 @@ async function AddGameMerch(game, callback) {
         if (err) {
           // SKIP DATA
         } else {
-          // TODO: why [0] nessesary?
+          // ToDo: why [0] nessesary?
           data = data[0];
           //console.log(data.length);
           //console.log(data);
