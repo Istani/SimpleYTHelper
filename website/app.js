@@ -24,6 +24,7 @@ var session = require("express-session");
 var i18n = require("i18n");
 var passport = require("passport");
 var youtube_auth = require("./oauth/youtube.js");
+var twitch_auth = require("./oauth/twitch.js");
 
 var hbs = exphbs.create({
   helpers: {
@@ -89,44 +90,68 @@ i18n.configure({
 app.use(i18n.init);
 
 youtube_auth(passport);
+twitch_auth(passport);
 app.get(
   "/auth/youtube",
   passport.authenticate("youtube", {
     scope: ["https://www.googleapis.com/auth/youtube"]
   })
 );
-app.get("/auth/youtube/callback", passport.authenticate("youtube"), function(
-  req,
-  res
-) {
-  var temp_data = {};
-  async.parallel(
-    [
-      function(callback) {
-        login.get_login(temp_data, callback, req.session.user);
-      }
-    ],
-    function(err) {
-      temp_data.new = {};
-      temp_data.new.service = "youtube";
-      temp_data.new.email = temp_data.login.email;
-      temp_data.new.access = req.user.accessToken;
-      temp_data.new.refresh = req.user.refreshToken;
+app.get(
+  "/auth/youtube/callback",
+  passport.authenticate("youtube"),
+  async function(req, res) {
+    var temp_data = {};
+    console.log(req.user.accessToken);
+    if (req.session.user) {
+      temp_data.service = "youtube";
+      temp_data.user_id = req.session.user[0].id;
+      temp_data.access_token = req.user.accessToken;
+      temp_data.refresh_token = req.user.refreshToken;
 
-      async.parallel(
-        [
-          function(callback) {
-            oauth.set_oauth_user(temp_data, callback, temp_data.new);
-          }
-        ],
-        function(err) {
-          //console.log(req.user);
-          res.redirect("/Dashboard");
-        }
-      );
+      await Token.query().insert(temp_data);
+
+      res.redirect("/Dashboard");
+    } else {
+      temp_data.error = {};
+      temp_data.error.code = "Error";
+      temp_data.error.text = i18n.__("Something went wrong!");
+      res.render("error", { data: temp_data });
     }
-  );
-});
+  }
+);
+
+app.get(
+  "/auth/twitch",
+  passport.authenticate("twitch", {
+    scope: [
+      "chat:read chat:edit clips:edit bits:read analytics:read:games channel:read:subscriptions user:read:broadcast user:read:email analytics:read:extensions channel:moderate"
+    ]
+  })
+);
+app.get(
+  "/auth/twitch/callback",
+  passport.authenticate("twitch"),
+  async function(req, res) {
+    var temp_data = {};
+    console.log(req.user.profile);
+    if (req.session.user) {
+      temp_data.service = "twitch";
+      temp_data.user_id = req.session.user[0].id;
+      temp_data.access_token = req.user.accessToken;
+      temp_data.refresh_token = req.user.refreshToken;
+
+      await Token.query().insert(temp_data);
+
+      res.redirect("/Dashboard");
+    } else {
+      temp_data.error = {};
+      temp_data.error.code = "Error";
+      temp_data.error.text = i18n.__("Something went wrong!");
+      res.render("error", { data: temp_data });
+    }
+  }
+);
 
 app.get("/Login", function(req, res) {
   var temp_data = {};
@@ -158,7 +183,7 @@ app.get("/Register", function(req, res) {
   res.render("register", { data: temp_data });
 });
 app.post("/Register", async function(req, res) {
-  // TODO: Daten auswerten
+  // ToDo: Daten auswerten
   var temp_data = {};
   var data = req.body;
   if (data.password != data.password_repeat || data.password == "") {

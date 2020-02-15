@@ -1,5 +1,5 @@
 {
-  "name": "twitch",
+  "name": "syth-twitch",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
@@ -10,9 +10,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "await-sleep": "0.0.1",
+    "better-queue": "^3.8.10",
     "moment": "^2.24.0",
     "node-cron": "^2.0.3",
     "node-emoji": "^1.10.0",
-    "tmi.js": "^1.5.0"
+    "request": "^2.88.2",
+    "tmi.js": "^1.5.0",
+    "twitch": "^4.0.0"
   }
 }

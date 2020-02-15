@@ -687,7 +687,7 @@ function writeChat(auth, chatId, Message) {
         "tmp/chat_post.json",
         JSON.stringify(response.data, null, 2)
       );
-      console.log("Post: ", response);
+      console.log("Post: ", Message);
     }
   );
 }
