@@ -352,10 +352,18 @@ async function removeItemToInventory(syth_user, msg, item) {
 async function genMonster(syth_user, msg) {
   var monsters = await RPG_Monster.query().where("owner", syth_user);
   if (monsters.length > 0) {
-    if (monsters[0].hp <= 0) {
+    var this_moment = moment();
+    var next_moment = moment(monsters[0].death_cooldown);
+    if (monsters[0].hp <= 0 && this_moment >= next_moment) {
       await RPG_Monster.query()
         .delete()
         .where("owner", syth_user);
+    } else if (this_moment < next_moment) {
+      await outgoing(
+        msg,
+        "🎶 Kein Neues Monster, der Dungeon Keeper braucht noch Pause!"
+      );
+      return;
     }
   }
   monsters = await RPG_Monster.query().where("owner", syth_user);
@@ -493,6 +501,12 @@ async function attackMosnter(syth_user, msg) {
   if (monsters[0].hp < 0) {
     tmp_dmg += monsters[0].hp;
     monsters[0].hp = 0;
+  }
+  if (monsters[0].hp == 0) {
+    var dat = moment()
+      .add(300, "seconds")
+      .format();
+    monsters[0].death_cooldown = dat;
   }
   char[0].total_dmg += tmp_dmg;
   char[0].threat += tmp_dmg;
