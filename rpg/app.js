@@ -695,7 +695,7 @@ async function outgoing(msg_data, content) {
   tmp_chat.room = msg_data.room;
   tmp_chat.content = content;
   console.log(msg_data.server + ": " + content);
-  //await Outgoing_Message.query().insert(tmp_chat);
+  await Outgoing_Message.query().insert(tmp_chat);
   await sleep(1000);
 }
 
