@@ -391,6 +391,9 @@ function SearchBroadcasts(auth, pageToken = "") {
                   ""
               );
             } else {
+              if (obj.actualEndTime != null) {
+                tmp_room.is_rpg = false;
+              }
               await Chat_Room.query()
                 .patch(tmp_room)
                 .where(c[0]);
