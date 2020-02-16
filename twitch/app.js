@@ -119,12 +119,14 @@ async function AddChannel(channel, guild) {
   tmp_room.service = "twitch";
   tmp_room.server = guild.id;
   tmp_room.room = channel.id;
+  //tmp_room.is_rpg = true;
 
   var c = await Chat_Room.query().where(tmp_room);
 
   // Additions
   tmp_room.is_rpg = true;
   tmp_room.name = channel.name;
+  //tmp_room.is_rpg = true;
 
   if (c.length == 0) {
     console.log("Room:", JSON.stringify(tmp_room));
