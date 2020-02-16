@@ -16,7 +16,7 @@ module.exports = passport => {
       {
         clientID: process.env.DISCORD_CLIENT_ID,
         clientSecret: process.env.DISCORD_CLIENT_SECRET,
-        callbackURL: "http://localhost:3000/auth/discord/callback"
+        callbackURL: "http://syth.games-on-sale.de/auth/discord/callback"
       },
       function(accessToken, refreshToken, profile, done) {
         var user = {

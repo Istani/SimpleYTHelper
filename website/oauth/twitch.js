@@ -15,7 +15,7 @@ module.exports = passport => {
       {
         clientID: process.env.TWITCH_CLIENT_ID,
         clientSecret: process.env.TWITCH_CLIENT_SECRET,
-        callbackURL: "http://localhost:3000/auth/twitch/callback"
+        callbackURL: "http://syth.games-on-sale.de/auth/twitch/callback"
       },
       function(accessToken, refreshToken, profile, done) {
         var user = {
