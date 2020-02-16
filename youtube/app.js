@@ -25,7 +25,7 @@ const Chat_Message = require("./models/chat_message.js");
 const Chat_Room = require("./models/chat_room.js");
 const Chat_Server = require("./models/chat_server.js");
 const Chat_User = require("./models/chat_user.js");
-const tokens = require("./models/syth_token.js");
+const Token = require("./models/syth_token.js");
 
 var RepeatDealy = 15 * 1000;
 var SCOPES = ["https://www.googleapis.com/auth/youtube"];
