@@ -410,7 +410,7 @@ async function FakeMsg(server, room, content) {
 
   if (m.length == 0) {
     console.log("Fake-Message: ", JSON.stringify(tmp_message));
-    //await Chat_Message.query().insert(tmp_message);
+    await Chat_Message.query().insert(tmp_message);
     await sleep(1000);
   } else {
     FakeMsg(server, room, content);
