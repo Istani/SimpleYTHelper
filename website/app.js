@@ -25,6 +25,7 @@ var i18n = require("i18n");
 var passport = require("passport");
 var youtube_auth = require("./oauth/youtube.js");
 var twitch_auth = require("./oauth/twitch.js");
+var discord_auth = require("./oauth/discord.js");
 
 var hbs = exphbs.create({
   helpers: {
@@ -91,6 +92,7 @@ app.use(i18n.init);
 
 youtube_auth(passport);
 twitch_auth(passport);
+discord_auth(passport);
 app.get(
   "/auth/youtube",
   passport.authenticate("youtube", {
@@ -102,12 +104,13 @@ app.get(
   passport.authenticate("youtube"),
   async function(req, res) {
     var temp_data = {};
-    console.log(req.user.accessToken);
+    console.log(req.user.profile);
     if (req.session.user) {
       temp_data.service = "youtube";
       temp_data.user_id = req.session.user[0].id;
       temp_data.access_token = req.user.accessToken;
       temp_data.refresh_token = req.user.refreshToken;
+      temp_data.service_user = req.user.profile.id;
 
       await Token.query().insert(temp_data);
 
@@ -140,6 +143,35 @@ app.get(
       temp_data.user_id = req.session.user[0].id;
       temp_data.access_token = req.user.accessToken;
       temp_data.refresh_token = req.user.refreshToken;
+      temp_data.service_user = req.user.profile.id;
+
+      await Token.query().insert(temp_data);
+
+      res.redirect("/Dashboard");
+    } else {
+      temp_data.error = {};
+      temp_data.error.code = "Error";
+      temp_data.error.text = i18n.__("Something went wrong!");
+      res.render("error", { data: temp_data });
+    }
+  }
+);
+app.get(
+  "/auth/discord",
+  passport.authenticate("discord", { scope: "identify" })
+);
+app.get(
+  "/auth/discord/callback",
+  passport.authenticate("discord"),
+  async function(req, res) {
+    var temp_data = {};
+    console.log(req.user.profile);
+    if (req.session.user) {
+      temp_data.service = "discord";
+      temp_data.user_id = req.session.user[0].id;
+      temp_data.access_token = req.user.accessToken;
+      temp_data.refresh_token = req.user.refreshToken;
+      temp_data.service_user = req.user.profile.id;
 
       await Token.query().insert(temp_data);
 
@@ -234,6 +266,24 @@ app.get("/Dashboard", async function(req, res) {
   if (req.session.user) {
     // Schauen ob der User auch Existiert?
     temp_data.login = req.session.user[0];
+    temp_data.current = [];
+    var temp_token = await Token.query()
+      .where("user_id", req.session.user[0].id)
+      .eager("[channel]");
+    for (let token_index = 0; token_index < temp_token.length; token_index++) {
+      const element = temp_token[token_index];
+      if (typeof element.channel[0] != "undefined") {
+        temp_data.current[token_index] = {
+          name: element.channel[0].channel_title,
+          service: element.service
+        };
+      } else {
+        temp_data.current[token_index] = {
+          name: "No Data!",
+          service: element.service
+        };
+      }
+    }
     //console.log(temp_data);
     res.render("dashboard", { data: temp_data });
   } else {

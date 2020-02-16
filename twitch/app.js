@@ -119,11 +119,11 @@ async function AddChannel(channel, guild) {
   tmp_room.service = "twitch";
   tmp_room.server = guild.id;
   tmp_room.room = channel.id;
-  tmp_room.is_rpg = true;
 
   var c = await Chat_Room.query().where(tmp_room);
 
   // Additions
+  tmp_room.is_rpg = true;
   tmp_room.name = channel.name;
 
   if (c.length == 0) {
@@ -163,7 +163,7 @@ async function AddMessage(msg, guild, channel, user) {
   var tmp_message = {};
 
   // Keys
-  tmp_messageservice = "twitch";
+  tmp_message.service = "twitch";
   tmp_message.server = guild.id;
   tmp_message.room = channel.id;
   tmp_message.id = msg.id;
@@ -204,16 +204,27 @@ async function SendMessage(channelID, msg) {
   client.say(channelID.replace("#", ""), msg);
 }
 
+async function startTokens() {
+  await Token.query()
+    .where("service", "twitch")
+    .patch({ is_importing: false });
+  ReadToken();
+}
 async function ReadToken() {
-  var Auth_Token = await Token.query().where("service", "twitch");
-  console.log(Auth_Token.length);
+  var Auth_Token = await Token.query()
+    .where("service", "twitch")
+    .where("is_importing", false);
   //console.log(Auth_Token);
   // fs.writeFileSync("tmp/auth.json", JSON.stringify(auth, null, 2));
   for (let auth_index = 0; auth_index < Auth_Token.length; auth_index++) {
     const element = Auth_Token[auth_index];
 
+    await Token.query()
+      .where(element)
+      .patch({ is_importing: true });
+
     var twitchClient = await TwitchClient.withCredentials(
-      process.env.TWITCH_CLIENT,
+      process.env.TWITCH_CLIENT_ID,
       element.access_token,
       undefined,
       {
@@ -221,78 +232,121 @@ async function ReadToken() {
         refreshToken: element.refresh_token,
         onRefresh: async token => {
           //await Auth_Token.query().where(element).patch(token)
-          console.log(element, token);
+          //console.log(element, token);
         }
       }
     );
     var temp = await twitchClient.getTokenInfo();
-    console.log(temp);
-    //GetStream(twitchClient, element.user_id);
-    GetChannel(twitchClient, element.user_id);
+
+    cron.schedule("*/15 * * * *", () => {
+      q.push("Broadcasts", () => {
+        GetStream(twitchClient, element.user_id);
+      });
+    });
+    q.push("Channels", () => {
+      GetChannel(twitchClient, element.user_id);
+    });
   }
+  setTimeout(ReadToken, 1000);
 }
-//ReadToken();
+startTokens();
 
 async function GetStream(twitchClient, syth_user) {
   var TokenInfo = await twitchClient.getTokenInfo();
   var Streams = await twitchClient.helix.streams.getStreamByUserId(
     TokenInfo.userId
   );
-
   var obj = {};
-  obj.service = "twitch";
-  obj.b_id = Streams.id;
-  obj.owner = Streams.userId;
-  obj.b_title = Streams.title;
 
-  obj.actualStartTime = Streams.startDate;
-  obj.actualEndTime = null;
-  obj.liveChatId = "";
+  if (Streams != null) {
+    obj.service = "twitch";
+    obj.b_id = Streams.id;
+    obj.owner = Streams.userId;
+    obj.b_title = Streams.title;
 
-  var m = await ow_broadcasts
-    .query()
-    .where("service", obj.service)
-    .where("owner", obj.owner)
-    .where("b_id", obj.b_id);
+    obj.actualStartTime = Streams.startDate;
+    obj.actualEndTime = null;
+    obj.liveChatId = "";
 
-  if (m.length > 0) {
-    await ow_broadcasts
+    var m = await ow_broadcasts
       .query()
-      .patch(obj)
       .where("service", obj.service)
       .where("owner", obj.owner)
       .where("b_id", obj.b_id);
+
+    if (m.length > 0) {
+      await ow_broadcasts
+        .query()
+        .patch(obj)
+        .where("service", obj.service)
+        .where("owner", obj.owner)
+        .where("b_id", obj.b_id);
+    } else {
+      console.log("Broadcast: ", obj);
+      await ow_broadcasts.query().insert(obj);
+
+      await FakeMsg(TokenInfo.userName, obj.owner, "?spawn");
+      await FakeMsg(
+        TokenInfo.userName,
+        obj.owner,
+        "!announcement Livestream: https://www.twitch.tv/" +
+          TokenInfo.userName +
+          ""
+      );
+    }
+    var Game = await Streams.getGame();
+    var temp_game_name = Games.getEncodedName(Game.name);
+    const g = await Games.query()
+      .where("name", "like", temp_game_name)
+      .eager("[links]");
+    if (g.length == 1) {
+      var tmp_room = {};
+
+      tmp_room.service = "twitch";
+      tmp_room.server = TokenInfo.userName;
+      tmp_room.room = obj.owner;
+
+      var c = await Chat_Room.query().where(tmp_room);
+      if (c.length == 1) {
+        c[0].linked_game = g[0].name;
+        await Chat_Room.query()
+          .patch(c[0])
+          .where("room", c[0].room);
+      }
+    }
   } else {
-    console.log("Broadcast: ", obj);
-    await ow_broadcasts.query().insert(obj);
+    obj.service = "twitch";
+    obj.owner = TokenInfo.userId;
+    obj.actualEndTime = null;
+    var m = await ow_broadcasts
+      .query()
+      .where("service", obj.service)
+      .where("owner", obj.owner)
+      .where("actualEndTime", obj.actualEndTime);
+    for (let streams_index = 0; streams_index < m.length; streams_index++) {
+      const element = m[streams_index];
+      element.actualEndTime = moment().format();
+      await ow_broadcasts
+        .query()
+        .where("service", element.service)
+        .where("owner", element.owner)
+        .where("b_id", element.b_id)
+        .patch(element);
 
-    await FakeMsg(TokenInfo.userName, obj.owner, "?spawn");
-    await FakeMsg(
-      TokenInfo.userName,
-      obj.owner,
-      "!announcement Livestream: https://www.twitch.tv/" +
-        TokenInfo.userName +
-        ""
-    );
-  }
-  var Game = await Streams.getGame();
-  var temp_game_name = Games.getEncodedName(Game.name);
-  const g = await Games.query()
-    .where("name", "like", temp_game_name)
-    .eager("[links]");
-  if (g.length == 1) {
-    var tmp_room = {};
-
-    tmp_room.service = "twitch";
-    tmp_room.server = TokenInfo.userName;
-    tmp_room.room = obj.owner;
-
-    var c = await Chat_Room.query().where(tmp_room);
-    if (c.length == 1) {
-      c[0].linked_game = g[0].name;
+      // Update Chatrooms
+    }
+    var r = await Chat_Room.query()
+      .where("service", obj.service)
+      .where("server", TokenInfo.userName)
+      .where("is_rpg", true);
+    for (let room_index = 0; room_index < r.length; room_index++) {
+      const element = r[room_index];
+      element.is_rpg = false;
       await Chat_Room.query()
-        .patch(c[0])
-        .where("room", c[0].room);
+        .where("service", element.service)
+        .where("server", element.server)
+        .where("room", element.room)
+        .patch(element);
     }
   }
 }
@@ -311,7 +365,7 @@ async function GetChannel(twitchClient, syth_user) {
   channel_obj.user_id = syth_user;
   channel_obj.channel_id = User.id;
   channel_obj.channel_title = User.displayName;
-  channel_obj.discription = User.description;
+  channel_obj.description = User.description;
   //channel_obj.start_date = data.snippet.publishedAt;
   channel_obj.thumbnail = User.profilePictureUrl;
   channel_obj.banner = User.offlinePlaceholderUrl;
@@ -320,7 +374,24 @@ async function GetChannel(twitchClient, syth_user) {
   channel_obj.views = User.view_count;
   //channel_obj.subscriber = data.statistics.subscriberCount;
   //channel_obj.videos = data.statistics.videoCount;
-  console.log(channel_obj);
+
+  var m = await ow_channel
+    .query()
+    .where("service", channel_obj.service)
+    .where("user_id", channel_obj.user_id)
+    .where("channel_id", channel_obj.channel_id);
+
+  if (m.length > 0) {
+    await ow_channel
+      .query()
+      .patch(channel_obj)
+      .where("service", channel_obj.service)
+      .where("user_id", channel_obj.user_id)
+      .where("channel_id", channel_obj.channel_id);
+  } else {
+    await ow_channel.query().insert(channel_obj);
+    console.log("Channel: ", JSON.stringify(channel_obj));
+  }
 }
 async function FakeMsg(server, room, content) {
   var tmp_message = {};
@@ -339,7 +410,7 @@ async function FakeMsg(server, room, content) {
 
   if (m.length == 0) {
     console.log("Fake-Message: ", JSON.stringify(tmp_message));
-    await Chat_Message.query().insert(tmp_message);
+    //await Chat_Message.query().insert(tmp_message);
     await sleep(1000);
   } else {
     FakeMsg(server, room, content);

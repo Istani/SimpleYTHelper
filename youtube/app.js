@@ -40,20 +40,36 @@ var q = new Queue(function(type, input, cb) {
 //const apis = google.getSupportedAPIs();
 //console.log(apis);
 //return;
-authorize(StartImport);
+async function startTokens() {
+  await Token.query()
+    .where("service", "youtube")
+    .patch({ is_importing: false });
+  authorize(StartImport);
+}
+
 async function authorize(callback) {
   var clientSecret = process.env.YOUTUBE_CLIENT_SECRET;
   var clientId = process.env.YOUTUBE_CLIENT_ID;
   var redirectUrl = process.env.YOUTUBE_CLINET_URI;
   var oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl);
 
-  var user_token = await tokens.query().where("service", "youtube");
+  var user_token = await tokens
+    .query()
+    .where("service", "youtube")
+    .where("is_importing", false);
   for (let index = 0; index < user_token.length; index++) {
     const element = user_token[index];
+    await Token.query()
+      .where(element)
+      .patch({ is_importing: true });
     oauth2Client.credentials = element;
     callback(oauth2Client);
   }
+  setTimeout(() => {
+    authorize(callback);
+  }, 1000);
 }
+startTokens();
 
 function StartImport(auth) {
   var sic = auth.credentials;
@@ -101,7 +117,7 @@ function StartImport(auth) {
       });
     }, RepeatDealy);
   });
-  ListSponsors(auth);
+  //ListSponsors(auth);
 }
 
 function ListChannels(auth, pageToken = "") {
@@ -129,7 +145,7 @@ function ListChannels(auth, pageToken = "") {
       channel_obj.user_id = sic.user_id;
       channel_obj.channel_id = data.id;
       channel_obj.channel_title = data.snippet.title;
-      channel_obj.discription = data.snippet.discription;
+      channel_obj.description = data.snippet.description;
       channel_obj.start_date = data.snippet.publishedAt;
       channel_obj.thumbnail = data.snippet.thumbnails.high.url;
       channel_obj.banner = data.brandingSettings.image.bannerTvHighImageUrl;

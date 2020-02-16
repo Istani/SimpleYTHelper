@@ -9,6 +9,9 @@ const config = require("dotenv").config({ path: "../.env" });
 const Discord = require("discord.js");
 const client = new Discord.Client();
 const emoji = require("node-emoji");
+const request = require("request");
+const Queue = require("better-queue");
+const cron = require("node-cron");
 
 // DB Models
 const Outgoing_Message = require("./models/outgoing_messages.js");
@@ -16,8 +19,15 @@ const Chat_Message = require("./models/chat_message.js");
 const Chat_Room = require("./models/chat_room.js");
 const Chat_Server = require("./models/chat_server.js");
 const Chat_User = require("./models/chat_user.js");
+const Token = require("./models/syth_token.js");
+const ow_channel = require("./models/channel.js");
 
 //console.log(process.env.DISCORD_TOKEN);
+var q = new Queue(function(type, input, cb) {
+  console.log("Start Import: " + type);
+  input();
+  cb(null, result);
+});
 
 client.login(process.env.DISCORD_TOKEN).catch(function(error) {
   if (error) {
@@ -179,4 +189,75 @@ async function AddUser(user, guild) {
       .patch(tmp_user)
       .where(u[0]);
   }
+}
+
+async function startTokens() {
+  await Token.query()
+    .where("service", "discord")
+    .patch({ is_importing: false });
+  ReadToken();
+}
+async function ReadToken() {
+  var Auth_Token = await Token.query()
+    .where("service", "discord")
+    .where("is_importing", false);
+  for (let auth_index = 0; auth_index < Auth_Token.length; auth_index++) {
+    const element = Auth_Token[auth_index];
+
+    await Token.query()
+      .where(element)
+      .patch({ is_importing: true });
+
+    q.push("Channels", () => {
+      GetChannel(element, element.user_id);
+    });
+  }
+  setTimeout(ReadToken, 1000);
+}
+startTokens();
+
+async function GetChannel(token, syth_user) {
+  var req = await request.get(
+    "https://discordapp.com/api/users/@me",
+    {
+      auth: {
+        bearer: token.access_token
+      }
+    },
+    async function(err, resp, body) {
+      if (err) {
+        q.push("Channels", () => {
+          GetChannel(element, element.user_id);
+        });
+        return;
+      }
+      var User = JSON.parse(body);
+
+      var channel_obj = {};
+      channel_obj.service = "discord";
+      channel_obj.user_id = syth_user;
+      channel_obj.channel_id = User.id;
+      channel_obj.channel_title = User.username;
+      channel_obj.description = "";
+      channel_obj.thumbnail = User.avatar;
+
+      var m = await ow_channel
+        .query()
+        .where("service", channel_obj.service)
+        .where("user_id", channel_obj.user_id)
+        .where("channel_id", channel_obj.channel_id);
+
+      if (m.length > 0) {
+        await ow_channel
+          .query()
+          .patch(channel_obj)
+          .where("service", channel_obj.service)
+          .where("user_id", channel_obj.user_id)
+          .where("channel_id", channel_obj.channel_id);
+      } else {
+        await ow_channel.query().insert(channel_obj);
+        console.log("Channel: ", JSON.stringify(channel_obj));
+      }
+    }
+  );
 }

@@ -20,6 +20,21 @@ class Token extends Model {
   $beforeUpdate() {
     this.updated_at = new Date().toISOString();
   }
+
+  static get relationMappings() {
+    const Channel = require("./channel.js");
+
+    return {
+      channel: {
+        relation: Model.HasManyRelation,
+        modelClass: Channel,
+        join: {
+          from: "channel.channel_id",
+          to: "syth_token.service_user"
+        }
+      }
+    };
+  }
 }
 
 module.exports = Token;

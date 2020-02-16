@@ -1,13 +1,23 @@
 {{data.login.user}} Hier folgt das Dashboard!
 <br>
 <div>
-  {{i18n "New.OAuth"}}
+  <h2>{{i18n "New.OAuth"}}</h2>
   <center>
-    <a href="/auth/youtube" class="">
-      <img src="/service_icons/youtube.png" alt="youtube" width="32" height="32">
-    </a>
-    <a href="/auth/twitch" class="">
-      <img src="/service_icons/twitch.png" alt="twitch" width="32" height="32">
-    </a>
+    <a href="/auth/youtube" class=""><img src="/service_icons/youtube.png" alt="youtube" width="32" height="32"></a>
+    &nbsp;
+    <a href="/auth/twitch" class=""><img src="/service_icons/twitch.png" alt="twitch" width="32" height="32"></a>
+    &nbsp;
+    <a href="/auth/discord" class=""><img src="/service_icons/discord.png" alt="discord" width="32" height="32"></a>
+    &nbsp;
+  </center>
+
+  <h2>{{i18n "Current.OAuth"}}</h2>
+  <center>
+    {{#each data.current}}
+      <div>
+        <img src="/service_icons/{{service}}.png" alt="{{service}}" width="32" height="32"> &nbsp;
+        {{name}}
+      </div>
+    {{/each}}
   </center>
 </div>
