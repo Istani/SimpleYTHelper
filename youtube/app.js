@@ -53,8 +53,7 @@ async function authorize(callback) {
   var redirectUrl = process.env.YOUTUBE_CLINET_URI;
   var oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl);
 
-  var user_token = await tokens
-    .query()
+  var user_token = await Token.query()
     .where("service", "youtube")
     .where("is_importing", false);
   for (let index = 0; index < user_token.length; index++) {
