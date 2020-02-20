@@ -162,6 +162,13 @@ commands[8] = {
   function: announcement_command,
   visible: false
 };
+commands[9] = {
+  name: "ehrenmann",
+  params: "",
+  description: "Ehre wem ehre gebührt",
+  function: ehrenmann_command,
+  visible: false
+};
 
 async function get_msg() {
   //return;
@@ -374,6 +381,12 @@ async function game_command(msg_data) {
     default:
       output_string += "Unbekannter Parameter **" + methode + "**\n";
   }
+  await outgoing(msg_data, output_string);
+  output_string = "";
+}
+
+async function ehrenmann_command(msg_data) {
+  var output_string = ":DefEhre:";
   await outgoing(msg_data, output_string);
   output_string = "";
 }
