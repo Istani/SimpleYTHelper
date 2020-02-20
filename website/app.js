@@ -330,6 +330,12 @@ app.get("/HUD/:channel/:category", async function(req, res, next) {
       console.error(e);
       var data = [];
     }
+    if (param_category == "SpecialEffects") {
+      data = [];
+      data[0] = [];
+      data[0]["SpecialEffects"] = [];
+      data[0]["SpecialEffects"][0] = "";
+    }
     if (data.length > 0) {
       var temp_data = {};
       temp_data.data = [];

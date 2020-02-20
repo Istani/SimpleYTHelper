@@ -11,11 +11,11 @@ git add ./hooks/
 #prop='version'
 #appversion=`jsonval`
 
-rm ./CHANGELOG.md
+rm CHANGELOG.md
 echo "SimpleYTH ($appversion)" > CHANGELOG.md
 echo "" >> CHANGELOG.md
-git log --format="* %s -- %aN" --no-merges $(git describe --tags --abbrev=0 @^)..@ >> ./CHANGELOG.md
-git add ./CHANGELOG.md
+git log --format="* %s -- %aN" --no-merges $(git describe --tags --abbrev=0 @^)..@ >> CHANGELOG.md
+git add CHANGELOG.md
 
 # Prettify all files
 FILES=$(git diff --cached --name-only --diff-filter=ACMR "*.js" "*.jsx" "*.json" | sed 's| |\\ |g')
