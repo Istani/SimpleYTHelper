@@ -52,24 +52,24 @@
 
   sombrero();
 
-  /*
-    $(document).ready(function () {
-      console.log(location.origin.replace(':3000', '') + ":3005");
-      var socket_rpg = io(location.origin.replace(':3000', '') + ":3005");
-      socket_rpg.on('connect', function () {
-        socket_rpg.send("join", "{{data.user}}");
 
-        socket_rpg.on('command', function (data) {
-          console.log(data);
-          // ToDo: Things!
-        });
+  $(document).ready(function () {
+    console.log("http://games-on-sale.de:3005");
+    var socket_rpg = io("http://games-on-sale.de:3005");
+    socket_rpg.on('connect', function () {
+      socket_rpg.send("join", "{{data.user}}");
 
-        socket_rpg.on('disconnect', function () {
-          setTimeout(() => {
-            location.reload();
-          }, 100);
-        });
+      socket_rpg.on('command', function (data) {
+        console.log(data);
+        // ToDo: Things!
+      });
+
+      socket_rpg.on('disconnect', function () {
+        setTimeout(() => {
+          location.reload();
+        }, 100);
       });
     });
-    */
+  });
+
 </script>
