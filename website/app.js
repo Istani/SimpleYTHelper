@@ -339,6 +339,10 @@ app.get("/HUD/:channel/:category", async function(req, res, next) {
     if (data.length > 0) {
       var temp_data = {};
       temp_data.data = [];
+
+      var udata = await User_Channel.query().where("channel_id", param_channel);
+      temp_data.user = udata[0].user_id;
+
       for (let index = 0; index < data.length; index++) {
         const element = data[index];
         for (let index = 0; index < element[param_category].length; index++) {
