@@ -8,6 +8,7 @@ console.log();
 const fs = require("fs");
 const sleep = require("await-sleep");
 const cron = require("node-cron");
+const io = require("socket.io")(3005);
 
 // DB-Models
 const Messages = require("./models/chat_message.js");
@@ -37,6 +38,16 @@ function save_settings() {
   load_settings();
 }
 load_settings();
+
+io.on("connection", function(socket) {
+  socket.on("message", function(func, data) {
+    if (func == "join") {
+      socket.join(data);
+    }
+  });
+  socket.on("disconnect", function() {});
+});
+var syth_user = 4;
 
 cron.schedule("00 00 * * * ", () => {
   makeStats();
@@ -169,6 +180,13 @@ commands[9] = {
   function: ehrenmann_command,
   visible: false
 };
+commands[10] = {
+  name: "sombrero",
+  params: "",
+  description: "AiAiAiAiAi",
+  function: sombrero_command,
+  visible: true
+};
 
 async function get_msg() {
   //return;
@@ -200,6 +218,7 @@ async function get_msg() {
     }
     if (typeof commands[found_index].function == "function") {
       await commands[found_index].function(msg_list[i]);
+      io.to(syth_user).emit("command", commands[found_index].name);
     }
     //await sleep(1000);
   }
@@ -387,6 +406,12 @@ async function game_command(msg_data) {
 
 async function ehrenmann_command(msg_data) {
   var output_string = ":DefEhre:";
+  await outgoing(msg_data, output_string);
+  output_string = "";
+}
+
+async function sombrero_command(msg_data) {
+  var output_string = "Ai Ai Ai Ai Ai:";
   await outgoing(msg_data, output_string);
   output_string = "";
 }
