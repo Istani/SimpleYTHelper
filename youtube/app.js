@@ -474,15 +474,23 @@ async function LiveChat(auth, pageToken = "") {
     async function(err, response) {
       if (err) {
         console.error(err);
-        setTimeout(() => {
+        setTimeout(async () => {
+          data[0].Livestream[0].liveChatId = "";
+          await ow_broadcasts
+            .query()
+            .patch(data[0].Livestream[0])
+            .where("service", data[0].Livestream[0].service)
+            .where("owner", data[0].Livestream[0].owner)
+            .where("b_id", data[0].Livestream[0].b_id);
+
           q.push("Broadcasts", () => {
             auth.credentials = sic;
             SearchBroadcasts(auth);
           });
-          q.push("LiveChat", () => {
+          /*q.push("LiveChat", () => {
             auth.credentials = sic;
             LiveChat(auth);
-          });
+          });*/
         }, RepeatDealy);
         return;
       }
