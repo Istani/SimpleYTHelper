@@ -411,7 +411,7 @@ async function ehrenmann_command(msg_data) {
 }
 
 async function sombrero_command(msg_data) {
-  var output_string = "Ai Ai Ai Ai Ai:";
+  var output_string = "Ai Ai Ai Ai Ai";
   await outgoing(msg_data, output_string);
   output_string = "";
 }

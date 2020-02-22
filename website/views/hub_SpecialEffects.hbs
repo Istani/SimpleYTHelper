@@ -4,21 +4,26 @@
     width: 1920px;
     height: 1080px;
     position: relative;
-    background-color: green;
+    background-color: transparent;
     vertical-align: center;
   }
 
   #sombrero {
     text-align: center;
-  }
-
-  #sombrero {
-    animation: GFX_Loop 7.1s;
+    animation: sombrero_frame 7.1s;
     opacity: 0;
     transform: scale3d(1, 1, 1) translate(-1200px, 200px);
   }
 
-  @keyframes GFX_Loop {
+  #party {
+    text-align: center;
+    width: 1920px;
+    height: 1080px;
+    animation: party_frame 5s;
+    opacity: 0;
+  }
+
+  @keyframes sombrero_frame {
     0% {
       opacity: 1;
       transform: scale3d(1, 1, 1) translate(1200px, 175px);
@@ -34,6 +39,36 @@
       transform: scale3d(1, 1, 1) translate(-1200px, 175px);
     }
   }
+
+  @keyframes party_frame {
+    0% {
+      opacity: 0;
+    }
+
+    1%,
+    15%,
+    60% {
+      opacity: 1;
+      background-color: rgba(255, 0, 0, 0.30);
+    }
+
+    30%,
+    75% {
+      opacity: 1;
+      background-color: rgba(0, 255, 0, 0.30);
+    }
+
+    45%,
+    90% {
+      opacity: 1;
+      background-color: rgba(0, 0, 255, 0.30);
+    }
+
+    99% {
+      opacity: 1;
+      background-color: rgba(0, 0, 0, 0);
+    }
+  }
 </style>
 
 <div class="border_box" id="screen">
@@ -47,21 +82,35 @@
   function sombrero() {
     var div = document.getElementById("screen");
     div.innerHTML = "<div id='sombrero'><img src='/hud/sombrero.png'><br>AiAiAiAi</div>";
-    setTimeout(sombrero, 7000);
   }
 
-  sombrero();
+  function party() {
+    var div = document.getElementById("screen");
+    div.innerHTML = "<div id='party'><img id='party_img_1' src='/hud/sombrero.png'><img id='party_img_2' src='/hud/sombrero.png'><img id='party_img_3' src='/hud/sombrero.png'></div>";
+  }
 
+  party();
 
   $(document).ready(function () {
-    console.log("http://games-on-sale.de:3005");
-    var socket_rpg = io("http://games-on-sale.de:3005");
+    console.log(location.origin.replace(':3000', '') + ":3005");
+    var socket_rpg = io(location.origin.replace(':3000', '') + ":3005");
+
     socket_rpg.on('connect', function () {
       socket_rpg.send("join", "{{data.user}}");
 
       socket_rpg.on('command', function (data) {
         console.log(data);
+
         // ToDo: Things!
+        if (data == "sombrero") {
+          sombrero();
+        }
+
+        if (data == "party") {
+          party();
+        }
+
+
       });
 
       socket_rpg.on('disconnect', function () {
