@@ -391,6 +391,9 @@ function SearchBroadcasts(auth, pageToken = "") {
             // Additions
             tmp_room.name = obj.b_title;
             tmp_room.is_rpg = true;
+            if (obj.b_title.toLowerCase().includes("sponsored")) {
+              tmp_room.is_rpg = false;
+            }
 
             if (c.length == 0) {
               console.log("Room: ", JSON.stringify(tmp_room));
@@ -431,6 +434,30 @@ function SearchBroadcasts(auth, pageToken = "") {
           } else {
             console.log("Broadcast: ", obj);
             await ow_broadcasts.query().insert(obj);
+          }
+        }
+
+        // Update Last Stream-Chats?
+        var Stream_RPG_Chats = await Chat_Room.query()
+          .where("service", "youtube")
+          .where("is_rpg", true);
+        for (
+          let rpg_chat_index = 0;
+          rpg_chat_index < Stream_RPG_Chats.length;
+          rpg_chat_index++
+        ) {
+          const element = Stream_RPG_Chats[rpg_chat_index];
+          console.log("Checking", element.name);
+          var HasLiveStream = await ow_broadcasts
+            .query()
+            .where("liveChatId", element.room);
+          if (HasLiveStream.length == 0) {
+            element.is_rpg = false;
+            await Chat_Room.query()
+              .patch(element)
+              .where("service", element.service)
+              .where("server", element.server)
+              .where("room", element.room);
           }
         }
       } catch (e) {
