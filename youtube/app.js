@@ -73,6 +73,14 @@ startTokens();
 function StartImport(auth) {
   var sic = auth.credentials;
   fs.writeFileSync("tmp/auth.json", JSON.stringify(auth, null, 2));
+  q.push("Videos", () => {
+    auth.credentials = sic;
+    ListVideos(auth);
+  });
+}
+function xStartImport(auth) {
+  var sic = auth.credentials;
+  fs.writeFileSync("tmp/auth.json", JSON.stringify(auth, null, 2));
 
   q.push("Channels", () => {
     auth.credentials = sic;
@@ -117,6 +125,48 @@ function StartImport(auth) {
     }, RepeatDealy);
   });
   //ListSponsors(auth);
+}
+
+function ListVideos(auth, pageToken = "") {
+  var sic = auth.credentials;
+  service.videos.list(
+    {
+      auth: auth,
+      part: "id, snippet, statistics, status",
+      //id: "3ISZGwwLj4g",
+      //id: "UAImOvmh6ng",
+      id: "oNnKo0aWcfM",
+      maxResults: 50,
+      pageToken: pageToken
+    },
+    async function(err, response) {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      fs.writeFileSync(
+        "tmp/videos.json",
+        JSON.stringify(response.data, null, 2)
+      );
+      var data = response.data.items;
+      for (let index = 0; index < data.length; index++) {
+        const element = data[index];
+        console.log(element);
+
+        var tmp_data = {};
+        tmp_data.service = "youtube";
+        tmp_data.v_id = element.id;
+        tmp_data.channel_id = element.snippet.channelId;
+        if (typeof element.snippet.thumbnails.standard != "undefined") {
+          tmp_data.thumbnail = element.snippet.thumbnails.standard.url;
+        } else {
+          tmp_data.thumbnail = element.snippet.thumbnails.default.url;
+        }
+        tmp_data.title = element.snippet.title;
+        tmp_data.description = element.snippet.description;
+      }
+    }
+  );
 }
 
 function ListChannels(auth, pageToken = "") {

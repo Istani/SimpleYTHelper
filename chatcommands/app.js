@@ -187,6 +187,13 @@ commands[10] = {
   function: sombrero_command,
   visible: true
 };
+commands[10] = {
+  name: "martin",
+  params: "",
+  description: "Mister Defender 833",
+  function: martin_command,
+  visible: false
+};
 
 async function get_msg() {
   //return;
@@ -412,6 +419,17 @@ async function ehrenmann_command(msg_data) {
 
 async function sombrero_command(msg_data) {
   var output_string = "Ai Ai Ai Ai Ai";
+  await outgoing(msg_data, output_string);
+  output_string = "";
+}
+
+async function martin_command(msg_data) {
+  var output_string = "";
+  output_string += "Website: https://defender833.de/\r\n";
+  output_string += "Youtube: https://www.youtube.com/defender833\r\n";
+  output_string += "Instagram: https://www.instagram.com/defender833/\r\n";
+  output_string += "Twitter: https://twitter.com/Defender833\r\n";
+  output_string += "Facebook: https://www.facebook.com/DefenderYT/\r\n";
   await outgoing(msg_data, output_string);
   output_string = "";
 }
