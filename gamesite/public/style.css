@@ -3,21 +3,6 @@
   border-radius: 4px !important;
 }
 
-/* ubuntu-regular - latin */
-@font-face {
-  font-family: "Ubuntu";
-  font-style: normal;
-  font-weight: 400;
-  src: url("/fonts/ubuntu-v14-latin-regular.eot"); /* IE9 Compat Modes */
-  src: local("Ubuntu Regular"), local("Ubuntu-Regular"), url("/fonts/ubuntu-v14-latin-regular.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */ url("/fonts/ubuntu-v14-latin-regular.woff2") format("woff2"), /* Super Modern Browsers */ url("/fonts/ubuntu-v14-latin-regular.woff") format("woff"), /* Modern Browsers */ url("/fonts/ubuntu-v14-latin-regular.ttf") format("truetype"), /* Safari, Android, iOS */ url("/fonts/ubuntu-v14-latin-regular.svg#Ubuntu") format("svg"); /* Legacy iOS */
-}
-
-@font-face {
-  font-family: "Oxanium-Bold";
-  font-style: normal;
-  font-weight: 700;
-  src: local("Oxanium Bold"), local("Oxanium-Bold"), url("/fonts/Oxanium-Bold.woff2") format("woff2"), /* Super Modern Browsers */ url("/fonts/Oxanium-Bold.woff") format("woff"), /* Modern Browsers */ url("/fonts/Oxanium-Bold.ttf") format("truetype"); /* Safari, Android, iOS */
-}
 @font-face {
   font-family: "Oxanium-Regular";
   font-style: normal;
@@ -160,7 +145,7 @@ a.game_link {
   display: inline-block;
   vertical-align: top;
 }
-.game_description {
+.game_description p {
   text-align: justify;
 }
 .price-container {
@@ -221,4 +206,37 @@ a.GOG {
 p.created {
   text-align: right;
   font-size: 60%;
+}
+.game {
+  padding: 0 10vw 0 10vw;
+  align-items: top;
+  justify-items: center;
+  display: grid;
+  grid-gap: 20px;
+  grid-template-columns: auto;
+  grid-template-areas:
+    "title title"
+    "game_pic stores"
+    "genres text"
+    "merch text";
+}
+.title {
+  grid-area: title;
+}
+.game_pic {
+  grid-area: game_pic;
+}
+.game_description {
+  grid-area: text;
+}
+.game_stores {
+  grid-area: "stores";
+  width: 30vw;
+}
+.game_merch {
+  grid-area: "merch";
+  visibility: hidden;
+}
+.game_genres {
+  grid-area: "genres";
 }

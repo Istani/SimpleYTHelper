@@ -1,57 +1,79 @@
 <center>
-  <h1>{{display_name}}</h1>
   <div class="game">
-    <img src="{{banner}}" class="game_pic" width="460" height="215" alt="Game Banner {{display_name}}"><br>
-    <br>
-    <p class="game_description">{{{description}}}</p>
-    <br>
-    <hr class="game_hr">
-    <h2>Stores</h2>
-    <table width="90%">
-      {{#each links}}
-        <tr>
-          <td width="100%">
-            <a href="{{link}}" class="{{store}}" target="_blank">
-              {{store}}
-            </a>
-          </td>
-          <td class="price-container">
-            <p class="price">
-              <a href="{{link}}" target="_blank">
-                {{#checkPrice ../lowPrice formatPrice}}
-                  <span class="">{{formatPrice}}&nbsp;€</span>
-      {{else}}
-        <span class="low">{{formatPrice}}&nbsp;€</span>
-                {{/checkPrice}}
-              </a>
-            </p>
+    <h1 class="title">{{display_name}}</h1>
 
-          </td>
-        </tr>
-        </a>
-      {{/each}}
-    </table>
-    <hr class="game_hr">
-    <h2>Merch</h2>
-    <table width="90%">
-      {{#each merch}}
-        <tr>
-          <td width="100%">
-            <a href="{{link}}" class="{{store}}" target="_blank">
-              {{display_name}}
-            </a>
-          </td>
-          <td class="price-container">
-            <p class="price">
-              <a href="{{link}}" target="_blank">
-                <span class="">{{formatPrice}}&nbsp;€</span>
+    <img src="{{banner}}" class="game_pic" width="460" height="215" alt="Game Banner {{display_name}}"></img>
+
+    <div class="game_stores">
+      <h2>Stores</h2>
+      <table>
+        {{#each links}}
+          <tr>
+            <td width="100%">
+              <a href="{{link}}" class="{{store}}" target="_blank">
+                {{store}}
               </a>
-            </p>
-          </td>
-        </tr>
-        </a>
-      {{/each}}
-    </table>
+            </td>
+            <td class="price-container">
+              <p class="price">
+                <a href="{{link}}" target="_blank">
+                  {{#checkPrice ../lowPrice formatPrice}}
+                    <span class="">{{formatPrice}}&nbsp;€</span>
+        {{else}}
+          <span class="low">{{formatPrice}}&nbsp;€</span>
+                  {{/checkPrice}}
+                </a>
+              </p>
+
+            </td>
+          </tr>
+          </a>
+        {{/each}}
+      </table>
+    </div>
+
+    <div class="game_description">
+      <h2>Description</h2>
+      <p>{{{description}}}</p>
+    </div>
+
+    <div class="game_genres">
+      <h2>Genres</h2>
+      <table width="90%">
+        {{#each genre}}
+          <tr>
+            <td width="100%">
+              <a href="/category/adventure{{genre}}" class="genre_{{genre}}">
+                {{genre}}
+              </a>
+            </td>
+          </tr>
+        {{/each}}
+      </table>
+    </div>
+
+    <div class="game_merch">
+      <h2>Merch</h2>
+      <table width="90%">
+        {{#each merch}}
+          <tr>
+            <td width="100%">
+              <a href="{{link}}" class="{{store}}" target="_blank">
+                {{display_name}}
+              </a>
+            </td>
+            <td class="price-container">
+              <p class="price">
+                <a href="{{link}}" target="_blank">
+                  <span class="">{{formatPrice}}&nbsp;€</span>
+                </a>
+              </p>
+            </td>
+          </tr>
+          </a>
+        {{/each}}
+      </table>
+    </div>
   </div>
   <br><br>
 </center>
