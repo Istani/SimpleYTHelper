@@ -3,6 +3,28 @@
   border-radius: 4px !important;
 }
 
+/* ubuntu-regular - latin */
+@font-face {
+  font-family: "Ubuntu";
+  font-style: normal;
+  font-weight: 400;
+  src: url("/fonts/ubuntu-v14-latin-regular.eot"); /* IE9 Compat Modes */
+  src: local("Ubuntu Regular"), local("Ubuntu-Regular"), url("/fonts/ubuntu-v14-latin-regular.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */ url("/fonts/ubuntu-v14-latin-regular.woff2") format("woff2"), /* Super Modern Browsers */ url("/fonts/ubuntu-v14-latin-regular.woff") format("woff"), /* Modern Browsers */ url("/fonts/ubuntu-v14-latin-regular.ttf") format("truetype"), /* Safari, Android, iOS */ url("/fonts/ubuntu-v14-latin-regular.svg#Ubuntu") format("svg"); /* Legacy iOS */
+}
+
+@font-face {
+  font-family: "Oxanium-Bold";
+  font-style: normal;
+  font-weight: 700;
+  src: local("Oxanium Bold"), local("Oxanium-Bold"), url("/fonts/Oxanium-Bold.woff2") format("woff2"), /* Super Modern Browsers */ url("/fonts/Oxanium-Bold.woff") format("woff"), /* Modern Browsers */ url("/fonts/Oxanium-Bold.ttf") format("truetype"); /* Safari, Android, iOS */
+}
+@font-face {
+  font-family: "Oxanium-Regular";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Oxanium Regular"), local("Oxanium-Regular"), url("/fonts/Oxanium-Regular.woff2") format("woff2"), /* Super Modern Browsers */ url("/fonts/Oxanium-Regular.woff") format("woff"), /* Modern Browsers */ url("/fonts/Oxanium-Regular.ttf") format("truetype"); /* Safari, Android, iOS */
+}
+
 body {
   font-size: 100%;
   padding: 0px;
@@ -17,6 +39,7 @@ body {
     "navigation"
     "content"
     "footer";
+  font-family: "Oxanium-Regular";
 }
 table {
   border-spacing: 0;
