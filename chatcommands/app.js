@@ -194,6 +194,13 @@ commands[10] = {
   function: martin_command,
   visible: false
 };
+commands[11] = {
+  name: "snacks",
+  params: "",
+  disconnect: "Aristosnacks - Overly Posh Snack Reviews",
+  function: snack_command,
+  visible: true
+};
 
 async function get_msg() {
   //return;
@@ -430,6 +437,14 @@ async function martin_command(msg_data) {
   output_string += "Instagram: https://www.instagram.com/defender833/\r\n";
   output_string += "Twitter: https://twitter.com/Defender833\r\n";
   output_string += "Facebook: https://www.facebook.com/DefenderYT/\r\n";
+  await outgoing(msg_data, output_string);
+  output_string = "";
+}
+
+async function snack_command(msg_data) {
+  var output_string = "";
+  output_string +=
+    "Aristosnacks - Overly Posh Snack Reviews: https://www.youtube.com/watch?v=Wmp0xj2k6_c";
   await outgoing(msg_data, output_string);
   output_string = "";
 }
