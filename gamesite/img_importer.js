@@ -32,11 +32,9 @@ async function get_image(game) {
   }
 }
 async function gen_text() {
-  console.log(1);
-  var FontFile = __dirname + "\\public\\fonts\\Oxanium-Regular.fnt";
-  console.log(FontFile);
+  var FontFile = "..\\_readme\\Oxanium.fnt"; // Mit Bindestrich im Namen hatte des irgendwie ein Problem!
   var font = await Jimp.loadFont(FontFile);
-  console.log(2);
+  console.log(font);
   var widht = Jimp.measureText(font, package_info.name);
   var height = Jimp.measureTextHeight(font, package_info.name, 100);
   var offset = 8;
