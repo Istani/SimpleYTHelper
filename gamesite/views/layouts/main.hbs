@@ -36,7 +36,7 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-140335274-1"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
+    function gtag() {dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'UA-140335274-1');
   </script>
@@ -86,21 +86,23 @@
 <body>
   <div id="header">
     <img src="/img/text.png">
-    &nbsp;
-    <a href="https://twitter.com/GamesOnSaleDE" target="_blank">
-      <img src="/img/twitter.png" with="32" height="32">
-    </a>
-    <a href="https://discord.gg/uPqjefM" target="_blank">
-      <img src="/img/discord.png" with="32" height="32">
-    </a>
   </div>
 
   <div id="navigation" width="80%">
-    <ul>
-      <li><a href="/news">News</a></li>
-      <li><a href="/games">Games</a></li>
-      <li><a href="/impressum">Impressum</a></li>
-    </ul>
+    <div id="navi">
+      <ul>
+        <li style="float:right"><a href="https://twitter.com/GamesOnSaleDE" target="_blank"><img src="/img/twitter.png" with="32"height="32"></a></li>
+        <li style="float:right"><a href="https://discord.gg/uPqjefM" target="_blank"><img src="/img/discord.png" with="32" height="32"></a>
+
+        <li><a href="/news">News</a></li>
+        <li><a href="/games">Games</a></li>
+        <li><a href="/impressum">Impressum</a></li>
+        <li width="100%">&nbsp;</li>
+        <li width="100%">&nbsp;</li>
+        
+        </li>
+      </ul>
+    </div>
   </div>
 
   <div id="content" style="display: none">
