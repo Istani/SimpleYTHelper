@@ -7,13 +7,14 @@ const fs = require("fs");
 async function main() {
   //await gen_text();
   //await gen_no_pic();
-  await gen_banner();
+  /*await gen_banner();
   const g = await Game.query()
     .where({ type: "game" })
     .orderBy("updated_at");
   for (var i = 0; i < g.length; i++) {
     //await get_image(g[i]);
   }
+  */
 }
 async function get_image(game) {
   var pic_path = "./public/img/games/" + game.name + ".png";
@@ -31,7 +32,11 @@ async function get_image(game) {
   }
 }
 async function gen_text() {
-  var font = await Jimp.loadFont(Jimp.FONT_SANS_64_WHITE);
+  console.log(1);
+  var FontFile = __dirname + "\\public\\fonts\\Oxanium-Regular.fnt";
+  console.log(FontFile);
+  var font = await Jimp.loadFont(FontFile);
+  console.log(2);
   var widht = Jimp.measureText(font, package_info.name);
   var height = Jimp.measureTextHeight(font, package_info.name, 100);
   var offset = 8;
@@ -60,7 +65,7 @@ async function gen_text() {
   pic.print(font, offset_fix, offset_fix, package_info.name);
 
   pic.scaleToFit(1060, 300);
-  pic.write("./public/img/text.png");
+  pic.write("./public/img/text2.png");
   console.log("text done");
 }
 async function gen_no_pic() {
