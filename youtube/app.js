@@ -164,6 +164,13 @@ function ListVideos(auth, pageToken = "") {
         }
         tmp_data.title = element.snippet.title;
         tmp_data.description = element.snippet.description;
+        tmp_data.privacyStatus = element.status.privacyStatus;
+        tmp_data.viewCount = element.statistics.viewCount;
+        tmp_data.likeCount = element.statistics.likeCount;
+        tmp_data.dislikeCount = element.statistics.dislikeCount;
+        tmp_data.commentCount = element.statistics.commentCount;
+
+        console.log(tmp_data);
       }
     }
   );

@@ -11,7 +11,7 @@ async function main() {
   //await logo_shadow();
   //await logo_details();
   //await logo_text_long();
-  await gen_banner();
+  //await gen_banner();
   /*
   const g = await Game.query()
     .where({ type: "game" })
