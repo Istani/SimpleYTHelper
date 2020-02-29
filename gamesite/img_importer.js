@@ -5,33 +5,23 @@ const Jimp = require("jimp");
 const fs = require("fs");
 
 async function main() {
-  await gen_text();
+  //await gen_url_text();
   //await gen_no_pic();
-  /*await gen_banner();
+  //await details_shadow();
+  //await logo_shadow();
+  //await logo_details();
+  //await logo_text_long();
+  await gen_banner();
+  /*
   const g = await Game.query()
     .where({ type: "game" })
     .orderBy("updated_at");
-  for (var i = 0; i < g.length; i++) {
-    //await get_image(g[i]);
+  or (var i = 0; i < g.length; i++) {
+    await get_image(g[i]);
   }
   */
 }
-async function get_image(game) {
-  var pic_path = "./public/img/games/" + game.name + ".png";
-  if (fs.existsSync(pic_path)) {
-    //console.log("Skip Import of",game.name);
-  } else {
-    console.log("Import of", game.name);
-    await Jimp.read(game.banner)
-      .then(pic => {
-        pic.scaleToFit(460, 215).write(pic_path);
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  }
-}
-async function gen_text() {
+async function gen_url_text() {
   var FontFile = ".\\public\\fonts\\font.fnt"; // Mit Bindestrich im Namen hatte des irgendwie ein Problem!
   var font = await Jimp.loadFont(FontFile);
   var widht = Jimp.measureText(font, package_info.name);
@@ -61,15 +51,15 @@ async function gen_text() {
   offset_fix = offset / 2;
   pic.print(font, offset_fix, offset_fix, package_info.name);
 
-  pic.scaleToFit(1060, 300);
-  pic.write("./public/img/text2.png");
+  pic.scaleToFit(4060, 300);
+  pic.write("./public/img/url_text.png");
   console.log("text done");
 }
 async function gen_no_pic() {
   var font = await Jimp.loadFont(Jimp.FONT_SANS_128_BLACK);
   var widht = Jimp.measureText(font, "?");
   var height = Jimp.measureTextHeight(font, "?");
-  var text = await Jimp.read("./public/img/text.png");
+  var text = await Jimp.read("./public/img/url_text.png");
 
   var pic = new Jimp(widht, height, 0xffffffff);
   pic.print(font, 0, 0, "?");
@@ -88,6 +78,103 @@ async function gen_no_pic() {
 
   pic.write("./public/img/games/no_pic.jpg");
   console.log("no pic done");
+}
+async function details_shadow() {
+  var offset = 16;
+
+  var details = await Jimp.read("./public/img/logo_details.png");
+  details.color([{ apply: "green", params: [0x66] }]);
+
+  var pic = new Jimp(
+    details.bitmap.width + offset * 2,
+    details.bitmap.height + offset * 2,
+    0xffffff00
+  );
+
+  var temp_x = (pic.bitmap.width - details.bitmap.width) / 2;
+  var temp_y = (pic.bitmap.height - details.bitmap.height) / 2;
+
+  for (let xi = temp_x - offset; xi < temp_x + offset; xi++) {
+    for (let yi = temp_y - offset; yi < temp_y + offset; yi++) {
+      pic.composite(details, xi, yi);
+    }
+  }
+  pic.color([
+    { apply: "blue", params: [-0xff] },
+    { apply: "red", params: [-0xff] },
+    { apply: "green", params: [-0xff] }
+  ]);
+  pic.composite(details, temp_x, temp_y);
+  pic.scaleToFit(300, 300);
+  pic.write("./public/img/tmp_details.png");
+
+  console.log("details done");
+}
+async function logo_shadow() {
+  var offset = 8;
+
+  var details = await Jimp.read("./public/img/logo_pacman.png");
+  var pic = new Jimp(
+    details.bitmap.width + offset * 2,
+    details.bitmap.height + offset * 2,
+    0xffffff00
+  );
+
+  var temp_x = (pic.bitmap.width - details.bitmap.width) / 2;
+  var temp_y = (pic.bitmap.height - details.bitmap.height) / 2;
+
+  for (let xi = temp_x - offset; xi < temp_x + offset; xi++) {
+    for (let yi = temp_y - offset; yi < temp_y + offset; yi++) {
+      pic.composite(details, xi, yi);
+    }
+  }
+  pic.color([
+    { apply: "blue", params: [-0xff] },
+    { apply: "red", params: [-0xff] },
+    { apply: "green", params: [-0xff] }
+  ]);
+  pic.composite(details, temp_x, temp_y);
+  pic.scaleToFit(300, 300);
+  pic.write("./public/img/tmp_pacman.png");
+
+  console.log("pacman done");
+}
+async function logo_details() {
+  var logo = await Jimp.read("./public/img/tmp_pacman.png");
+  var details = await Jimp.read("./public/img/tmp_details.png");
+  details.scaleToFit(details.bitmap.width / 2, details.bitmap.height / 2);
+
+  var pic = new Jimp(logo.bitmap.width * 3, logo.bitmap.height, 0xffffff00);
+  var center_details_x = (logo.bitmap.width - details.bitmap.width) / 2;
+  var center_details_y = (logo.bitmap.height - details.bitmap.height) / 2;
+
+  var new_x = center_details_x + logo.bitmap.width / 2;
+  pic.composite(details, new_x, center_details_y);
+  new_x = new_x + details.bitmap.width;
+  pic.composite(details, new_x, center_details_y);
+  new_x = new_x + details.bitmap.width;
+  pic.composite(details, new_x, center_details_y);
+  new_x = new_x + details.bitmap.width;
+  pic.composite(details, new_x, center_details_y);
+
+  pic.composite(logo, 0, 0);
+  pic.scaleToFit(1060, 300);
+
+  pic.write("./public/img/tmp_logo.png");
+  console.log("tmp logo done");
+}
+async function logo_text_long() {
+  var logo = await Jimp.read("./public/img/tmp_logo.png");
+  var details = await Jimp.read("./public/img/url_text.png");
+
+  var new_size = logo.bitmap.width + details.bitmap.width;
+  var pic = new Jimp(new_size, logo.bitmap.height, 0xffffff00);
+  pic.composite(logo, 0, 0);
+  pic.composite(details, logo.bitmap.width, 0);
+  pic.scaleToFit(728, 90);
+
+  pic.write("./public/img/text.png");
+  console.log("tmp text new done");
 }
 async function gen_banner() {
   var text = await Jimp.read("./public/img/text.png");
@@ -157,4 +244,5 @@ async function gen_banner() {
   pic.write("./public/img/banner.png");
   console.log("banner done");
 }
+
 main();
