@@ -19,17 +19,23 @@
                 <a href="{{link}}" target="_blank">
                   {{#checkPrice ../lowPrice formatPrice}}
                     <span class="">{{formatPrice}}&nbsp;€</span>
-                  {{else}}
-                    <span class="low">{{formatPrice}}&nbsp;€</span>
+        {{else}}
+          <span class="low">{{formatPrice}}&nbsp;€</span>
                   {{/checkPrice}}
                 </a>
               </p>
-
             </td>
           </tr>
           </a>
         {{/each}}
       </table>
+      <br>
+      <div class="hinweis">
+        <strong>Hinweis: </strong> Preise können abweichen!<br>
+        Wir bemühen uns möglichst schnell die neusten Daten zu bekommen, aber Computer sind auch nur Maschinen.<br>
+        <!--<strong>*=Affiliate/Werbe-Link</strong>: Es kostet euch nicht mehr, aber ich bekomme einen kleinen Teil als
+        Provision wenn ihr über diesen Link kauft.<br>!-->
+      </div><br>
     </div>
 
     <div class="game_description">
@@ -39,17 +45,13 @@
 
     <div class="game_genres">
       <h2>Genres</h2>
-      <table width="90%">
+      <div class="genre-container">
         {{#each genre}}
-          <tr>
-            <td width="100%">
-              <a href="/category/adventure{{genre}}" class="genre_{{genre}}">
-                {{genre}}
-              </a>
-            </td>
-          </tr>
+          <button class="button_blue" onclick="location.href='/category/{{genre}}'">
+            {{genre}}
+          </button>
         {{/each}}
-      </table>
+      </div>
     </div>
 
     <div class="game_merch">
