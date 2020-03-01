@@ -491,6 +491,13 @@ function SearchBroadcasts(auth, pageToken = "") {
           } else {
             console.log("Broadcast: ", obj);
             await ow_broadcasts.query().insert(obj);
+
+            setTimeout(() => {
+              q.push("LiveChat", () => {
+                auth.credentials = sic;
+                LiveChat(auth);
+              });
+            }, RepeatDealy);
           }
         }
 
