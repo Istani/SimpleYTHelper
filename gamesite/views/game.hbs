@@ -6,29 +6,20 @@
 
     <div class="game_stores">
       <h2>Stores</h2>
-      <table>
+      <div class="store-container">
         {{#each links}}
-          <tr>
-            <td width="100%">
-              <a href="{{link}}" class="{{store}}" target="_blank">
-                {{store}}
-              </a>
-            </td>
-            <td class="price-container">
-              <p class="price">
-                <a href="{{link}}" target="_blank">
-                  {{#checkPrice ../lowPrice formatPrice}}
-                    <span class="">{{formatPrice}}&nbsp;€</span>
-        {{else}}
-          <span class="low">{{formatPrice}}&nbsp;€</span>
-                  {{/checkPrice}}
-                </a>
-              </p>
-            </td>
-          </tr>
-          </a>
+          <button class="blue_click" onclick="window.open('{{link}}', '_blank');">
+            <span class="price_inline">
+              {{#checkPrice ../lowPrice formatPrice}}
+                <span class="">{{formatPrice}}&nbsp;€</span>
+              {{else}}
+                <span class="low">{{formatPrice}}&nbsp;€</span>
+              {{/checkPrice}}
+            </span>
+            <span class="{{store}}">{{store}}</span>
+          </button>
         {{/each}}
-      </table>
+      </div>
       <br>
       <div class="hinweis">
         <strong>Hinweis: </strong> Preise können abweichen!<br>
@@ -47,7 +38,7 @@
       <h2>Genres</h2>
       <div class="genre-container">
         {{#each genre}}
-          <button class="button_blue" onclick="location.href='/category/{{genre}}'">
+          <button class="blue_click" onclick="location.href='/category/{{genre}}'">
             {{genre}}
           </button>
         {{/each}}

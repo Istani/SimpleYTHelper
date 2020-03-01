@@ -46,14 +46,45 @@ p {
   margin-top: 0;
   margin-bottom: 0;
 }
+button {
+  display: inline-block;
+  cursor: pointer;
+}
 
+.blue_click {
+  background-color: #007;
+  border: 1px solid #00f;
+  border-radius: 4px;
+  color: #fff;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+  background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
+  padding: 3px 30px;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  transition: background-color 0.2s ease-out;
+  background-clip: padding-box;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3), 0 2px 2px -1px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 0.3) inset;
+}
+button.blue_click:hover,
+a.blue_click:hover,
+li a:hover {
+  background-color: #ccc;
+  color: #555;
+}
+button.blue_click:active {
+  background: #e9e9e9;
+  position: relative;
+  top: 1px;
+  text-shadow: none;
+  -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3) inset;
+  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3) inset;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3) inset;
+}
 ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: #007;
-  border: 1px solid #00f;
   border-radius: 4px;
 }
 li {
@@ -65,10 +96,7 @@ li a {
   text-align: center;
   padding: 14px 16px 4px 16px;
   text-decoration: none;
-  font-size: 150%;
-}
-li a:hover {
-  background-color: #11f;
+  font-size: 160%;
 }
 
 hr {
@@ -162,8 +190,15 @@ a.game_link {
   bottom: 0;
   right: 0;
 }
+.price_inline {
+  font-size: 120%;
+  text-align: right;
+  font-weight: bold;
+  float: right;
+}
+.price_inline .low,
 .price .low {
-  color: green;
+  color: #00aa00 !important;
 }
 .price .high {
   color: red;
@@ -183,27 +218,35 @@ a.Amazon {
   background-size: 16px 16px;
   padding-left: 18px;
 }
-a.Steam {
+.Steam {
   background: url("/img/service/steam.png") no-repeat left;
   background-position: 0px 0px;
   background-size: 16px 16px;
   padding-left: 18px;
 }
-a.Humble {
+.Humble {
   background: url("/img/service/humble.png") no-repeat left;
   background-position: 0px 0px;
   background-size: 16px 16px;
   padding-left: 18px;
 }
-a.Humble::after {
+.Humble::after {
   content: "*";
 }
-a.GOG {
+.GOG {
   background: url("/img/service/gog.png") no-repeat left;
   background-position: 0px 0px;
   background-size: 16px 16px;
   padding-left: 18px;
 }
+
+.store-container .blue_click .Steam,
+.store-container .blue_click .GOG,
+.store-container .blue_click .Humble {
+  font-size: 125%;
+}
+
+
 .price a {
   background: url("") !important;
 }
@@ -249,36 +292,13 @@ p.created {
   white-space: nowrap;
 }
 
-.genre-container {
-  display:flex;
+.genre-container,
+.store-container {
+  display: flex;
   flex-direction: column;
   align-items: stretch;
 }
-.button_blue {
-  background-color: #007;
-  /*border-color: #00f;*/
-  color: #fff;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
-  background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
-  padding: 6px 30px;
-  margin: 5px 0px;
-  text-transform: uppercase;
-  display: inline-block;
-  cursor: pointer;
-  transition: background-color 0.2s ease-out;
-  background-clip: padding-box;
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3), 0 2px 2px -1px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 0.3) inset;
+.store-container .blue_click {
+  text-align: left;
 }
-.button_blue:hover {
-  background-color: #ccc;
-  color: #555;
-}
-.button_blue:active {
-  background: #e9e9e9;
-  position: relative;
-  top: 1px;
-  text-shadow: none;
-  -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3) inset;
-  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3) inset;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3) inset;
-}
+
