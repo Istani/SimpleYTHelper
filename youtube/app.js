@@ -19,6 +19,7 @@ const sponsors = require("./models/member.js");
 const ow_playlist = require("./models/playlists.js");
 const ow_playlistitems = require("./models/playlists_items.js");
 const ow_broadcasts = require("./models/broadcast.js");
+const ow_videos = require("./models/videos.js");
 const ow_channel = require("./models/channel.js");
 const Outgoing_Message = require("./models/outgoing_messages.js");
 const Chat_Message = require("./models/chat_message.js");
@@ -124,20 +125,47 @@ function StartImport(auth) {
       });
     }, RepeatDealy);
   });
+
+  cron.schedule("50 22 * * *", () => {
+    q.push("Videos", () => {
+      auth.credentials = sic;
+      ListVideos(auth);
+    });
+  });
   //ListSponsors(auth);
 }
 
-function ListVideos(auth, pageToken = "") {
+async function ListVideos(auth, pageToken = "") {
+  var max_per_request = 50;
+  pageToken = pageToken * 1; // parseInt wollte ja nicht mit einen leeren string arbeiten!
+
   var sic = auth.credentials;
+  var channel_obj = await ow_channel
+    .query()
+    .where("service", "youtube")
+    .where("user_id", sic.user_id);
+  var playlists_obj = await ow_playlistitems
+    .query()
+    .where("pl_id", channel_obj[0].main_playlist)
+    .limit(max_per_request)
+    .offset(pageToken);
+  var abfrage_string = "";
+  for (let pl_index = 0; pl_index < playlists_obj.length; pl_index++) {
+    const element = playlists_obj[pl_index];
+    if (abfrage_string != "") {
+      abfrage_string += ", ";
+    }
+    abfrage_string += element.video_id;
+  }
   service.videos.list(
     {
       auth: auth,
       part: "id, snippet, statistics, status",
       //id: "3ISZGwwLj4g",
       //id: "UAImOvmh6ng",
-      id: "oNnKo0aWcfM",
-      maxResults: 50,
-      pageToken: pageToken
+      id: abfrage_string,
+      maxResults: max_per_request,
+      pageToken: ""
     },
     async function(err, response) {
       if (err) {
@@ -151,12 +179,12 @@ function ListVideos(auth, pageToken = "") {
       var data = response.data.items;
       for (let index = 0; index < data.length; index++) {
         const element = data[index];
-        console.log(element);
+        //console.log(element);
 
         var tmp_data = {};
         tmp_data.service = "youtube";
         tmp_data.v_id = element.id;
-        tmp_data.channel_id = element.snippet.channelId;
+        tmp_data.owner = element.snippet.channelId;
         if (typeof element.snippet.thumbnails.standard != "undefined") {
           tmp_data.thumbnail = element.snippet.thumbnails.standard.url;
         } else {
@@ -165,12 +193,36 @@ function ListVideos(auth, pageToken = "") {
         tmp_data.title = element.snippet.title;
         tmp_data.description = element.snippet.description;
         tmp_data.privacyStatus = element.status.privacyStatus;
+        tmp_data.publishedAt = element.snippet.publishedAt;
         tmp_data.viewCount = element.statistics.viewCount;
         tmp_data.likeCount = element.statistics.likeCount;
         tmp_data.dislikeCount = element.statistics.dislikeCount;
         tmp_data.commentCount = element.statistics.commentCount;
 
-        console.log(tmp_data);
+        var m = await ow_videos
+          .query()
+          .where("service", tmp_data.service)
+          .where("owner", tmp_data.owner)
+          .where("v_id", tmp_data.v_id);
+
+        if (m.length > 0) {
+          await ow_videos
+            .query()
+            .patch(tmp_data)
+            .where("service", tmp_data.service)
+            .where("owner", tmp_data.owner)
+            .where("v_id", tmp_data.v_id);
+          //console.log("video patch: ", tmp_data.v_id);
+        } else {
+          console.log("video new: ", tmp_data.v_id);
+          await ow_videos.query().insert(tmp_data);
+        }
+      }
+      if (data.length == max_per_request) {
+        q.push("Videos", () => {
+          auth.credentials = sic;
+          ListVideos(auth, pageToken + max_per_request);
+        });
       }
     }
   );

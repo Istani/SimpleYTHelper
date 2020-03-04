@@ -437,9 +437,11 @@ async function martin_command(msg_data) {
   output_string += "Instagram: https://www.instagram.com/defender833/\r\n";
   output_string += "Twitter: https://twitter.com/Defender833\r\n";
   await outgoing(msg_data, output_string);
+
   output_string = "";
   output_string += "Facebook: https://www.facebook.com/DefenderYT/\r\n";
   await outgoing(msg_data, output_string);
+
   output_string = "";
 }
 

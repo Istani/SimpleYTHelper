@@ -175,6 +175,7 @@ a.game_link {
   width: 48%;
   display: inline-block;
   vertical-align: top;
+  overflow: hidden;
 }
 .game_description p {
   text-align: justify;
@@ -246,7 +247,6 @@ a.Amazon {
   font-size: 125%;
 }
 
-
 .price a {
   background: url("") !important;
 }
@@ -301,4 +301,3 @@ p.created {
 .store-container .blue_click {
   text-align: left;
 }
-
