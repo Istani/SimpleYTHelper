@@ -187,14 +187,14 @@ commands[10] = {
   function: sombrero_command,
   visible: true
 };
-commands[10] = {
+commands[11] = {
   name: "martin",
   params: "",
   description: "Mister Defender 833",
   function: martin_command,
   visible: false
 };
-commands[11] = {
+commands[12] = {
   name: "snacks",
   params: "",
   disconnect: "Aristosnacks - Overly Posh Snack Reviews",
@@ -436,6 +436,8 @@ async function martin_command(msg_data) {
   output_string += "Youtube: https://www.youtube.com/defender833\r\n";
   output_string += "Instagram: https://www.instagram.com/defender833/\r\n";
   output_string += "Twitter: https://twitter.com/Defender833\r\n";
+  await outgoing(msg_data, output_string);
+  output_string = "";
   output_string += "Facebook: https://www.facebook.com/DefenderYT/\r\n";
   await outgoing(msg_data, output_string);
   output_string = "";
