@@ -845,7 +845,6 @@
                 if (nodeType === 9) {
                   if ((elem = context.getElementById(m))) {
                     // Support: IE, Opera, Webkit
-                    // TODO: identify versions
                     // getElementById can match elements by name instead of ID
                     if (elem.id === m) {
                       results.push(elem);
@@ -858,7 +857,6 @@
                   // Element context
                 } else {
                   // Support: IE, Opera, Webkit
-                  // TODO: identify versions
                   // getElementById can match elements by name instead of ID
                   if (
                     newContext &&

@@ -11,6 +11,7 @@ var Queue = require("better-queue");
 var cron = require("node-cron");
 const emoji = require("node-emoji");
 const sleep = require("await-sleep");
+const moment = require("moment");
 
 var readline = require("readline");
 var { google } = require("googleapis");
@@ -193,7 +194,9 @@ async function ListVideos(auth, pageToken = "") {
         tmp_data.title = element.snippet.title;
         tmp_data.description = element.snippet.description;
         tmp_data.privacyStatus = element.status.privacyStatus;
-        tmp_data.publishedAt = element.snippet.publishedAt;
+        tmp_data.publishedAt = moment(
+          element.snippet.publishedAt
+        ).toISOString();
         tmp_data.viewCount = element.statistics.viewCount;
         tmp_data.likeCount = element.statistics.likeCount;
         tmp_data.dislikeCount = element.statistics.dislikeCount;
@@ -216,8 +219,20 @@ async function ListVideos(auth, pageToken = "") {
         } else {
           console.log("video new: ", tmp_data.v_id);
           await ow_videos.query().insert(tmp_data);
+
+          // TODO: Richtige Räume finden!
+          var room = await Rooms.query().where({ is_announcement: true });
+          for (let ri = 0; ri < room.length; ri++) {
+            const element = room[ri];
+            await FakeMsg(
+              element.server,
+              element.room,
+              "!video " + tmp_data.v_id + ""
+            );
+          }
         }
       }
+
       if (data.length == max_per_request) {
         q.push("Videos", () => {
           auth.credentials = sic;

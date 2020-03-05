@@ -9,6 +9,7 @@ const fs = require("fs");
 const sleep = require("await-sleep");
 const cron = require("node-cron");
 const io = require("socket.io")(3005);
+const moment = require("moment");
 
 // DB-Models
 const Messages = require("./models/chat_message.js");
@@ -18,6 +19,7 @@ const Server = require("./models/chat_server.js");
 const Outgoing_Message = require("./models/outgoing_messages.js");
 const Games = require("./models/game.js");
 const Links = require("./models/game_link.js");
+const Videos = require("./models/videos.js");
 
 var settings = {};
 function load_settings() {
@@ -199,6 +201,13 @@ commands[12] = {
   params: "",
   disconnect: "Aristosnacks - Overly Posh Snack Reviews",
   function: snack_command,
+  visible: true
+};
+commands[13] = {
+  name: "video",
+  params: "[id]",
+  disconnect: "Give me a Video",
+  function: video_command,
   visible: true
 };
 
@@ -449,6 +458,31 @@ async function snack_command(msg_data) {
   var output_string = "";
   output_string +=
     "Aristosnacks - Overly Posh Snack Reviews: https://www.youtube.com/watch?v=Wmp0xj2k6_c";
+  await outgoing(msg_data, output_string);
+  output_string = "";
+}
+
+async function video_command(msg_data) {
+  var output_string = "";
+  var temp_content = msg_data.content.split(" ");
+  // TODO: Get Owner!
+  if (typeof temp_content[1] != "undefined") {
+    var v = await Videos.query()
+      .where("owner", "UC5DOhI70dI3PnLPMkUsosgw")
+      .where("v_id", temp_content[1]);
+  } else {
+    var v = await Videos.query()
+      .where("owner", "UC5DOhI70dI3PnLPMkUsosgw")
+      .where("publishedAt", "<", moment().toISOString())
+      .where("privacyStatus", "public")
+      .orderBy("publishedAt", "DESC");
+  }
+  if (v.length > 0) {
+    output_string +=
+      v[0].title + " " + "https://www.youtube.com/watch?v=" + v[0].v_id;
+  } else {
+    output_string += "Video nicht gefunden!";
+  }
   await outgoing(msg_data, output_string);
   output_string = "";
 }
