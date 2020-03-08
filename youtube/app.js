@@ -221,15 +221,14 @@ async function ListVideos(auth, pageToken = "") {
           await ow_videos.query().insert(tmp_data);
 
           // TODO: Richtige Räume finden!
+          // TODO: Nicht einfach jedes posten!
+          /*
           var room = await Chat_Room.query().where({ is_announcement: true });
           for (let ri = 0; ri < room.length; ri++) {
             const element = room[ri];
-            await FakeMsg(
-              element.server,
-              element.room,
-              "!video " + tmp_data.v_id + ""
-            );
+            await FakeMsg(element.server, element.room, "!video " + tmp_data.v_id + "");
           }
+          */
         }
       }
 

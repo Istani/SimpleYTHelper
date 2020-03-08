@@ -470,6 +470,15 @@ async function video_command(msg_data) {
     var v = await Videos.query()
       .where("owner", "UC5DOhI70dI3PnLPMkUsosgw")
       .where("v_id", temp_content[1]);
+    if (v.length == 0) {
+      temp_content.shift();
+      var search = temp_content.join(" ");
+      var v = await Videos.query()
+        .where("owner", "UC5DOhI70dI3PnLPMkUsosgw")
+        .where("title", "like", "%" + search + "%")
+        .orderBy("publishedAt", "DESC")
+        .limit(5);
+    }
   } else {
     var v = await Videos.query()
       .where("owner", "UC5DOhI70dI3PnLPMkUsosgw")
@@ -478,8 +487,12 @@ async function video_command(msg_data) {
       .orderBy("publishedAt", "DESC");
   }
   if (v.length > 0) {
-    output_string +=
-      v[0].title + " " + "https://www.youtube.com/watch?v=" + v[0].v_id;
+    for (let vidx = 0; vidx < v.length; vidx++) {
+      const element = v[vidx];
+      output_string =
+        element.title + " " + "https://www.youtube.com/watch?v=" + element.v_id;
+      await outgoing(msg_data, output_string);
+    }
   } else {
     output_string += "Video nicht gefunden!";
   }
