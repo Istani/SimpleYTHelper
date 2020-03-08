@@ -72,7 +72,7 @@ async function authorize(callback) {
 }
 startTokens();
 
-function tStartImport(auth) {
+function StartImport(auth) {
   var sic = auth.credentials;
   fs.writeFileSync("tmp/auth.json", JSON.stringify(auth, null, 2));
   q.push("Videos", () => {
@@ -80,7 +80,7 @@ function tStartImport(auth) {
     ListVideos(auth);
   });
 }
-function StartImport(auth) {
+function xStartImport(auth) {
   var sic = auth.credentials;
   fs.writeFileSync("tmp/auth.json", JSON.stringify(auth, null, 2));
 
@@ -221,7 +221,7 @@ async function ListVideos(auth, pageToken = "") {
           await ow_videos.query().insert(tmp_data);
 
           // TODO: Richtige Räume finden!
-          var room = await Rooms.query().where({ is_announcement: true });
+          var room = await Chat_Room.query().where({ is_announcement: true });
           for (let ri = 0; ri < room.length; ri++) {
             const element = room[ri];
             await FakeMsg(
