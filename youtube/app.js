@@ -72,7 +72,7 @@ async function authorize(callback) {
 }
 startTokens();
 
-function StartImport(auth) {
+function tStartImport(auth) {
   var sic = auth.credentials;
   fs.writeFileSync("tmp/auth.json", JSON.stringify(auth, null, 2));
   q.push("Videos", () => {
@@ -80,7 +80,7 @@ function StartImport(auth) {
     ListVideos(auth);
   });
 }
-function xStartImport(auth) {
+function StartImport(auth) {
   var sic = auth.credentials;
   fs.writeFileSync("tmp/auth.json", JSON.stringify(auth, null, 2));
 
