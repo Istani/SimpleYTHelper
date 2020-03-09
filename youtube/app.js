@@ -136,7 +136,7 @@ function StartImport(auth) {
   //ListSponsors(auth);
 }
 
-async function ListVideos(auth, pageToken = "") {
+async function ListVideos(auth, pageToken = "", nextPage = true) {
   var max_per_request = 50;
   pageToken = pageToken * 1; // parseInt wollte ja nicht mit einen leeren string arbeiten!
 
@@ -148,6 +148,7 @@ async function ListVideos(auth, pageToken = "") {
   var playlists_obj = await ow_playlistitems
     .query()
     .where("pl_id", channel_obj[0].main_playlist)
+    .orderBy("publishedAt", "DESC")
     .limit(max_per_request)
     .offset(pageToken);
   var abfrage_string = "";
@@ -232,7 +233,7 @@ async function ListVideos(auth, pageToken = "") {
         }
       }
 
-      if (data.length == max_per_request) {
+      if (data.length == max_per_request && nextPage) {
         q.push("Videos", () => {
           auth.credentials = sic;
           ListVideos(auth, pageToken + max_per_request);
@@ -396,7 +397,12 @@ async function ListNewUploads(auth) {
     auth.credentials = sic;
     ListPlaylistItems(auth, data[0].main_playlist, "", false);
   });
+  q.push("Videos Upload", () => {
+    auth.credentials = sic;
+    ListVideos(auth, 0, false);
+  });
 }
+
 function ListPlaylistItems(auth, playlist, pageToken = "", loadAll = true) {
   var sic = auth.credentials;
   service.playlistItems.list(
