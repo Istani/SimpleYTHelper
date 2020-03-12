@@ -210,6 +210,13 @@ commands[13] = {
   function: video_command,
   visible: true
 };
+commands[14] = {
+  name: "monster",
+  params: "",
+  disconnect: "Give me a Video",
+  function: monster_command,
+  visible: false
+};
 
 async function get_msg() {
   //return;
@@ -458,6 +465,13 @@ async function snack_command(msg_data) {
   var output_string = "";
   output_string +=
     "Aristosnacks - Overly Posh Snack Reviews: https://www.youtube.com/watch?v=i71bZM7Gx5w";
+  await outgoing(msg_data, output_string);
+  output_string = "";
+}
+async function monster_command(msg_data) {
+  var output_string = "";
+  output_string +=
+    "Ein gar edles Tröpfchen http://games-on-sale.de/s/monster #werbung";
   await outgoing(msg_data, output_string);
   output_string = "";
 }
