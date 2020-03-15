@@ -148,7 +148,7 @@ async function ListVideos(auth, pageToken = "", nextPage = true) {
   var playlists_obj = await ow_playlistitems
     .query()
     .where("pl_id", channel_obj[0].main_playlist)
-    .orderBy("publishedAt", "DESC")
+    .orderBy("created_at", "DESC")
     .limit(max_per_request)
     .offset(pageToken);
   var abfrage_string = "";

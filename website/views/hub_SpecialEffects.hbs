@@ -12,7 +12,24 @@
     text-align: center;
     animation: sombrero_frame 7.1s;
     opacity: 0;
-    transform: scale3d(1, 1, 1) translate(-1200px, 200px);
+    transform: scale3d(1, 1, 1) translate(-1200px, 150px);
+  }
+
+  @keyframes sombrero_frame {
+    0% {
+      opacity: 1;
+      transform: scale3d(1, 1, 1) translate(1200px, 125px);
+    }
+
+    50% {
+      opacity: 1;
+      transform: scale3d(3, 3, 1) translate(0px, 125px);
+    }
+
+    100% {
+      opacity: 1;
+      transform: scale3d(1, 1, 1) translate(-1200px, 125px);
+    }
   }
 
   #party {
@@ -23,45 +40,31 @@
     opacity: 0;
   }
 
-  @keyframes sombrero_frame {
-    0% {
-      opacity: 1;
-      transform: scale3d(1, 1, 1) translate(1200px, 175px);
-    }
-
-    50% {
-      opacity: 1;
-      transform: scale3d(3, 3, 1) translate(0px, 175px);
-    }
-
-    100% {
-      opacity: 1;
-      transform: scale3d(1, 1, 1) translate(-1200px, 175px);
-    }
-  }
-
   @keyframes party_frame {
     0% {
       opacity: 0;
     }
 
     1%,
-    15%,
-    60% {
+    10%,
+    40%,
+    70% {
       opacity: 1;
-      background-color: rgba(255, 0, 0, 0.30);
+      background-color: rgba(255, 0, 0, 0.40);
+    }
+
+    20%,
+    50%,
+    80% {
+      opacity: 1;
+      background-color: rgba(0, 255, 0, 0.40);
     }
 
     30%,
-    75% {
-      opacity: 1;
-      background-color: rgba(0, 255, 0, 0.30);
-    }
-
-    45%,
+    60%,
     90% {
       opacity: 1;
-      background-color: rgba(0, 0, 255, 0.30);
+      background-color: rgba(0, 0, 255, 0.40);
     }
 
     99% {

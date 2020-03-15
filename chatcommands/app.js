@@ -213,7 +213,7 @@ commands[13] = {
 commands[14] = {
   name: "monster",
   params: "",
-  disconnect: "Give me a Video",
+  disconnect: "Give me a Healpotion",
   function: monster_command,
   visible: false
 };
