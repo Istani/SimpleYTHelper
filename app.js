@@ -8,6 +8,7 @@ console.log();
 /* --- */
 const fs = require("fs");
 const async = require("async");
+const sleep = require("await-sleep");
 function exec(command) {
   const e = require("child_process").execSync;
   console.log(command);
@@ -36,7 +37,7 @@ if (fs.existsSync(".env")) {
 var need_install = 0;
 async function install() {
   //exec("npm install");
-  await fs.readdir(__dirname, function(err, items) {
+  await fs.readdir(__dirname, async function(err, items) {
     for (var i = 0; i < items.length; i++) {
       var item = items[i];
       if (fs.statSync(__dirname + "/" + item).isDirectory()) {
@@ -79,6 +80,7 @@ async function install() {
 
       console.log("Restart all");
       exec("pm2 restart all");
+      await sleep(10000);
     }
     console.log("Done");
     process.exit(0);
