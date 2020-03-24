@@ -464,7 +464,7 @@ async function martin_command(msg_data) {
 async function snack_command(msg_data) {
   var output_string = "";
   output_string +=
-    "Aristosnacks - Overly Posh Snack Reviews: https://www.youtube.com/watch?v=i71bZM7Gx5w";
+    "Aristosnacks - Overly Posh Snack Reviews: http://games-on-sale.de/s/snacks";
   await outgoing(msg_data, output_string);
   output_string = "";
 }
