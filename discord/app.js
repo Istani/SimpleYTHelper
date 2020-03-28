@@ -47,7 +47,6 @@ client.on("ready", () => {
     })
     .catch(console.error);
   //SendMessage("225371711619465216", "test");
-  setTimeout(CheckForMessages, 1000);
 });
 
 client.on("error", error => {
@@ -91,6 +90,7 @@ async function CheckForMessages() {
   }
   setTimeout(CheckForMessages, 100);
 }
+setTimeout(CheckForMessages, 5000);
 async function SendMessage(channelID, msg) {
   console.log("Try to Send Message");
   client.channels.get(channelID).send(msg);

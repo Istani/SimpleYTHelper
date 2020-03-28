@@ -127,7 +127,13 @@ function StartImport(auth) {
       ListVideos(auth);
     });
   });
-  //ListSponsors(auth);
+
+  q.push("LiveChat", () => {
+    auth.credentials = sic;
+    LiveChat(auth);
+    auth.credentials = sic;
+    CheckForMessages(auth);
+  });
 }
 
 async function ListVideos(auth, pageToken = "", nextPage = true) {
@@ -531,13 +537,6 @@ function SearchBroadcasts(auth, pageToken = "") {
                   obj.b_id +
                   ""
               );
-
-              q.push("LiveChat", () => {
-                auth.credentials = sic;
-                LiveChat(auth);
-                auth.credentials = sic;
-                CheckForMessages(auth);
-              });
             } else {
               if (obj.actualEndTime != null) {
                 tmp_room.is_rpg = false;
@@ -651,10 +650,10 @@ async function LiveChat(auth, pageToken = "") {
             auth.credentials = sic;
             SearchBroadcasts(auth);
           });
-          /*q.push("LiveChat", () => {
+          q.push("LiveChat", () => {
             auth.credentials = sic;
             LiveChat(auth);
-          });*/
+          });
         }, RepeatDealy);
         return;
       }
