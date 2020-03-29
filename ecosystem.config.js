@@ -119,6 +119,13 @@ module.exports = {
       out_file: "logs/SYTH-GOG.log"
     },
     {
+      name: "SYTH-Epic",
+      script: "./epicstore/app.js",
+      log_date_format: "YYYY-MM-DD HH:mm:ss Z",
+      error_file: "logs/SYTH-Epic.err",
+      out_file: "logs/SYTH-Epic.log"
+    },
+    {
       name: "Istani-Achievements",
       script: "./metagamerscore/app.js",
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
