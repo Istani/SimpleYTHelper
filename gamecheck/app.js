@@ -116,7 +116,11 @@ async function get_games() {
       tmp_chat.service = element.service;
       tmp_chat.server = element.server;
       tmp_chat.room = element.room;
-      tmp_chat.content = tmp_tweet.message;
+      if (sale.discount == 100) {
+        tmp_chat.content = tmp_tweet.message + " @everyone";
+      } else {
+        tmp_chat.content = tmp_tweet.message;
+      }
       await Outgoing_Message.query().insert(tmp_chat);
     }
 

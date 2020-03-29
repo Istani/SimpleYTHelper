@@ -111,7 +111,8 @@ var hbs = exphbs.create({
     }
   },
   defaultLayout: "main",
-  extname: ".hbs"
+  extname: ".hbs",
+  allowProtoPropertiesByDefault: true
 });
 
 var app = express();

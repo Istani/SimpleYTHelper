@@ -164,7 +164,7 @@ async function get_Games() {
       }
       setInterval(() => {
         get_Games();
-      }, 6 * 60 * 60 * 1000); // 6*1 Stunde warten bevor Start
+      }, 4 * 60 * 60 * 1000); // 4*1 Stunde warten bevor Start
     }
   );
 }
