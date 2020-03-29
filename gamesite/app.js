@@ -34,9 +34,14 @@ async function GetAllGames() {
       // Adding Ads?
     }
   }
-  console.log("Display: ", Display_Games.length);
+  console.log("Display Games: ", Display_Games.length);
   GetAllCategorys(Display_Games);
   setTimeout(GetAllGames, 1000 * 60 * 60);
+  fs.writeFileSync(
+    "tmp/GetAllGames.json",
+    JSON.stringify(Display_Games, null, 2)
+  );
+  Display_Games = require("./tmp/GetAllGames.json");
 }
 GetAllGames();
 var All_Categorys;
@@ -57,7 +62,12 @@ async function GetAllCategorys(AllGames) {
     }
   }
   All_Categorys = All_Categorys.sort();
-  console.log(All_Categorys);
+  console.log("Display Categorys: ", All_Categorys.length);
+  fs.writeFileSync(
+    "tmp/All_Categorys.json",
+    JSON.stringify(All_Categorys, null, 2)
+  );
+  All_Categorys = require("./tmp/All_Categorys.json");
 }
 function FindGame(name, callback) {
   var error = null;
