@@ -17,7 +17,7 @@ async function trigger() {
   });
 }
 
-setTimeout(() => {
+setInterval(() => {
   trigger();
 }, 6 * 60 * 60 * 1000); // 6*1 Stunde warten bevor Start
 trigger();

@@ -162,6 +162,9 @@ async function get_Games() {
         }
         await sleep(sleeptime);
       }
+      setInterval(() => {
+        get_Games();
+      }, 6 * 60 * 60 * 1000); // 6*1 Stunde warten bevor Start
     }
   );
 }

@@ -61,7 +61,7 @@ async function tweet_gos() {
       async function(error, tweet, response) {
         if (error) {
           console.error(error);
-          setTimeout(tweet_gos, 5 * 60 * 1000);
+          setTimeout(tweet_gos, 15 * 60 * 1000);
           return;
         }
         await Tweets.query()
@@ -72,7 +72,7 @@ async function tweet_gos() {
       }
     );
   }
-  setTimeout(tweet_gos, 5 * 60 * 1000);
+  setTimeout(tweet_gos, 10 * 60 * 1000);
 }
 
 async function bg_gos() {
@@ -130,7 +130,7 @@ async function pp_gos() {
   await img.write("gos_pp.png");
 }
 
-//bg_gos();
-//pp_gos();
+bg_gos();
+pp_gos();
 tweet_gos();
 tweet_main();
