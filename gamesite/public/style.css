@@ -234,6 +234,15 @@ a.Amazon {
 .Humble::after {
   content: "*";
 }
+.Epic {
+  background: url("/img/service/epic.png") no-repeat left;
+  background-position: 0px 0px;
+  background-size: 16px 16px;
+  padding-left: 18px;
+}
+.Epic::after {
+  content: "*";
+}
 .GOG {
   background: url("/img/service/gog.png") no-repeat left;
   background-position: 0px 0px;
@@ -243,7 +252,8 @@ a.Amazon {
 
 .store-container .blue_click .Steam,
 .store-container .blue_click .GOG,
-.store-container .blue_click .Humble {
+.store-container .blue_click .Humble,
+.store-container .blue_click .Epic {
   font-size: 125%;
 }
 
