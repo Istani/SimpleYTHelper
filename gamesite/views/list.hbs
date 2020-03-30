@@ -14,10 +14,10 @@
               <span class="display_name">{{display_name}}</span><br>
               <br>
               <p class="price">
-                {{#checkPrice lowPrice highPrice}}
-                  <span class="low">{{lowPrice}}&nbsp;€</span> <span class="high">{{highPrice}}&nbsp;€</span>
+                {{#checkPrice games.lowPrice games.highPrice}}
+                  <span class="low">{{games.lowPrice}}&nbsp;€</span> <span class="high">{{games.highPrice}}&nbsp;€</span>
                 {{else}}
-                  <span class="">{{lowPrice}}&nbsp;€</span>
+                  <span class="">{{games.lowPrice}}&nbsp;€</span>
                 {{/checkPrice}}
               </p>
             </div>
