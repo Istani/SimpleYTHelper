@@ -1,0 +1,698 @@
+/* SK: Combine File */
+
+/* File Content: 1 _ datatables.css */
+/*
+ * This combined file was created by the DataTables downloader builder:
+ *   https://datatables.net/download
+ *
+ * To rebuild or modify this file with the latest versions of the included
+ * software please visit:
+ *   https://datatables.net/download/#dt/dt-1.10.20
+ *
+ * Included libraries:
+ *  DataTables 1.10.20
+ */
+
+/*
+ * Table styles
+ */
+table.dataTable {
+  width: 100%;
+  margin: 0 auto;
+  clear: both;
+  border-collapse: separate;
+  border-spacing: 0;
+  /*
+   * Header and footer styles
+   */
+  /*
+   * Body styles
+   */
+}
+table.dataTable thead th,
+table.dataTable tfoot th {
+  font-weight: bold;
+}
+table.dataTable thead th,
+table.dataTable thead td {
+  padding: 10px 18px;
+  border-bottom: 1px solid #111;
+}
+table.dataTable thead th:active,
+table.dataTable thead td:active {
+  outline: none;
+}
+table.dataTable tfoot th,
+table.dataTable tfoot td {
+  padding: 10px 18px 6px 18px;
+  border-top: 1px solid #111;
+}
+table.dataTable thead .sorting,
+table.dataTable thead .sorting_asc,
+table.dataTable thead .sorting_desc,
+table.dataTable thead .sorting_asc_disabled,
+table.dataTable thead .sorting_desc_disabled {
+  cursor: pointer;
+  *cursor: hand;
+  background-repeat: no-repeat;
+  background-position: center right;
+}
+table.dataTable thead .sorting {
+  background-image: url("/DataTables-1.10.20/images/sort_both.png");
+}
+table.dataTable thead .sorting_asc {
+  background-image: url("/DataTables-1.10.20/images/sort_asc.png");
+}
+table.dataTable thead .sorting_desc {
+  background-image: url("/DataTables-1.10.20/images/sort_desc.png");
+}
+table.dataTable thead .sorting_asc_disabled {
+  background-image: url("/DataTables-1.10.20/images/sort_asc_disabled.png");
+}
+table.dataTable thead .sorting_desc_disabled {
+  background-image: url("/DataTables-1.10.20/images/sort_desc_disabled.png");
+}
+table.dataTable.row-border tbody th,
+table.dataTable.row-border tbody td,
+table.dataTable.display tbody th,
+table.dataTable.display tbody td {
+  border-top: 1px solid #ddd;
+}
+table.dataTable.row-border tbody tr:first-child th,
+table.dataTable.row-border tbody tr:first-child td,
+table.dataTable.display tbody tr:first-child th,
+table.dataTable.display tbody tr:first-child td {
+  border-top: none;
+}
+table.dataTable.cell-border tbody th,
+table.dataTable.cell-border tbody td {
+  border-top: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+}
+table.dataTable.cell-border tbody tr th:first-child,
+table.dataTable.cell-border tbody tr td:first-child {
+  border-left: 1px solid #ddd;
+}
+table.dataTable.cell-border tbody tr:first-child th,
+table.dataTable.cell-border tbody tr:first-child td {
+  border-top: none;
+}
+table.dataTable.no-footer {
+  border-bottom: 1px solid #111;
+}
+table.dataTable.nowrap th,
+table.dataTable.nowrap td {
+  white-space: nowrap;
+}
+table.dataTable.compact thead th,
+table.dataTable.compact thead td {
+  padding: 4px 17px 4px 4px;
+}
+table.dataTable.compact tfoot th,
+table.dataTable.compact tfoot td {
+  padding: 4px;
+}
+table.dataTable.compact tbody th,
+table.dataTable.compact tbody td {
+  padding: 4px;
+}
+table.dataTable th.dt-left,
+table.dataTable td.dt-left {
+  text-align: left;
+}
+table.dataTable th.dt-center,
+table.dataTable td.dt-center,
+table.dataTable td.dataTables_empty {
+  text-align: center;
+}
+table.dataTable th.dt-right,
+table.dataTable td.dt-right {
+  text-align: right;
+}
+table.dataTable th.dt-justify,
+table.dataTable td.dt-justify {
+  text-align: justify;
+}
+table.dataTable th.dt-nowrap,
+table.dataTable td.dt-nowrap {
+  white-space: nowrap;
+}
+table.dataTable thead th.dt-head-left,
+table.dataTable thead td.dt-head-left,
+table.dataTable tfoot th.dt-head-left,
+table.dataTable tfoot td.dt-head-left {
+  text-align: left;
+}
+table.dataTable thead th.dt-head-center,
+table.dataTable thead td.dt-head-center,
+table.dataTable tfoot th.dt-head-center,
+table.dataTable tfoot td.dt-head-center {
+  text-align: center;
+}
+table.dataTable thead th.dt-head-right,
+table.dataTable thead td.dt-head-right,
+table.dataTable tfoot th.dt-head-right,
+table.dataTable tfoot td.dt-head-right {
+  text-align: right;
+}
+table.dataTable thead th.dt-head-justify,
+table.dataTable thead td.dt-head-justify,
+table.dataTable tfoot th.dt-head-justify,
+table.dataTable tfoot td.dt-head-justify {
+  text-align: justify;
+}
+table.dataTable thead th.dt-head-nowrap,
+table.dataTable thead td.dt-head-nowrap,
+table.dataTable tfoot th.dt-head-nowrap,
+table.dataTable tfoot td.dt-head-nowrap {
+  white-space: nowrap;
+}
+table.dataTable tbody th.dt-body-left,
+table.dataTable tbody td.dt-body-left {
+  text-align: left;
+}
+table.dataTable tbody th.dt-body-center,
+table.dataTable tbody td.dt-body-center {
+  text-align: center;
+}
+table.dataTable tbody th.dt-body-right,
+table.dataTable tbody td.dt-body-right {
+  text-align: right;
+}
+table.dataTable tbody th.dt-body-justify,
+table.dataTable tbody td.dt-body-justify {
+  text-align: justify;
+}
+table.dataTable tbody th.dt-body-nowrap,
+table.dataTable tbody td.dt-body-nowrap {
+  white-space: nowrap;
+}
+
+table.dataTable,
+table.dataTable th,
+table.dataTable td {
+  box-sizing: content-box;
+}
+
+/*
+ * Control feature layout
+ */
+.dataTables_wrapper {
+  position: relative;
+  clear: both;
+  *zoom: 1;
+  zoom: 1;
+}
+.dataTables_wrapper .dataTables_length {
+  float: left;
+}
+.dataTables_wrapper .dataTables_filter input {
+  margin-left: 0.5em;
+}
+.dataTables_wrapper .dataTables_info {
+  clear: both;
+  float: left;
+  padding-top: 0.755em;
+}
+.dataTables_wrapper .dataTables_paginate {
+  text-align: center;
+  padding-top: 0.25em;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  box-sizing: border-box;
+  display: inline-block;
+  min-width: 1.5em;
+  padding: 0.5em 1em;
+  margin-left: 2px;
+  text-align: center;
+  text-decoration: none !important;
+  cursor: pointer;
+  *cursor: hand;
+  border: 1px solid transparent;
+  border-radius: 2px;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+  border: 1px solid #979797;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover,
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:active {
+  cursor: default;
+  border: 1px solid transparent;
+  background: transparent;
+  box-shadow: none;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  border: 1px solid #111;
+  /* W3C */
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button:active {
+  outline: none;
+  /* W3C */
+  box-shadow: inset 0 0 3px #111;
+}
+.dataTables_wrapper .dataTables_paginate .ellipsis {
+  padding: 0 1em;
+}
+.dataTables_wrapper .dataTables_processing {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 40px;
+  margin-left: -50%;
+  margin-top: -25px;
+  padding-top: 20px;
+  text-align: center;
+  font-size: 1.2em;
+}
+.dataTables_wrapper .dataTables_scroll {
+  clear: both;
+}
+.dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody {
+  *margin-top: -1px;
+  -webkit-overflow-scrolling: touch;
+}
+.dataTables_wrapper
+  .dataTables_scroll
+  div.dataTables_scrollBody
+  > table
+  > thead
+  > tr
+  > th,
+.dataTables_wrapper
+  .dataTables_scroll
+  div.dataTables_scrollBody
+  > table
+  > thead
+  > tr
+  > td,
+.dataTables_wrapper
+  .dataTables_scroll
+  div.dataTables_scrollBody
+  > table
+  > tbody
+  > tr
+  > th,
+.dataTables_wrapper
+  .dataTables_scroll
+  div.dataTables_scrollBody
+  > table
+  > tbody
+  > tr
+  > td {
+  vertical-align: middle;
+}
+.dataTables_wrapper
+  .dataTables_scroll
+  div.dataTables_scrollBody
+  > table
+  > thead
+  > tr
+  > th
+  > div.dataTables_sizing,
+.dataTables_wrapper
+  .dataTables_scroll
+  div.dataTables_scrollBody
+  > table
+  > thead
+  > tr
+  > td
+  > div.dataTables_sizing,
+.dataTables_wrapper
+  .dataTables_scroll
+  div.dataTables_scrollBody
+  > table
+  > tbody
+  > tr
+  > th
+  > div.dataTables_sizing,
+.dataTables_wrapper
+  .dataTables_scroll
+  div.dataTables_scrollBody
+  > table
+  > tbody
+  > tr
+  > td
+  > div.dataTables_sizing {
+  height: 0;
+  overflow: hidden;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.dataTables_wrapper.no-footer .dataTables_scrollBody {
+  border-bottom: 1px solid #111;
+}
+.dataTables_wrapper.no-footer div.dataTables_scrollHead table.dataTable,
+.dataTables_wrapper.no-footer div.dataTables_scrollBody > table {
+  border-bottom: none;
+}
+.dataTables_wrapper:after {
+  visibility: hidden;
+  display: block;
+  content: "";
+  clear: both;
+  height: 0;
+}
+
+@media screen and (max-width: 767px) {
+  .dataTables_wrapper .dataTables_info,
+  .dataTables_wrapper .dataTables_paginate {
+    float: none;
+    text-align: center;
+  }
+  .dataTables_wrapper .dataTables_paginate {
+    margin-top: 0.5em;
+  }
+}
+@media screen and (max-width: 640px) {
+  .dataTables_wrapper .dataTables_length,
+  .dataTables_wrapper .dataTables_filter {
+    float: none;
+    text-align: center;
+  }
+  .dataTables_wrapper .dataTables_filter {
+    margin-top: 0.5em;
+  }
+}
+
+
+
+/* File Content: 2 _ style.css */
+.corner-all {
+  border: 1px solid #ccc !important;
+  border-radius: 4px !important;
+}
+
+@font-face {
+  font-family: "Oxanium-Regular";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Oxanium Regular"), local("Oxanium-Regular"), url("/fonts/Oxanium-Regular.woff2") format("woff2"), /* Super Modern Browsers */ url("/fonts/Oxanium-Regular.woff") format("woff"), /* Modern Browsers */ url("/fonts/Oxanium-Regular.ttf") format("truetype"); /* Safari, Android, iOS */
+}
+
+* {
+  font-family: "Oxanium-Regular";
+}
+
+body {
+  font-size: 100%;
+  padding: 0px;
+  margin: 0px;
+  background-color: #0f0f0f;
+  color: #ccc;
+  display: grid;
+  grid-gap: 0px;
+  grid-template-columns: auto;
+  grid-template-areas:
+    "header"
+    "navigation"
+    "content"
+    "footer";
+}
+table {
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+h2 {
+  margin: 0px;
+  margin-bottom: 3px;
+  text-decoration: underline;
+}
+.fett {
+  font-weight: bold;
+  white-space: nowrap;
+}
+p {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+button {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.blue_click {
+  background-color: #007;
+  border: 1px solid #00f;
+  border-radius: 4px;
+  color: #fff;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+  background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
+  padding: 3px 30px;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  transition: background-color 0.2s ease-out;
+  background-clip: padding-box;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3), 0 2px 2px -1px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 0.3) inset;
+}
+button.blue_click:hover,
+a.blue_click:hover,
+li a:hover {
+  background-color: #ccc;
+  color: #555;
+}
+button.blue_click:active {
+  background: #e9e9e9;
+  position: relative;
+  top: 1px;
+  text-shadow: none;
+  -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3) inset;
+  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3) inset;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3) inset;
+}
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 4px;
+}
+li {
+  float: left;
+}
+li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px 4px 16px;
+  text-decoration: none;
+  font-size: 160%;
+}
+
+hr {
+  border-color: #007;
+}
+
+#header {
+  grid-area: header;
+  background-image: url("/img/background.png");
+  background-repeat: repeat;
+  vertical-align: top;
+}
+#content {
+  grid-area: content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#navigation {
+  grid-area: navigation;
+}
+#footer {
+  grid-area: footer;
+  background-color: #007;
+  border: 1px solid #00f;
+  border-radius: 4px;
+}
+#anzeige {
+  grid-area: anzeige;
+}
+
+.game_list-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100% !important;
+}
+.news_list-container {
+  justify-content: center;
+  display: flex;
+  flex-wrap: wrap;
+  width: 100% !important;
+}
+.news_list-container table tr {
+  display: inline-block;
+}
+a {
+  text-decoration: none;
+  color: #ccc;
+}
+.game_list {
+  text-decoration: none;
+  color: #111 !important;
+  margin: 5px;
+  width: 276px;
+  max-width: 276px;
+  flex: 1;
+  position: relative;
+  background-color: white;
+  margin: 10px;
+  box-shadow: 3px 3px 1px #333;
+  display: inline-block;
+  vertical-align: top;
+}
+a.game_link {
+  color: #111 !important;
+}
+.news_list {
+  flex: 45%;
+  margin: 10px;
+  position: relative;
+  background-image: linear-gradient(#111, #333 80%, #111);
+  box-shadow: 3px 3px 1px #333;
+  text-align: left;
+  min-width: 800px;
+  width: 48%;
+  display: inline-block;
+  vertical-align: top;
+  overflow: hidden;
+}
+.game_description p {
+  text-align: justify;
+}
+.price-container {
+  position: relative;
+}
+.price {
+  font-size: 120%;
+  text-align: right;
+  font-weight: bold;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+.price_inline {
+  font-size: 120%;
+  text-align: right;
+  font-weight: bold;
+  float: right;
+}
+.price_inline .low,
+.price .low {
+  color: #00aa00 !important;
+}
+.price .high {
+  color: red;
+  text-decoration: line-through;
+}
+
+.hinweis {
+  background-color: rgba(180, 04, 04, 0.2);
+  border: 1px solid rgba(180, 04, 04, 0.5);
+  border-radius: 4px;
+  text-align: left;
+}
+
+a.Amazon {
+  background: url("/img/service/amazon.png") no-repeat left;
+  background-position: 0px 0px;
+  background-size: 16px 16px;
+  padding-left: 18px;
+}
+.Steam {
+  background: url("/img/service/steam.png") no-repeat left;
+  background-position: 0px 0px;
+  background-size: 16px 16px;
+  padding-left: 18px;
+}
+.Humble {
+  background: url("/img/service/humble.png") no-repeat left;
+  background-position: 0px 0px;
+  background-size: 16px 16px;
+  padding-left: 18px;
+}
+.Humble::after {
+  content: "*";
+}
+.Epic {
+  background: url("/img/service/epic.png") no-repeat left;
+  background-position: 0px 0px;
+  background-size: 16px 16px;
+  padding-left: 18px;
+}
+.Epic::after {
+  content: "*";
+}
+.GOG {
+  background: url("/img/service/gog.png") no-repeat left;
+  background-position: 0px 0px;
+  background-size: 16px 16px;
+  padding-left: 18px;
+}
+
+.store-container .blue_click .Steam,
+.store-container .blue_click .GOG,
+.store-container .blue_click .Humble,
+.store-container .blue_click .Epic {
+  font-size: 125%;
+}
+
+.price a {
+  background: url("") !important;
+}
+p.created {
+  text-align: right;
+  font-size: 60%;
+}
+.game {
+  padding: 0 10vw 0 10vw;
+  align-items: top;
+  justify-items: center;
+  display: grid;
+  grid-gap: 20px;
+  grid-template-columns: auto;
+  grid-template-areas:
+    "title title"
+    "game_pic stores"
+    "genres text"
+    "merch text";
+}
+.title {
+  grid-area: title;
+}
+.game_pic {
+  grid-area: game_pic;
+}
+.game_description {
+  grid-area: text;
+}
+.game_stores {
+  grid-area: "stores";
+  width: 30vw;
+}
+.game_merch {
+  grid-area: "merch";
+  visibility: hidden;
+}
+.game_genres {
+  grid-area: "genres";
+}
+
+.display_name {
+  white-space: nowrap;
+}
+
+.genre-container,
+.store-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.store-container .blue_click {
+  text-align: left;
+}
+
+
+

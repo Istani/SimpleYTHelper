@@ -105,6 +105,40 @@ function FindCategory(name, callback) {
   }
   callback(error, game);
 }
+function combine_jscripts() {
+  var path = __dirname + "/public/main.js";
+  console.log("Combine to ", path);
+  if (fs.existsSync(path)) {
+    fs.unlinkSync(path);
+  }
+  fs.appendFileSync(path, "/* SK: Combine File */\r\n\r\n");
+  var files = fs.readdirSync(__dirname + "/src_js/");
+  files.forEach(function(file) {
+    var temp_data = fs.readFileSync(__dirname + "/src_js/" + file);
+    fs.appendFileSync(path, "/* File Content: " + file + " */\r\n");
+    fs.appendFileSync(path, temp_data);
+    fs.appendFileSync(path, "\r\n\r\n\r\n");
+  });
+  console.log("Combine jscripts Finish!");
+}
+function combine_cshets() {
+  var path = __dirname + "/public/main.css";
+  console.log("Combine to ", path);
+  if (fs.existsSync(path)) {
+    fs.unlinkSync(path);
+  }
+  fs.appendFileSync(path, "/* SK: Combine File */\r\n\r\n");
+  var files = fs.readdirSync(__dirname + "/src_css/");
+  files.forEach(function(file) {
+    var temp_data = fs.readFileSync(__dirname + "/src_css/" + file);
+    fs.appendFileSync(path, "/* File Content: " + file + " */\r\n");
+    fs.appendFileSync(path, temp_data);
+    fs.appendFileSync(path, "\r\n\r\n\r\n");
+  });
+  console.log("Combine cshets Finish!");
+}
+combine_jscripts();
+combine_cshets();
 
 // Start Site
 var hbs = exphbs.create({
