@@ -217,6 +217,13 @@ commands[14] = {
   function: monster_command,
   visible: false
 };
+commands[15] = {
+  name: "knom",
+  params: "",
+  disconnect: "mimimi",
+  function: knom_command,
+  visible: false
+};
 
 async function get_msg() {
   //return;
@@ -472,6 +479,12 @@ async function monster_command(msg_data) {
   var output_string = "";
   output_string +=
     "Ein gar edles Tröpfchen http://games-on-sale.de/s/monster #werbung";
+  await outgoing(msg_data, output_string);
+  output_string = "";
+}
+async function knom_command(msg_data) {
+  var output_string = "";
+  output_string += "mimimi https://www.youtube.com/watch?v=oHg5SJYRHA0";
   await outgoing(msg_data, output_string);
   output_string = "";
 }
