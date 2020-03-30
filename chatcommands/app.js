@@ -231,6 +231,13 @@ commands[16] = {
   function: emma_command,
   visible: false
 };
+commands[17] = {
+  name: "istani",
+  params: "",
+  disconnect: "Weltbester Mod",
+  function: istani_command,
+  visible: false
+};
 
 async function get_msg() {
   //return;
@@ -499,6 +506,12 @@ async function emma_command(msg_data) {
   var output_string = "";
   output_string +=
     "memes be done my lord https://www.youtube.com/watch?v=oHg5SJYRHA0";
+  await outgoing(msg_data, output_string);
+  output_string = "";
+}
+async function istani_command(msg_data) {
+  var output_string = "";
+  output_string += "Weltbester Mod http://games-on-sale.de/";
   await outgoing(msg_data, output_string);
   output_string = "";
 }
