@@ -224,6 +224,13 @@ commands[15] = {
   function: knom_command,
   visible: false
 };
+commands[16] = {
+  name: "emma",
+  params: "",
+  disconnect: "memes",
+  function: emma_command,
+  visible: false
+};
 
 async function get_msg() {
   //return;
@@ -484,7 +491,14 @@ async function monster_command(msg_data) {
 }
 async function knom_command(msg_data) {
   var output_string = "";
-  output_string += "mimimi https://www.youtube.com/watch?v=oHg5SJYRHA0";
+  output_string += "mimimi https://www.youtube.com/watch?v=OYB7R922upA";
+  await outgoing(msg_data, output_string);
+  output_string = "";
+}
+async function emma_command(msg_data) {
+  var output_string = "";
+  output_string +=
+    "memes be done my lord https://www.youtube.com/watch?v=oHg5SJYRHA0";
   await outgoing(msg_data, output_string);
   output_string = "";
 }
