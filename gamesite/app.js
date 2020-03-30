@@ -17,6 +17,7 @@ const short_url = require("./models/short_url.js");
 
 var All_Games;
 var Display_Games;
+var show_games=[];
 async function GetAllGames() {
   console.log("Loading Games");
   const g = await Game.query()
@@ -26,11 +27,17 @@ async function GetAllGames() {
   console.log("Total of", All_Games.length, "Games Loaded");
   require("./img_importer.js");
   Display_Games = [];
-
+  show_games=[];
   for (var i = 0; i < All_Games.length; i++) {
     if (All_Games[i].links.length > 1) {
       Display_Games.push(All_Games[i]);
-
+      show_games.push({
+        name: All_Games[i].name,
+        banner: All_Games[i].banner,
+        display_name: All_Games[i].display_name,
+        lowPrice: All_Games[i].lowPrice,
+        highPrice: All_Games[i].highPrice,
+      });
       // Adding Ads?
     }
   }
@@ -190,9 +197,21 @@ app.get("/category/:cname", function(req, res) {
         console.error(req.url, "Category Undefined?");
         res.render("error", { error: "Category Undefined?" });
       } else {
+        var show_cat=[];
+        for (let gidx = 0; gidx < cat_ga
+        mes.length; gidx++) {
+          const element = cat_games[gidx];
+          show_cat.push({
+            name: element.name,
+            banner: element.banner,
+            display_name: element.display_name,
+            lowPrice: element.lowPrice,
+            highPrice: element.highPrice,
+          });
+        }
         res.render("list", {
           page_title: category_name + " Liste",
-          games: cat_games
+          games: show_cat
         });
       }
     }
@@ -200,7 +219,7 @@ app.get("/category/:cname", function(req, res) {
 });
 
 app.get("/games", function(req, res) {
-  res.render("list", { page_title: "Game Liste", games: Display_Games });
+  res.render("list", { page_title: "Game Liste", games: show_games });
 });
 
 app.get("/", function(req, res) {
