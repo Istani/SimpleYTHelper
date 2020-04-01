@@ -5,7 +5,7 @@ console.log(software);
 console.log("===");
 console.log();
 
-const puppeteer = require("puppeteer");
+//const puppeteer = require("puppeteer");
 const sleep = require("await-sleep");
 const fs = require("fs");
 const request = require("request");

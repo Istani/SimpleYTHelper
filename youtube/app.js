@@ -29,7 +29,7 @@ const Chat_Server = require("./models/chat_server.js");
 const Chat_User = require("./models/chat_user.js");
 const Token = require("./models/syth_token.js");
 
-var RepeatDealy = 60 * 1000;
+var RepeatDealy = 30 * 1000;
 var SCOPES = ["https://www.googleapis.com/auth/youtube"];
 var OAuth2 = google.auth.OAuth2;
 var service = google.youtube("v3");
