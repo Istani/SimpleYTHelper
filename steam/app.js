@@ -92,6 +92,8 @@ async function getAppDetails(appid) {
       } else {
         try {
           var data = JSON.parse(body);
+          fs.writeFileSync("tmp/game.json", JSON.stringify(data, null, 2));
+
           if (
             typeof data == "undefined" ||
             data == null ||
@@ -172,23 +174,25 @@ async function getAppDetails(appid) {
               }
 
               // GameGenre
-              for (var i = 0; i < app_data["genres"].length; i++) {
-                var genres = {
-                  genre: Games.getEncodedName(
-                    app_data["genres"][i]["description"]
-                  ),
-                  name: overview_data.name
-                };
-                var check_genre = await GameGenre.query()
-                  .where("name", genres.name)
-                  .where("genre", genres.genre);
-                if (check_genre.length == 0) {
-                  await GameGenre.query().insert(genres);
-                } else {
-                  await GameGenre.query()
-                    .patch(genres)
+              if (typeof app_data["genres"] != "undefined") {
+                for (var i = 0; i < app_data["genres"].length; i++) {
+                  var genres = {
+                    genre: Games.getEncodedName(
+                      app_data["genres"][i]["description"]
+                    ),
+                    name: overview_data.name
+                  };
+                  var check_genre = await GameGenre.query()
                     .where("name", genres.name)
                     .where("genre", genres.genre);
+                  if (check_genre.length == 0) {
+                    await GameGenre.query().insert(genres);
+                  } else {
+                    await GameGenre.query()
+                      .patch(genres)
+                      .where("name", genres.name)
+                      .where("genre", genres.genre);
+                  }
                 }
               }
             } else {
@@ -201,6 +205,7 @@ async function getAppDetails(appid) {
             .patch({ type: "ERROR" })
             .where("appid", appid);
           await sleep(1000 * 60 * 5);
+          process.exit(1);
         }
       }
     });
@@ -216,22 +221,24 @@ async function getAppOverview() {
   var url = Steam.URL_Overview();
   console.log("Get Overview", url);
 
-  if (fs.existsSync("./tmp/overview.json") == false) {
-    await request(url, function(error, response, body) {
-      if (error) {
-        console.error(error);
-        return;
-      }
-      try {
-        var data = JSON.parse(body);
-        data = data.applist.apps.app;
-        fs.writeFileSync("./tmp/overview.json", JSON.stringify(data));
-      } catch (error) {
-        console.error(error);
-        return;
-      }
-    });
-  }
+  await request(url, function(error, response, body) {
+    if (error) {
+      console.error(error);
+      return;
+    }
+    try {
+      var data = JSON.parse(body);
+      data = data.applist.apps;
+      fs.writeFileSync("tmp/overview.json", JSON.stringify(data, null, 2));
+      fs.writeFileSync(
+        "tmp/overview_org.json",
+        JSON.stringify(JSON.parse(body), null, 2)
+      );
+    } catch (error) {
+      console.error(error);
+      return;
+    }
+  });
 
   try {
     var new_apps = 0;
@@ -257,5 +264,4 @@ async function getAppOverview() {
   } catch (error) {
     console.error(error);
   }
-  fs.unlinkSync("tmp/overview.json");
 }

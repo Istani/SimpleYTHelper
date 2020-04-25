@@ -15,7 +15,7 @@ class Steam extends Model {
   }
 
   static URL_Overview() {
-    return "http://api.steampowered.com/ISteamApps/GetAppList/v0001/";
+    return "http://api.steampowered.com/ISteamApps/GetAppList/v2/";
   }
 
   static URL_GamesAPI() {
