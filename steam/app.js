@@ -205,7 +205,7 @@ async function getAppDetails(appid) {
             .patch({ type: "ERROR" })
             .where("appid", appid);
           await sleep(1000 * 60 * 5);
-          process.exit(1);
+          //process.exit(1);
         }
       }
     });
