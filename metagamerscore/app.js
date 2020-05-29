@@ -79,7 +79,11 @@ async function main() {
         tmp_tweet.user = "Istani";
         // [ 'The Stone League', '828', '2019-09-18 13:57', 'STM\n      Minion Masters' ]
         tmp_tweet.message =
-          'New Achievement: "' + dump[i][0] + '" in "' + dump[i][3] + '"';
+          'New #Achievement: "' +
+          dump[i][0] +
+          '" in "' +
+          dump[i][3] +
+          '" #trophy';
         if (details.length > 0) {
           tmp_tweet.message += " http://games-on-sale.de/game/" + temp_name;
         }
