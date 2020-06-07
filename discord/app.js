@@ -67,11 +67,11 @@ client.on("message", msg => {
     guild.id = msg.author.id;
     guild.name = "DM";
   }
-  AddGuild(guild);
+  //AddGuild(guild);
   var channel = msg.channel;
-  AddChannel(channel, guild);
+  //AddChannel(channel, guild);
   var user = msg.author;
-  AddUser(user, guild);
+  //AddUser(user, guild);
 
   AddMessage(msg, guild, channel, user);
 });
