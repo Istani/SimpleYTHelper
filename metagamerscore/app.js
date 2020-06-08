@@ -96,7 +96,7 @@ async function main() {
   });
   console.log("Achievment Import Done, Wating 1 Hour for Restart");
   setTimeout(() => {
-    process.edxit(1);
+    process.exit(1);
   }, 1000 * 60);
 }
 main();
