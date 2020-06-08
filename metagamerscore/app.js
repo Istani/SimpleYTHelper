@@ -87,8 +87,8 @@ async function main() {
         if (details.length > 0) {
           tmp_tweet.message += " http://games-on-sale.de/game/" + temp_name;
         }
-        await Tweets.query().insert(tmp_tweet);
-        console.log(tmp_tweet.message);
+        //await Tweets.query().insert(tmp_tweet);
+        console.log("Tweet: ", tmp_tweet.message);
         //console.log(dump[i]);
       }
       save_settings();
@@ -96,7 +96,7 @@ async function main() {
   });
   console.log("Achievment Import Done, Wating 1 Hour for Restart");
   setTimeout(() => {
-    main();
+    process.edxit(1);
   }, 1000 * 60);
 }
 main();
