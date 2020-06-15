@@ -36,6 +36,8 @@ if (fs.existsSync(".env")) {
 
 var need_install = 0;
 async function install() {
+  return;
+
   //exec("npm install");
   await fs.readdir(__dirname, async function(err, items) {
     for (var i = 0; i < items.length; i++) {
