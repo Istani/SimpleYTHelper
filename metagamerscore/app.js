@@ -42,6 +42,7 @@ function save_settings() {
 }
 
 async function main() {
+  return;
   load_settings();
   await requestp({ url: url }, async function(error, response, body) {
     $ = cheerio.load(body);
