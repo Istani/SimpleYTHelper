@@ -251,10 +251,12 @@ async function get_msg() {
   for (var i = 0; i < msg_list.length; i++) {
     settings.last_time = msg_list[i].created_at;
     save_settings();
-
     if (msg_list[i].content.startsWith(settings.prefix) != true) {
       continue;
     }
+
+    msg_list[i].content = msg_list[i].content.toLowerCase();
+
     var temp_content = msg_list[i].content.split(" ");
     var found_index = commands.findIndex(function(element) {
       if (element.name == temp_content[0].replace(settings.prefix, "")) {
