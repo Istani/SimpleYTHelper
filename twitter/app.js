@@ -45,11 +45,11 @@ async function tweet_main() {
           .delete()
           .where("id", pre_tweet[0].id);
         console.log(pre_tweet[0]);
-        setTimeout(tweet_main, 30 * 60 * 1000);
+        setTimeout(tweet_main, 60 * 1000);
       }
     );
   }
-  setTimeout(tweet_main, 30 * 60 * 1000);
+  setTimeout(tweet_main, 60 * 1000);
 }
 
 async function tweet_gos() {
@@ -68,7 +68,7 @@ async function tweet_gos() {
           .delete()
           .where("id", pre_tweet[0].id);
         console.log(pre_tweet[0]);
-        setTimeout(tweet_gos, 5 * 60 * 1000);
+        setTimeout(tweet_gos, 10 * 60 * 1000);
       }
     );
   }
