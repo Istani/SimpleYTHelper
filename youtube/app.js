@@ -39,9 +39,6 @@ var q = new Queue(function(type, input, cb) {
   cb(null, result);
 });
 
-//const apis = google.getSupportedAPIs();
-//console.log(apis);
-//return;
 async function startTokens() {
   await Token.query()
     .where("service", "youtube")
@@ -77,7 +74,7 @@ function tStartImport(auth) {
   fs.writeFileSync("tmp/auth.json", JSON.stringify(auth, null, 2));
   q.push("Videos", () => {
     auth.credentials = sic;
-    ListVideos(auth);
+    ListMembers(auth);
   });
 }
 function StartImport(auth) {
@@ -753,6 +750,87 @@ function ListSponsors(auth, pageToken = "") {
           "tmp/sponsors.json",
           JSON.stringify(response.data, null, 2)
         );
+
+        var txt = response.data.items;
+        for (let index = 0; index < txt.length; index++) {
+          var element = txt[index].snippet;
+          var tmp_message = {};
+          tmp_message.service = "youtube";
+          tmp_message.owner = element.channelId;
+          tmp_message.member_id = element.sponsorDetails.channelId;
+
+          var m = await sponsors
+            .query()
+            .where("service", tmp_message.service)
+            .where("owner", tmp_message.owner)
+            .where("member_id", tmp_message.member_id);
+          tmp_message.member_name = element.sponsorDetails.displayName;
+          tmp_message.since = element.sponsorSince;
+          tmp_message.picture = element.sponsorDetails.profileImageUrl;
+
+          if (m.length > 0) {
+            await sponsors
+              .query()
+              .patch(tmp_message)
+              .where("service", tmp_message.service)
+              .where("owner", tmp_message.owner)
+              .where("member_id", tmp_message.member_id);
+          } else {
+            await sponsors.query().insert(tmp_message);
+            console.log("Sponsor: ", JSON.stringify(tmp_message));
+          }
+        }
+        /* if (
+          typeof response.data.nextPageToken != "undefined" &&
+          response.data.nextPageToken != ""
+        ) {
+          console.log(response.data.nextPageToken);
+          setTimeout(() => {
+            q.push("Sponsors", () => {
+              auth.credentials = sic;
+              ListSponsors(auth, response.data.nextPageToken);
+            });
+          }, 1000 * 5);
+        }*/
+        var date = new Date();
+        date.setDate(date.getDate() - 7);
+
+        await sponsors
+          .query()
+          .delete()
+          .where("updated_at", "<", date.toISOString());
+      } catch (e) {
+        console.error(e);
+        setTimeout(() => {
+          q.push("Sponsors", () => {
+            auth.credentials = sic;
+            ListSponsors(auth);
+          });
+        }, 1000 * 60 * 5);
+      }
+    }
+  );
+}
+function ListMembers(auth, pageToken = "") {
+  var sic = auth.credentials;
+  service.members.list(
+    {
+      auth: auth,
+      part: "snippet",
+      maxResults: 50
+    },
+    async function(err, response) {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      try {
+        fs.writeFileSync(
+          "tmp/members.json",
+          JSON.stringify(response.data, null, 2)
+        );
+        console.log(response.data);
+        return;
 
         var txt = response.data.items;
         for (let index = 0; index < txt.length; index++) {

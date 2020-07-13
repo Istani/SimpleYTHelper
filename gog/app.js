@@ -38,7 +38,7 @@ async function get_page(page) {
 
   console.log("Searching Page", query_string, "Max-Page: " + main_max_page);
 
-  await requestp({ url: url, qs: query_string }, function(
+  await requestp({ url: url, qs: { data: query_string } }, function(
     error,
     response,
     body

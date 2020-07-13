@@ -15,6 +15,7 @@ const striptags = require("striptags");
 
 const Games = require("./models/game.js");
 const GameLinks = require("./models/game_link.js");
+const Score = require("./models/metagamerscore.js");
 const Tweets = require("./models/send_tweets.js");
 
 const url =
@@ -42,7 +43,6 @@ function save_settings() {
 }
 
 async function main() {
-  return;
   load_settings();
   await requestp({ url: url }, async function(error, response, body) {
     $ = cheerio.load(body);
@@ -70,34 +70,43 @@ async function main() {
     }
     //console.log(dump);
     for (var i = dump.length - 1; i > 0; i--) {
-      var dat = new Date(dump[i][2]);
-      if (dat > settings.last_time) {
-        settings.last_time = dat;
-        var temp_name = Games.getEncodedName(dump[i][3]);
-        var details = await Games.query().where("name", temp_name);
-
-        var tmp_tweet = {};
-        tmp_tweet.user = "Istani";
-        // [ 'The Stone League', '828', '2019-09-18 13:57', 'STM\n      Minion Masters' ]
-        tmp_tweet.message =
-          'New #Achievement: "' +
-          dump[i][0] +
-          '" in "' +
-          dump[i][3] +
-          '" #trophy';
-        if (details.length > 0) {
-          tmp_tweet.message += " http://games-on-sale.de/game/" + temp_name;
-        }
-        //await Tweets.query().insert(tmp_tweet);
-        console.log("Tweet: ", tmp_tweet.message);
-        //console.log(dump[i]);
+      var temp_data = {
+        user: "9738",
+        game: dump[i][3],
+        title: dump[i][0]
+        //publishedAt: dump[i][2]
+      };
+      var s = await Score.query().where(temp_data);
+      if (s.length > 0) {
+        await Score.query()
+          .patch(temp_data)
+          .where(temp_data);
+        continue;
       }
-      save_settings();
+      temp_data.publishedAt = dump[i][2];
+      await Score.query().insert(temp_data);
+
+      var dat = new Date(dump[i][2]);
+
+      var temp_name = Games.getEncodedName(dump[i][3]);
+      var details = await Games.query().where("name", temp_name);
+
+      var tmp_tweet = {};
+      tmp_tweet.user = "Istani";
+      // [ 'The Stone League', '828', '2019-09-18 13:57', 'STM\n      Minion Masters' ]
+      tmp_tweet.message =
+        'New Achievement: "' + dump[i][0] + '" in "' + dump[i][3] + '"';
+      if (details.length > 0) {
+        tmp_tweet.message += " http://games-on-sale.de/game/" + temp_name;
+      }
+      await Tweets.query().insert(tmp_tweet);
+      console.log(tmp_tweet.message);
+      //console.log(dump[i]);
     }
   });
-  console.log("Achievment Import Done, Wating 1 Hour for Restart");
+  console.log("Game Import Done, Wating 1 Hour for Restart");
   setTimeout(() => {
-    process.exit(1);
-  }, 1000 * 60);
+    main();
+  }, 1000 * 60 * 60);
 }
 main();

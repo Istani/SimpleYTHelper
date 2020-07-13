@@ -66,6 +66,7 @@ client.on("message", msg => {
     guild = {};
     guild.id = msg.author.id;
     guild.name = "DM";
+    guild.ownerID = msg.author.id;
   }
   AddGuild(guild);
   var channel = msg.channel;
@@ -134,6 +135,7 @@ async function AddGuild(guild) {
 
   // Additions
   tmp_server.name = guild.name;
+  tmp_server.ownerID = guild.ownerID;
 
   if (g.length == 0) {
     console.log("Server:", JSON.stringify(tmp_server));
