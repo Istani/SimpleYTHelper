@@ -36,8 +36,6 @@ if (fs.existsSync(".env")) {
 
 var need_install = 0;
 async function install() {
-  return;
-
   //exec("npm install");
   await fs.readdir(__dirname, async function(err, items) {
     for (var i = 0; i < items.length; i++) {
@@ -76,9 +74,9 @@ async function install() {
 
       process.chdir(__dirname);
       exec("sh hooks/pre-commit");
-      exec("git add .");
-      exec('git commit -am "Post Commit Update"');
-      exec("git push");
+      //exec("git add .");
+      //exec('git commit -am "Post Commit Update"');
+      //exec("git push");
 
       console.log("Restart all");
       exec("pm2 restart all");
