@@ -78,6 +78,9 @@ async function main() {
       };
       var s = await Score.query().where(temp_data);
       if (s.length > 0) {
+        await Score.query()
+          .patch(temp_data)
+          .where(temp_data);
         continue;
       }
       temp_data.publishedAt = dump[i][2];
@@ -104,6 +107,6 @@ async function main() {
   console.log("Game Import Done, Wating 1 Hour for Restart");
   setTimeout(() => {
     main();
-  }, 1000 * 60);
+  }, 1000 * 60 * 60);
 }
 main();

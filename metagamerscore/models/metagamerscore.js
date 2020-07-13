@@ -15,11 +15,11 @@ class broadcast extends Model {
 
   $beforeInsert() {
     this.$beforeUpdate();
-    //this.created_at = new Date().toISOString();
+    this.created_at = new Date().toISOString();
   }
 
   $beforeUpdate() {
-    //this.updated_at = new Date().toISOString();
+    this.updated_at = new Date().toISOString();
   }
 }
 
