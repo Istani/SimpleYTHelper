@@ -205,7 +205,7 @@ async function getAppDetails(appid) {
             .patch({ type: "ERROR" })
             .where("appid", appid);
           await sleep(1000 * 60 * 5);
-          process.exit(1);
+          //process.exit(1);
         }
       }
     });
@@ -257,7 +257,7 @@ async function getAppOverview() {
         new_apps++;
       } else {
         console.log("Already imported SteamApp", new_entry.appid);
-        await sleep(1000);
+        await sleep(1);
       }
     }
     console.log(new_apps, "new SteamApps found!");

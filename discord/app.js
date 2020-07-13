@@ -216,7 +216,7 @@ async function ReadToken() {
   }
   setTimeout(ReadToken, 1000);
 }
-startTokens();
+//startTokens();
 
 async function GetChannel(token, syth_user) {
   var req = await request.get(
