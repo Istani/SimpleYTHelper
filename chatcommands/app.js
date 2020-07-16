@@ -255,11 +255,12 @@ async function get_msg() {
       continue;
     }
 
-    msg_list[i].content = msg_list[i].content.toLowerCase();
-
     var temp_content = msg_list[i].content.split(" ");
     var found_index = commands.findIndex(function(element) {
-      if (element.name == temp_content[0].replace(settings.prefix, "")) {
+      if (
+        element.name ==
+        temp_content[0].replace(settings.prefix, "").toLowerCase()
+      ) {
         return true;
       } else {
         return false;
