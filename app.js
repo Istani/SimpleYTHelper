@@ -5,8 +5,8 @@ console.log(software);
 console.log("===");
 console.log();
 
-// TODO: Test ToDo ACtion!
-// This is a Test
+// TODO: Test ToDo Action!
+// This is a Test XXX
 
 /* --- */
 const fs = require("fs");
