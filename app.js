@@ -5,9 +5,6 @@ console.log(software);
 console.log("===");
 console.log();
 
-// TODO: Test ToDo Action! Arrrgh!
-// This is a Test XXX!
-
 /* --- */
 const fs = require("fs");
 const async = require("async");
