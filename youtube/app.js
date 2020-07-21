@@ -613,6 +613,7 @@ async function LiveChat(auth, pageToken = "") {
     typeof data[0].Livestream == "undefined" ||
     typeof data[0].Livestream[0] == "undefined"
   ) {
+    console.log("Kein Livestream");
     setTimeout(() => {
       q.push("LiveChat", () => {
         auth.credentials = sic;
@@ -621,6 +622,7 @@ async function LiveChat(auth, pageToken = "") {
     }, RepeatDealy);
     return;
   }
+  console.log("Livestream da");
   service.liveChatMessages.list(
     {
       auth: auth,
