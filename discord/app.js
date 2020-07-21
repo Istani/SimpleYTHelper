@@ -196,13 +196,13 @@ async function AddUser(user, guild) {
 async function startTokens() {
   await Token.query()
     .where("service", "discord")
-    .patch({ is_importing: false });
+    .patch({ is_importing: "0" });
   ReadToken();
 }
 async function ReadToken() {
   var Auth_Token = await Token.query()
     .where("service", "discord")
-    .where("is_importing", false);
+    .where("is_importing", "0");
   for (let auth_index = 0; auth_index < Auth_Token.length; auth_index++) {
     const element = Auth_Token[auth_index];
 
