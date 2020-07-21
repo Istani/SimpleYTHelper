@@ -243,6 +243,8 @@ async function GetChannel(token, syth_user) {
       channel_obj.description = "";
       channel_obj.thumbnail = User.avatar;
 
+      // TODO: Why this dont work?
+
       var m = await ow_channel
         .query()
         .where("service", channel_obj.service)
@@ -256,9 +258,11 @@ async function GetChannel(token, syth_user) {
           .where("service", channel_obj.service)
           .where("user_id", channel_obj.user_id)
           .where("channel_id", channel_obj.channel_id);
+        console.log("Get Channel3");
       } else {
         await ow_channel.query().insert(channel_obj);
         console.log("Channel: ", JSON.stringify(channel_obj));
+        console.log("Get Channel4");
       }
     }
   );
