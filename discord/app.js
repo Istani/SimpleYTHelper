@@ -196,13 +196,13 @@ async function AddUser(user, guild) {
 async function startTokens() {
   await Token.query()
     .where("service", "discord")
-    .patch({ is_importing: false });
+    .patch({ is_importing: "0" });
   ReadToken();
 }
 async function ReadToken() {
   var Auth_Token = await Token.query()
     .where("service", "discord")
-    .where("is_importing", false);
+    .where("is_importing", "0");
   for (let auth_index = 0; auth_index < Auth_Token.length; auth_index++) {
     const element = Auth_Token[auth_index];
 
@@ -243,6 +243,8 @@ async function GetChannel(token, syth_user) {
       channel_obj.description = "";
       channel_obj.thumbnail = User.avatar;
 
+      // TODO: Why this dont work?
+
       var m = await ow_channel
         .query()
         .where("service", channel_obj.service)
@@ -256,9 +258,11 @@ async function GetChannel(token, syth_user) {
           .where("service", channel_obj.service)
           .where("user_id", channel_obj.user_id)
           .where("channel_id", channel_obj.channel_id);
+        console.log("Get Channel3");
       } else {
         await ow_channel.query().insert(channel_obj);
         console.log("Channel: ", JSON.stringify(channel_obj));
+        console.log("Get Channel4");
       }
     }
   );
