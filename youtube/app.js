@@ -491,10 +491,14 @@ function SearchBroadcasts(auth, pageToken = "") {
           obj.owner = element.snippet.channelId;
           obj.b_title = element.snippet.title;
 
-          if (typeof element.snippet.actualStartTime == "undefined")
-            obj.actualStartTime=moment(element.snippet.scheduledStartTime).toISOString();
+          if (typeof element.snippet.actualStartTime == "undefined") {
+            obj.actualStartTime = moment(
+              element.snippet.scheduledStartTime
+            ).toISOString();
           } else {
-            obj.actualStartTime = moment(element.snippet.actualStartTime).toISOString();
+            obj.actualStartTime = moment(
+              element.snippet.actualStartTime
+            ).toISOString();
           }
           if (typeof element.snippet.actualEndTime == "undefined") {
             obj.actualEndTime = null;
