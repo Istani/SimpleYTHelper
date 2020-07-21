@@ -66,7 +66,8 @@ client.on("message", (channel, tags, message, self) => {
   console.log(tags);
   var server_data = {
     id: channel.replace("#", ""),
-    name: channel.replace("#", "")
+    name: "LiveStream",
+    owner: tags["user-id"]
   };
   var channel_data = { id: tags["room-id"], name: tags["message-type"] }; // ?
   var user_data = { id: tags["user-id"], username: tags["display-name"] };
@@ -101,6 +102,7 @@ async function AddGuild(guild) {
 
   // Additions
   tmp_server.name = guild.name;
+  tmp_server.owner = guild.owner;
 
   if (g.length == 0) {
     console.log("Server:", JSON.stringify(tmp_server));
