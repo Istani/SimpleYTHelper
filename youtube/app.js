@@ -491,7 +491,9 @@ function SearchBroadcasts(auth, pageToken = "") {
           obj.owner = element.snippet.channelId;
           obj.b_title = element.snippet.title;
 
-          obj.actualStartTime = element.snippet.actualStartTime;
+          obj.actualStartTime = moment(
+            element.snippet.actualStartTime
+          ).toISOString();
           if (typeof element.snippet.actualEndTime == "undefined") {
             obj.actualEndTime = null;
           } else {
@@ -602,7 +604,10 @@ async function LiveChat(auth, pageToken = "") {
     .eager("Livestream")
     .modifyEager("Livestream", builder => {
       // Order children by age and only select id.
-      builder.where("liveChatId", "!=", "").whereNotNull("liveChatId");
+      builder
+        .where("liveChatId", "!=", "")
+        .whereNotNull("liveChatId")
+        .where("actualStartTime", "<", moment().toISOString());
     });
   if (
     typeof data[0].Livestream == "undefined" ||
