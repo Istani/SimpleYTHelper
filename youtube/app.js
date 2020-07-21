@@ -286,6 +286,7 @@ function ListChannels(auth, pageToken = "") {
         var g = await Chat_Server.query().where(tmp_server);
 
         // Additions
+        tmp_server.owner = channel_obj.channel_id;
         tmp_server.name = "Livestream";
         if (g.length == 0) {
           console.log("Server: ", JSON.stringify(tmp_server));
