@@ -528,7 +528,7 @@ async function istani_command(msg_data) {
 async function sport_command(msg_data) {
   var output_string = "";
   output_string +=
-    "Denkt dran, jeden morgen Ring Fit Adventures mit Defender833! (Mo-Fr 06:30 / Sa-So 07:00)";
+    "Denkt dran, jeden morgen Ring Fit Adventures mit Defender833! (Mo-Fr 06:30 / Sa-So 09:00)";
   await outgoing(msg_data, output_string);
   output_string = "";
 }
