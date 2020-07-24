@@ -238,6 +238,13 @@ commands[17] = {
   function: istani_command,
   visible: false
 };
+commands[18] = {
+  name: "sport",
+  params: "",
+  disconnect: "Ring Fit Sport!",
+  function: sport_command,
+  visible: false
+};
 
 async function get_msg() {
   //return;
@@ -514,6 +521,14 @@ async function emma_command(msg_data) {
 async function istani_command(msg_data) {
   var output_string = "";
   output_string += "Weltbester Mod http://games-on-sale.de/";
+  await outgoing(msg_data, output_string);
+  output_string = "";
+}
+
+async function sport_command(msg_data) {
+  var output_string = "";
+  output_string +=
+    "Denkt dran, jeden morgen Ring Fit Adventures mit Defender833! (Mo-Fr 06:30 / Sa-So 07:00)";
   await outgoing(msg_data, output_string);
   output_string = "";
 }
