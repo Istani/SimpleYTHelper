@@ -662,7 +662,14 @@ async function LiveChat(auth, pageToken = "") {
         return;
       }
       try {
+        //fs.writeFileSync("tmp/chat.json", JSON.stringify(response.data, null, 2));
         var txt = response.data.items;
+        if (txt.length > 0) {
+          fs.writeFileSync(
+            "tmp/chat.json",
+            JSON.stringify(response.data, null, 2)
+          );
+        }
         for (let index = 0; index < txt.length; index++) {
           const element = txt[index];
 
@@ -689,6 +696,14 @@ async function LiveChat(auth, pageToken = "") {
               await Chat_Message.query()
                 .patch(tmp_message)
                 .where(m[0]);
+              if (element.snippet.type == "newSponsorEvent") {
+                // Neuer Sponsor
+                await FakeMsg(
+                  tmp_message.server,
+                  tmp_message.room,
+                  "!party Willkommen @" + element.authorDetails.displayName
+                );
+              }
             } catch (e) {
               console.error(e);
             }
