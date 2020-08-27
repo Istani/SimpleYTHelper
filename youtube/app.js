@@ -690,6 +690,14 @@ async function LiveChat(auth, pageToken = "") {
           if (m.length == 0) {
             console.log("Message: ", JSON.stringify(tmp_message));
             await Chat_Message.query().insert(tmp_message);
+            if (element.snippet.type == "newSponsorEvent") {
+              // Neuer Sponsor
+              await FakeMsg(
+                tmp_message.server,
+                tmp_message.room,
+                "!party Willkommen @" + element.authorDetails.displayName
+              );
+            }
           } else {
             //console.log('Message Repeat:', JSON.stringify(tmp_message));
             try {
