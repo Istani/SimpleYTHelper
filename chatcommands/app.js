@@ -336,7 +336,10 @@ async function announcement_command(msg_data) {
   output_string = "";
 }
 async function party_command(msg_data) {
-  var output_string = "Party @everyone!";
+  var output_string = "Party @everyone!"; // <a:party_parrot:750306235118649374>"; //<a:party_parrot:488517145504776194>"; // <a:PartyParrot:393549053629038594>
+  if (msg_data.service.toLowerCase() == "discord") {
+    output_string += " <a:party_parrot:750306235118649374>";
+  }
   await outgoing(msg_data, output_string);
   output_string = "";
 }
@@ -530,7 +533,7 @@ async function istani_command(msg_data) {
 async function sport_command(msg_data) {
   var output_string = "";
   output_string +=
-    "Denkt dran, jeden morgen Ring Fit Adventures mit Defender833! (Mo-Fr 06:30 / Sa-So 09:00)";
+    "Denkt dran, jeden morgen Ring Fit Adventure mit Defender833! (Mo-Do 06:30 / Sa-So 09:00) http://games-on-sale.de/s/sport";
   await outgoing(msg_data, output_string);
   output_string = "";
 }
