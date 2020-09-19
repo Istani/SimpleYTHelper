@@ -245,7 +245,13 @@ commands[18] = {
   function: sport_command,
   visible: false
 };
-
+commands[18] = {
+  name: "quest",
+  params: "",
+  disconnect: "Marks a Quest!",
+  function: quest_command,
+  visible: false
+};
 async function get_msg() {
   //return;
   //console.log(prefix, settings.last_time);
@@ -264,14 +270,10 @@ async function get_msg() {
 
     var temp_content = msg_list[i].content.split(" ");
     var found_index = commands.findIndex(function(element) {
-      if (
-        element.name ==
-        temp_content[0].replace(settings.prefix, "").toLowerCase()
-      ) {
-        return true;
-      } else {
-        return false;
-      }
+      return temp_content[0]
+        .replace(settings.prefix, "")
+        .toLowerCase()
+        .startsWith(element.name);
     });
     if (typeof found_index == "undefined" || found_index == -1) {
       console.error("Unknown Command: ", temp_content[0]);
