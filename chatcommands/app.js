@@ -595,24 +595,26 @@ async function questlist_command(msg_data) {
   // TODO: Da fehlt auch noch das Richtige Räume Finden, Martin verknüpft ja nicht seine Daten
   //output_string += "Quest within the Last 24hours (" + msg_data.timestamp +")\r\n";
   var questrequest = await Messages.query()
-    .where("user", element.user)
-    .where("server", element.server)
-    .where("content", "!quest%")
+    .where("content", "like", "!quest%")
     .orderBy("created_at", "DESC")
     .limit(1);
   if (questrequest.length == 0) {
     output_string += "Keine Quest gefunden!\r\n";
+    await outgoing(msg_data, output_string);
+    output_string = "";
   } else {
+    //console.log(questrequest);
     var questlist = await Messages.query()
       .where("server", questrequest[0].server)
       .where("room", questrequest[0].room)
-      .where("content", "!quest%")
+      .where("content", "like", "!quest%")
       .orderBy("created_at");
+    console.log("Quest gefunden: " + questlist.length);
     for (var i = 0; i < questlist.length; i++) {
       output_string +=
-        "" + questlist[i].timestamp + "\t" + questlist[i].timestamp + "\r\n";
+        questlist[i].timestamp + "\t" + questlist[i].content + "\r\n";
+      await outgoing(msg_data, output_string);
+      output_string = "";
     }
   }
-  await outgoing(msg_data, output_string);
-  output_string = "";
 }
