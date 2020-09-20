@@ -215,7 +215,7 @@ commands[14] = {
   params: "",
   disconnect: "Give me a Healpotion",
   function: monster_command,
-  visible: false
+  visible: true
 };
 commands[15] = {
   name: "knom",
@@ -243,15 +243,23 @@ commands[18] = {
   params: "",
   disconnect: "Ring Fit Sport!",
   function: sport_command,
-  visible: false
+  visible: true
 };
-commands[18] = {
+commands[19] = {
   name: "quest",
   params: "",
   disconnect: "Marks a Quest!",
   function: quest_command,
+  visible: true
+};
+commands[20] = {
+  name: "list",
+  params: "",
+  disconnect: "List all Quests!",
+  function: questlist_command,
   visible: false
 };
+
 async function get_msg() {
   //return;
   //console.log(prefix, settings.last_time);
@@ -571,6 +579,39 @@ async function video_command(msg_data) {
     }
   } else {
     output_string += "Video nicht gefunden!";
+  }
+  await outgoing(msg_data, output_string);
+  output_string = "";
+}
+
+async function quest_command(msg_data) {
+  var output_string = "";
+  output_string += "Added Timestamp at " + msg_data.timestamp;
+  await outgoing(msg_data, output_string);
+  output_string = "";
+}
+async function questlist_command(msg_data) {
+  var output_string = "";
+  // TODO: Da fehlt auch noch das Richtige Räume Finden, Martin verknüpft ja nicht seine Daten
+  //output_string += "Quest within the Last 24hours (" + msg_data.timestamp +")\r\n";
+  var questrequest = await Messages.query()
+    .where("user", element.user)
+    .where("server", element.server)
+    .where("content", "!quest%")
+    .orderBy("created_at", "DESC")
+    .limit(1);
+  if (questrequest.length == 0) {
+    output_string += "Keine Quest gefunden!\r\n";
+  } else {
+    var questlist = await Messages.query()
+      .where("server", questrequest[0].server)
+      .where("room", questrequest[0].room)
+      .where("content", "!quest%")
+      .orderBy("created_at");
+    for (var i = 0; i < questlist.length; i++) {
+      output_string +=
+        "" + questlist[i].timestamp + "\t" + questlist[i].timestamp + "\r\n";
+    }
   }
   await outgoing(msg_data, output_string);
   output_string = "";
