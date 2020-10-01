@@ -101,7 +101,7 @@ async function main() {
         dump[i][3] +
         '" #trophy';
       if (details.length > 0) {
-        tmp_tweet.message += " http://games-on-sale.de/game/" + temp_name;
+        tmp_tweet.message += " https://games-on-sale.de/game/" + temp_name;
       }
       await Tweets.query().insert(tmp_tweet);
       console.log(tmp_tweet.message);

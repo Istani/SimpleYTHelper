@@ -457,7 +457,7 @@ async function game_command(msg_data) {
         output_string += "Spiel nicht gefunden!\n";
       } else {
         output_string += "**" + g[0].display_name + "** \n";
-        output_string += "http://games-on-sale.de/game/" + g[0].name + "\n";
+        output_string += "https://games-on-sale.de/game/" + g[0].name + "\n";
         for (var l = 0; l < g[0].links.length; l++) {
           output_string +=
             g[0].links[l].store + ": " + g[0].links[l].formatPrice + "€\n";
@@ -508,14 +508,14 @@ async function martin_command(msg_data) {
 async function snack_command(msg_data) {
   var output_string = "";
   output_string +=
-    "Aristosnacks - Overly Posh Snack Reviews: http://games-on-sale.de/s/snacks";
+    "Aristosnacks - Overly Posh Snack Reviews: https://games-on-sale.de/s/snacks";
   await outgoing(msg_data, output_string);
   output_string = "";
 }
 async function monster_command(msg_data) {
   var output_string = "";
   output_string +=
-    "Ein gar edles Tröpfchen http://games-on-sale.de/s/monster #werbung";
+    "Ein gar edles Tröpfchen https://games-on-sale.de/s/monster #werbung";
   await outgoing(msg_data, output_string);
   output_string = "";
 }
@@ -533,7 +533,7 @@ async function emma_command(msg_data) {
 }
 async function istani_command(msg_data) {
   var output_string = "";
-  output_string += "Weltbester Mod http://games-on-sale.de/";
+  output_string += "Weltbester Mod https://games-on-sale.de/";
   await outgoing(msg_data, output_string);
   output_string = "";
 }
@@ -541,7 +541,7 @@ async function istani_command(msg_data) {
 async function sport_command(msg_data) {
   var output_string = "";
   output_string +=
-    "Denkt dran, jeden morgen Ring Fit Adventure mit Defender833! (Mo-Do 06:30 / Sa-So 09:00) http://games-on-sale.de/s/sport";
+    "Denkt dran, jeden morgen Ring Fit Adventure mit Defender833! (Mo-Do 06:30 / Sa-So 09:00) https://games-on-sale.de/s/sport";
   await outgoing(msg_data, output_string);
   output_string = "";
 }
