@@ -9,6 +9,8 @@ console.log();
 var fs = require("fs");
 var express = require("express");
 var exphbs = require("express-handlebars");
+const http = require("http");
+const https = require("https");
 
 // DB Models
 const Game = require("./models/game.js");
@@ -259,4 +261,36 @@ app.get("/", function(req, res) {
   res.redirect("/news");
 });
 
-app.listen(3001, () => console.log("Interface on 3001!"));
+//app.listen(3001, () => console.log("Interface on 3001!"));
+
+// Certificate
+const privateKey = fs.readFileSync(
+  "/etc/letsencrypt/live/games-on-sale.de/privkey.pem",
+  "utf8"
+);
+const certificate = fs.readFileSync(
+  "/etc/letsencrypt/live/games-on-sale.de/cert.pem",
+  "utf8"
+);
+const ca = fs.readFileSync(
+  "/etc/letsencrypt/live/games-on-sale.de/chain.pem",
+  "utf8"
+);
+
+const credentials = {
+  key: privateKey,
+  cert: certificate,
+  ca: ca
+};
+
+// Starting both http & https servers
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(credentials, app);
+
+httpServer.listen(4001, () => {
+  console.log("HTTP Server running on port 4001");
+});
+
+httpsServer.listen(3001, () => {
+  console.log("HTTPS Server running on port 3001");
+});
