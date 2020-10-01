@@ -199,63 +199,63 @@ commands[11] = {
 commands[12] = {
   name: "snacks",
   params: "",
-  disconnect: "Aristosnacks - Overly Posh Snack Reviews",
+  description: "Aristosnacks - Overly Posh Snack Reviews",
   function: snack_command,
   visible: true
 };
 commands[13] = {
   name: "video",
   params: "[id]",
-  disconnect: "Give me a Video",
+  description: "Give me a Video",
   function: video_command,
   visible: true
 };
 commands[14] = {
   name: "monster",
   params: "",
-  disconnect: "Give me a Healpotion",
+  description: "Give me a Healpotion",
   function: monster_command,
   visible: true
 };
 commands[15] = {
   name: "knom",
   params: "",
-  disconnect: "mimimi",
+  description: "mimimi",
   function: knom_command,
   visible: false
 };
 commands[16] = {
   name: "emma",
   params: "",
-  disconnect: "memes",
+  description: "memes",
   function: emma_command,
   visible: false
 };
 commands[17] = {
   name: "istani",
   params: "",
-  disconnect: "Weltbester Mod",
+  description: "Weltbester Mod",
   function: istani_command,
   visible: false
 };
 commands[18] = {
   name: "sport",
   params: "",
-  disconnect: "Ring Fit Sport!",
+  description: "Ring Fit Sport!",
   function: sport_command,
   visible: true
 };
 commands[19] = {
   name: "quest",
   params: "",
-  disconnect: "Marks a Quest!",
+  description: "Marks a Quest!",
   function: quest_command,
   visible: true
 };
 commands[20] = {
   name: "list",
   params: "",
-  disconnect: "List all Quests!",
+  description: "List all Quests!",
   function: questlist_command,
   visible: false
 };
