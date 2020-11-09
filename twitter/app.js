@@ -134,3 +134,14 @@ bg_gos();
 pp_gos();
 tweet_gos();
 tweet_main();
+
+async function get_usertweets() {
+  var options = { screen_name: "istani" };
+  client.get("statuses/user_timeline", options, function(err, data) {
+    fs.writeFileSync("tmp/tweets.json", JSON.stringify(data, null, 2));
+    //for (var i = 0; i < data.length ; i++) {
+    //  console.log(data[i].text);
+    //}
+  });
+}
+//get_usertweets();
