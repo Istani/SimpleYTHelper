@@ -231,7 +231,7 @@ async function ReadToken() {
   }
   setTimeout(ReadToken, 1000);
 }
-//startTokens();
+startTokens();
 
 async function GetChannel(token, syth_user) {
   var req = await request.get(
@@ -248,9 +248,7 @@ async function GetChannel(token, syth_user) {
         });
         return;
       }
-      console.log(body);
       var User = JSON.parse(body);
-      console.log(User);
 
       var channel_obj = {};
       channel_obj.service = "discord";
@@ -260,15 +258,11 @@ async function GetChannel(token, syth_user) {
       channel_obj.description = "";
       channel_obj.thumbnail = User.avatar;
 
-      // TODO: Why this dont work?
-      console.log(channel_obj);
-
       var m = await ow_channel
         .query()
         .where("service", channel_obj.service)
         .where("user_id", channel_obj.user_id)
         .where("channel_id", channel_obj.channel_id);
-      console.log("Get Channel2");
       if (m.length > 0) {
         await ow_channel
           .query()
@@ -276,11 +270,9 @@ async function GetChannel(token, syth_user) {
           .where("service", channel_obj.service)
           .where("user_id", channel_obj.user_id)
           .where("channel_id", channel_obj.channel_id);
-        console.log("Get Channel3");
       } else {
         await ow_channel.query().insert(channel_obj);
         console.log("Channel: ", JSON.stringify(channel_obj));
-        console.log("Get Channel4");
       }
     }
   );
