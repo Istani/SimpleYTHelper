@@ -10,7 +10,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "better-queue": "^3.8.10",
     "jimp": "^0.8.4",
+    "node-cron": "^2.0.3",
     "twit": "^2.2.11"
   }
 }

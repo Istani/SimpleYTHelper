@@ -9,8 +9,16 @@ const config = require("dotenv").config({ path: "../.env" });
 const Twitter = require("twit");
 const Jimp = require("jimp");
 const fs = require("fs");
+const cron = require("node-cron");
+const Queue = require("better-queue");
 
 const Tweets = require("./models/send_tweets.js");
+
+var q = new Queue(function(type, input, cb) {
+  console.log("Start: " + type);
+  input();
+  cb(null, result);
+});
 
 // https://www.npmjs.com/package/twitter
 
@@ -29,6 +37,22 @@ var client_gos = new Twitter({
   access_token_secret: process.env.GOS_TWITTER_SECRET
 });
 
+cron.schedule("*/2 * * * *", () => {
+  q.push("Tweets Send Main", () => {
+    tweet_main();
+  });
+});
+cron.schedule("*/15 * * * *", () => {
+  q.push("Tweets Send Game on Sale", () => {
+    tweet_gos();
+  });
+});
+cron.schedule("*/30 * * * *", () => {
+  q.push("Tweets Read Main", () => {
+    get_usertweets();
+  });
+});
+
 async function tweet_main() {
   var pre_tweet = await Tweets.query().where("user", "Istani");
   if (pre_tweet.length > 0) {
@@ -38,18 +62,15 @@ async function tweet_main() {
       async function(error, tweet, response) {
         if (error) {
           console.error(error);
-          setTimeout(tweet_main, 1 * 60 * 1000);
           return;
         }
         await Tweets.query()
           .delete()
           .where("id", pre_tweet[0].id);
         console.log(pre_tweet[0]);
-        setTimeout(tweet_main, 60 * 1000);
       }
     );
   }
-  setTimeout(tweet_main, 60 * 1000);
 }
 
 async function tweet_gos() {
@@ -61,18 +82,15 @@ async function tweet_gos() {
       async function(error, tweet, response) {
         if (error) {
           console.error(error);
-          setTimeout(tweet_gos, 15 * 60 * 1000);
           return;
         }
         await Tweets.query()
           .delete()
           .where("id", pre_tweet[0].id);
         console.log(pre_tweet[0]);
-        setTimeout(tweet_gos, 10 * 60 * 1000);
       }
     );
   }
-  setTimeout(tweet_gos, 15 * 60 * 1000);
 }
 
 async function bg_gos() {
@@ -101,7 +119,7 @@ async function bg_gos() {
       }
     );
   });
-  img.write("gos_bg.png");
+  //img.write("gos_bg.png");
 }
 async function pp_gos() {
   var img = await Jimp.read("../gamesite/public/img/text.png");
@@ -127,13 +145,8 @@ async function pp_gos() {
       }
     );
   });
-  await img.write("gos_pp.png");
+  //await img.write("gos_pp.png");
 }
-
-bg_gos();
-pp_gos();
-tweet_gos();
-tweet_main();
 
 async function get_usertweets() {
   var options = { screen_name: "istani" };
@@ -144,4 +157,6 @@ async function get_usertweets() {
     //}
   });
 }
-//get_usertweets();
+
+bg_gos();
+pp_gos();
