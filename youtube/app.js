@@ -69,10 +69,10 @@ async function authorize(callback) {
 }
 startTokens();
 
-function tStartImport(auth) {
+function xStartImport(auth) {
   var sic = auth.credentials;
   fs.writeFileSync("tmp/auth.json", JSON.stringify(auth, null, 2));
-  q.push("Videos", () => {
+  q.push("ListMembers", () => {
     auth.credentials = sic;
     ListMembers(auth);
   });
@@ -152,7 +152,7 @@ async function ListVideos(auth, pageToken = "", nextPage = true) {
   for (let pl_index = 0; pl_index < playlists_obj.length; pl_index++) {
     const element = playlists_obj[pl_index];
     if (abfrage_string != "") {
-      abfrage_string += ", ";
+      abfrage_string += ",";
     }
     abfrage_string += element.video_id;
   }
@@ -160,10 +160,8 @@ async function ListVideos(auth, pageToken = "", nextPage = true) {
     {
       auth: auth,
       part: "id, snippet, statistics, status",
-      //id: "3ISZGwwLj4g",
-      //id: "UAImOvmh6ng",
       id: abfrage_string,
-      maxResults: max_per_request,
+      //maxResults: max_per_request,
       pageToken: ""
     },
     async function(err, response) {
@@ -230,10 +228,10 @@ async function ListVideos(auth, pageToken = "", nextPage = true) {
         }
       }
 
-      if (data.length == max_per_request && nextPage) {
+      if (data.length > 0 && nextPage) {
         q.push("Videos", () => {
           auth.credentials = sic;
-          ListVideos(auth, pageToken + max_per_request);
+          ListVideos(auth, pageToken + data.length);
         });
       }
     }
@@ -445,6 +443,7 @@ function ListPlaylistItems(auth, playlist, pageToken = "", loadAll = true) {
             .where("owner", tmp_message.owner)
             .where("pl_id", tmp_message.pl_id)
             .where("position", tmp_message.position);
+          //console.log("Update PlayList Item: ", JSON.stringify(tmp_message));
         } else {
           await ow_playlistitems.query().insert(tmp_message);
           console.log("PlayList Item: ", JSON.stringify(tmp_message));
