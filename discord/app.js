@@ -47,7 +47,7 @@ client.on("ready", () => {
     })
     .catch(console.error);
   //SendMessage("225371711619465216", "test");
-  PruneAll();
+  //PruneAll();
 });
 
 function PruneAll() {
