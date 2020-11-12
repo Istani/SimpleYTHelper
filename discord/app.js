@@ -47,15 +47,21 @@ client.on("ready", () => {
     })
     .catch(console.error);
   //SendMessage("225371711619465216", "test");
+  PruneAll();
 });
 
-cron.schedule("0 15 * * *", () => {
-  client.guilds.cache.forEach(guild => {
-    guild.members
-      .prune({ days: 30, dry: true })
+function PruneAll() {
+  var allGuilds = client.guilds;
+  //console.log(allGuilds);
+  allGuilds.forEach(guild => {
+    guild
+      .pruneMembers(30, false)
       .then(pruned => console.log(guild.name + " - " + pruned + " Prune!"))
       .catch(console.error);
   });
+}
+cron.schedule("0 15 * * *", () => {
+  PruneAll();
 });
 
 client.on("error", error => {
@@ -65,7 +71,7 @@ client.on("error", error => {
 
 client.on("disconnect", event => {
   console.log("Client Event", "Disconnect");
-  process.exit(1);
+  //process.exit(1);
 });
 
 /* Custom Stuff */
@@ -242,7 +248,9 @@ async function GetChannel(token, syth_user) {
         });
         return;
       }
+      console.log(body);
       var User = JSON.parse(body);
+      console.log(User);
 
       var channel_obj = {};
       channel_obj.service = "discord";
@@ -253,13 +261,14 @@ async function GetChannel(token, syth_user) {
       channel_obj.thumbnail = User.avatar;
 
       // TODO: Why this dont work?
+      console.log(channel_obj);
 
       var m = await ow_channel
         .query()
         .where("service", channel_obj.service)
         .where("user_id", channel_obj.user_id)
         .where("channel_id", channel_obj.channel_id);
-
+      console.log("Get Channel2");
       if (m.length > 0) {
         await ow_channel
           .query()
