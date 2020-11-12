@@ -49,6 +49,15 @@ client.on("ready", () => {
   //SendMessage("225371711619465216", "test");
 });
 
+cron.schedule("0 15 * * *", () => {
+  client.guilds.cache.forEach(guild => {
+    guild.members
+      .prune({ days: 30, dry: true })
+      .then(pruned => console.log(guild.name + " - " + pruned + " Prune!"))
+      .catch(console.error);
+  });
+});
+
 client.on("error", error => {
   console.log("Client Error", error);
   process.exit(1);
