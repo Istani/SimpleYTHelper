@@ -266,7 +266,7 @@ function ListChannels(auth, pageToken = "") {
       channel_obj.description = data.snippet.description;
       channel_obj.start_date = data.snippet.publishedAt;
       channel_obj.thumbnail = data.snippet.thumbnails.high.url;
-      channel_obj.banner = data.brandingSettings.image.bannerTvHighImageUrl;
+      //channel_obj.banner = data.brandingSettings.image.bannerTvHighImageUrl;
 
       channel_obj.main_playlist = data.contentDetails.relatedPlaylists.uploads;
       channel_obj.views = data.statistics.viewCount;
@@ -607,6 +607,7 @@ async function LiveChat(auth, pageToken = "") {
   var data = await ow_channel
     .query()
     .where("user_id", auth.credentials.user_id)
+    .where("service", "youtube")
     .eager("Livestream")
     .modifyEager("Livestream", builder => {
       // Order children by age and only select id.
