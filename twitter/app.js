@@ -205,6 +205,7 @@ async function AddMessage(tweet) {
   if (m.length == 0) {
     console.log("Message:", JSON.stringify(tmp_message));
     await Chat_Message.query().insert(tmp_message);
+    check_special_tweet(tweet);
   } else {
     //console.log('Message Repeat:', JSON.stringify(tmp_message));
     await Chat_Message.query()
@@ -216,24 +217,23 @@ async function AddMessage(tweet) {
 async function get_usertweets() {
   var options = { screen_name: "istani" };
 
-  var hasSelfie = false;
   client.get("statuses/user_timeline", options, async function(err, data) {
     fs.writeFileSync("tmp/tweets.json", JSON.stringify(data, null, 2));
     for (var i = 0; i < data.length; i++) {
-      //console.log(data[i].text);
-      if (data[i].text.includes("#dailyselfie") && hasSelfie == false) {
-        await get_pciture_from_url(
-          data[i].entities.media[0].media_url,
-          options.screen_name + ".jpg"
-        );
-        hasSelfie = true;
-        console.log("Picture Download for " + options.screen_name);
-        await pp_main("istani.jpg");
-      }
-
       AddMessage(data[i]);
     }
   });
+}
+async function check_special_tweet(tweet) {
+  //console.log(data[i].text);
+  if (tweet.text.includes("#dailyselfie")) {
+    await get_pciture_from_url(
+      tweet.entities.media[0].media_url,
+      tweet.user.screen_name + ".jpg"
+    );
+    console.log("Picture Download for " + tweet.user.screen_name);
+    await pp_main(tweet.user.screen_name + ".jpg");
+  }
 }
 
 bg_gos();
