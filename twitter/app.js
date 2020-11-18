@@ -193,7 +193,7 @@ async function AddMessage(tweet) {
   } else {
     tmp_message.room = tweet.in_reply_to_user_id;
   }
-  tmp_message.id = tweet.id;
+  tmp_message.id = tweet.id_str;
 
   var m = await Chat_Message.query().where(tmp_message);
 
@@ -227,12 +227,31 @@ async function get_usertweets() {
 async function check_special_tweet(tweet) {
   //console.log(data[i].text);
   if (tweet.text.includes("#dailyselfie")) {
-    await get_pciture_from_url(
-      tweet.entities.media[0].media_url,
-      tweet.user.screen_name + ".jpg"
-    );
-    console.log("Picture Download for " + tweet.user.screen_name);
-    await pp_main(tweet.user.screen_name + ".jpg");
+    if (typeof tweet.entities.media[0].media_url != undefined) {
+      await get_pciture_from_url(
+        tweet.entities.media[0].media_url,
+        tweet.user.screen_name + ".jpg"
+      );
+
+      console.log("Picture Download for " + tweet.user.screen_name);
+      await pp_main(tweet.user.screen_name + ".jpg");
+    }
+
+    var output_string =
+      '<blockquote class="twitter-tweet"><p lang="de" dir="ltr">' +
+      tweet.text +
+      "</p>&mdash; " +
+      tweet.user.name +
+      " (@" +
+      tweet.user.screen_name +
+      ') <a href="https://twitter.com/' +
+      tweet.user.screen_name +
+      "/status/" +
+      tweet.id_str +
+      '?ref_src=twsrc%5Etfw">' +
+      tweet.created_at +
+      '</a></blockquote><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script><br><br>\n\r';
+    fs.appendFileSync("tmp/dailyselfie.txt", output_string);
   }
 }
 
