@@ -36,7 +36,7 @@ if (fs.existsSync(".env")) {
 
 var need_install = 0;
 async function install() {
-  return;
+  //  return;
 
   //exec("npm install");
   await fs.readdir(__dirname, async function(err, items) {
@@ -67,7 +67,7 @@ async function install() {
     });
     need_install = exec_return[0] - 0x30;
     //console.log(need_install);
-    //return;
+    process.exit(0);
 
     if (need_install) {
       process.chdir(__dirname + "/.git");
