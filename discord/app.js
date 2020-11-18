@@ -76,7 +76,7 @@ client.on("error", error => {
 
 client.on("disconnect", event => {
   console.log("Client Event", "Disconnect");
-  //process.exit(1);
+  process.exit(1);
 });
 
 /* Custom Stuff */
