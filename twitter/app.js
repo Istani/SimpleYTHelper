@@ -115,7 +115,8 @@ async function bg_gos() {
         if (error) {
           console.error(error);
         }
-        console.log(response);
+        //console.log(response);
+        console.log("GOS Banner Picture Update!");
       }
     );
   });
@@ -141,22 +142,66 @@ async function pp_gos() {
         if (error) {
           console.error(error);
         }
-        console.log(response);
+        //console.log(response);
+        console.log("GOS Profile Picture Update!");
       }
     );
   });
   //await img.write("gos_pp.png");
 }
+async function pp_main(picture_path) {
+  var img = await Jimp.read("tmp/" + picture_path);
+  await img.scaleToFit(400, 400);
+  await img.contain(
+    400,
+    400,
+    Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE
+  );
+  await img.getBase64(Jimp.AUTO, (err, res) => {
+    if (err) {
+      console.error(err);
+    }
+    var data = res.split(",");
+    client.post(
+      "account/update_profile_image",
+      { image: data[1], media: data[0] },
+      async function(error, response) {
+        if (error) {
+          console.error(error);
+        }
+        //console.log(response);
+        console.log("Upload Picture: " + picture_path);
+      }
+    );
+  });
+  //await img.write("main_pp.png");
+}
+async function get_pciture_from_url(url, picname) {
+  var img = await Jimp.read(url);
+  await img.write("tmp/" + picname);
+}
 
 async function get_usertweets() {
   var options = { screen_name: "istani" };
-  client.get("statuses/user_timeline", options, function(err, data) {
+
+  var hasSelfie = false;
+  client.get("statuses/user_timeline", options, async function(err, data) {
     fs.writeFileSync("tmp/tweets.json", JSON.stringify(data, null, 2));
-    //for (var i = 0; i < data.length ; i++) {
-    //  console.log(data[i].text);
-    //}
+    for (var i = 0; i < data.length; i++) {
+      //console.log(data[i].text);
+      if (data[i].text.includes("#dailyselfie") && hasSelfie == false) {
+        await get_pciture_from_url(
+          data[i].entities.media[0].media_url,
+          options.screen_name + ".jpg"
+        );
+        hasSelfie = true;
+        console.log("Picture Download for " + options.screen_name);
+        await pp_main(options.screen_name + ".jpg");
+      }
+    }
   });
 }
 
 bg_gos();
 pp_gos();
+//get_usertweets();
