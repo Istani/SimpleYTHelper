@@ -13,6 +13,7 @@ const cron = require("node-cron");
 const Queue = require("better-queue");
 
 const Tweets = require("./models/send_tweets.js");
+const Chat_Message = require("./models/chat_message.js");
 
 var q = new Queue(function(type, input, cb) {
   console.log("Start: " + type);
@@ -181,6 +182,37 @@ async function get_pciture_from_url(url, picname) {
   await img.write("tmp/" + picname);
 }
 
+async function AddMessage(tweet) {
+  var tmp_message = {};
+
+  // Keys
+  tmp_message.service = package_info.name.replace("syth-", "");
+  tmp_message.server = tweet.user.id;
+  if (tweet.in_reply_to_user_id == null) {
+    tmp_message.room = "TimeLine";
+  } else {
+    tmp_message.room = tweet.in_reply_to_user_id;
+  }
+  tmp_message.id = tweet.id;
+
+  var m = await Chat_Message.query().where(tmp_message);
+
+  // Additons
+  tmp_message.user = tweet.user.id;
+  tmp_message.timestamp = tweet.created_at;
+  tmp_message.content = tweet.text;
+
+  if (m.length == 0) {
+    console.log("Message:", JSON.stringify(tmp_message));
+    await Chat_Message.query().insert(tmp_message);
+  } else {
+    //console.log('Message Repeat:', JSON.stringify(tmp_message));
+    await Chat_Message.query()
+      .patch(tmp_message)
+      .where(m[0]);
+  }
+}
+
 async function get_usertweets() {
   var options = { screen_name: "istani" };
 
@@ -196,8 +228,10 @@ async function get_usertweets() {
         );
         hasSelfie = true;
         console.log("Picture Download for " + options.screen_name);
-        await pp_main(options.screen_name + ".jpg");
+        await pp_main("istani.jpg");
       }
+
+      AddMessage(data[i]);
     }
   });
 }
