@@ -934,7 +934,8 @@ async function CheckForMessages(auth) {
   var sic = auth.credentials;
   var data = await ow_channel
     .query()
-    .where("user_id", auth.credentials.user_id);
+    .where("user_id", auth.credentials.user_id)
+    .where("service", "youtube");
 
   var msgs = await Outgoing_Message.query()
     .where("service", "youtube")

@@ -84,27 +84,29 @@ async function main() {
         continue;
       }
       temp_data.publishedAt = dump[i][2];
-      await Score.query().insert(temp_data);
+      try {
+        await Score.query().insert(temp_data);
 
-      var dat = new Date(dump[i][2]);
+        var dat = new Date(dump[i][2]);
 
-      var temp_name = Games.getEncodedName(dump[i][3]);
-      var details = await Games.query().where("name", temp_name);
+        var temp_name = Games.getEncodedName(dump[i][3]);
+        var details = await Games.query().where("name", temp_name);
 
-      var tmp_tweet = {};
-      tmp_tweet.user = "Istani";
-      // [ 'The Stone League', '828', '2019-09-18 13:57', 'STM\n      Minion Masters' ]
-      tmp_tweet.message =
-        'New #Achievement: "' +
-        dump[i][0] +
-        '" in "' +
-        dump[i][3] +
-        '" #trophy';
-      if (details.length > 0) {
-        tmp_tweet.message += " https://games-on-sale.de/game/" + temp_name;
-      }
-      await Tweets.query().insert(tmp_tweet);
-      console.log(tmp_tweet.message);
+        var tmp_tweet = {};
+        tmp_tweet.user = "Istani";
+        // [ 'The Stone League', '828', '2019-09-18 13:57', 'STM\n      Minion Masters' ]
+        tmp_tweet.message =
+          'New #Achievement: "' +
+          dump[i][0] +
+          '" in "' +
+          dump[i][3] +
+          '" #trophy';
+        if (details.length > 0) {
+          tmp_tweet.message += " https://games-on-sale.de/game/" + temp_name;
+        }
+        await Tweets.query().insert(tmp_tweet);
+        console.log(tmp_tweet.message);
+      } catch {}
       //console.log(dump[i]);
     }
   });
