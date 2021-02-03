@@ -935,14 +935,8 @@ function ListMembers(auth, pageToken = "") {
 
 async function CheckForMessages(auth) {
   var sic = auth.credentials;
-  var data = await ow_channel
-    .query()
-    .where("user_id", auth.credentials.user_id)
-    .where("service", "youtube");
 
-  var msgs = await Outgoing_Message.query()
-    .where("service", "youtube")
-    .where("server", data[0].channel_id);
+  var msgs = await Outgoing_Message.query().where("service", "youtube");
   if (msgs.length > 0) {
     for (var i = 0; i < msgs.length; i++) {
       await SendMessage(auth, msgs[i].room, emoji.emojify(msgs[i].content));
