@@ -129,8 +129,11 @@ function StartImport(auth) {
     auth.credentials = sic;
     LiveChat(auth);
     auth.credentials = sic;
-    CheckForMessages(auth);
   });
+
+  if (auth.user_id == 5) {
+    CheckForMessages(auth);
+  }
 }
 
 async function ListVideos(auth, pageToken = "", nextPage = true) {
