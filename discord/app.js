@@ -55,11 +55,11 @@ function PruneAll() {
   //console.log(allGuilds);
   allGuilds.forEach(guild => {
     guild
-      .pruneMembers(30, false)
+      .pruneMembers(30, true)
       .then(pruned => {
         console.log(guild.name + " - " + pruned + " Prune!");
         if (pruned > 0) {
-          guild.pruneMembers(30, true);
+          guild.pruneMembers(30, false);
         }
       })
       .catch(console.error);

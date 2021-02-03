@@ -258,3 +258,5 @@ async function check_special_tweet(tweet) {
 bg_gos();
 pp_gos();
 //get_usertweets();
+
+pp_main("Istani.jpg");
