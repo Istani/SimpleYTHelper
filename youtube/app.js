@@ -614,7 +614,8 @@ async function LiveChat(auth, pageToken = "") {
       builder
         .where("liveChatId", "!=", "")
         .whereNotNull("liveChatId")
-        .where("actualStartTime", "<", moment().toISOString());
+        .where("actualStartTime", "<", moment().toISOString())
+        .whereNull("actualEndTime");
     });
   if (
     typeof data[0].Livestream == "undefined" ||
