@@ -30,7 +30,10 @@ const Chat_User = require("./models/chat_user.js");
 const Token = require("./models/syth_token.js");
 
 var RepeatDealy = 30 * 1000;
-var SCOPES = ["https://www.googleapis.com/auth/youtube"];
+var SCOPES = [
+  "https://www.googleapis.com/auth/youtube",
+  "https://www.googleapis.com/auth/youtube.channel-memberships.creator"
+];
 var OAuth2 = google.auth.OAuth2;
 var service = google.youtube("v3");
 var q = new Queue(function(type, input, cb) {
