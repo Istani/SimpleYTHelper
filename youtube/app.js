@@ -131,7 +131,7 @@ function StartImport(auth) {
     auth.credentials = sic;
   });
 
-  if (auth.user_id == 5) {
+  if (auth.credentials.user_id == 5) {
     CheckForMessages(auth);
   }
 }
@@ -938,6 +938,7 @@ async function CheckForMessages(auth) {
   var sic = auth.credentials;
 
   var msgs = await Outgoing_Message.query().where("service", "youtube");
+  //console.log("MSGS: " + msgs.length);
   if (msgs.length > 0) {
     for (var i = 0; i < msgs.length; i++) {
       await SendMessage(auth, msgs[i].room, emoji.emojify(msgs[i].content));

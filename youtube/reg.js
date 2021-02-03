@@ -7,8 +7,8 @@ var OAuth2 = google.auth.OAuth2;
 
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/youtube-nodejs-quickstart.json
-var SCOPES = ["https://www.googleapis.com/auth/youtube.readonly"];
-var TOKEN_DIR = "C:\\Dropbox\\SimpleSoftwareStudioShare\\SimpleYTH\\youtube\\";
+var SCOPES = ["https://www.googleapis.com/auth/youtube", "https://www.googleapis.com/auth/youtube.channel-memberships.creator"];
+var TOKEN_DIR = ".\";
 var TOKEN_PATH = TOKEN_DIR + "youtube-nodejs-quickstart.json";
 
 // Load client secrets from a local file.
