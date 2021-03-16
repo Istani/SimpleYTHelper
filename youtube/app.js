@@ -36,7 +36,6 @@ var SCOPES = [
 ];
 var OAuth2 = google.auth.OAuth2;
 var service = google.youtube("v3");
-var analytics = google.youtubeAnalytics("v2"); //google.analyticsreporting('v4');//google.analytics('v3');
 var q = new Queue(function(type, input, cb) {
   console.log("Start Import: " + type);
   input();
@@ -778,33 +777,7 @@ async function LiveChat(auth, pageToken = "") {
     }
   );
 }
-async function test_report(auth, pageToken = "") {
-  var sic = auth.credentials;
-  analytics.reports.query(
-    {
-      auth: auth,
-      ids: "channel=MINE",
-      startDate: "2020-01-01",
-      endDate: "2020-01-31",
-      metrics:
-        "views,estimatedMinutesWatched,averageViewDuration,averageViewPercentage,subscribersGained",
-      dimensions: "day",
-      sort: "day"
-    },
-    async function(err, responste) {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      try {
-        fs.writeFileSync("tmp/report.json", JSON.stringify(response, null, 2));
-        console.log("done");
-      } catch (e) {
-        console.error(e);
-      }
-    }
-  );
-}
+
 function ListSponsors(auth, pageToken = "") {
   var sic = auth.credentials;
   service.sponsors.list(
