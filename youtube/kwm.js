@@ -24,13 +24,13 @@ var SCOPES = [
   "https://www.googleapis.com/auth/youtube.readonly",
   "https://www.googleapis.com/auth/youtubepartner",
   "https://www.googleapis.com/auth/yt-analytics-monetary.readonly",
-  "https://www.googleapis.com/auth/yt-analytics.readonly",
+  "https://www.googleapis.com/auth/yt-analytics.readonly"
 ];
-var OAuth2 = const auth = new google.auth.GoogleAuth({
-  scopes: [SCOPES],
+var OAuth2 = new google.auth.GoogleAuth({
+  scopes: [SCOPES]
 });
 const authClient = await OAuth2.getClient();
-google.options({auth: authClient});
+google.options({ auth: authClient });
 
 var analytics = google.youtubeAnalytics("v2");
 var q = new Queue(function(type, input, cb) {
