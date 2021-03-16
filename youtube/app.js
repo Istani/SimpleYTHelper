@@ -74,15 +74,6 @@ startTokens();
 
 function StartImport(auth) {
   var sic = auth.credentials;
-  //fs.writeFileSync("tmp/auth.json", JSON.stringify(auth, null, 2));
-  //q.push("ListMembers", () => {
-  //  auth.credentials = sic;
-  //  ListMembers(auth);
-  //});
-  test_report(sic, "");
-}
-function xStartImport(auth) {
-  var sic = auth.credentials;
   fs.writeFileSync("tmp/auth.json", JSON.stringify(auth, null, 2));
 
   q.push("Channels", () => {
