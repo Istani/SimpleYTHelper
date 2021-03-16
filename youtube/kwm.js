@@ -26,11 +26,7 @@ var SCOPES = [
   "https://www.googleapis.com/auth/yt-analytics-monetary.readonly",
   "https://www.googleapis.com/auth/yt-analytics.readonly"
 ];
-var OAuth2 = new google.auth.GoogleAuth({
-  scopes: [SCOPES]
-});
-const authClient = await OAuth2.getClient();
-google.options({ auth: authClient });
+var OAuth2 = google.auth.OAuth2;
 
 var analytics = google.youtubeAnalytics("v2");
 var q = new Queue(function(type, input, cb) {
@@ -46,11 +42,12 @@ async function startTokens() {
   authorize(StartImport);
 }
 
+var oauth2Client;
 async function authorize(callback) {
   var clientSecret = process.env.YOUTUBE_CLIENT_SECRET;
   var clientId = process.env.YOUTUBE_CLIENT_ID;
   var redirectUrl = process.env.YOUTUBE_CLINET_URI;
-  var oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl);
+  oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl);
 
   var user_token = await Token.query()
     .where("service", "youtube")
@@ -82,18 +79,20 @@ function StartImport(auth) {
 
 async function test_report(auth, pageToken = "") {
   var sic = auth.credentials;
+  google.options({ auth: oauth2Client });
   analytics.reports.query(
     {
-      auth: auth,
-      ids: "channel=MINE",
+      auth: sic,
+      ids: "channel==MINE",
       startDate: "2020-01-01",
       endDate: "2020-01-31",
       metrics:
         "views,estimatedMinutesWatched,averageViewDuration,averageViewPercentage,subscribersGained",
       dimensions: "day",
       sort: "day"
+      //alt: "csv" // In V2 nicht OK
     },
-    async function(err, responste) {
+    async function(err, response) {
       if (err) {
         console.error(err);
         return;
