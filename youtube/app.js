@@ -102,7 +102,7 @@ function StartImport(auth) {
     });
     q.push("Sponsors", () => {
       auth.credentials = sic;
-      ListSponsors(auth);
+      ListMembers(auth);
     });
     setTimeout(() => {
       // Damit dann Channels und Sponsors vielleicht schon fertig ist
@@ -769,93 +769,13 @@ async function LiveChat(auth, pageToken = "") {
   );
 }
 
-function ListSponsors(auth, pageToken = "") {
-  var sic = auth.credentials;
-  service.sponsors.list(
-    {
-      auth: auth,
-      part: "snippet",
-      maxResults: 50
-    },
-    async function(err, response) {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      try {
-        fs.writeFileSync(
-          "tmp/sponsors.json",
-          JSON.stringify(response.data, null, 2)
-        );
-
-        var txt = response.data.items;
-        for (let index = 0; index < txt.length; index++) {
-          var element = txt[index].snippet;
-          var tmp_message = {};
-          tmp_message.service = "youtube";
-          tmp_message.owner = element.channelId;
-          tmp_message.member_id = element.sponsorDetails.channelId;
-
-          var m = await sponsors
-            .query()
-            .where("service", tmp_message.service)
-            .where("owner", tmp_message.owner)
-            .where("member_id", tmp_message.member_id);
-          tmp_message.member_name = element.sponsorDetails.displayName;
-          tmp_message.since = element.sponsorSince;
-          tmp_message.picture = element.sponsorDetails.profileImageUrl;
-
-          if (m.length > 0) {
-            await sponsors
-              .query()
-              .patch(tmp_message)
-              .where("service", tmp_message.service)
-              .where("owner", tmp_message.owner)
-              .where("member_id", tmp_message.member_id);
-          } else {
-            await sponsors.query().insert(tmp_message);
-            console.log("Sponsor: ", JSON.stringify(tmp_message));
-          }
-        }
-        /* if (
-          typeof response.data.nextPageToken != "undefined" &&
-          response.data.nextPageToken != ""
-        ) {
-          console.log(response.data.nextPageToken);
-          setTimeout(() => {
-            q.push("Sponsors", () => {
-              auth.credentials = sic;
-              ListSponsors(auth, response.data.nextPageToken);
-            });
-          }, 1000 * 5);
-        }*/
-        var date = new Date();
-        date.setDate(date.getDate() - 7);
-
-        await sponsors
-          .query()
-          .delete()
-          .where("updated_at", "<", date.toISOString());
-      } catch (e) {
-        console.error(e);
-        setTimeout(() => {
-          q.push("Sponsors", () => {
-            auth.credentials = sic;
-            ListSponsors(auth);
-          });
-        }, 1000 * 60 * 5);
-      }
-    }
-  );
-}
-
 function ListMembers(auth, pageToken = "") {
   var sic = auth.credentials;
   service.members.list(
     {
       auth: auth,
       part: "snippet",
-      maxResults: 50
+      maxResults: 1000
     },
     async function(err, response) {
       if (err) {
@@ -867,25 +787,39 @@ function ListMembers(auth, pageToken = "") {
           "tmp/members.json",
           JSON.stringify(response.data, null, 2)
         );
-        console.log(response.data);
-        return;
 
         var txt = response.data.items;
         for (let index = 0; index < txt.length; index++) {
           var element = txt[index].snippet;
           var tmp_message = {};
           tmp_message.service = "youtube";
-          tmp_message.owner = element.channelId;
-          tmp_message.member_id = element.sponsorDetails.channelId;
+          tmp_message.owner = element.creatorChannelId;
+          tmp_message.member_id = element.memberDetails.channelId;
 
           var m = await sponsors
             .query()
             .where("service", tmp_message.service)
             .where("owner", tmp_message.owner)
             .where("member_id", tmp_message.member_id);
-          tmp_message.member_name = element.sponsorDetails.displayName;
-          tmp_message.since = element.sponsorSince;
-          tmp_message.picture = element.sponsorDetails.profileImageUrl;
+
+          tmp_message.member_name = element.memberDetails.displayName;
+          tmp_message.since =
+            element.membershipDetails.membershipsDuration.memberSince;
+          tmp_message.picture = element.memberDetails.profileImageUrl;
+
+          tmp_message.current =
+            element.memberDetails.membershipsDuration.memberTotalDurationMonths;
+          tmp_message.points = 0;
+
+          pointarr = element.memberDetails.membershipsDurationAtLevels;
+          for (
+            let pointarr_cnt = 0;
+            pointarr_cnt < pointarr.length;
+            pointarr_cnt
+          ) {
+            tmp_message.points +=
+              pointarr[pointarr_cnt].memberTotalDurationMonths;
+          }
 
           if (m.length > 0) {
             await sponsors
@@ -923,7 +857,7 @@ function ListMembers(auth, pageToken = "") {
         setTimeout(() => {
           q.push("Sponsors", () => {
             auth.credentials = sic;
-            ListSponsors(auth);
+            ListMembers(auth);
           });
         }, 1000 * 60 * 5);
       }

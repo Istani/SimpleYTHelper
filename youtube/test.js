@@ -88,7 +88,7 @@ function ListMembers(auth, pageToken = "") {
     {
       auth: auth,
       part: "snippet",
-      maxResults: 50
+      maxResults: 1000
     },
     async function(err, response) {
       if (err) {
@@ -100,25 +100,39 @@ function ListMembers(auth, pageToken = "") {
           "tmp/members.json",
           JSON.stringify(response.data, null, 2)
         );
-        console.log(response.data);
-        return;
 
         var txt = response.data.items;
         for (let index = 0; index < txt.length; index++) {
           var element = txt[index].snippet;
           var tmp_message = {};
           tmp_message.service = "youtube";
-          tmp_message.owner = element.channelId;
-          tmp_message.member_id = element.sponsorDetails.channelId;
+          tmp_message.owner = element.creatorChannelId;
+          tmp_message.member_id = element.memberDetails.channelId;
 
           var m = await sponsors
             .query()
             .where("service", tmp_message.service)
             .where("owner", tmp_message.owner)
             .where("member_id", tmp_message.member_id);
-          tmp_message.member_name = element.sponsorDetails.displayName;
-          tmp_message.since = element.sponsorSince;
-          tmp_message.picture = element.sponsorDetails.profileImageUrl;
+
+          tmp_message.member_name = element.memberDetails.displayName;
+          tmp_message.since =
+            element.membershipDetails.membershipsDuration.memberSince;
+          tmp_message.picture = element.memberDetails.profileImageUrl;
+
+          tmp_message.current =
+            element.memberDetails.membershipsDuration.memberTotalDurationMonths;
+          tmp_message.points = 0;
+
+          pointarr = element.memberDetails.membershipsDurationAtLevels;
+          for (
+            let pointarr_cnt = 0;
+            pointarr_cnt < pointarr.length;
+            pointarr_cnt
+          ) {
+            tmp_message.points +=
+              pointarr[pointarr_cnt].memberTotalDurationMonths;
+          }
 
           if (m.length > 0) {
             await sponsors
@@ -156,7 +170,7 @@ function ListMembers(auth, pageToken = "") {
         setTimeout(() => {
           q.push("Sponsors", () => {
             auth.credentials = sic;
-            ListSponsors(auth);
+            ListMembers(auth);
           });
         }, 1000 * 60 * 5);
       }
