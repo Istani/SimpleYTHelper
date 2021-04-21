@@ -799,7 +799,8 @@ function ListMembers(auth, pageToken = "") {
           tmp_message.service = "youtube";
           tmp_message.owner = element.creatorChannelId;
           if (typeof element.memberDetails == "undefined") {
-            tmp_message.member_id = "-1";
+            tmp_message.owner = "SYTH";
+            tmp_message.member_id = element.creatorChannelId;
             tmp_message.member_name = "SYTH: Error Account Data API";
             tmp_message.picture = "";
           } else {
