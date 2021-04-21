@@ -13,6 +13,13 @@ const emoji = require("node-emoji");
 const sleep = require("await-sleep");
 const moment = require("moment");
 
+var q_startDate = moment()
+  .subtract(90, "days")
+  .format("YYYY-MM-DD");
+var q_endDate = moment()
+  .subtract(14, "days")
+  .format("YYYY-MM-DD");
+
 var readline = require("readline");
 var { google } = require("googleapis");
 
@@ -36,9 +43,9 @@ var q = new Queue(function(type, input, cb) {
 });
 
 async function startTokens() {
-  await Token.query()
-    .where("service", "youtube")
-    .patch({ is_importing: false });
+  //await Token.query()
+  //  .where("service", "youtube")
+  //  .patch({ is_importing: false });
   authorize(StartImport);
 }
 
@@ -49,24 +56,24 @@ async function authorize(callback) {
   var redirectUrl = process.env.YOUTUBE_CLINET_URI;
   oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl);
 
-  var user_token = await Token.query()
-    .where("service", "youtube")
-    .where("is_importing", false);
+  var user_token = await Token.query().where("service", "youtube");
+  //  .where("is_importing", false);
   for (let index = 0; index < user_token.length; index++) {
     const element = user_token[index];
-    await Token.query()
-      .where(element)
-      .patch({ is_importing: true });
+    //await Token.query()
+    //  .where(element)
+    //  .patch({ is_importing: true });
     oauth2Client.credentials = element;
-    callback(oauth2Client);
+    await callback(oauth2Client);
   }
-  setTimeout(() => {
-    authorize(callback);
-  }, 1000);
+  //setTimeout(() => {
+  //  authorize(callback);
+  //}, 1000);
+  //process.exit(0);
 }
 startTokens();
 
-function StartImport(auth) {
+async function StartImport(auth) {
   var sic = auth.credentials;
   /*cron.schedule("0 * * * *", () => {
     q.push("Uploads", () => {
@@ -74,23 +81,30 @@ function StartImport(auth) {
       ListNewUploads(auth);
     });
   });*/
-  test_report(sic, "");
+  await test_report(sic, "");
 }
 
 async function test_report(auth, pageToken = "") {
   var sic = auth.credentials;
+  console.log(auth);
+  var sic_user = auth.service_user;
   google.options({ auth: oauth2Client });
   analytics.reports.query(
     {
       auth: sic,
       ids: "channel==MINE",
-      startDate: "2020-01-01",
-      endDate: "2020-01-31",
-      metrics:
-        "views,estimatedMinutesWatched,averageViewDuration,averageViewPercentage,subscribersGained",
-      dimensions: "day",
-      sort: "day"
+      startDate: q_startDate,
+      endDate: q_endDate,
+      //metrics: "views,comments,likes,dislikes,estimatedMinutesWatched,averageViewDuration,averageViewPercentage",//,subscribersGained,subscribersLost", // grossRevenue,estimatedRevenue,
+      //dimensions: "day",
+      //dimensions: "video",//"day,video",
+      //sort: "day"
       //alt: "csv" // In V2 nicht OK
+      metrics:
+        "views,estimatedMinutesWatched,comments,likes,dislikes,averageViewDuration,averageViewPercentage",
+      dimensions: "video",
+      sort: "-views",
+      maxResults: 100
     },
     async function(err, response) {
       if (err) {
@@ -98,7 +112,10 @@ async function test_report(auth, pageToken = "") {
         return;
       }
       try {
-        fs.writeFileSync("tmp/report.json", JSON.stringify(response, null, 2));
+        fs.writeFileSync(
+          "tmp/report_" + sic_user + ".json",
+          JSON.stringify(response, null, 2)
+        );
         console.log("done");
       } catch (e) {
         console.error(e);
