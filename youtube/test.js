@@ -117,7 +117,7 @@ function ListMembers(auth, pageToken = "") {
 
           tmp_message.member_name = element.memberDetails.displayName;
           tmp_message.since =
-            element.membershipDetails.membershipsDuration.memberSince;
+            element.membershipsDetails.membershipsDuration.memberSince;
           tmp_message.picture = element.memberDetails.profileImageUrl;
 
           tmp_message.current =
