@@ -121,10 +121,10 @@ function ListMembers(auth, pageToken = "") {
           tmp_message.picture = element.memberDetails.profileImageUrl;
 
           tmp_message.current =
-            element.memberDetails.membershipsDuration.memberTotalDurationMonths;
+            element.membershipsDetails.membershipsDuration.memberTotalDurationMonths;
           tmp_message.points = 0;
 
-          pointarr = element.memberDetails.membershipsDurationAtLevels;
+          pointarr = element.membershipsDetails.membershipsDurationAtLevels;
           for (
             let pointarr_cnt = 0;
             pointarr_cnt < pointarr.length;
