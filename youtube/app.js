@@ -798,7 +798,16 @@ function ListMembers(auth, pageToken = "") {
           var tmp_message = {};
           tmp_message.service = "youtube";
           tmp_message.owner = element.creatorChannelId;
-          tmp_message.member_id = element.memberDetails.channelId;
+          if (typeof element.memberDetails == "undefined") {
+            tmp_message.owner = "SYTH";
+            tmp_message.member_id = element.creatorChannelId;
+            tmp_message.member_name = "SYTH: Error Account Data API";
+            tmp_message.picture = "";
+          } else {
+            tmp_message.member_id = element.memberDetails.channelId;
+            tmp_message.member_name = element.memberDetails.displayName;
+            tmp_message.picture = element.memberDetails.profileImageUrl;
+          }
 
           var m = await sponsors
             .query()
@@ -806,10 +815,8 @@ function ListMembers(auth, pageToken = "") {
             .where("owner", tmp_message.owner)
             .where("member_id", tmp_message.member_id);
 
-          tmp_message.member_name = element.memberDetails.displayName;
           tmp_message.since =
             element.membershipsDetails.membershipsDuration.memberSince;
-          tmp_message.picture = element.memberDetails.profileImageUrl;
 
           tmp_message.current =
             element.membershipsDetails.membershipsDuration.memberTotalDurationMonths;
@@ -832,6 +839,7 @@ function ListMembers(auth, pageToken = "") {
               .where("service", tmp_message.service)
               .where("owner", tmp_message.owner)
               .where("member_id", tmp_message.member_id);
+            //console.log("Update Sponsor: ", JSON.stringify(tmp_message));
           } else {
             await sponsors.query().insert(tmp_message);
             console.log("Sponsor: ", JSON.stringify(tmp_message));
