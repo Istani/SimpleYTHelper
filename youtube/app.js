@@ -858,12 +858,6 @@ function ListMembers(auth, pageToken = "") {
           .where("updated_at", "<", date.toISOString());
       } catch (e) {
         console.error(e);
-        setTimeout(() => {
-          q.push("Sponsors", () => {
-            auth.credentials = sic;
-            ListMembers(auth);
-          });
-        }, 1000 * 60 * 5);
       }
     }
   );
