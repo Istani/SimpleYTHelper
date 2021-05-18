@@ -350,6 +350,7 @@ app.get("/HUD/:channel/:category", async function(req, res, next) {
           var tmp_data = {
             name: element2.member_name,
             since: element2.since,
+            current: element2.current,
             length_month:
               parseInt(
                 (new Date() - element2.since) / 1000 / 60 / 60 / 24 / 30
