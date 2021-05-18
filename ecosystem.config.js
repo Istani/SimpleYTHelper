@@ -131,13 +131,20 @@ module.exports = {
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       error_file: "logs/Istani-Achievements.err",
       out_file: "logs/Istani-Achievements.log"
-    } /*,
-    {
+    },
+    /*{
       name: "Istani-Tinder",
       script: "./tinder_automation/app.js",
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       error_file: "logs/Istani-Tinder.err",
       out_file: "logs/Istani-Tinder.log"
     }*/
+    {
+      name: "SYTH-YT-API",
+      script: "./youtube/server.js",
+      log_date_format: "YYYY-MM-DD HH:mm:ss Z",
+      error_file: "logs/SYTH-YT-API.err",
+      out_file: "logs/SYTH-YT-API.log"
+    }
   ]
 };
