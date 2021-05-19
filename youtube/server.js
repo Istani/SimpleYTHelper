@@ -91,6 +91,32 @@ function getBroadcast(socket) {
   );
 }
 
+function getVideoDetails(socket, id) {
+  var service = google.youtube("v3");
+  service.videos.list(
+    {
+      auth: socket.oauth2Client,
+      part: "id, statistics",
+      id: id,
+      pageToken: ""
+    },
+    async function(err, response) {
+      if (err) {
+        socket.emit(
+          "API Error",
+          "The API returned an error: ",
+          JSON.stringify(err, null, 2)
+        );
+        console.err("Broadcast: ", JSON.stringify(err));
+        return;
+      }
+      var elemts = response.data.items;
+      socket.emit("videos", elemts);
+      console.log("Video: ", JSON.stringify(elemts));
+    }
+  );
+}
+
 const io = require("socket.io")();
 
 io.on("connection", socket => {
@@ -115,6 +141,9 @@ io.on("connection", socket => {
 
   socket.on("Search", args => {
     getBroadcast(socket);
+  });
+  socket.on("VideoStatistic", args => {
+    getVideoDetails(socket, args);
   });
 });
 
