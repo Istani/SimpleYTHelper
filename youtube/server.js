@@ -127,14 +127,29 @@ io.on("connection", socket => {
   var redirectUrl = process.env.YOUTUBE_CLINET_URI;
   socket.oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl);
 
-  socket.on("New", args => {
+  socket.on("New", cfg => {
+    if (typeof cfg != "undefined") {
+      socket.oauth2Client = new OAuth2(
+        cfg.clientId,
+        cfg.clientSecret,
+        cfg.redirectUrl
+      );
+    }
     console.log("New User");
     getNewToken(socket);
   });
   socket.on("Code", args => {
     requestNewToken(args, socket);
   });
-  socket.on("Auth", args => {
+  socket.on("Auth", (args, cfg) => {
+    if (typeof cfg != "undefined") {
+      socket.oauth2Client = new OAuth2(
+        cfg.clientId,
+        cfg.clientSecret,
+        cfg.redirectUrl
+      );
+    }
+
     socket.oauth2Client.credentials = JSON.parse(args);
     getChannel(socket);
   });
