@@ -40,14 +40,16 @@ function requestNewToken(code, socket) {
   });
 }
 
-function getChannel(socket) {
+function getChannel(socket, pageToken = "") {
   console.log("Auth: ", socket.oauth2Client.credentials);
   var service = google.youtube("v3");
   service.channels.list(
     {
       auth: socket.oauth2Client,
       part: "snippet,statistics",
-      mine: true
+      mmaxResults: 10,
+      mine: true,
+      pageToken: pageToken
     },
     function(err, response) {
       if (err) {
@@ -66,13 +68,15 @@ function getChannel(socket) {
   );
 }
 
-function getBroadcast(socket) {
+function getBroadcast(socket, nextPageToken) {
   var service = google.youtube("v3");
   service.liveBroadcasts.list(
     {
       auth: socket.oauth2Client,
       part: "id, snippet",
-      mine: true
+      ine: true,
+      maxResults: 50,
+      pageToken: nextPageToken
     },
     async function(err, response) {
       if (err) {
@@ -156,8 +160,8 @@ io.on("connection", socket => {
     getChannel(socket);
   });
 
-  socket.on("Search", args => {
-    getBroadcast(socket);
+  socket.on("Search", nextPageToken => {
+    getBroadcast(socket, nextPageToken);
   });
   socket.on("VideoStatistic", args => {
     getVideoDetails(socket, args);

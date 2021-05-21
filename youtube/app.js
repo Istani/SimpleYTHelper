@@ -469,7 +469,7 @@ function SearchBroadcasts(auth, pageToken = "") {
       auth: auth,
       part: "id, snippet",
       mine: true,
-      maxResults: 10,
+      maxResults: 50,
       pageToken: pageToken
     },
     async function(err, response) {
