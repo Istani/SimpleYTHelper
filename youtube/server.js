@@ -58,7 +58,7 @@ function getChannel(socket, pageToken = "") {
           "The API returned an error: ",
           JSON.stringify(err)
         );
-        console.err("Channel: ", JSON.stringify(err));
+        console.error("Channel: ", JSON.stringify(err));
         return;
       }
       var elemts = response.data.items;
@@ -85,7 +85,7 @@ function getBroadcast(socket, nextPageToken) {
           "The API returned an error: ",
           JSON.stringify(err, null, 2)
         );
-        console.err("Broadcast: ", JSON.stringify(err));
+        console.error("Broadcast: ", JSON.stringify(err));
         return;
       }
       var elemts = response.data.items;
@@ -111,7 +111,7 @@ function getVideoDetails(socket, id) {
           "The API returned an error: ",
           JSON.stringify(err, null, 2)
         );
-        console.err("Broadcast: ", JSON.stringify(err));
+        console.error("Broadcast: ", JSON.stringify(err));
         return;
       }
       var elemts = response.data.items;
