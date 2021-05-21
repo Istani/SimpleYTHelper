@@ -74,7 +74,7 @@ function getBroadcast(socket, nextPageToken) {
     {
       auth: socket.oauth2Client,
       part: "id, snippet",
-      ine: true,
+      mine: true,
       maxResults: 50,
       pageToken: nextPageToken
     },
