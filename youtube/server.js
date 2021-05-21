@@ -129,6 +129,7 @@ io.on("connection", socket => {
 
   socket.on("New", cfg => {
     if (typeof cfg != "undefined") {
+      console.log(cfg);
       socket.oauth2Client = new OAuth2(
         cfg.clientId,
         cfg.clientSecret,
@@ -143,6 +144,7 @@ io.on("connection", socket => {
   });
   socket.on("Auth", (args, cfg) => {
     if (typeof cfg != "undefined") {
+      console.log(cfg);
       socket.oauth2Client = new OAuth2(
         cfg.clientId,
         cfg.clientSecret,
