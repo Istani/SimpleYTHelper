@@ -88,9 +88,13 @@ function getBroadcast(socket, nextPageToken) {
         console.error("Broadcast: ", JSON.stringify(err));
         return;
       }
-      var elemts = response.data.items;
+      var elemts = response;
       socket.emit("broadcasts", elemts);
-      console.log("Broadcast: ", JSON.stringify(elemts));
+      console.log(
+        "Broadcast: ",
+        JSON.stringify(elemts.data),
+        elemts.data.nextPageToken
+      );
     }
   );
 }
