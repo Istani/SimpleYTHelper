@@ -259,6 +259,13 @@ commands[20] = {
   function: questlist_command,
   visible: false
 };
+commands[21] = {
+  name: "balu",
+  params: "",
+  description: "mimimi",
+  function: knom_command,
+  visible: false
+};
 
 async function get_msg() {
   //return;
