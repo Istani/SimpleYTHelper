@@ -20,6 +20,7 @@ const Outgoing_Message = require("./models/outgoing_messages.js");
 const Games = require("./models/game.js");
 const Links = require("./models/game_link.js");
 const Videos = require("./models/videos.js");
+const Member = require("./models/member.js");
 
 var settings = {};
 function load_settings() {
@@ -257,6 +258,13 @@ commands[20] = {
   params: "",
   description: "List all Quests!",
   function: questlist_command,
+  visible: false
+};
+commands[21] = {
+  name: "rngvip",
+  params: "",
+  description: "Random VIP Name",
+  function: rng_vip,
   visible: false
 };
 
@@ -617,4 +625,15 @@ async function questlist_command(msg_data) {
       output_string = "";
     }
   }
+}
+
+async function rng_vip(msg_data) {
+  var output_string = "";
+  var members = await Member.query()
+    .where("owner", "UC5DOhI70dI3PnLPMkUsosgw")
+    .orderBy("RAND()");
+  console.log("Member gefunden: " + members[0].member_name);
+  output_string = members[0].member_name;
+  await outgoing(msg_data, output_string);
+  output_string = "";
 }
