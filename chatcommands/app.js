@@ -635,10 +635,11 @@ async function questlist_command(msg_data) {
 }
 
 async function rng_vip(msg_data) {
+  // TODO: Nur vom richtigen Channel!
   var output_string = "";
   var members = await Member.query()
     .where("owner", "UC5DOhI70dI3PnLPMkUsosgw")
-    .orderBy("RAND()");
+    .orderByRaw("RAND()");
   console.log("Member gefunden: " + members[0].member_name);
   output_string = members[0].member_name;
   await outgoing(msg_data, output_string);
