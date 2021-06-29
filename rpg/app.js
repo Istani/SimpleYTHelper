@@ -391,8 +391,9 @@ async function genMonster(syth_user, msg) {
       .where("server", msg.server)
       .avg("msg_avg")
       .avg("msg_sum");
-    var dmg_cap = parseInt(getCaps[0]["avg(`msg_avg`)"]) + settings.min_dmg;
-    var hp_cap = parseInt(getCaps[0]["avg(`msg_sum`)"]) + settings.min_hp;
+    var dmg_cap =
+      (parseInt(getCaps[0]["avg(`msg_avg`)"]) + settings.min_dmg) * 2;
+    var hp_cap = (parseInt(getCaps[0]["avg(`msg_sum`)"]) + settings.min_hp) * 2;
 
     var rand = getRandomInt(vips.length);
     //vips[rand]
