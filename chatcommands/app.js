@@ -73,6 +73,7 @@ async function makeStats() {
       .orderBy("created_at");
 
     var day_stat = {};
+    element.msg_sum = 0;
     for (let mindex = 0; mindex < message.length; mindex++) {
       const element2 = message[mindex];
       element.msg_sum++;
