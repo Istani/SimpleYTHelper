@@ -12,7 +12,18 @@ const moment = require("moment");
 
 const io = require("socket.io")(3005, {
   cors: {
-    origin: "*"
+    origin: "http://games-on-sale.de:3000",
+    methods: ["GET", "POST"]
+  },
+  origins: "http://games-on-sale.de:3000",
+  handlePreflightRequest: (req, res) => {
+    const headers = {
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Access-Control-Allow-Origin": "http://games-on-sale.de:3000", //req.headers.origin, //or the specific origin you want to give access to,
+      "Access-Control-Allow-Credentials": false
+    };
+    res.writeHead(200, headers);
+    res.end();
   }
 });
 
