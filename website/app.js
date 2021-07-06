@@ -47,7 +47,11 @@ var hbs = exphbs.create({
 
 var app = express();
 var server = require("http").createServer(app);
-var io = require("socket.io")(server);
+var io = require("socket.io")(server, {
+  cors: {
+    origin: "*"
+  }
+});
 
 io.on("connection", function(socket) {
   console.log("Connection");

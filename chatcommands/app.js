@@ -8,8 +8,13 @@ console.log();
 const fs = require("fs");
 const sleep = require("await-sleep");
 const cron = require("node-cron");
-const io = require("socket.io")(3005);
 const moment = require("moment");
+
+const io = require("socket.io")(3005, {
+  cors: {
+    origin: "*"
+  }
+});
 
 // DB-Models
 const Messages = require("./models/chat_message.js");
