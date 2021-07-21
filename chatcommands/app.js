@@ -278,13 +278,6 @@ commands[20] = {
   visible: false
 };
 commands[21] = {
-  name: "balu",
-  params: "",
-  description: "mimimi",
-  function: knom_command,
-  visible: false
-};
-commands[22] = {
   name: "rngvip",
   params: "",
   description: "Random VIP Name",
