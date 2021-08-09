@@ -288,8 +288,8 @@ commands[22] = {
   name: "firma",
   params: "",
   description: "Martins Firma",
-  function firma,
-  visible:true
+  function: firma,
+  visible: true
 };
 
 async function get_msg() {
@@ -664,8 +664,7 @@ async function rng_vip(msg_data) {
 }
 
 async function firma(msg_data) {
-  var output_string = 'Schaust du hier: http://kw.media/';
+  var output_string = "Schaust du hier: http://kw.media/";
   await outgoing(msg_data, output_string);
   output_string = "";
 }
-
