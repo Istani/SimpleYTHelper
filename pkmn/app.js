@@ -20,6 +20,7 @@ const gen = "8";
 
 function replace_all(text) {
   text = replaceType(text);
+  text = replaceType(text);
   text = striptags(text);
   text = text.replace("&nbsp;", "");
   text = text.trim();
@@ -43,7 +44,7 @@ async function main() {
     var tab = $("table").parsetable();
     var dump = [];
     for (var col = 0; col < tab[0].length; col++) {
-      for (var row = 0; row < tab.length - 1; row++) {
+      for (var row = 0; row < tab.length; row++) {
         if (typeof dump[col] == "undefined") {
           dump[col] = [];
         }
@@ -53,9 +54,10 @@ async function main() {
         dump[col][row] = replace_all(tab[row][col]);
       }
     }
-
+    //console.log(dump);
+    //return;
     for (var i = 1; i < dump.length; i++) {
-      var pkm = { id: dump[i][0], name: dump[i][1] };
+      var pkm = { id: dump[i][0], name: dump[i][1], type: dump[i][2] };
       pkm_list.push(pkm);
       await getPkm_Details(pkm.id);
 
