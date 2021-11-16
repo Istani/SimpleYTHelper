@@ -12,7 +12,18 @@ const moment = require("moment");
 
 const io = require("socket.io")(3005, {
   cors: {
-    origin: "*"
+    origin: "http://games-on-sale.de:3000",
+    methods: ["GET", "POST"]
+  },
+  origins: "http://games-on-sale.de:3000",
+  handlePreflightRequest: (req, res) => {
+    const headers = {
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Access-Control-Allow-Origin": "http://games-on-sale.de:3000", //req.headers.origin, //or the specific origin you want to give access to,
+      "Access-Control-Allow-Credentials": false
+    };
+    res.writeHead(200, headers);
+    res.end();
   }
 });
 
@@ -267,18 +278,18 @@ commands[20] = {
   visible: false
 };
 commands[21] = {
-  name: "balu",
-  params: "",
-  description: "mimimi",
-  function: knom_command,
-  visible: false
-};
-commands[22] = {
   name: "rngvip",
   params: "",
   description: "Random VIP Name",
   function: rng_vip,
   visible: false
+};
+commands[22] = {
+  name: "firma",
+  params: "",
+  description: "Martins Firma",
+  function: firma,
+  visible: true
 };
 
 async function get_msg() {
@@ -648,6 +659,12 @@ async function rng_vip(msg_data) {
     .orderByRaw("RAND()");
   console.log("Member gefunden: " + members[0].member_name);
   output_string = members[0].member_name;
+  await outgoing(msg_data, output_string);
+  output_string = "";
+}
+
+async function firma(msg_data) {
+  var output_string = "Schaust du hier: http://kw.media/";
   await outgoing(msg_data, output_string);
   output_string = "";
 }
