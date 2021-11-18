@@ -18,7 +18,7 @@ const url = "https://www.bisafans.de/pokedex/listen/numerisch.php";
 var pkm_list = [];
 const gen = "8";
 
-// ------------------------------ Settings 
+// ------------------------------ Settings
 var settings = {};
 function load_settings() {
   try {
@@ -42,9 +42,7 @@ load_settings();
 function load_pkmn_list() {
   try {
     pkm_list = require("./tmp/pkmn_liste.json");
-  } catch (error) {
-
-  }
+  } catch (error) {}
 }
 function save_okmn_list() {
   var data = JSON.stringify(pkm_list);
@@ -53,7 +51,7 @@ function save_okmn_list() {
 }
 load_pkmn_list();
 
-// ------------------------------ Function 
+// ------------------------------ Function
 function replace_all(text) {
   text = replaceType(text);
   text = replaceType(text);
@@ -71,7 +69,7 @@ function replaceType(text) {
   return new_text;
 }
 
-// ------------------------------ Main 
+// ------------------------------ Main
 async function main() {
   await requestp({ url: url }, async function(error, response, body) {
     fs.writeFileSync("./tmp/pokemon_liste.html", body);
@@ -96,7 +94,7 @@ async function main() {
       var pkm = { id: dump[i][0], name: dump[i][1], type: dump[i][2] };
 
       var idx = pkm_list.findIndex(element => element.id == pkm.id);
-      if (idx<0) {
+      if (idx < 0) {
         pkm_list.push(pkm);
       }
 
@@ -161,12 +159,16 @@ async function getPkm_Details(pkm_no) {
               straerke: dump[i][4],
               genauigkeit: dump[i][5]
             };
-            if (typeof pkm_list[idx].attacks!="undefined") {
-              var attk_idx = pkm_list[idx].attacks.findIndex(element => (element.level == this_atk.level) && (element.name==this_atk.name));
-              if (attk_idx>=0) {
-                attacks[attk_idx]=this_atk;
+            if (typeof pkm_list[idx].attacks != "undefined") {
+              var attk_idx = pkm_list[idx].attacks.findIndex(
+                element =>
+                  element.level == this_atk.level &&
+                  element.name == this_atk.name
+              );
+              if (attk_idx >= 0) {
+                attacks[attk_idx] = this_atk;
               } else {
-                attacks.push(this_atk);  
+                attacks.push(this_atk);
               }
             } else {
               attacks.push(this_atk);
@@ -187,8 +189,7 @@ async function getPkm_Details(pkm_no) {
 
 main();
 
-
-// ------------------------------ Syth 
+// ------------------------------ Syth
 
 async function outgoing(msg_data, content) {
   var tmp_chat = {};
@@ -200,3 +201,59 @@ async function outgoing(msg_data, content) {
   await Outgoing_Message.query().insert(tmp_chat);
   await sleep(1000);
 }
+async function get_msg() {
+  var msg_list = await Messages.query()
+    .where("content", "like", "!pkmn%")
+    .where("created_at", ">", settings.last_time)
+    .orderBy("created_at");
+
+  for (var i = 0; i < msg_list.length; i++) {
+    settings.last_time = msg_list[i].created_at;
+    save_settings();
+
+    // ToDo: Get SYTH-User out of DB
+    var syth_user = 4;
+    var temp_content = msg_list[i].content.split(" ");
+    //console.log(temp_content);
+    if (temp_content[0].startsWith("!pkmn")) {
+      var attr = temp_content.split(" ");
+      var idx = -1;
+      if (typeof attr[0] != "undefined") {
+        idx = pkm_list.findIndex(
+          element => element.id == attr[0] && element.name.startsWith(attr[0])
+        );
+        if (typeof attr[1] != "undefined") {
+          var attk_idx = pkm_list[idx].attacks.findIndex(
+            element => element.level * 1 > attr[1] * 1
+          );
+          var this_attk = pkm_list[idx].attacks[attk_idx];
+          outgoing(
+            msg_list[i],
+            this_attk.level +
+              ": " +
+              this_attk.name +
+              " " +
+              this_attk.straerke +
+              " (" +
+              this_attk.typ +
+              ")"
+          );
+        } else {
+          if (idx == -1) {
+            outgoing(msg_list[i], attr[0] + " nicht gefunden!");
+          } else {
+            var this_pkm = pkm_list[idx];
+            outgoing(
+              msg_list[i],
+              this_pkm.id + ": " + this_pkm.name + " (" + this_attk.typ + ")"
+            );
+          }
+        }
+      }
+    }
+  }
+
+  save_settings();
+  setTimeout(get_msg, 100);
+}
+get_msg();
