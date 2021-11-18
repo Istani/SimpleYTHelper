@@ -13,10 +13,16 @@ const cheerio = require("cheerio");
 const cheerioTableparser = require("cheerio-tableparser");
 const striptags = require("striptags");
 
+const Messages = require("./models/chat_message.js");
+const Rooms = require("./models/chat_room.js");
+const Server = require("./models/chat_server.js");
+const Chat_User = require("./models/chat_user.js");
+const Outgoing_Message = require("./models/outgoing_messages.js");
+
 const url = "https://www.bisafans.de/pokedex/listen/numerisch.php";
 
 var pkm_list = [];
-const gen = "8";
+const gen = "4";
 
 // ------------------------------ Settings
 var settings = {};
@@ -214,18 +220,23 @@ async function get_msg() {
     // ToDo: Get SYTH-User out of DB
     var syth_user = 4;
     var temp_content = msg_list[i].content.split(" ");
-    //console.log(temp_content);
+    console.log(temp_content);
     if (temp_content[0].startsWith("!pkmn")) {
-      var attr = temp_content.split(" ");
+      var attr = temp_content;
       var idx = -1;
-      if (typeof attr[0] != "undefined") {
+      console.log(attr);
+      if (typeof attr[1] != "undefined") {
         idx = pkm_list.findIndex(
-          element => element.id == attr[0] && element.name.startsWith(attr[0])
+          element => element.id == attr[1] || element.name.startsWith(attr[1])
         );
-        if (typeof attr[1] != "undefined") {
+        if (typeof attr[2] != "undefined") {
+          if (typeof pkm_list[idx] == "undefined") {
+            continue;
+          }
           var attk_idx = pkm_list[idx].attacks.findIndex(
-            element => element.level * 1 > attr[1] * 1
+            element => element.level * 1 > attr[2] * 1
           );
+          if (attak_idx == -1) continue;
           var this_attk = pkm_list[idx].attacks[attk_idx];
           outgoing(
             msg_list[i],
@@ -240,12 +251,12 @@ async function get_msg() {
           );
         } else {
           if (idx == -1) {
-            outgoing(msg_list[i], attr[0] + " nicht gefunden!");
+            outgoing(msg_list[i], attr[1] + " nicht gefunden!");
           } else {
             var this_pkm = pkm_list[idx];
             outgoing(
               msg_list[i],
-              this_pkm.id + ": " + this_pkm.name + " (" + this_attk.typ + ")"
+              this_pkm.id + ": " + this_pkm.name + " (" + this_pkm.type + ")"
             );
           }
         }
