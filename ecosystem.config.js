@@ -145,6 +145,13 @@ module.exports = {
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       error_file: "logs/SYTH-YT-API.err",
       out_file: "logs/SYTH-YT-API.log"
+    },
+    {
+      name: "SYTH-Pokemon",
+      script: "./pkmn/app.js",
+      log_date_format: "YYYY-MM-DD HH:mm:ss Z",
+      error_file: "logs/SYTH-Pokemon.err",
+      out_file: "logs/SYTH-Pokemon.log"
     }
   ]
 };

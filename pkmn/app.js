@@ -18,14 +18,48 @@ const url = "https://www.bisafans.de/pokedex/listen/numerisch.php";
 var pkm_list = [];
 const gen = "8";
 
+// ------------------------------ Settings 
+var settings = {};
+function load_settings() {
+  try {
+    settings = require("./tmp/settings.json");
+    //settings.last_time = new Date(settings.last_time);
+  } catch (error) {
+    console.error("Settings", "Couldn't load!");
+    settings = {};
+    settings.last_time = new Date();
+    settings.last_time.setDate(settings.last_time.getDate() - 7);
+    save_settings();
+  }
+}
+function save_settings() {
+  var data = JSON.stringify(settings, null, 2);
+  fs.writeFileSync("./tmp/settings.json", data);
+  load_settings();
+}
+load_settings();
+
+function load_pkmn_list() {
+  try {
+    pkm_list = require("./tmp/pkmn_liste.json");
+  } catch (error) {
+
+  }
+}
+function save_okmn_list() {
+  var data = JSON.stringify(pkm_list);
+  fs.writeFileSync("./tmp/pkmn_liste.json", data);
+  load_pkmn_list();
+}
+load_pkmn_list();
+
+// ------------------------------ Function 
 function replace_all(text) {
   text = replaceType(text);
   text = replaceType(text);
   text = striptags(text);
   text = text.replace("&nbsp;", "");
   text = text.trim();
-
-  //text=text[0].toUpperCase() + text.slice(1);
   return text;
 }
 function replaceType(text) {
@@ -36,6 +70,8 @@ function replaceType(text) {
   }
   return new_text;
 }
+
+// ------------------------------ Main 
 async function main() {
   await requestp({ url: url }, async function(error, response, body) {
     fs.writeFileSync("./tmp/pokemon_liste.html", body);
@@ -58,24 +94,27 @@ async function main() {
     //return;
     for (var i = 1; i < dump.length; i++) {
       var pkm = { id: dump[i][0], name: dump[i][1], type: dump[i][2] };
-      pkm_list.push(pkm);
+
+      var idx = pkm_list.findIndex(element => element.id == pkm.id);
+      if (idx<0) {
+        pkm_list.push(pkm);
+      }
+
       await getPkm_Details(pkm.id);
-
       console.log("Scan: " + pkm.name);
-
       var idx = pkm_list.findIndex(element => element.id == pkm.id);
       if (typeof pkm_list[idx].attacks == "undefined") {
         pkm_list.splice(idx, 1);
       }
     }
 
-    var data = JSON.stringify(pkm_list);
-    fs.writeFileSync("./tmp/pkmn_liste.json", data);
+    save_okmn_list();
     fs.unlinkSync("./tmp/pokemon_liste.html");
     console.log("---Done---");
   });
 }
 async function getPkm_Details(pkm_no) {
+  var idx = pkm_list.findIndex(element => element.id == pkm_no);
   await requestp(
     { url: "https://www.bisafans.de/pokedex/" + pkm_no + ".php" },
     async function(error, response, body) {
@@ -122,15 +161,24 @@ async function getPkm_Details(pkm_no) {
               straerke: dump[i][4],
               genauigkeit: dump[i][5]
             };
-            attacks.push(this_atk);
+            if (typeof pkm_list[idx].attacks!="undefined") {
+              var attk_idx = pkm_list[idx].attacks.findIndex(element => (element.level == this_atk.level) && (element.name==this_atk.name));
+              if (attk_idx>=0) {
+                attacks[attk_idx]=this_atk;
+              } else {
+                attacks.push(this_atk);  
+              }
+            } else {
+              attacks.push(this_atk);
+            }
           }
-          var idx = pkm_list.findIndex(element => element.id == pkm_no);
           pkm_list[idx].attacks = attacks;
           fs.unlinkSync("./tmp/pokemon_" + pkm_no + "_moves.html");
         });
       }
 
-      // ToDo: Get Evolve and Type?
+      // ToDo: Get Evolve and Gen-Type?
+      //process.exit(0);
 
       fs.unlinkSync("./tmp/pokemon_" + pkm_no + ".html");
     }
@@ -138,3 +186,17 @@ async function getPkm_Details(pkm_no) {
 }
 
 main();
+
+
+// ------------------------------ Syth 
+
+async function outgoing(msg_data, content) {
+  var tmp_chat = {};
+  tmp_chat.service = msg_data.service;
+  tmp_chat.server = msg_data.server;
+  tmp_chat.room = msg_data.room;
+  tmp_chat.content = content;
+  console.log(msg_data.server + ": " + content);
+  await Outgoing_Message.query().insert(tmp_chat);
+  await sleep(1000);
+}
