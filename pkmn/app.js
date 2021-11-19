@@ -236,7 +236,7 @@ async function get_msg() {
           var attk_idx = pkm_list[idx].attacks.findIndex(
             element => element.level * 1 > attr[2] * 1
           );
-          if (attak_idx == -1) continue;
+          if (attk_idx == -1) continue;
           var this_attk = pkm_list[idx].attacks[attk_idx];
           outgoing(
             msg_list[i],
