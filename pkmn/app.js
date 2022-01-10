@@ -22,7 +22,7 @@ const Outgoing_Message = require("./models/outgoing_messages.js");
 const url = "https://www.bisafans.de/pokedex/listen/numerisch.php";
 
 var pkm_list = [];
-const gen = "4";
+const gen = "8";
 
 // ------------------------------ Settings
 var settings = {};
