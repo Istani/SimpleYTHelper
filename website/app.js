@@ -327,9 +327,18 @@ app.get("/HUD/:channel/:category", async function(req, res, next) {
   } else {
     // Service HUD
     try {
-      var data = await User_Channel.query()
-        .where("channel_id", param_channel)
-        .eager(param_category);
+      if (param_category == "member") {
+        var data = await User_Channel.query()
+          .where("channel_id", param_channel)
+          .eager("VIPs");
+        data[0]["member"] = data[0]["VIPs"];
+        delete data[0]["VIPs"];
+        //console.log(data);
+      } else {
+        var data = await User_Channel.query()
+          .where("channel_id", param_channel)
+          .eager(param_category);
+      }
     } catch (e) {
       console.error(e);
       var data = [];

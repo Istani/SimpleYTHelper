@@ -1,0 +1,69 @@
+<style>
+  .animatedText {
+    animation: FadeAndScale 7.1s ease-in;
+  }
+  .animatedSubGoal {
+    animation: FadeAndScale 14.1s ease-in;
+  }
+  .animatedText, .animatedSubGoal {
+    transform-origin: center bottom;
+    padding: 10px;
+    margin: 30px;
+    border-color: var(--color_2);
+    border-width: 1px;
+    border-style: solid;
+    background-color: var(--color_1);
+  }
+
+  @keyframes FadeAndScale {
+    0% {
+      opacity: 0;
+      transform: scale3d(0.5, 0.5, 1);
+    }
+
+    20% {
+      opacity: 1;
+      transform: scale3d(1.5, 1.5, 1);
+    }
+
+    80% {
+      opacity: 1;
+      transform: scale3d(1.5, 1.5, 1);
+    }
+
+    90% {
+      opacity: 0;
+      transform: scale3d(0.5, 0.5, 1);
+    }
+
+    100% {
+      opacity: 0;
+      transform: scale3d(0.5, 0.5, 1);
+    }
+  }
+</style>
+<center>
+  <div id="show_subs"></div>
+</center>
+
+<script type="text/javascript">
+var data = [
+  {{#each data.data}}
+    { name: "{{name}}", time: {{current}} },
+  {{/each}}
+  ];
+
+  
+  function animateSubs() {
+    var current_sub = 0;
+    var div = document.getElementById("show_subs");
+    var text="";
+    text = "<marquee>";
+    while (current_sub < data.length) {
+      text = text + "<span class='username'>" + data[current_sub].name + "</span> <span class='special'>" + data[current_sub].time + "</span> Monate <span class='trenn'> | </span>";
+      current_sub++;
+    }
+    div.innerHTML = text + "</marquee>";
+  }
+  animateSubs();
+</script>

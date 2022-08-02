@@ -29,7 +29,7 @@ var settings = {};
 function load_settings() {
   try {
     settings = require("./tmp/settings.json");
-    //settings.last_time = new Date(settings.last_time);
+    settings.last_time = new Date(settings.last_time);
   } catch (error) {
     console.error("Settings", "Couldn't load!");
     settings = {};

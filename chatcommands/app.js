@@ -291,6 +291,13 @@ commands[22] = {
   function: firma,
   visible: true
 };
+commands[23] = {
+  name: "eldenring",
+  params: "",
+  description: "Defender Eldenring",
+  function: eldenring,
+  visible: true
+};
 
 async function get_msg() {
   //return;
@@ -665,6 +672,13 @@ async function rng_vip(msg_data) {
 
 async function firma(msg_data) {
   var output_string = "Schaust du hier: http://kw.media/";
+  await outgoing(msg_data, output_string);
+  output_string = "";
+}
+
+async function eldenring(msg_data) {
+  var output_string =
+    "Elden Ring bei Humble Bundle: https://games-on-sale.de/s/defenderring #werbung";
   await outgoing(msg_data, output_string);
   output_string = "";
 }
