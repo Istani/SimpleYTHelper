@@ -7,7 +7,7 @@ console.log();
 const config = require("dotenv").config({ path: "../.env" });
 
 const Discord = require("discord.js");
-const client = new Discord.Client();
+const client = new Discord.Client({ intents: 0xffff, partials: ["CHANNEL"] });
 const emoji = require("node-emoji");
 const request = require("request");
 const Queue = require("better-queue");
@@ -24,21 +24,17 @@ const ow_channel = require("./models/channel.js");
 
 //console.log(process.env.DISCORD_TOKEN);
 var q = new Queue(function(type, input, cb) {
+  return;
   console.log("Start Import: " + type);
   input();
   cb(null, result);
 });
 
-client.login(process.env.DISCORD_TOKEN).catch(function(error) {
-  if (error) {
-    console.log("Client Login", error);
-    process.exit(1);
-  }
-});
+client.login(process.env.DISCORD_TOKEN);
 
 client.on("ready", () => {
   console.log(`Logged in as <${client.user.tag}>!`);
-  client.user
+  /*client.user
     .setActivity("SYTH")
     .then(presence => {
       console.log(
@@ -46,6 +42,7 @@ client.on("ready", () => {
       );
     })
     .catch(console.error);
+  */
   //SendMessage("225371711619465216", "test");
   //PruneAll();
 });
@@ -80,7 +77,8 @@ client.on("disconnect", event => {
 });
 
 /* Custom Stuff */
-client.on("message", msg => {
+client.on("messageCreate", msg => {
+  //console.log("MSG: ",msg);
   var guild = msg.guild;
   if (guild == null) {
     guild = {};
@@ -114,7 +112,7 @@ async function CheckForMessages() {
 setTimeout(CheckForMessages, 5000);
 async function SendMessage(channelID, msg) {
   console.log("Try to Send Message");
-  client.channels.get(channelID).send(msg);
+  client.channels.cache.get(channelID).send(msg);
 }
 
 async function AddMessage(msg, guild, channel, user) {
