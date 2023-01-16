@@ -14,6 +14,21 @@ class Chat_Message extends Model {
     return "service, server, room, id";
   }
 
+  static get relationMappings() {
+    const Users = require("./chat_user.js");
+
+    return {
+      User: {
+        relation: Model.HasManyRelation,
+        modelClass: Users,
+        join: {
+          from: ["chat_message.server", "chat_message.user"],
+          to: ["chat_user.server", "chat_user.user"]
+        }
+      }
+    };
+  }
+
   $beforeInsert() {
     this.$beforeUpdate();
   }

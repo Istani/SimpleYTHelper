@@ -1,0 +1,51 @@
+<style type="text/css">
+  .border_box {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+  }
+
+  #log {
+    position: absolute;
+    bottom: 0;
+  }
+  
+  td {
+    vertical-align: top;
+  }
+  tr>td {
+    padding-bottom: 8px;
+  }
+</style>
+
+<div class="border_box log_box" style="">
+  <div id="comming_soon">
+    Loading...
+  </div>
+  <table id="log"></table>
+</div>
+
+<script type="text/javascript">
+  $ = jQuery;
+
+  $(document).ready(function () {
+    console.log(location.origin.replace(':3000', '') + ":3005");
+    var socket_rpg = io(location.origin.replace(':3000', '') + ":3005");
+    socket_rpg.on('connect', function () {
+      $('#comming_soon').css({display: 'none'});
+      socket_rpg.send("join", "{{param.channel}}");
+
+      socket_rpg.on('log', function (data) {
+        console.log(data);
+        //$('#log').append("<span class='special'>" + data.created_at + ":</span>&nbsp;<span class='username'>"+data.user_name+":</span>&nbsp;" + data.content + "</span><br>");
+        $('#log').append("<tr><td><span class='special'>" + data.created_at + "</span></td><td><span class='username'>"+data.user_name+"</span></td><td><span class='msg'>" + data.content + "</span></td></tr>");
+      });
+
+      socket_rpg.on('disconnect', function () {
+        setTimeout(() => {
+          location.reload();
+        }, 100);
+      });
+    });
+  });
+</script>

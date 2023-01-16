@@ -100,7 +100,7 @@
     var socket_rpg = io(location.origin.replace(':3000', '') + ":3005");
 
     socket_rpg.on('connect', function () {
-      socket_rpg.send("join", "{{data.user}}");
+      socket_rpg.send("join", "{{param.channel}}");
 
       socket_rpg.on('command', function (data) {
         console.log(data);

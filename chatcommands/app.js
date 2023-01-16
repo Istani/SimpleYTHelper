@@ -9,6 +9,7 @@ const fs = require("fs");
 const sleep = require("await-sleep");
 const cron = require("node-cron");
 const moment = require("moment");
+const emoji = require("node-emoji");
 
 const io = require("socket.io")(3005, {
   cors: {
@@ -37,6 +38,7 @@ const Games = require("./models/game.js");
 const Links = require("./models/game_link.js");
 const Videos = require("./models/videos.js");
 const Member = require("./models/member.js");
+const Chat_Message = require("./models/chat_message.js");
 
 var settings = {};
 function load_settings() {
@@ -62,6 +64,9 @@ io.on("connection", function(socket) {
   socket.on("message", function(func, data) {
     if (func == "join") {
       socket.join(data);
+      setTimeout(() => {
+        send_old_chat(data, socket);
+      }, 1000);
     }
   });
   socket.on("disconnect", function() {});
@@ -304,7 +309,9 @@ async function get_msg() {
   //console.log(prefix, settings.last_time);
   var msg_list = await Messages.query()
     .where("content", "like", settings.prefix + "%")
-    .where("created_at", ">", settings.last_time);
+    .where("created_at", ">", settings.last_time)
+    .orderBy("created_at", "ASC")
+    .eager("User");
   //console.log(msg_list);
   //console.log(commands);
 
@@ -328,15 +335,41 @@ async function get_msg() {
     }
     if (typeof commands[found_index].function == "function") {
       await commands[found_index].function(msg_list[i]);
-      io.to(syth_user).emit("command", commands[found_index].name);
+      io.to(msg_list[i].server).emit("command", commands[found_index].name);
     }
     //await sleep(1000);
+    const element = msg_list[i];
+    element.created_at = moment(element.created_at).format("HH:mm");
+    element.user_name = element.User[0].name;
+    element.content = emoji.emojify(element.content);
+    delete element.User;
+    io.to(msg_list[i].server).emit("log", element);
   }
 
   save_settings();
   setTimeout(get_msg, 100);
 }
 get_msg();
+
+async function send_old_chat(user, socket) {
+  console.log(user);
+  var logs = await Messages.query()
+    .where("service", "youtube")
+    .where("server", user)
+    .orderBy("created_at", "DESC")
+    .orderBy("id", "DESC")
+    .limit(15)
+    .eager("User");
+  var reverse_logs = logs.reverse();
+  for (let l_index = 0; l_index < reverse_logs.length; l_index++) {
+    const element = reverse_logs[l_index];
+    element.created_at = moment(element.created_at).format("HH:mm");
+    element.user_name = element.User[0].name;
+    element.content = emoji.emojify(element.content);
+    delete element.User;
+    socket.emit("log", element);
+  }
+}
 
 async function outgoing(msg_data, content) {
   var tmp_chat = {};

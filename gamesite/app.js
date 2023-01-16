@@ -9,6 +9,7 @@ console.log();
 var fs = require("fs");
 var express = require("express");
 var exphbs = require("express-handlebars");
+const bodyParser = require("body-parser");
 const http = require("http");
 const https = require("https");
 
@@ -169,6 +170,11 @@ var hbs = exphbs.create({
 });
 
 var app = express();
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(bodyParser.raw());
+
 app.engine(".hbs", hbs.engine);
 app.set("view engine", ".hbs");
 
@@ -259,6 +265,28 @@ app.get("/games", function(req, res) {
 
 app.get("/", function(req, res) {
   res.redirect("/news");
+});
+
+/*
+app.get("/notify", function (req, res) {
+  console.log(req);
+  res.setHeader("Content-Type", "application/json");
+  res.writeHead(200);
+  res.end(`{"message": "This is a JSON response"}`);
+});
+app.put("/notify", function (req, res) {
+  console.log(req);
+  res.setHeader("Content-Type", "application/json");
+  res.writeHead(200);
+  res.end(`{"message": "This is a JSON response"}`);
+});
+*/
+app.post("/notify", function(req, res) {
+  //console.log(req);
+  res.setHeader("Content-Type", "application/json");
+  res.writeHead(200);
+  res.end(`{"message": "This is a JSON response"}`);
+  console.log("Got body:", JSON.stringify(req.body));
 });
 
 //app.listen(3001, () => console.log("Interface on 3001!"));

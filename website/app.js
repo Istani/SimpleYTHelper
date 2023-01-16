@@ -13,6 +13,7 @@ const async = require("async");
 const Login = require("./models/syth_login.js");
 const Token = require("./models/syth_token.js");
 const User_Channel = require("./models/channel.js");
+const Chat = require("./models/chat_message.js");
 const session_secret = new Buffer(package_info.name).toString("base64");
 
 /* Webserver */
@@ -327,28 +328,30 @@ app.get("/HUD/:channel/:category", async function(req, res, next) {
   } else {
     // Service HUD
     try {
-      if (param_category == "member") {
-        var data = await User_Channel.query()
-          .where("channel_id", param_channel)
-          .eager("VIPs");
-        data[0]["member"] = data[0]["VIPs"];
-        delete data[0]["VIPs"];
-        //console.log(data);
-      } else {
-        var data = await User_Channel.query()
-          .where("channel_id", param_channel)
-          .eager(param_category);
+      switch (param_category) {
+        case "member":
+          var data = await User_Channel.query()
+            .where("channel_id", param_channel)
+            .eager("VIPs");
+          data[0]["member"] = data[0]["VIPs"];
+          delete data[0]["VIPs"];
+          break;
+        case "user":
+          var data = await User_Channel.query()
+            .where("channel_id", param_channel)
+            .eager(param_category);
+          break;
+        default:
+          var data = [];
+          data[0] = [];
+          data[0][param_category] = [];
+          data[0][param_category][0] = "";
       }
     } catch (e) {
       console.error(e);
       var data = [];
     }
-    if (param_category == "SpecialEffects") {
-      data = [];
-      data[0] = [];
-      data[0]["SpecialEffects"] = [];
-      data[0]["SpecialEffects"][0] = "";
-    }
+
     if (data.length > 0) {
       var temp_data = {};
       temp_data.data = [];
@@ -382,7 +385,10 @@ app.get("/HUD/:channel/:category", async function(req, res, next) {
         });
       }
       console.log(temp_data);
-      res.render("hub_" + param_category, { data: temp_data });
+      res.render("hub_" + param_category, {
+        data: temp_data,
+        param: req.params
+      });
       return;
     }
   }
