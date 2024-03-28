@@ -1,5 +1,3 @@
-const config = require("dotenv").config({ path: "../.env" });
-
 var fs = require("fs");
 var readline = require("readline");
 var { google } = require("googleapis");
@@ -15,7 +13,14 @@ var TOKEN_DIR = "./";
 var TOKEN_PATH = TOKEN_DIR + "youtube-nodejs-quickstart.json";
 
 // Load client secrets from a local file.
-authorize(getChannel);
+fs.readFile("client_secret.json", function processClientSecrets(err, content) {
+  if (err) {
+    console.log("Error loading client secret file: " + err);
+    return;
+  }
+  // Authorize a client with the loaded credentials, then call the YouTube API.
+  authorize(JSON.parse(content), getChannel);
+});
 
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
@@ -24,13 +29,22 @@ authorize(getChannel);
  * @param {Object} credentials The authorization client credentials.
  * @param {function} callback The callback to call with the authorized client.
  */
-function authorize(callback) {
-  var clientSecret = process.env.YOUTUBE_CLIENT_SECRET;
-  var clientId = process.env.YOUTUBE_CLIENT_ID;
-  var redirectUrl = process.env.YOUTUBE_CLINET_URI;
+function authorize(credentials, callback) {
+  var clientSecret = credentials.installed.client_secret;
+  var clientId = credentials.installed.client_id;
+  var redirectUrl = credentials.installed.redirect_uris[0];
   var oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl);
 
-  getNewToken(oauth2Client, callback);
+  // Check if we have previously stored a token.
+  fs.readFile(TOKEN_PATH, function(err, token) {
+    if (err) {
+      getNewToken(oauth2Client, callback);
+    } else {
+      oauth2Client.credentials = JSON.parse(token);
+      save_token(JSON.parse(token));
+      callback(oauth2Client);
+    }
+  });
 }
 
 /**
@@ -70,7 +84,7 @@ function getNewToken(oauth2Client, callback) {
  *
  * @param {Object} token The token to store to disk.
  */
-function storeToken(token) {
+async function storeToken(token) {
   try {
     fs.mkdirSync(TOKEN_DIR);
   } catch (err) {
@@ -84,60 +98,49 @@ function storeToken(token) {
   });
 }
 
+async function save_token(token) {
+  const Token = require("./models/syth_token.js");
+  var new_obj = {
+    user_id: 1,
+    service: "youtube",
+    access_token: token.access_token,
+    refresh_token: token.refresh_token,
+    scope: token.scope,
+    token_type: token.token_type,
+    expiry_date: token.expiry_date
+  };
+  await Token.query().insert(new_obj);
+}
+
 /**
  * Lists the names and IDs of up to 10 files.
  *
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
-
-var LiveVideoID = undefined;
 function getChannel(auth) {
   var service = google.youtube("v3");
-  /*service.channels.list({
-    auth: auth,
-    part: 'snippet,contentDetails,statistics',
-    forUsername: 'Defender833gaming'
-  }, function (err, response) {
-    if (err) {
-      console.log('The API returned an error: ' + err);
-      return;
-    }
-    var channels = response.data.items;
-    if (channels.length == 0) {
-      console.log('No channel found.');
-    } else {
-      console.log('This channel\'s ID is %s. Its title is \'%s\', and ' +
-        'it has %s views.',
-        channels[0].id,
-        channels[0].snippet.title,
-        channels[0].statistics.viewCount);
-    }
-  });*/
-  service.search.list(
+  service.channels.list(
     {
       auth: auth,
-      part: "id",
-      channelId: "UC5DOhI70dI3PnLPMkUsosgw",
-      eventType: "live",
-      type: "video"
+      part: "snippet,contentDetails,statistics",
+      mine: true
     },
     function(err, response) {
-      try {
-        LiveVideoID = response.data.items[0].id.videoId;
-
-        service.liveBroadcasts.list(
-          {
-            auth: auth,
-            part: "snippet",
-            id: LiveVideoID
-          },
-          function(err, response) {
-            console.log(response.data.items[0]);
-            console.log(LiveVideoID);
-          }
+      if (err) {
+        console.log("The API returned an error: " + err);
+        return;
+      }
+      var channels = response.data.items;
+      if (channels.length == 0) {
+        console.log("No channel found.");
+      } else {
+        console.log(
+          "This channel's ID is %s. Its title is '%s', and " +
+            "it has %s views.",
+          channels[0].id,
+          channels[0].snippet.title,
+          channels[0].statistics.viewCount
         );
-      } catch (e) {
-        LiveVideoID = undefined;
       }
     }
   );

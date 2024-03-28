@@ -465,6 +465,7 @@ function ListPlaylistItems(auth, playlist, pageToken = "", loadAll = true) {
 function SearchBroadcasts(auth, pageToken = "") {
   var sic = auth.credentials;
   service.liveBroadcasts.list(
+    //service.liveStreams.list(
     {
       auth: auth,
       part: "id, snippet",
@@ -529,20 +530,27 @@ function SearchBroadcasts(auth, pageToken = "") {
             if (obj.b_title.toLowerCase().includes("sponsored")) {
               tmp_room.is_rpg = false;
             }
+            if (tmp_room.server != "UC5DOhI70dI3PnLPMkUsosgw") {
+              // ToDo: Born Things
+              tmp_room.is_rpg = false;
+            }
 
             if (c.length == 0) {
               console.log("Room: ", JSON.stringify(tmp_room));
               await Chat_Room.query().insert(tmp_room);
 
               // Add Spawn?
-              await FakeMsg(tmp_room.server, tmp_room.room, "?spawn");
-              await FakeMsg(
-                tmp_room.server,
-                tmp_room.room,
-                "!announcement Livestream: https://www.youtube.com/watch?v=" +
-                  obj.b_id +
-                  ""
-              );
+              if (tmp_room.server == "UC5DOhI70dI3PnLPMkUsosgw") {
+                // ToDo: Born Things
+                await FakeMsg(tmp_room.server, tmp_room.room, "?spawn");
+                await FakeMsg(
+                  tmp_room.server,
+                  tmp_room.room,
+                  "!announcement Livestream: https://www.youtube.com/watch?v=" +
+                    obj.b_id +
+                    ""
+                );
+              }
             } else {
               if (obj.actualEndTime != null) {
                 tmp_room.is_rpg = false;
@@ -803,10 +811,13 @@ function ListMembers(auth, pageToken = "") {
             tmp_message.member_id = element.creatorChannelId;
             tmp_message.member_name = "SYTH: Error Account Data API";
             tmp_message.picture = "";
+            tmp_message.level = "";
           } else {
             tmp_message.member_id = element.memberDetails.channelId;
             tmp_message.member_name = element.memberDetails.displayName;
             tmp_message.picture = element.memberDetails.profileImageUrl;
+            tmp_message.level =
+              element.membershipsDetails.highestAccessibleLevelDisplayName;
           }
 
           var m = await sponsors

@@ -333,8 +333,58 @@ app.get("/HUD/:channel/:category", async function(req, res, next) {
           var data = await User_Channel.query()
             .where("channel_id", param_channel)
             .eager("VIPs");
-          data[0]["member"] = data[0]["VIPs"];
+          data[0][param_category] = data[0]["VIPs"];
           delete data[0]["VIPs"];
+          break;
+        case "member2":
+          var data = await User_Channel.query()
+            .where("channel_id", param_channel)
+            .eager("VIPs");
+
+          for (let i = 0; i < data[0]["VIPs"].length; i++) {
+            const element = data[0]["VIPs"][i];
+            if (typeof data[0]["Export"] == "undefined") {
+              data[0]["Export"] = [];
+            }
+            element.level = element.level.replace("~833~ Crew -", "").trim();
+
+            if (typeof data[0]["Export"][element.level] == "undefined") {
+              data[0]["Export"][element.level] = [];
+            }
+            data[0]["Export"][element.level].push(element.member_name);
+          }
+
+          data[0][param_category] = data[0]["Export"];
+          var tab = [];
+          tab[0] = [];
+          tab[1] = [];
+
+          var keys = Object.keys(data[0]["Export"]);
+
+          var max_size = 0;
+          for (let i = 0; i < keys.length; i++) {
+            tab[0].push(keys[i]);
+            tab[1].push(keys[i] + ":");
+            if (data[0]["Export"][keys[i]].length > max_size) {
+              max_size = data[0]["Export"][keys[i]].length;
+            }
+          }
+          for (let i = 0; i < max_size; i++) {
+            for (let j = 0; j < keys.length; j++) {
+              if (typeof tab[i + 2] == "undefined") {
+                tab[i + 2] = [];
+              }
+              if (typeof data[0]["Export"][keys[j]][i] == "undefined") {
+                tab[i + 2].push("");
+              } else {
+                tab[i + 2].push(data[0]["Export"][keys[j]][i]);
+              }
+            }
+          }
+          data[0][param_category] = tab;
+
+          delete data[0]["VIPs"];
+          delete data[0]["Export"];
           break;
         case "user":
           var data = await User_Channel.query()
@@ -357,38 +407,53 @@ app.get("/HUD/:channel/:category", async function(req, res, next) {
       temp_data.data = [];
 
       var udata = await User_Channel.query().where("channel_id", param_channel);
-      temp_data.user = udata[0].user_id;
+      temp_data.user = param_channel; //udata[0].user_id;
 
-      for (let index = 0; index < data.length; index++) {
-        const element = data[index];
-        for (let index = 0; index < element[param_category].length; index++) {
-          const element2 = element[param_category][index];
-          var tmp_data = {
-            name: element2.member_name,
-            since: element2.since,
-            current: element2.current,
-            length_month:
-              parseInt(
-                (new Date() - element2.since) / 1000 / 60 / 60 / 24 / 30
-              ) + 1
-          };
-          temp_data.data.push(tmp_data);
+      if (param_category == "member2") {
+        temp_data.data = data[0][param_category];
+      } else {
+        for (let index = 0; index < data.length; index++) {
+          const element = data[index];
+          for (let index = 0; index < element[param_category].length; index++) {
+            const element2 = element[param_category][index];
+            var tmp_data = {
+              name: element2.member_name,
+              level: element2.level,
+              since: element2.since,
+              current: element2.current,
+              length_month:
+                parseInt(
+                  (new Date() - element2.since) / 1000 / 60 / 60 / 24 / 30
+                ) + 1
+            };
+            temp_data.data.push(tmp_data);
+          }
+          temp_data.data.sort((a, b) => {
+            if (a.since < b.since) {
+              return -1;
+            }
+            if (a.since > b.since) {
+              return 1;
+            }
+            return 0;
+          });
         }
-        temp_data.data.sort((a, b) => {
-          if (a.since < b.since) {
-            return -1;
-          }
-          if (a.since > b.since) {
-            return 1;
-          }
-          return 0;
-        });
       }
       console.log(temp_data);
-      res.render("hub_" + param_category, {
-        data: temp_data,
-        param: req.params
-      });
+      if (param_category == "member2") {
+        res.set("Content-Type", "text/plain");
+        res.render("hub_" + param_category, {
+          data: temp_data,
+          param: req.params,
+          layout: false
+        });
+      } else {
+        res.render("hub_" + param_category, {
+          data: temp_data,
+          param: req.params
+        });
+      }
+
       return;
     }
   }

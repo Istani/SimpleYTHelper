@@ -64,6 +64,7 @@ io.on("connection", function(socket) {
   socket.on("message", function(func, data) {
     if (func == "join") {
       socket.join(data);
+      console.log("Join: ", data);
       setTimeout(() => {
         send_old_chat(data, socket);
       }, 1000);
@@ -303,6 +304,20 @@ commands[23] = {
   function: eldenring,
   visible: true
 };
+commands[23] = {
+  name: "palim",
+  params: "",
+  description: "Bron Palim",
+  function: palim,
+  visible: true
+};
+commands[24] = {
+  name: "payday",
+  params: "",
+  description: "Zahltag!",
+  function: payday_command,
+  visible: true
+};
 
 async function get_msg() {
   //return;
@@ -334,13 +349,25 @@ async function get_msg() {
       continue;
     }
     if (typeof commands[found_index].function == "function") {
+      // ToDo: Born nur Born Befehl!
+      if (msg_list[i].server == "UCZBtx6qc38MULL8YlXe3iTA") {
+        if (commands[found_index].name == "palim") {
+          await commands[found_index].function(msg_list[i]);
+          io.to(msg_list[i].server).emit("command", commands[found_index].name);
+        }
+        continue;
+      }
+
       await commands[found_index].function(msg_list[i]);
       io.to(msg_list[i].server).emit("command", commands[found_index].name);
     }
     //await sleep(1000);
     const element = msg_list[i];
     element.created_at = moment(element.created_at).format("HH:mm");
-    element.user_name = element.User[0].name;
+    try {
+      element.user_name = element.User[0].name;
+    } catch (e) {}
+
     element.content = emoji.emojify(element.content);
     delete element.User;
     io.to(msg_list[i].server).emit("log", element);
@@ -591,6 +618,14 @@ async function monster_command(msg_data) {
   await outgoing(msg_data, output_string);
   output_string = "";
 }
+async function payday_command(msg_data) {
+  var output_string = "";
+  output_string +=
+    "Um die Wartezeit auf den Zahltag zu verkürzen: https://games-on-sale.de/s/payday #werbung";
+  await outgoing(msg_data, output_string);
+  output_string = "";
+}
+
 async function knom_command(msg_data) {
   var output_string = "";
   output_string += "mimimi";
@@ -714,4 +749,26 @@ async function eldenring(msg_data) {
     "Elden Ring bei Humble Bundle: https://games-on-sale.de/s/defenderring #werbung";
   await outgoing(msg_data, output_string);
   output_string = "";
+}
+
+var palim_isTimeout = false;
+var palim_Timeout = null;
+
+async function palim(msg_data) {
+  if (palim_isTimeout == true) {
+    var output_string =
+      "Ich bin gleich für Sie da, ich kümmere mich noch eben um den Kunden vor Ihnen!";
+    await outgoing(msg_data, output_string);
+    output_string = "";
+  } else {
+    palim_isTimeout = true;
+    palim_Timeout = setTimeout(() => {
+      palim_isTimeout = false;
+    }, 1000 * 60 * 5);
+    var output_string = "Palim, Palim!";
+    await outgoing(msg_data, output_string);
+    output_string = "";
+    io.to(msg_data.server).emit("sound", "palim");
+    console.log("Sound to: " + msg_data.server);
+  }
 }

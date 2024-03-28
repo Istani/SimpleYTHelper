@@ -15,7 +15,8 @@ module.exports = passport => {
       {
         clientID: process.env.YOUTUBE_CLIENT_ID,
         clientSecret: process.env.YOUTUBE_CLIENT_SECRET,
-        callbackURL: "http://syth.games-on-sale.de/auth/youtube/callback"
+        callbackURL: "http://syth.games-on-sale.de/auth/youtube/callback" //,
+        //scope: ['https://www.googleapis.com/auth/youtube.readonly']
       },
       function(accessToken, refreshToken, profile, done) {
         var user = {
