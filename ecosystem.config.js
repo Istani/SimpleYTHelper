@@ -1,6 +1,14 @@
 module.exports = {
   apps: [
     {
+      name: "SYTH-Core",
+      script: "./app.js",
+      log_date_format: "YYYY-MM-DD HH:mm:ss Z",
+      error_file: "logs/SYTH-Core.err",
+      out_file: "logs/SYTH-Core.log",
+      autorestart: false
+    },
+    {
       name: "SYTH-Backup",
       script: "./cronjob/app.js",
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",

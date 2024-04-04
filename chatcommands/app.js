@@ -447,7 +447,7 @@ async function party_command(msg_data) {
   if (msg_data.service.toLowerCase() == "discord") {
     output_string += " <a:party_parrot:750306235118649374>";
   }
-  await outgoing(msg_data, output_string);
+  //  await outgoing(msg_data, output_string);
   output_string = "";
 }
 async function peel_command(msg_data) {
