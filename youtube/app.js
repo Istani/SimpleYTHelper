@@ -58,16 +58,17 @@ async function authorize(callback) {
   var user_token = await Token.query()
     .where("service", "youtube")
     .where("is_importing", false);
-  for (let index = 0; index < user_token.length; index++) {
-    const element = user_token[index];
-    await Token.query()
-      .where(element)
-      .patch({ is_importing: true });
-    oauth2Client.credentials = element;
-    callback(oauth2Client);
-  }
+  let index = 0;
+  //for (let index = 0; index < user_token.length; index++) {
+  const element = user_token[index];
+  await Token.query()
+    .where(element)
+    .patch({ is_importing: true });
+  oauth2Client.credentials = element;
+  callback(oauth2Client);
+  //}
   setTimeout(() => {
-    authorize(callback);
+    authorize(StartImport);
   }, 1000);
 }
 startTokens();
@@ -79,6 +80,11 @@ function StartImport(auth) {
   q.push("Channels", () => {
     auth.credentials = sic;
     ListChannels(auth);
+  });
+
+  q.push("Sponsors", () => {
+    auth.credentials = sic;
+    ListMembers(auth);
   });
 
   cron.schedule("0 * * * *", () => {
@@ -94,9 +100,6 @@ function StartImport(auth) {
       SearchBroadcasts(auth);
     });
   });
-
-  //auth.credentials = sic;
-  //ListMembers(auth);
 
   cron.schedule("50 21 * * *", () => {
     q.push("Channels", () => {
@@ -129,7 +132,8 @@ function StartImport(auth) {
     auth.credentials = sic;
   });
 
-  if (auth.credentials.user_id == 5) {
+  if (sic.id == 5) {
+    auth.credentials = sic;
     CheckForMessages(auth);
   }
 }

@@ -199,6 +199,7 @@ commands[8] = {
   function: announcement_command,
   visible: false
 };
+/*
 commands[9] = {
   name: "ehrenmann",
   params: "",
@@ -206,13 +207,15 @@ commands[9] = {
   function: ehrenmann_command,
   visible: false
 };
-commands[10] = {
+*/
+commands[9] = {
   name: "sombrero",
   params: "",
   description: "AiAiAiAiAi",
   function: sombrero_command,
   visible: true
 };
+/*
 commands[11] = {
   name: "martin",
   params: "",
@@ -220,13 +223,15 @@ commands[11] = {
   function: martin_command,
   visible: false
 };
-commands[12] = {
+*/
+commands[10] = {
   name: "snacks",
   params: "",
   description: "Aristosnacks - Overly Posh Snack Reviews",
   function: snack_command,
-  visible: true
+  visible: false
 };
+/*
 commands[13] = {
   name: "video",
   params: "[id]",
@@ -234,6 +239,8 @@ commands[13] = {
   function: video_command,
   visible: true
 };
+*/
+/*
 commands[14] = {
   name: "monster",
   params: "",
@@ -241,6 +248,8 @@ commands[14] = {
   function: monster_command,
   visible: true
 };
+*/
+/*
 commands[15] = {
   name: "knom",
   params: "",
@@ -269,27 +278,29 @@ commands[18] = {
   function: sport_command,
   visible: true
 };
-commands[19] = {
+*/
+commands[11] = {
   name: "quest",
   params: "",
   description: "Marks a Quest!",
   function: quest_command,
-  visible: true
+  visible: false
 };
-commands[20] = {
+commands[12] = {
   name: "list",
   params: "",
   description: "List all Quests!",
   function: questlist_command,
   visible: false
 };
-commands[21] = {
+commands[13] = {
   name: "rngvip",
   params: "",
   description: "Random VIP Name",
   function: rng_vip,
   visible: false
 };
+/*
 commands[22] = {
   name: "firma",
   params: "",
@@ -297,6 +308,8 @@ commands[22] = {
   function: firma,
   visible: true
 };
+*/
+/*
 commands[23] = {
   name: "eldenring",
   params: "",
@@ -304,13 +317,15 @@ commands[23] = {
   function: eldenring,
   visible: true
 };
-commands[23] = {
+*/
+commands[14] = {
   name: "palim",
   params: "",
   description: "Bron Palim",
   function: palim,
-  visible: true
+  visible: false
 };
+/*
 commands[24] = {
   name: "payday",
   params: "",
@@ -318,10 +333,11 @@ commands[24] = {
   function: payday_command,
   visible: true
 };
+*/
 
 async function get_msg() {
   //return;
-  //console.log(prefix, settings.last_time);
+  //console.log(settings.prefix, settings.last_time);
   var msg_list = await Messages.query()
     .where("content", "like", settings.prefix + "%")
     .where("created_at", ">", settings.last_time)
@@ -447,7 +463,7 @@ async function party_command(msg_data) {
   if (msg_data.service.toLowerCase() == "discord") {
     output_string += " <a:party_parrot:750306235118649374>";
   }
-  //  await outgoing(msg_data, output_string);
+  await outgoing(msg_data, output_string);
   output_string = "";
 }
 async function peel_command(msg_data) {

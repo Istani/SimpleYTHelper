@@ -50,7 +50,7 @@ const client = new tmi.Client({
     username: process.env.TWITCH_Login,
     password: process.env.TWITCH_Passwort
   },
-  channels: ["#istani", "#defender833"]
+  channels: ["#istani", "#defender833", "yunkeed"]
 });
 client.connect();
 
@@ -63,11 +63,11 @@ client.on("message", (channel, tags, message, self) => {
     tags["user-id"] = "BOT";
     tags["room-id"] = "WHY Twitch/TMI?";
   }
-  console.log(tags);
+  //console.log(tags);
   var server_data = {
     id: channel.replace("#", ""),
     name: "LiveStream",
-    owner: tags["user-id"]
+    owner: tags["room-id"] //tags["user-id"]
   };
   var channel_data = { id: tags["room-id"], name: tags["message-type"] }; // ?
   var user_data = { id: tags["user-id"], username: tags["display-name"] };
