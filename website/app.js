@@ -55,7 +55,7 @@ var io = require("socket.io")(server, {
 });
 
 io.on("connection", function(socket) {
-  console.log("Connection");
+  //console.log("Connection");
   socket.emit("debug", { text: "connection" });
   socket.on("message", function(func, data) {
     console.log(func, ":", data);
@@ -83,6 +83,9 @@ app.use(express.static("public"));
 app.use(function(req, res, next) {
   req.app.locals.layout = "main";
   console.log("REQ:", req.url);
+  //console.log(req.session);
+  req.custom_data = {};
+  req.custom_data.session = req.session;
   next();
 });
 
@@ -123,7 +126,7 @@ app.get(
     } else {
       temp_data.error = {};
       temp_data.error.code = "Error";
-      temp_data.error.text = i18n.__("Something went wrong!");
+      temp_data.error.text = i18n.__("Can't find Session User!");
       res.render("error", { data: temp_data });
     }
   }
@@ -133,7 +136,7 @@ app.get(
   "/auth/twitch",
   passport.authenticate("twitch", {
     scope: [
-      "chat:read chat:edit clips:edit bits:read analytics:read:games channel:read:subscriptions user:read:broadcast user:read:email analytics:read:extensions channel:moderate"
+      "chat:read chat:edit analytics:read:games channel:read:subscriptions user:read:broadcast"
     ]
   })
 );
@@ -142,7 +145,9 @@ app.get(
   passport.authenticate("twitch"),
   async function(req, res) {
     var temp_data = {};
-    console.log(req.user.profile);
+    //console.log(req.user.profile);
+    req.session = req.custom_data.session;
+
     if (req.session.user) {
       temp_data.service = "twitch";
       temp_data.user_id = req.session.user[0].id;
@@ -156,7 +161,7 @@ app.get(
     } else {
       temp_data.error = {};
       temp_data.error.code = "Error";
-      temp_data.error.text = i18n.__("Something went wrong!");
+      temp_data.error.text = i18n.__("Can't find Session User!");
       res.render("error", { data: temp_data });
     }
   }
@@ -184,7 +189,7 @@ app.get(
     } else {
       temp_data.error = {};
       temp_data.error.code = "Error";
-      temp_data.error.text = i18n.__("Something went wrong!");
+      temp_data.error.text = i18n.__("Can't find Session User!");
       res.render("error", { data: temp_data });
     }
   }
