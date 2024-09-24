@@ -153,7 +153,7 @@ async function AddGuild(guild) {
 
   // Additions
   tmp_server.name = guild.name;
-  tmp_server.owner = guild.ownerID;
+  tmp_server.owner = guild.ownerId;
 
   if (g.length == 0) {
     console.log("Server:", JSON.stringify(tmp_server));
@@ -200,6 +200,7 @@ async function AddUser(user, guild) {
 
   // Additions
   tmp_user.name = user.username;
+  // Discord hat kein Profil Bild in der Nachricht -.-
 
   if (u.length == 0) {
     console.log("User:", JSON.stringify(tmp_user));

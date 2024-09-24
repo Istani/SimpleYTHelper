@@ -171,11 +171,14 @@ async function send_mvp(user, mvps) {
 async function getSythUser(msg) {
   var ret = 1;
 
+  /*
+  --- Dann wären alle Discord immer die neusten? Doof irgendwie...
   var ls = await Login.query()
     .limit(1)
     .orderBy("id");
   if (ls.length == 0) return ret;
   ret = ls[0].id;
+  */
 
   var server_list = await Server.query()
     .where("server", "like", msg.server)
@@ -433,13 +436,15 @@ async function genMonster(syth_user, msg) {
     if (vips.length == 0) {
       var rand_user = await Chat_User.query()
         .where("service", msg.service)
-        .where("server", msg.server);
+        .where("server", msg.server)
+        .where("profile_picture", "NOT LIKE", "");
+
       // TODO: Blacklist User - Löschen oder sowas
       if (rand_user.length > 0) {
         var random_user = getRandomInt(rand_user.length);
         vips[vips.length] = {
           member_name: rand_user[random_user].name,
-          picture: "http://syth.games-on-sale.de/mob.png",
+          picture: rand_user[random_user].profile_picture,
           since: rand_user[random_user].created_at //?
         };
       } else {

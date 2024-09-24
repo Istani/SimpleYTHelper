@@ -745,6 +745,7 @@ async function LiveChat(auth, pageToken = "") {
 
             // Additions
             tmp_user.name = element.authorDetails.displayName;
+            tmp_user.profile_picture = element.authorDetails.profileImageUrl;
 
             if (u.length == 0) {
               await Chat_User.query().insert(tmp_user);
