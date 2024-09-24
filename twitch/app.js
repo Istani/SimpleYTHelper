@@ -404,16 +404,14 @@ async function GetChannel(twitchClient, syth_user) {
   }
 
   // Refresh all Users Profile Picutre
+  var limit_user_requests = 100; // Twitch Limitierung!
+  var tmp_users = [];
   var all_user = await Chat_User.query()
     .where("service", channel_obj.service)
     .where("server", User._data.login)
     .where("user", "NOT LIKE", "BOT");
-  var limit_user_requests = 100; // Twitch Limitierung!
-  var tmp_users = [];
-
   for (let i = 0; i < all_user.length; i++) {
     tmp_users[tmp_users.length] = all_user[i].user;
-
     if (tmp_users.length >= limit_user_requests) {
       await GetUsers(
         twitchClient,

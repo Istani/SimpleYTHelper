@@ -230,10 +230,30 @@ async function get_msg() {
 
     var temp_content = msg_list[i].content.split(" ");
     //console.log(temp_content);
+
     if (temp_content[0].startsWith(settings.prefix + "spawn")) {
       await genMonster(syth_user, msg_list[i]);
-      //await genChar(syth_user, msg_list[i]);
     }
+
+    if (
+      temp_content[0].startsWith(settings.prefix + "help") ||
+      temp_content[0].startsWith(settings.prefix + "command")
+    ) {
+      await outgoing(
+        msg_list[i],
+        "---RPG Befehle--- Prefix: " + settings.prefix
+      );
+      await outgoing(msg_list[i], "attack - Greif das Monster an");
+      await outgoing(msg_list[i], "harvest - Sammeln von Ressourcen");
+      await outgoing(msg_list[i], "heal - Verwendet ein Heilitem");
+
+      await outgoing(
+        msg_list[i],
+        "charinfo - Informationen über deinen Charakter"
+      );
+      await outgoing(msg_list[i], "mobinfo - Informationen über das Monster");
+    }
+
     if (temp_content[0].startsWith(settings.prefix + "attack")) {
       var hasCooldown = await check_cooldown(syth_user, msg_list[i]);
       if (hasCooldown) {
@@ -241,12 +261,6 @@ async function get_msg() {
         return;
       }
       await attackMosnter(syth_user, msg_list[i]);
-    }
-    if (temp_content[0].startsWith(settings.prefix + "charinfo")) {
-      await showChar(syth_user, msg_list[i]);
-    }
-    if (temp_content[0].startsWith(settings.prefix + "mobinfo")) {
-      await showMosnter(syth_user, msg_list[i]);
     }
     if (temp_content[0].startsWith(settings.prefix + "harvest")) {
       var hasCooldown = await check_cooldown(syth_user, msg_list[i]);
@@ -263,6 +277,13 @@ async function get_msg() {
         return;
       }
       await consumeItem(syth_user, msg_list[i], "heal");
+    }
+
+    if (temp_content[0].startsWith(settings.prefix + "charinfo")) {
+      await showChar(syth_user, msg_list[i]);
+    }
+    if (temp_content[0].startsWith(settings.prefix + "mobinfo")) {
+      await showMosnter(syth_user, msg_list[i]);
     }
 
     if (temp_content[0].startsWith(settings.prefix + "bot")) {
@@ -484,7 +505,7 @@ async function genMonster(syth_user, msg) {
       " erscheint! (" +
       tmp_monster.hp_max +
       " HP)";
-    await outgoing_multi(msg, output_string);
+    await outgoing_multi(syth_user, msg, output_string);
     send_log(
       syth_user,
       output_string,
@@ -653,7 +674,7 @@ async function attackMosnter(syth_user, msg) {
       .limit(5);
     send_mvp(syth_user, mvps);
     var outgoing_messages = "👑 Ihr habt das Monster besiegt!";
-    await outgoing_multi(msg, outgoing_messages);
+    await outgoing_multi(syth_user, msg, outgoing_messages);
     send_log(
       syth_user,
       outgoing_messages + " MVP: " + mvps[0].displayname,
@@ -663,7 +684,11 @@ async function attackMosnter(syth_user, msg) {
     );
     for (let m_index = 0; m_index < mvps.length; m_index++) {
       const element = mvps[m_index];
-      await outgoing_multi(msg, m_index + 1 + ". " + element.displayname);
+      await outgoing_multi(
+        syth_user,
+        msg,
+        m_index + 1 + ". " + element.displayname
+      );
     }
   }
 }
@@ -727,6 +752,9 @@ async function check_cooldown(syth_user, msg) {
     .where("owner", syth_user)
     .where("id", msg.user);
 
+  if (chars[0].cooldown == "0") {
+    return false;
+  }
   var this_moment = moment();
   var next_moment = moment(chars[0].cooldown);
 
@@ -768,8 +796,11 @@ async function outgoing(msg_data, content) {
   await sleep(1000);
 }
 
-async function outgoing_multi(msg_data, content) {
-  // ToDo: User Filter
+async function outgoing_multi(syth_user, msg_data, content) {
+  await outgoing(msg_data, content);
+  return;
+
+  // ToDo: User Filter für Logined USER
   var room = await Rooms.query().where({ is_rpg: true });
 
   for (let room_index = 0; room_index < room.length; room_index++) {
