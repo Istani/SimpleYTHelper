@@ -55,8 +55,6 @@ const client = new tmi.Client({
 client.connect();
 
 client.on("message", (channel, tags, message, self) => {
-  console.log(tags);
-
   if (self == true) {
     // Missiong informations
     //console.log(channel, message, tags);
@@ -93,7 +91,6 @@ client.on("message", (channel, tags, message, self) => {
 
 client.on("connected", (adress, port) => {
   setTimeout(CheckForMessages, 100);
-  //console.log(client);
 });
 client.on("disconnected", () => {
   // is that a thing?
@@ -114,7 +111,6 @@ async function AddGuild(guild) {
   tmp_server.owner = guild.owner;
 
   if (g.length == 0) {
-    console.log("Server:", JSON.stringify(tmp_server));
     await Chat_Server.query().insert(tmp_server);
   } else {
     await Chat_Server.query()
@@ -140,7 +136,6 @@ async function AddChannel(channel, guild) {
   //tmp_room.is_rpg = true;
 
   if (c.length == 0) {
-    console.log("Room:", JSON.stringify(tmp_room));
     await Chat_Room.query().insert(tmp_room);
   } else {
     await Chat_Room.query()
@@ -163,7 +158,6 @@ async function AddUser(user, guild) {
   tmp_user.name = user.username;
 
   if (u.length == 0) {
-    console.log("User:", JSON.stringify(tmp_user));
     await Chat_User.query().insert(tmp_user);
   } else {
     await Chat_User.query()
@@ -192,7 +186,6 @@ async function AddMessage(msg, guild, channel, user) {
     console.log("Message:", JSON.stringify(tmp_message));
     await Chat_Message.query().insert(tmp_message);
   } else {
-    //console.log('Message Repeat:', JSON.stringify(tmp_message));
     await Chat_Message.query()
       .patch(tmp_message)
       .where(m[0]);
@@ -227,8 +220,7 @@ async function ReadToken() {
   var Auth_Token = await Token.query()
     .where("service", "twitch")
     .where("is_importing", false);
-  //console.log(Auth_Token);
-  // fs.writeFileSync("tmp/auth.json", JSON.stringify(auth, null, 2));
+
   for (let auth_index = 0; auth_index < Auth_Token.length; auth_index++) {
     const element = Auth_Token[auth_index];
 
@@ -245,7 +237,7 @@ async function ReadToken() {
         refreshToken: element.refresh_token,
         onRefresh: async token => {
           //await Auth_Token.query().where(element).patch(token)
-          console.log(element, token);
+          //console.log(element, token);
         }
       }
     );
@@ -259,12 +251,6 @@ async function ReadToken() {
     q.push("Channels", () => {
       GetChannel(twitchClient, element.user_id);
     });
-
-    /*
-    q.push("Users",() => {
-      GetUsers(twitchClient, element.user_id, ["136906771","24232085"]);
-    });
-    */
   }
   setTimeout(ReadToken, 1000);
 }
@@ -355,6 +341,9 @@ async function GetStream(twitchClient, syth_user) {
 
       // Update Chatrooms
     }
+
+    // Bei Tiwtich ist das Quatsch, weil es nur einen Chatroom gibt, nicht wie bei Youtube, Getrennt je stream voneinander!
+    /*
     var r = await Chat_Room.query()
       .where("service", obj.service)
       .where("server", TokenInfo.userName)
@@ -368,6 +357,7 @@ async function GetStream(twitchClient, syth_user) {
         .where("room", element.room)
         .patch(element);
     }
+    */
   }
 }
 
@@ -407,18 +397,62 @@ async function GetChannel(twitchClient, syth_user) {
     await ow_channel.query().insert(channel_obj);
     console.log("Channel: ", JSON.stringify(channel_obj));
   }
+
+  // Refresh all Users Profile Picutre
+  var all_user = await Chat_User.query()
+    .where("service", channel_obj.service)
+    .where("server", User._data.login)
+    .where("user", "NOT LIKE", "BOT"); // ! ist login wirklich richitg?
+  var limit_user_requests = 100; // Twitch Limitierung!
+  var tmp_users = [];
+
+  for (let i = 0; i < all_user.length; i++) {
+    tmp_users[tmp_users.length] = all_user[i].user;
+
+    if (tmp_users.length >= limit_user_requests) {
+      await GetUsers(
+        twitchClient,
+        syth_user,
+        tmp_users,
+        channel_obj.service,
+        User._data.login
+      );
+      var tmp_users = [];
+    }
+  }
+  if (tmp_users.length > 0) {
+    await GetUsers(
+      twitchClient,
+      syth_user,
+      tmp_users,
+      channel_obj.service,
+      User._data.login
+    );
+    var tmp_users = [];
+  }
 }
 
 async function GetFollowers(twitchclient, syth_user) {
   // 'https://api.twitch.tv/helix/channels/followers?broadcaster_id=123456&user_id=654321'
 }
 
-async function GetUsers(twitchClient, syth_user, users) {
+async function GetUsers(twitchClient, syth_user, users, service, server) {
   // 'https://api.twitch.tv/helix/users?id=141981764'
 
   var TokenInfo = await twitchClient.getTokenInfo();
   var data = await twitchClient.helix.users.getUsersByIds(users);
   fs.writeFileSync("tmp/users.json", JSON.stringify(data, null, 2));
+
+  for (let i = 0; i < data.length; i++) {
+    user_data = {
+      profile_picture: data[i]._data.profile_image_url
+    };
+    await Chat_User.query()
+      .patch(user_data)
+      .where("service", service)
+      .where("server", server)
+      .where("user", data[i]._data.id);
+  }
 }
 
 async function FakeMsg(server, room, content) {
