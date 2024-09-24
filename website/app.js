@@ -85,7 +85,10 @@ app.use(function(req, res, next) {
   console.log("REQ:", req.url);
   //console.log(req.session);
   req.custom_data = {};
-  req.custom_data.session = req.session;
+  if (req.session) {
+    req.custom_data.session = {};
+    req.custom_data.session.user = req.session.user;
+  }
   next();
 });
 
@@ -112,7 +115,9 @@ app.get(
   passport.authenticate("youtube"),
   async function(req, res) {
     var temp_data = {};
-    console.log(req.user.profile);
+    //console.log(req.user.profile);
+    req.session = req.custom_data.session;
+
     if (req.session.user) {
       temp_data.service = "youtube";
       temp_data.user_id = req.session.user[0].id;
@@ -136,7 +141,7 @@ app.get(
   "/auth/twitch",
   passport.authenticate("twitch", {
     scope: [
-      "chat:read chat:edit analytics:read:games channel:read:subscriptions user:read:broadcast"
+      "analytics:read:games channel:read:subscriptions moderator:read:followers user:read:broadcast"
     ]
   })
 );
@@ -175,7 +180,9 @@ app.get(
   passport.authenticate("discord"),
   async function(req, res) {
     var temp_data = {};
-    console.log(req.user.profile);
+    //console.log(req.user.profile);
+    req.session = req.custom_data.session;
+
     if (req.session.user) {
       temp_data.service = "discord";
       temp_data.user_id = req.session.user[0].id;
@@ -321,6 +328,10 @@ app.get("/HUD/:channel/:category", async function(req, res, next) {
     } catch (e) {
       console.error(e);
       var data = [];
+    }
+    if (data.length == 0) {
+      //! Das ist natürlich quatsch! Aber für RPG bestimmt Okay
+      var data = await User_Channel.query().orderBy("created_at");
     }
     if (data.length == 0) {
       res.render("error", { data: temp_data });

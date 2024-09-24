@@ -50,11 +50,13 @@ const client = new tmi.Client({
     username: process.env.TWITCH_Login,
     password: process.env.TWITCH_Passwort
   },
-  channels: ["#istani", "#defender833", "yunkeed"]
+  channels: ["#istani", "#yunkeed"]
 });
 client.connect();
 
 client.on("message", (channel, tags, message, self) => {
+  console.log(tags);
+
   if (self == true) {
     // Missiong informations
     //console.log(channel, message, tags);
@@ -63,7 +65,7 @@ client.on("message", (channel, tags, message, self) => {
     tags["user-id"] = "BOT";
     tags["room-id"] = "WHY Twitch/TMI?";
   }
-  //console.log(tags);
+
   var server_data = {
     id: channel.replace("#", ""),
     name: "LiveStream",
@@ -76,10 +78,17 @@ client.on("message", (channel, tags, message, self) => {
     createdAt: moment(parseInt(tags["tmi-sent-ts"])).format(),
     content: message
   };
-  AddGuild(server_data);
-  AddChannel(channel_data, server_data);
+  if (self != true) {
+    AddGuild(server_data);
+    AddChannel(channel_data, server_data);
+  }
   AddUser(user_data, server_data);
   AddMessage(message_data, server_data, channel_data, user_data);
+
+  fs.writeFileSync(
+    "tmp/message.json",
+    JSON.stringify({ channel: channel, message: message, tags: tags }, null, 2)
+  );
 });
 
 client.on("connected", (adress, port) => {
@@ -236,13 +245,13 @@ async function ReadToken() {
         refreshToken: element.refresh_token,
         onRefresh: async token => {
           //await Auth_Token.query().where(element).patch(token)
-          //console.log(element, token);
+          console.log(element, token);
         }
       }
     );
     var temp = await twitchClient.getTokenInfo();
 
-    cron.schedule("*/15 * * * *", () => {
+    cron.schedule("*/5 * * * *", () => {
       q.push("Broadcasts", () => {
         GetStream(twitchClient, element.user_id);
       });
@@ -250,6 +259,12 @@ async function ReadToken() {
     q.push("Channels", () => {
       GetChannel(twitchClient, element.user_id);
     });
+
+    /*
+    q.push("Users",() => {
+      GetUsers(twitchClient, element.user_id, ["136906771","24232085"]);
+    });
+    */
   }
   setTimeout(ReadToken, 1000);
 }
@@ -263,6 +278,7 @@ async function GetStream(twitchClient, syth_user) {
   var obj = {};
 
   if (Streams != null) {
+    fs.writeFileSync("tmp/streams.json", JSON.stringify(Streams, null, 2));
     obj.service = "twitch";
     obj.b_id = Streams.id;
     obj.owner = Streams.userId;
@@ -356,14 +372,9 @@ async function GetStream(twitchClient, syth_user) {
 }
 
 async function GetChannel(twitchClient, syth_user) {
-  //var TokenInfo = await twitchClient.getTokenInfo();
-  var User = await twitchClient.helix.users.getMe(false); //getUserById(TokenInfo.userId);
-  //var follows = await User.getFollows();
-  //console.log(follows);
-  //return;
-  //console.log(User);
-  //return;
+  var User = await twitchClient.helix.users.getMe(false);
 
+  fs.writeFileSync("tmp/channel.json", JSON.stringify(User, null, 2));
   var channel_obj = {};
   channel_obj.service = "twitch";
   channel_obj.user_id = syth_user;
@@ -397,6 +408,19 @@ async function GetChannel(twitchClient, syth_user) {
     console.log("Channel: ", JSON.stringify(channel_obj));
   }
 }
+
+async function GetFollowers(twitchclient, syth_user) {
+  // 'https://api.twitch.tv/helix/channels/followers?broadcaster_id=123456&user_id=654321'
+}
+
+async function GetUsers(twitchClient, syth_user, users) {
+  // 'https://api.twitch.tv/helix/users?id=141981764'
+
+  var TokenInfo = await twitchClient.getTokenInfo();
+  var data = await twitchClient.helix.users.getUsersByIds(users);
+  fs.writeFileSync("tmp/users.json", JSON.stringify(data, null, 2));
+}
+
 async function FakeMsg(server, room, content) {
   var tmp_message = {};
 

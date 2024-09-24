@@ -12,6 +12,7 @@ const sleep = require("await-sleep");
 const moment = require("moment");
 const emoji = require("node-emoji"); // https://raw.githubusercontent.com/omnidan/node-emoji/master/lib/emoji.json
 
+const Login = require("./models/syth_login.js");
 const Messages = require("./models/chat_message.js");
 const Rooms = require("./models/chat_room.js");
 const Server = require("./models/chat_server.js");
@@ -167,6 +168,38 @@ async function send_mvp(user, mvps) {
   io.to(user).emit("mvps", mvps);
 }
 
+async function getSythUser(msg) {
+  var ret = 1;
+
+  var ls = await Login.query()
+    .limit(1)
+    .orderBy("id");
+  if (ls.length == 0) return ret;
+  ret = ls[0].id;
+
+  var server_list = await Server.query()
+    .where("server", "like", msg.server)
+    .where("service", "like", msg.service)
+    .orderBy("created_at");
+
+  if (server_list.length == 0) {
+    return ret;
+  }
+  if (server_list[0].owner == null) {
+    return ret;
+  }
+
+  var channel_list = await User_Channel.query().where(
+    "channel_id",
+    server_list[0].owner
+  );
+  if (channel_list.length == 0) {
+    return ret;
+  }
+  ret = channel_list[0].user_id;
+  return ret;
+}
+
 async function get_msg() {
   var msg_list = await Messages.query()
     .where("content", "like", settings.prefix + "%")
@@ -177,6 +210,10 @@ async function get_msg() {
     settings.last_time = msg_list[i].created_at;
     save_settings();
 
+    if (msg_list[i].content.startsWith(settings.prefix) != true) {
+      continue;
+    }
+
     var username = await Chat_User.query()
       .where("server", msg_list[i].server)
       .where("user", msg_list[i].user);
@@ -186,12 +223,8 @@ async function get_msg() {
       msg_list[i].username = username[0].name;
     }
 
-    if (msg_list[i].content.startsWith(settings.prefix) != true) {
-      continue;
-    }
+    var syth_user = await getSythUser(msg_list[i]);
 
-    // ToDo: Get SYTH-User out of DB
-    var syth_user = 4;
     var temp_content = msg_list[i].content.split(" ");
     //console.log(temp_content);
     if (temp_content[0].startsWith(settings.prefix + "spawn")) {
@@ -378,6 +411,7 @@ async function genMonster(syth_user, msg) {
     var data = await User_Channel.query()
       .where("user_id", syth_user)
       .eager("VIPs");
+
     var vips = [];
     for (let cindex = 0; cindex < data.length; cindex++) {
       const element = data[cindex];
@@ -395,6 +429,29 @@ async function genMonster(syth_user, msg) {
       (parseInt(getCaps[0]["avg(`msg_avg`)"]) + settings.min_dmg) * 2;
     var hp_cap = (parseInt(getCaps[0]["avg(`msg_sum`)"]) + settings.min_hp) * 2;
 
+    // ! Wenn Keine VIPs verfügbar
+    if (vips.length == 0) {
+      var rand_user = await Chat_User.query()
+        .where("service", msg.service)
+        .where("server", msg.server);
+      // TODO: Blacklist User - Löschen oder sowas
+      if (rand_user.length > 0) {
+        var random_user = getRandomInt(rand_user.length);
+        vips[vips.length] = {
+          member_name: rand_user[random_user].name,
+          picture: "http://syth.games-on-sale.de/mob.png",
+          since: rand_user[random_user].created_at //?
+        };
+      } else {
+        var random_user = getRandomInt(rand_user.length);
+        vips[vips.length] = {
+          member_name: "No Data",
+          picture: "http://syth.games-on-sale.de/mob.png",
+          since: new Date()
+        };
+      }
+    }
+
     var rand = getRandomInt(vips.length);
     //vips[rand]
     var tmp_monster = {};
@@ -405,6 +462,12 @@ async function genMonster(syth_user, msg) {
     tmp_monster.hp_max =
       parseInt((new Date() - vips[rand].since) / 1000 / 60 / 60 / 24 / 30 + 1) *
       settings.min_hp;
+
+    // Balance langzeit abonenten?
+    if (tmp_monster.hp_max > hp_cap * 5) {
+      tmp_monster.hp_max = hp_cap * 5;
+    }
+
     tmp_monster.hp = tmp_monster.hp_max;
     tmp_monster.dmg_cap = dmg_cap;
     tmp_monster.hp_cap = hp_cap;
