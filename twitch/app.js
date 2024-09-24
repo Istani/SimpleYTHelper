@@ -51,6 +51,7 @@ const client = new tmi.Client({
     password: process.env.TWITCH_Passwort
   },
   channels: ["#istani", "#yunkeed"]
+  // Todo: Read Channels from DB
 });
 client.connect();
 
@@ -364,6 +365,8 @@ async function GetStream(twitchClient, syth_user) {
 async function GetChannel(twitchClient, syth_user) {
   var User = await twitchClient.helix.users.getMe(false);
 
+  // "created_at": "2016-10-12T15:25:01Z"
+
   fs.writeFileSync("tmp/channel.json", JSON.stringify(User, null, 2));
   var channel_obj = {};
   channel_obj.service = "twitch";
@@ -371,7 +374,9 @@ async function GetChannel(twitchClient, syth_user) {
   channel_obj.channel_id = User.id;
   channel_obj.channel_title = User.displayName;
   channel_obj.description = User.description;
-  //channel_obj.start_date = data.snippet.publishedAt;
+
+  channel_obj.start_date = User._data.created_at;
+
   channel_obj.thumbnail = User.profilePictureUrl;
   channel_obj.banner = User.offlinePlaceholderUrl;
 
@@ -402,7 +407,7 @@ async function GetChannel(twitchClient, syth_user) {
   var all_user = await Chat_User.query()
     .where("service", channel_obj.service)
     .where("server", User._data.login)
-    .where("user", "NOT LIKE", "BOT"); // ! ist login wirklich richitg?
+    .where("user", "NOT LIKE", "BOT");
   var limit_user_requests = 100; // Twitch Limitierung!
   var tmp_users = [];
 
@@ -412,7 +417,6 @@ async function GetChannel(twitchClient, syth_user) {
     if (tmp_users.length >= limit_user_requests) {
       await GetUsers(
         twitchClient,
-        syth_user,
         tmp_users,
         channel_obj.service,
         User._data.login
@@ -423,7 +427,6 @@ async function GetChannel(twitchClient, syth_user) {
   if (tmp_users.length > 0) {
     await GetUsers(
       twitchClient,
-      syth_user,
       tmp_users,
       channel_obj.service,
       User._data.login
@@ -436,10 +439,8 @@ async function GetFollowers(twitchclient, syth_user) {
   // 'https://api.twitch.tv/helix/channels/followers?broadcaster_id=123456&user_id=654321'
 }
 
-async function GetUsers(twitchClient, syth_user, users, service, server) {
+async function GetUsers(twitchClient, users, service, server) {
   // 'https://api.twitch.tv/helix/users?id=141981764'
-
-  var TokenInfo = await twitchClient.getTokenInfo();
   var data = await twitchClient.helix.users.getUsersByIds(users);
   fs.writeFileSync("tmp/users.json", JSON.stringify(data, null, 2));
 
