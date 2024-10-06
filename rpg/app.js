@@ -550,7 +550,8 @@ async function genChar(syth_user, msg) {
       chat_user[0].msg_avg = monsters[0].dmg_cap;
     }
     my_char.displayname = chat_user[0].name;
-    my_char.hp_max += chat_user[0].msg_sum;
+    (my_char.picture = chat_user[0].profile_picture),
+      (my_char.hp_max += chat_user[0].msg_sum);
     my_char.atk += chat_user[0].msg_avg;
   }
 
