@@ -51,7 +51,7 @@ const client = new tmi.Client({
     password: process.env.TWITCH_Passwort
   },
   channels: ["#istani", "#yunkeed"]
-  // Todo: Read Channels from DB
+  // Todo: Read Channels from DB - Total dämchlich weil des is der Login Name, nicht die ID, nicht Display Name...
 });
 client.connect();
 
@@ -293,6 +293,7 @@ async function GetStream(twitchClient, syth_user) {
       await ow_broadcasts.query().insert(obj);
 
       await FakeMsg(TokenInfo.userName, obj.owner, "?spawn");
+      await FakeMsg(TokenInfo.userName, obj.owner, "?help");
       await FakeMsg(
         TokenInfo.userName,
         obj.owner,

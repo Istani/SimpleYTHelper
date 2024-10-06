@@ -35,10 +35,10 @@
   }
 </style>
 
+<div class="border_box" style="width: 187px; height: 187px; background-image: url('/rpg.png');text-align: center;">
 <!--
-  <div class="border_box" style="width: 187px; height: 187px; background-image: url('/rpg.png');text-align: center;">
-!-->
 <div style="width: 187px; height: 187px; text-align: center;"></div>
+!-->
   <div id="comming_soon">
     Comming Soon...
   </div>
@@ -135,7 +135,7 @@
         var output = "<img src='/hud/crown.png' width='16' height='16'>&nbsp;Ihr habt das Monster besiegt!<br><br>";
         for (let m_index = 0; m_index < mvps.length; m_index++) {
           const element = mvps[m_index];
-          output += "<span class='special'>" + m_index + 1 + "</span>. <span class='username'>" + element.displayname + "</span><br>";
+          output += "<span class='special'>" + (parseInt(m_index) + 1) + "</span>. <span class='username'>" + element.displayname + "</span><br>";
         }
         $('#mvps').html(output);
       });

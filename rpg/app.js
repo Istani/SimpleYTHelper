@@ -594,7 +594,7 @@ async function attackMosnter(syth_user, msg) {
   }
   if (monsters[0].hp == 0) {
     var dat = moment()
-      .add(300, "seconds")
+      .add(5, "seconds")
       .format();
     monsters[0].death_cooldown = dat;
   }
