@@ -334,6 +334,13 @@ commands[24] = {
   visible: true
 };
 */
+commands[14] = {
+  name: "streamplan",
+  params: "",
+  description: "Was ist der Plan?",
+  function: streamplan,
+  visible: false
+};
 
 async function get_msg() {
   //return;
@@ -787,4 +794,11 @@ async function palim(msg_data) {
     io.to(msg_data.server).emit("sound", "palim");
     console.log("Sound to: " + msg_data.server);
   }
+}
+
+async function streamplan(msg_data) {
+  var output_string =
+    "Was ist der Plan? https://media.discordapp.net/attachments/213716270963621888/1365648823359377508/StreamplanSquare_20250428.jpg";
+  await outgoing(msg_data, output_string);
+  output_string = "";
 }

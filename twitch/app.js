@@ -50,7 +50,7 @@ const client = new tmi.Client({
     username: process.env.TWITCH_Login,
     password: process.env.TWITCH_Passwort
   },
-  channels: ["#istani", "#yunkeed"]
+  channels: ["#istani", "#yunkthreed"]
   // Todo: Read Channels from DB - Total dämchlich weil des is der Login Name, nicht die ID, nicht Display Name...
 });
 client.connect();
@@ -293,14 +293,8 @@ async function GetStream(twitchClient, syth_user) {
       await ow_broadcasts.query().insert(obj);
 
       await FakeMsg(TokenInfo.userName, obj.owner, "?spawn");
-      await FakeMsg(TokenInfo.userName, obj.owner, "?help");
-      await FakeMsg(
-        TokenInfo.userName,
-        obj.owner,
-        "!announcement Livestream: https://www.twitch.tv/" +
-          TokenInfo.userName +
-          ""
-      );
+      //await FakeMsg(TokenInfo.userName, obj.owner, "?help");
+      //await FakeMsg(TokenInfo.userName,obj.owner,"!announcement Livestream: https://www.twitch.tv/" +TokenInfo.userName +"");
     }
     var Game = await Streams.getGame();
     var temp_game_name = Games.getEncodedName(Game.name);
@@ -472,7 +466,7 @@ async function FakeMsg(server, room, content) {
 
   if (m.length == 0) {
     console.log("Fake-Message: ", JSON.stringify(tmp_message));
-    //await Chat_Message.query().insert(tmp_message);
+    await Chat_Message.query().insert(tmp_message);
     await sleep(1000);
   } else {
     FakeMsg(server, room, content);

@@ -290,6 +290,10 @@ async function get_msg() {
       await sleep(1000);
       await outgoing(msg_list[i], settings.prefix + temp_content[1]);
     }
+    if (temp_content[0].startsWith(settings.prefix + "do")) {
+      await sleep(1000);
+      await outgoing(msg_list[i], "!" + temp_content[1]);
+    }
     send_mob(syth_user);
   }
 

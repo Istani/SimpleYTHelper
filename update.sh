@@ -1,5 +1,6 @@
 #!/usr/bin/sh
 cd ~/SimpleYTHelper/
+rm */core
 pm2 resurrect
 git checkout master
 git pull

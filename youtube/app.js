@@ -676,14 +676,19 @@ async function LiveChat(auth, pageToken = "") {
         return;
       }
       try {
-        //fs.writeFileSync("tmp/chat.json", JSON.stringify(response.data, null, 2));
+        fs.writeFileSync(
+          "tmp/chat.json",
+          JSON.stringify(response.data, null, 2)
+        );
         var txt = response.data.items;
+        /*
         if (txt.length > 0) {
           fs.writeFileSync(
             "tmp/chat.json",
             JSON.stringify(response.data, null, 2)
           );
         }
+        */
         for (let index = 0; index < txt.length; index++) {
           const element = txt[index];
 
