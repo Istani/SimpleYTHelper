@@ -274,8 +274,11 @@ function ListChannels(auth, pageToken = "") {
       channel_obj.views = data.statistics.viewCount;
       channel_obj.subscriber = data.statistics.subscriberCount;
       channel_obj.videos = data.statistics.videoCount;
-      await Token.query().where(sic).patch({ service_user: channel_obj.channel_id });
+
       auth.credentials.service_user=channel_obj.channel_id;
+      await Token.query().where({id: sic.id}).patch({ service_user: channel_obj.channel_id });
+      //console.log(sic);
+      
 
       {
         // Add Server
@@ -630,6 +633,7 @@ async function LiveChat(auth, pageToken = "") {
         .whereNull("actualEndTime");
     });
   if (
+    data.length==0 ||
     typeof data[0].Livestream == "undefined" ||
     typeof data[0].Livestream[0] == "undefined"
   ) {
