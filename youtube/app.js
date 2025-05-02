@@ -58,15 +58,17 @@ async function authorize(callback) {
   var user_token = await Token.query()
     .where("service", "youtube")
     .where("is_importing", false);
-  let index = 0;
-  //for (let index = 0; index < user_token.length; index++) {
-  const element = user_token[index];
-  await Token.query()
-    .where(element)
-    .patch({ is_importing: true });
-  oauth2Client.credentials = element;
-  callback(oauth2Client);
-  //}
+  if (user_token.length>0) {
+    let index = 0;
+    //for (let index = 0; index < user_token.length; index++) {
+    const element = user_token[index];
+    await Token.query()
+      .where(element)
+      .patch({ is_importing: true });
+    oauth2Client.credentials = element;
+    callback(oauth2Client);
+    //}
+  }
   setTimeout(() => {
     authorize(StartImport);
   }, 1000);
@@ -272,6 +274,8 @@ function ListChannels(auth, pageToken = "") {
       channel_obj.views = data.statistics.viewCount;
       channel_obj.subscriber = data.statistics.subscriberCount;
       channel_obj.videos = data.statistics.videoCount;
+      await Token.query().where(sic).patch({ service_user: channel_obj.channel_id });
+      auth.credentials.service_user=channel_obj.channel_id;
 
       {
         // Add Server
@@ -614,7 +618,7 @@ async function LiveChat(auth, pageToken = "") {
   var sic = auth.credentials;
   var data = await ow_channel
     .query()
-    .where("user_id", auth.credentials.user_id)
+    .where("channel_id", auth.credentials.service_user)
     .where("service", "youtube")
     .eager("Livestream")
     .modifyEager("Livestream", builder => {
@@ -629,7 +633,7 @@ async function LiveChat(auth, pageToken = "") {
     typeof data[0].Livestream == "undefined" ||
     typeof data[0].Livestream[0] == "undefined"
   ) {
-    console.log("Kein Livestream");
+    //console.log("Kein Livestream");
     setTimeout(() => {
       q.push("LiveChat", () => {
         auth.credentials = sic;
@@ -638,7 +642,7 @@ async function LiveChat(auth, pageToken = "") {
     }, RepeatDealy);
     return;
   }
-  console.log("Livestream da");
+  console.log("LiveChat: ", data[0].Livestream[0].b_id);
   service.liveChatMessages.list(
     {
       auth: auth,
