@@ -1,5 +1,6 @@
 const config = require("dotenv").config({ path: "../.env" });
 const moment = require("moment");
+const fs = require("fs");
 const Token = require("./models/syth_token.js");
 var { google } = require("googleapis");
 var service = google.youtube("v3");
@@ -20,7 +21,7 @@ async function authorize(callback) {
 
   var user_token = await Token.query().where("service", "youtube")
   let index = 0;
-  const element = user_token[index];
+  const element = user_token[1];
   oauth2Client.credentials = element;
   callback(oauth2Client);
 }
@@ -51,9 +52,9 @@ function SearchBroadcasts(auth, pageToken = "") {
     //service.liveStreams.list(
     {
       auth: auth,
-      part: "id, snippet",
+      part: "id, snippet, contentDetails, status",
       mine: true,
-      maxResults: 1,
+      maxResults: 50,
       pageToken: pageToken
     },
     async function(err, response) {
@@ -61,6 +62,10 @@ function SearchBroadcasts(auth, pageToken = "") {
         console.error(err);
         return;
       }
+      fs.writeFileSync(
+        "tmp/liveBroadcasts.json",
+        JSON.stringify(response.data, null, 2)
+      );
       for (let index = 0; index < response.data.items.length; index++) {
         const element = response.data.items[index];
 

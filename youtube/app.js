@@ -83,6 +83,10 @@ function StartImport(auth) {
     auth.credentials = sic;
     ListChannels(auth);
   });
+  q.push("Broadcasts", () => {
+    auth.credentials = sic;
+    SearchBroadcasts(auth);
+  });
 
   cron.schedule("0 0 * * *", () => {
     q.push("Uploads", () => {
@@ -275,9 +279,11 @@ function ListChannels(auth, pageToken = "") {
       channel_obj.subscriber = data.statistics.subscriberCount;
       channel_obj.videos = data.statistics.videoCount;
 
-      auth.credentials.service_user=channel_obj.channel_id;
-      await Token.query().where({id: sic.id}).patch({ service_user: channel_obj.channel_id });
-      //console.log(sic);
+      if (sic.service_user!=channel_obj.channel_id) {
+        console.log("Change Token service_user, ", sic.id);
+        await Token.query().where({id: sic.id}).patch({ service_user: channel_obj.channel_id, is_importing: false });
+        process.exit(0);
+      }
       
 
       {
@@ -474,7 +480,7 @@ function SearchBroadcasts(auth, pageToken = "") {
     //service.liveStreams.list(
     {
       auth: auth,
-      part: "id, snippet",
+      part: "id, snippet, status",
       mine: true,
       maxResults: 50,
       pageToken: pageToken
@@ -517,6 +523,10 @@ function SearchBroadcasts(auth, pageToken = "") {
             obj.liveChatId = "";
           } else {
             obj.liveChatId = element.snippet.liveChatId;
+          }
+
+          if (element.status.privacyStatus != "public") {
+            obj.liveChatId = "";
           }
 
           {
@@ -657,25 +667,30 @@ async function LiveChat(auth, pageToken = "") {
     },
     async function(err, response) {
       if (err) {
-        console.error(err);
-        setTimeout(async () => {
-          data[0].Livestream[0].liveChatId = "";
-          await ow_broadcasts
-            .query()
-            .patch(data[0].Livestream[0])
-            .where("service", data[0].Livestream[0].service)
-            .where("owner", data[0].Livestream[0].owner)
-            .where("b_id", data[0].Livestream[0].b_id);
+        if (err.response.status==404) {
+          //await ow_broadcasts.query().delete().where("b_id", data[0].Livestream[0].b_id);
+          console.log("LiveChat not Found! ", data[0].Livestream[0].b_id);
+        } else if (err.response.status==403) {
+          await ow_broadcasts.query().delete().where("b_id", data[0].Livestream[0].b_id);
+          console.log("LiveChat Forbidden! ", data[0].Livestream[0].b_id);
+        } else {
+          console.error(err);
+        }
+        
+        await ow_broadcasts
+          .query()
+          .patch({liveChatId: ""})
+          .where("b_id", data[0].Livestream[0].b_id);
 
-          q.push("Broadcasts", () => {
-            auth.credentials = sic;
-            SearchBroadcasts(auth);
-          });
-          q.push("LiveChat", () => {
-            auth.credentials = sic;
-            LiveChat(auth);
-          });
-        }, RepeatDealy);
+        q.push("Broadcasts", () => {
+          auth.credentials = sic;
+          SearchBroadcasts(auth);
+        });
+        q.push("LiveChat", () => {
+          auth.credentials = sic;
+          LiveChat(auth);
+        });
+        
         return;
       }
       try {
