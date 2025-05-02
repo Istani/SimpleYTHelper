@@ -598,6 +598,7 @@ function SearchBroadcasts(auth, pageToken = "") {
 
         // Update Last Stream-Chats?
         var Stream_RPG_Chats = await Chat_Room.query()
+          .where("server", sic.service_user)
           .where("service", "youtube")
           .where("is_rpg", true);
         for (
