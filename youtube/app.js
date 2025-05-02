@@ -82,19 +82,14 @@ function StartImport(auth) {
     ListChannels(auth);
   });
 
-  q.push("Sponsors", () => {
-    auth.credentials = sic;
-    ListMembers(auth);
-  });
-
-  cron.schedule("0 * * * *", () => {
+  cron.schedule("0 0 * * *", () => {
     q.push("Uploads", () => {
       auth.credentials = sic;
       ListNewUploads(auth);
     });
   });
 
-  cron.schedule("*/15 * * * *", () => {
+  cron.schedule("*/20 * * * *", () => {
     q.push("Broadcasts", () => {
       auth.credentials = sic;
       SearchBroadcasts(auth);
