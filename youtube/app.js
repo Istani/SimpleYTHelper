@@ -28,23 +28,34 @@ const Chat_Room = require("./models/chat_room.js");
 const Chat_Server = require("./models/chat_server.js");
 const Chat_User = require("./models/chat_user.js");
 const Token = require("./models/syth_token.js");
+const SocketToken = require("./models/youtube_socket_token.js");
+const ChannelAnalyticsHistory = require("./models/channel_analytics_history.js");
+const VideoAnalyticsHistory = require("./models/video_analytics_history.js");
 
 var RepeatDealy = 30 * 1000;
 var SCOPES = [
   "https://www.googleapis.com/auth/youtube",
-  "https://www.googleapis.com/auth/youtube.channel-memberships.creator"
+  "https://www.googleapis.com/auth/youtube.channel-memberships.creator",
+  "https://www.googleapis.com/auth/youtube.readonly",
+  "https://www.googleapis.com/auth/youtubepartner",
+  "https://www.googleapis.com/auth/yt-analytics-monetary.readonly",
+  "https://www.googleapis.com/auth/yt-analytics.readonly"
 ];
 var OAuth2 = google.auth.OAuth2;
 var service = google.youtube("v3");
+var analytics = google.youtubeAnalytics("v2");
+const io = require("socket.io")();
 var q = new Queue(function(type, input, cb) {
   console.log("Start Import: " + type);
   input();
-  cb(null, result);
+  cb(null);
 });
 
 async function startTokens() {
   await Token.query()
     .where("service", "youtube")
+    .patch({ is_importing: false });
+  await SocketToken.query()
     .patch({ is_importing: false });
   authorize(StartImport);
 }
@@ -53,27 +64,48 @@ async function authorize(callback) {
   var clientSecret = process.env.YOUTUBE_CLIENT_SECRET;
   var clientId = process.env.YOUTUBE_CLIENT_ID;
   var redirectUrl = process.env.YOUTUBE_CLINET_URI;
-  var oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl);
 
-  var user_token = await Token.query()
+  // Process tokens from Token model (syth_token table)
+  var user_tokens = await Token.query()
     .where("service", "youtube")
     .where("is_importing", false);
-  if (user_token.length>0) {
-    let index = 0;
-    //for (let index = 0; index < user_token.length; index++) {
-    const element = user_token[index];
+
+  for (let index = 0; index < user_tokens.length; index++) {
+    const element = user_tokens[index];
     await Token.query()
-      .where(element)
+      .where({id: element.id})
       .patch({ is_importing: true });
+
+    var oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl);
     oauth2Client.credentials = element;
     callback(oauth2Client);
-    //}
   }
+
+  // Process tokens from SocketToken model (youtube_socket_token table)
+  var socket_tokens = await SocketToken.query()
+    .where("is_importing", false);
+
+  for (let index = 0; index < socket_tokens.length; index++) {
+    const element = socket_tokens[index];
+    await SocketToken.query()
+      .where({id: element.id})
+      .patch({ is_importing: true });
+
+    var oauth2Client = new OAuth2(
+      element.client_id || clientId,
+      element.client_secret || clientSecret,
+      element.redirect_url || redirectUrl
+    );
+    oauth2Client.credentials = element;
+    callback(oauth2Client);
+  }
+
   setTimeout(() => {
-    authorize(StartImport);
+    authorize(callback);
   }, 1000);
 }
 startTokens();
+GlobalCronSchedules();
 
 function StartImport(auth) {
   var sic = auth.credentials;
@@ -87,44 +119,13 @@ function StartImport(auth) {
     auth.credentials = sic;
     SearchBroadcasts(auth);
   });
-
-  cron.schedule("0 0 * * *", () => {
-    q.push("Uploads", () => {
-      auth.credentials = sic;
-      ListNewUploads(auth);
-    });
+  q.push("Analytics", () => {
+    auth.credentials = sic;
+    ImportAnalytics(auth);
   });
-
-  cron.schedule("*/20 * * * *", () => {
-    q.push("Broadcasts", () => {
-      auth.credentials = sic;
-      SearchBroadcasts(auth);
-    });
-  });
-
-  cron.schedule("50 21 * * *", () => {
-    q.push("Channels", () => {
-      auth.credentials = sic;
-      ListChannels(auth);
-    });
-    q.push("Sponsors", () => {
-      auth.credentials = sic;
-      ListMembers(auth);
-    });
-    setTimeout(() => {
-      // Damit dann Channels und Sponsors vielleicht schon fertig ist
-      q.push("Playlists", () => {
-        auth.credentials = sic;
-        ListPlaylists(auth);
-      });
-    }, RepeatDealy);
-  });
-
-  cron.schedule("50 22 * * *", () => {
-    q.push("Videos", () => {
-      auth.credentials = sic;
-      ListVideos(auth);
-    });
+  q.push("ChannelAnalytics", () => {
+    auth.credentials = sic;
+    ImportChannelAnalytics(auth);
   });
 
   q.push("LiveChat", () => {
@@ -136,6 +137,68 @@ function StartImport(auth) {
   if (sic.id == 5) {
     auth.credentials = sic;
     CheckForMessages(auth);
+  }
+}
+
+function GlobalCronSchedules() {
+  cron.schedule("0 0 * * *", () => {
+    RunForEveryToken("Uploads", ListNewUploads);
+  });
+
+  cron.schedule("*/20 * * * *", () => {
+    RunForEveryToken("Broadcasts", SearchBroadcasts);
+  });
+
+  cron.schedule("*/10 * * * *", () => {
+    // Schedule LiveChat check every 10 mins as well, since it's now global
+    RunForEveryToken("LiveChat", (auth) => {
+        LiveChat(auth);
+    });
+  });
+
+  cron.schedule("50 21 * * *", () => {
+    RunForEveryToken("Channels", ListChannels);
+    RunForEveryToken("Sponsors", ListMembers);
+    setTimeout(() => {
+      RunForEveryToken("Playlists", ListPlaylists);
+    }, RepeatDealy);
+  });
+
+  cron.schedule("50 22 * * *", () => {
+    RunForEveryToken("Videos", ListVideos);
+  });
+
+  cron.schedule("0 3 * * *", () => {
+    RunForEveryToken("Analytics", ImportAnalytics);
+    RunForEveryToken("ChannelAnalytics", ImportChannelAnalytics);
+  });
+}
+
+async function RunForEveryToken(type, callback) {
+  var clientSecret = process.env.YOUTUBE_CLIENT_SECRET;
+  var clientId = process.env.YOUTUBE_CLIENT_ID;
+  var redirectUrl = process.env.YOUTUBE_CLINET_URI;
+
+  var user_tokens = await Token.query().where("service", "youtube");
+  for (let element of user_tokens) {
+    q.push(type, () => {
+      var oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl);
+      oauth2Client.credentials = element;
+      callback(oauth2Client);
+    });
+  }
+
+  var socket_tokens = await SocketToken.query();
+  for (let element of socket_tokens) {
+    q.push(type, () => {
+      var oauth2Client = new OAuth2(
+        element.client_id || clientId,
+        element.client_secret || clientSecret,
+        element.redirect_url || redirectUrl
+      );
+      oauth2Client.credentials = element;
+      callback(oauth2Client);
+    });
   }
 }
 
@@ -244,6 +307,406 @@ async function ListVideos(auth, pageToken = "", nextPage = true) {
   );
 }
 
+function getBroadcast(socket, nextPageToken) {
+  service.liveBroadcasts.list(
+    {
+      auth: socket.oauth2Client,
+      part: "id, snippet, status",
+      mine: true,
+      maxResults: 50,
+      pageToken: nextPageToken
+    },
+    async function(err, response) {
+      if (err) {
+        socket.emit(
+          "API Error",
+          "The API returned an error: ",
+          JSON.stringify(err, null, 2)
+        );
+        console.error("Broadcast: ", JSON.stringify(err));
+        return;
+      }
+      var elemts = response;
+      socket.emit("broadcasts", elemts);
+
+      // Save to database
+      for (let index = 0; index < response.data.items.length; index++) {
+        const element = response.data.items[index];
+
+        var obj = {};
+        obj.service = "youtube";
+        obj.b_id = element.id;
+        obj.owner = element.snippet.channelId;
+        obj.b_title = element.snippet.title;
+
+        if (typeof element.snippet.actualStartTime == "undefined") {
+          obj.actualStartTime = moment(
+            element.snippet.scheduledStartTime
+          ).toISOString();
+        } else {
+          obj.actualStartTime = moment(
+            element.snippet.actualStartTime
+          ).toISOString();
+        }
+        if (typeof element.snippet.actualEndTime == "undefined") {
+          obj.actualEndTime = null;
+        } else {
+          obj.actualEndTime = element.snippet.actualEndTime;
+        }
+        if (typeof element.snippet.liveChatId == "undefined") {
+          obj.liveChatId = "";
+        } else {
+          obj.liveChatId = element.snippet.liveChatId;
+        }
+
+        if (element.status.privacyStatus != "public") {
+          obj.liveChatId = "";
+        }
+
+        var m = await ow_broadcasts
+          .query()
+          .where("service", obj.service)
+          .where("owner", obj.owner)
+          .where("b_id", obj.b_id);
+
+        if (m.length > 0) {
+          await ow_broadcasts
+            .query()
+            .patch(obj)
+            .where("service", obj.service)
+            .where("owner", obj.owner)
+            .where("b_id", obj.b_id);
+        } else {
+          await ow_broadcasts.query().insert(obj);
+        }
+      }
+    }
+  );
+}
+
+function getVideoDetails(socket, id) {
+  service.videos.list(
+    {
+      auth: socket.oauth2Client,
+      part: "id, snippet, statistics, status",
+      id: id,
+      pageToken: ""
+    },
+    async function(err, response) {
+      if (err) {
+        socket.emit(
+          "API Error",
+          "The API returned an error: ",
+          JSON.stringify(err, null, 2)
+        );
+        console.error("Broadcast: ", JSON.stringify(err));
+        return;
+      }
+      var elemts = response.data.items;
+      socket.emit("videos", elemts);
+
+      // Save to database
+      for (let index = 0; index < elemts.length; index++) {
+        const element = elemts[index];
+
+        var tmp_data = {};
+        tmp_data.service = "youtube";
+        tmp_data.v_id = element.id;
+        tmp_data.owner = element.snippet.channelId;
+        if (typeof element.snippet.thumbnails.standard != "undefined") {
+          tmp_data.thumbnail = element.snippet.thumbnails.standard.url;
+        } else {
+          tmp_data.thumbnail = element.snippet.thumbnails.default.url;
+        }
+        tmp_data.title = element.snippet.title;
+        tmp_data.description = element.snippet.description;
+        tmp_data.privacyStatus = element.status.privacyStatus;
+        tmp_data.publishedAt = moment(
+          element.snippet.publishedAt
+        ).toISOString();
+        tmp_data.viewCount = element.statistics.viewCount;
+        tmp_data.likeCount = element.statistics.likeCount;
+        tmp_data.dislikeCount = element.statistics.dislikeCount;
+        tmp_data.commentCount = element.statistics.commentCount;
+
+        var m = await ow_videos
+          .query()
+          .where("service", tmp_data.service)
+          .where("owner", tmp_data.owner)
+          .where("v_id", tmp_data.v_id);
+
+        if (m.length > 0) {
+          await ow_videos
+            .query()
+            .patch(tmp_data)
+            .where("service", tmp_data.service)
+            .where("owner", tmp_data.owner)
+            .where("v_id", tmp_data.v_id);
+        } else {
+          await ow_videos.query().insert(tmp_data);
+        }
+      }
+    }
+  );
+}
+
+async function getAnalyticsChannel(socket, args) {
+  try {
+    const data = await ChannelAnalyticsHistory.query()
+      .where("channel_id", socket.oauth2Client.credentials.name)
+      .orderBy("timestamp", "desc")
+      .limit(1);
+
+    if (data.length > 0) {
+      socket.emit("AnalyticsChannel", { data: data[0] });
+    } else {
+      socket.emit("AnalyticsChannel", { data: null });
+    }
+  } catch (err) {
+    socket.emit("API Error", "Database Error: " + err.message);
+  }
+}
+
+async function getAnalyticsVideo(socket, args) {
+  try {
+    // Get latest analytics for each video of this channel
+    const subquery = VideoAnalyticsHistory.query()
+      .select("video_id")
+      .max("timestamp as max_ts")
+      .where("channel_id", socket.oauth2Client.credentials.name)
+      .groupBy("video_id");
+
+    const data = await VideoAnalyticsHistory.query()
+      .alias("h")
+      .join(subquery.as("latest"), function() {
+        this.on("h.video_id", "=", "latest.video_id").andOn("h.timestamp", "=", "latest.max_ts");
+      })
+      .orderBy("h.views", "desc")
+      .limit(100);
+
+    socket.emit("AnalyticsVideo", { data: { rows: data } });
+  } catch (err) {
+    socket.emit("API Error", "Database Error: " + err.message);
+  }
+}
+
+function getNewToken(socket, add_scope) {
+  var temp_scope = SCOPES;
+  if (typeof add_scope != "undefined") {
+    temp_scope = add_scope;
+  }
+  var authUrl = socket.oauth2Client.generateAuthUrl({
+    access_type: "offline",
+    scope: temp_scope
+  });
+  socket.emit("Link", authUrl);
+}
+function requestNewToken(code, socket) {
+  socket.oauth2Client.getToken(code, async function(err, token) {
+    if (err) {
+      socket.emit(
+        "TOKEN Error",
+        "Error while trying to retrieve access token: ",
+        err
+      );
+      return;
+    }
+    socket.oauth2Client.credentials = token;
+
+    // Save token to database (youtube_socket_token table)
+    try {
+      var new_obj = {
+        client_id: socket.oauth2Client._clientId,
+        client_secret: socket.oauth2Client._clientSecret,
+        redirect_url: socket.oauth2Client.redirectUri,
+        access_token: token.access_token,
+        refresh_token: token.refresh_token,
+        scope: token.scope,
+        token_type: token.token_type,
+        expiry_date: token.expiry_date
+      };
+
+      // Check if token for this custom client already exists
+      var existing = await SocketToken.query().where({
+        client_id: new_obj.client_id
+      });
+
+      if (existing.length > 0) {
+        await SocketToken.query().patch(new_obj).where({ id: existing[0].id });
+      } else {
+        await SocketToken.query().insert(new_obj);
+      }
+    } catch (e) {
+      console.error("Error saving socket token:", e);
+    }
+
+    getSocketChannel(socket);
+  });
+}
+
+function getSocketChannel(socket, pageToken = "") {
+  service.channels.list(
+    {
+      auth: socket.oauth2Client,
+      part: "snippet,statistics",
+      maxResults: 10,
+      mine: true,
+      pageToken: pageToken
+    },
+    function(err, response) {
+      if (err) {
+        socket.emit(
+          "API Error",
+          "The API returned an error: ",
+          JSON.stringify(err)
+        );
+        console.error("Channel: ", JSON.stringify(err));
+        return;
+      }
+      var elemts = response.data.items;
+      socket.oauth2Client.credentials.name = elemts[0].id;
+      socket.emit("TOKEN", socket.oauth2Client.credentials);
+      socket.emit("channels", elemts);
+    }
+  );
+}
+
+io.on("connection", socket => {
+  console.log("Socket Connection");
+
+  var clientSecret = process.env.YOUTUBE_CLIENT_SECRET;
+  var clientId = process.env.YOUTUBE_CLIENT_ID;
+  var redirectUrl = process.env.YOUTUBE_CLINET_URI;
+
+  socket.on("New", (cfg, new_scopes) => {
+    if (typeof cfg != "undefined") {
+      socket.oauth2Client = new OAuth2(
+        cfg.clientId,
+        cfg.clientSecret,
+        cfg.redirectUrl
+      );
+    } else {
+      socket.oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl);
+    }
+    getNewToken(socket, new_scopes);
+  });
+  socket.on("Code", args => {
+    requestNewToken(args, socket);
+  });
+  socket.on("Auth", (args, cfg) => {
+    if (typeof cfg != "undefined") {
+      socket.oauth2Client = new OAuth2(
+        cfg.clientId,
+        cfg.clientSecret,
+        cfg.redirectUrl
+      );
+    } else {
+      socket.oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl);
+    }
+
+    socket.oauth2Client.credentials = JSON.parse(args);
+    getSocketChannel(socket);
+  });
+
+  socket.on("Search", nextPageToken => {
+    getBroadcast(socket, nextPageToken);
+  });
+  socket.on("VideoStatistic", args => {
+    getVideoDetails(socket, args);
+  });
+
+  socket.on("AnalyticsChannel", args => {
+    getAnalyticsChannel(socket, args);
+  });
+  socket.on("AnalyticsVideo", args => {
+    getAnalyticsVideo(socket, args);
+  });
+});
+
+io.listen(3006);
+
+async function ImportChannelAnalytics(auth) {
+  var q_startDate = moment()
+    .subtract(90, "days")
+    .format("YYYY-MM-DD");
+  var q_endDate = moment()
+    .subtract(14, "days")
+    .format("YYYY-MM-DD");
+
+  var sic = auth.credentials;
+  var sic_user = sic.service_user;
+
+  analytics.reports.query(
+    {
+      auth: auth,
+      ids: "channel==MINE",
+      startDate: q_startDate,
+      endDate: q_endDate,
+      metrics:
+        "views,comments,likes,dislikes,estimatedMinutesWatched,averageViewDuration,averageViewPercentage,subscribersGained,subscribersLost,grossRevenue,estimatedRevenue",
+      dimensions: "day",
+      sort: "day"
+    },
+    async function(err, response) {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      try {
+        fs.writeFileSync(
+          "tmp/report_channel_" + sic_user + ".json",
+          JSON.stringify(response.data, null, 2)
+        );
+
+        var rows = response.data.rows;
+        if (rows && rows.length > 0) {
+          // Sum up the values for the period or just take the latest?
+          // The request seems to imply getting the latest state or aggregation.
+          // For channel stats like revenue and subscribers, we'll sum them up for the 90 day period to get a total,
+          // or we could just take the last row if we want "current" stats.
+          // Given the table structure, let's sum them or take the most recent day's aggregated totals if that's how it's used.
+          // Looking at server.js, it just emits the whole thing.
+          // Let's sum them up to reflect the totals in the channel table.
+
+          let totalSubGained = 0;
+          let totalSubLost = 0;
+          let totalGrossRevenue = 0;
+          let totalEstimatedRevenue = 0;
+
+          for (let i = 0; i < rows.length; i++) {
+            totalSubGained += rows[i][8];
+            totalSubLost += rows[i][9];
+            totalGrossRevenue += rows[i][10];
+            totalEstimatedRevenue += rows[i][11];
+          }
+
+          var channel_data = {
+            service: "youtube",
+            channel_id: sic_user,
+            views: rows.reduce((a, b) => a + b[1], 0),
+            comments: rows.reduce((a, b) => a + b[2], 0),
+            likes: rows.reduce((a, b) => a + b[3], 0),
+            dislikes: rows.reduce((a, b) => a + b[4], 0),
+            estimatedMinutesWatched: rows.reduce((a, b) => a + b[5], 0),
+            averageViewDuration: rows.reduce((a, b) => a + Number(b[6]), 0) / rows.length,
+            averageViewPercentage: rows.reduce((a, b) => a + Number(b[7]), 0) / rows.length,
+            subscribersGained: totalSubGained,
+            subscribersLost: totalSubLost,
+            grossRevenue: totalGrossRevenue,
+            estimatedRevenue: totalEstimatedRevenue,
+            timestamp: new Date().toISOString()
+          };
+
+          await ChannelAnalyticsHistory.query().insert(channel_data);
+        }
+        console.log("Channel Analytics Import done for " + sic_user);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  );
+}
+
 function ListChannels(auth, pageToken = "") {
   var sic = auth.credentials;
   service.channels.list(
@@ -281,10 +744,15 @@ function ListChannels(auth, pageToken = "") {
 
       if (sic.service_user!=channel_obj.channel_id) {
         console.log("Change Token service_user, ", sic.id);
-        await Token.query().where({id: sic.id}).patch({ service_user: channel_obj.channel_id, is_importing: false });
-        process.exit(0);
+        if (sic.client_id) {
+            // It's a SocketToken (has client_id)
+            await SocketToken.query().where({id: sic.id}).patch({ service_user: channel_obj.channel_id, is_importing: false });
+        } else {
+            // It's a regular Token
+            await Token.query().where({id: sic.id}).patch({ service_user: channel_obj.channel_id, is_importing: false });
+        }
       }
-      
+
 
       {
         // Add Server
@@ -677,7 +1145,7 @@ async function LiveChat(auth, pageToken = "") {
         } else {
           console.error(err);
         }
-        
+
         await ow_broadcasts
           .query()
           .patch({liveChatId: ""})
@@ -691,7 +1159,7 @@ async function LiveChat(auth, pageToken = "") {
           auth.credentials = sic;
           LiveChat(auth);
         });
-        
+
         return;
       }
       try {
@@ -985,4 +1453,76 @@ async function FakeMsg(server, room, content) {
   } else {
     FakeMsg(server, room, content);
   }
+}
+
+async function ImportAnalytics(auth) {
+  var q_startDate = moment()
+    .subtract(90, "days")
+    .format("YYYY-MM-DD");
+  var q_endDate = moment()
+    .subtract(14, "days")
+    .format("YYYY-MM-DD");
+
+  var sic = auth.credentials;
+  var sic_user = sic.service_user;
+
+  analytics.reports.query(
+    {
+      auth: auth,
+      ids: "channel==MINE",
+      startDate: q_startDate,
+      endDate: q_endDate,
+      metrics:
+        "views,estimatedMinutesWatched,comments,likes,dislikes,averageViewDuration,averageViewPercentage",
+      dimensions: "video",
+      sort: "-views",
+      maxResults: 200 // Increased from 100
+    },
+    async function(err, response) {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      try {
+        fs.writeFileSync(
+          "tmp/report_" + sic_user + ".json",
+          JSON.stringify(response.data, null, 2)
+        );
+
+        var rows = response.data.rows;
+        if (rows) {
+          for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const video_id = row[0];
+            const views = row[1];
+            const estimatedMinutesWatched = row[2];
+            const comments = row[3];
+            const likes = row[4];
+            const dislikes = row[5];
+            const averageViewDuration = row[6];
+            const averageViewPercentage = row[7];
+
+            var tmp_data = {
+              service: "youtube",
+              channel_id: sic_user,
+              video_id: video_id,
+              views: views,
+              estimatedMinutesWatched: estimatedMinutesWatched,
+              comments: comments,
+              likes: likes,
+              dislikes: dislikes,
+              averageViewDuration: averageViewDuration,
+              averageViewPercentage: averageViewPercentage,
+              timestamp: new Date().toISOString()
+            };
+
+            await VideoAnalyticsHistory.query().insert(tmp_data);
+          }
+        }
+        console.log("Analytics Import done for " + sic_user);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  );
 }
