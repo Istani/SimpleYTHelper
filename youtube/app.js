@@ -149,6 +149,13 @@ function GlobalCronSchedules() {
     RunForEveryToken("Broadcasts", SearchBroadcasts);
   });
 
+  cron.schedule("*/10 * * * *", () => {
+    // Schedule LiveChat check every 10 mins as well, since it's now global
+    RunForEveryToken("LiveChat", (auth) => {
+        LiveChat(auth);
+    });
+  });
+
   cron.schedule("50 21 * * *", () => {
     RunForEveryToken("Channels", ListChannels);
     RunForEveryToken("Sponsors", ListMembers);
@@ -509,7 +516,6 @@ function requestNewToken(code, socket) {
     // Save token to database (youtube_socket_token table)
     try {
       var new_obj = {
-        user_id: 1, // Default user_id as seen in reg.js
         client_id: socket.oauth2Client._clientId,
         client_secret: socket.oauth2Client._clientSecret,
         redirect_url: socket.oauth2Client.redirectUri,
@@ -520,9 +526,8 @@ function requestNewToken(code, socket) {
         expiry_date: token.expiry_date
       };
 
-      // Check if token for this user and custom client already exists
+      // Check if token for this custom client already exists
       var existing = await SocketToken.query().where({
-        user_id: new_obj.user_id,
         client_id: new_obj.client_id
       });
 
@@ -746,7 +751,6 @@ function ListChannels(auth, pageToken = "") {
             // It's a regular Token
             await Token.query().where({id: sic.id}).patch({ service_user: channel_obj.channel_id, is_importing: false });
         }
-        process.exit(0);
       }
 
 

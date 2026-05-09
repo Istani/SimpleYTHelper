@@ -1,7 +1,6 @@
 exports.up = function(knex) {
   return knex.schema.createTable("youtube_socket_token", function(t) {
     t.increments("id");
-    t.integer("user_id");
     t.string("client_id");
     t.string("client_secret");
     t.string("redirect_url");
