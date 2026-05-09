@@ -45,8 +45,34 @@ body {
 }
 
 .service-twitch {
-  background: url("/img/service/twitch.png") no-repeat left;
+  background: url("/service_icons/twitch.png") no-repeat left;
   background-position: 0px 0px;
   background-size: 16px 16px;
-  padding-left: 18px;
+  padding-left: 20px;
+  display: inline-block;
+  line-height: 16px;
+  min-height: 16px;
+  min-width: 16px;
+}
+
+.service-youtube {
+  background: url("/service_icons/youtube.png") no-repeat left;
+  background-position: 0px 0px;
+  background-size: 16px 16px;
+  padding-left: 20px;
+  display: inline-block;
+  line-height: 16px;
+  min-height: 16px;
+  min-width: 16px;
+}
+
+.service-discord {
+  background: url("/service_icons/discord.png") no-repeat left;
+  background-position: 0px 0px;
+  background-size: 16px 16px;
+  padding-left: 20px;
+  display: inline-block;
+  line-height: 16px;
+  min-height: 16px;
+  min-width: 16px;
 }

@@ -18,6 +18,8 @@ const Video = require("./models/videos.js");
 const Member = require("./models/member.js");
 const RpgChar = require("./models/rpg_char.js");
 const RpgInventory = require("./models/rpg_inventory.js");
+const RpgLog = require("./models/rpg_log.js");
+const Playlist = require("./models/playlists.js");
 const session_secret = new Buffer(package_info.name).toString("base64");
 
 /* Webserver */
@@ -493,6 +495,10 @@ app.get("/RPG", async function(req, res) {
     temp_data.chars = await RpgChar.query()
       .where("owner", req.session.user[0].id)
       .eager("inventory");
+    temp_data.logs = await RpgLog.query()
+      .where("owner", req.session.user[0].id)
+      .orderBy("created_at", "desc")
+      .limit(10);
     res.render("rpg", { data: temp_data });
   } else {
     res.redirect("/Login");
@@ -524,6 +530,19 @@ app.get("/Videos", async function(req, res) {
       .whereIn("owner", channel_ids)
       .orderBy("publishedAt", "desc");
     res.render("videos", { data: temp_data });
+  } else {
+    res.redirect("/Login");
+  }
+});
+
+app.get("/Playlists", async function(req, res) {
+  var temp_data = {};
+  if (req.session.user) {
+    temp_data.login = req.session.user[0];
+    var tokens = await Token.query().where("user_id", req.session.user[0].id);
+    var channel_ids = tokens.map(t => t.service_user);
+    temp_data.playlists = await Playlist.query().whereIn("owner", channel_ids);
+    res.render("playlists", { data: temp_data });
   } else {
     res.redirect("/Login");
   }
