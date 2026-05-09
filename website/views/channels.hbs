@@ -1,0 +1,31 @@
+<h2>{{i18n "Channels"}}</h2>
+
+<div class="ui-accordion ui-widget ui-helper-reset">
+    {{#each data.channels}}
+        {{#each channel}}
+            <h3 class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">
+                <img src="/service_icons/{{../service}}.png" width="24" height="24" style="vertical-align: middle;">
+                {{channel_title}}
+            </h3>
+            <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
+                <div style="display: flex; align-items: start;">
+                    <img src="{{thumbnail}}" width="88" style="margin-right: 15px; border-radius: 50%;">
+                    <div>
+                        <p><strong>{{i18n "Service"}}:</strong> {{../service}}</p>
+                        <p><strong>{{i18n "Subscribers"}}:</strong> {{subscriber}}</p>
+                        <p><strong>{{i18n "Views"}}:</strong> {{views}}</p>
+                        <p><strong>Videos:</strong> {{videos}}</p>
+                    </div>
+                </div>
+                <p><em>{{description}}</em></p>
+            </div>
+            <br>
+        {{/each}}
+        {{#unless channel}}
+            <div class="ui-state-highlight ui-corner-all" style="padding: 10px; margin-bottom: 10px;">
+                <img src="/service_icons/{{service}}.png" width="24" height="24" style="vertical-align: middle;">
+                {{i18n "No Data!"}} ({{service}})
+            </div>
+        {{/unless}}
+    {{/each}}
+</div>

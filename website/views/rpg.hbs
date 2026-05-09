@@ -1,0 +1,47 @@
+<h2>{{i18n "RPG"}}</h2>
+
+{{#each data.chars}}
+    <div class="ui-accordion ui-widget ui-helper-reset" style="margin-bottom: 20px;">
+        <h3 class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">
+            {{id}}
+        </h3>
+        <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
+            <div style="display: flex; justify-content: space-around; text-align: center; margin-bottom: 15px;">
+                <div>
+                    <strong>{{i18n "HP"}}</strong><br>
+                    {{hp}} / {{hp_max}}
+                </div>
+                <div>
+                    <strong>{{i18n "ATK"}}</strong><br>
+                    {{atk}}
+                </div>
+                <div>
+                    <strong>{{i18n "Threat"}}</strong><br>
+                    {{threat}}
+                </div>
+            </div>
+
+            <h4>{{i18n "Inventory"}}</h4>
+            <table width="100%" cellpadding="5" cellspacing="0" border="1" style="border-collapse: collapse;">
+                <thead>
+                    <tr class="ui-state-default">
+                        <th>{{i18n "Item"}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each inventory}}
+                        <tr>
+                            <td>{{item_name}}</td>
+                        </tr>
+                    {{#else}}
+                        <tr>
+                            <td align="center">Empty inventory</td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{{#else}}
+    <p>No RPG characters found.</p>
+{{/each}}

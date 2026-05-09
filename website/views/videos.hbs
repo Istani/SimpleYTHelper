@@ -1,0 +1,23 @@
+<h2>{{i18n "Videos"}}</h2>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); grid-gap: 20px;">
+    {{#each data.videos}}
+        <div class="ui-widget-content ui-corner-all" style="padding: 10px;">
+            <img src="{{thumbnail}}" style="width: 100%; border-radius: 4px;">
+            <h4 style="margin: 10px 0 5px 0; height: 3em; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                {{title}}
+            </h4>
+            <div style="font-size: 0.9em; color: #666;">
+                <img src="/service_icons/{{service}}.png" width="16" height="16" style="vertical-align: middle;">
+                {{service}} | {{publishedAt}}
+            </div>
+            <hr>
+            <div style="font-size: 0.85em;">
+                <strong>{{i18n "Views"}}:</strong> {{viewCount}} |
+                <strong>Likes:</strong> {{likeCount}}
+            </div>
+        </div>
+    {{#else}}
+        <p>No videos found.</p>
+    {{/each}}
+</div>
