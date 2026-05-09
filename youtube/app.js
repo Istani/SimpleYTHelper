@@ -32,10 +32,15 @@ const Token = require("./models/syth_token.js");
 var RepeatDealy = 30 * 1000;
 var SCOPES = [
   "https://www.googleapis.com/auth/youtube",
-  "https://www.googleapis.com/auth/youtube.channel-memberships.creator"
+  "https://www.googleapis.com/auth/youtube.channel-memberships.creator",
+  "https://www.googleapis.com/auth/youtube.readonly",
+  "https://www.googleapis.com/auth/youtubepartner",
+  "https://www.googleapis.com/auth/yt-analytics-monetary.readonly",
+  "https://www.googleapis.com/auth/yt-analytics.readonly"
 ];
 var OAuth2 = google.auth.OAuth2;
 var service = google.youtube("v3");
+var analytics = google.youtubeAnalytics("v2");
 var q = new Queue(function(type, input, cb) {
   console.log("Start Import: " + type);
   input();
@@ -87,6 +92,10 @@ function StartImport(auth) {
     auth.credentials = sic;
     SearchBroadcasts(auth);
   });
+  q.push("Analytics", () => {
+    auth.credentials = sic;
+    ImportAnalytics(auth);
+  });
 
   cron.schedule("0 0 * * *", () => {
     q.push("Uploads", () => {
@@ -124,6 +133,13 @@ function StartImport(auth) {
     q.push("Videos", () => {
       auth.credentials = sic;
       ListVideos(auth);
+    });
+  });
+
+  cron.schedule("0 3 * * *", () => {
+    q.push("Analytics", () => {
+      auth.credentials = sic;
+      ImportAnalytics(auth);
     });
   });
 
@@ -284,7 +300,7 @@ function ListChannels(auth, pageToken = "") {
         await Token.query().where({id: sic.id}).patch({ service_user: channel_obj.channel_id, is_importing: false });
         process.exit(0);
       }
-      
+
 
       {
         // Add Server
@@ -677,7 +693,7 @@ async function LiveChat(auth, pageToken = "") {
         } else {
           console.error(err);
         }
-        
+
         await ow_broadcasts
           .query()
           .patch({liveChatId: ""})
@@ -691,7 +707,7 @@ async function LiveChat(auth, pageToken = "") {
           auth.credentials = sic;
           LiveChat(auth);
         });
-        
+
         return;
       }
       try {
@@ -985,4 +1001,77 @@ async function FakeMsg(server, room, content) {
   } else {
     FakeMsg(server, room, content);
   }
+}
+
+async function ImportAnalytics(auth) {
+  var q_startDate = moment()
+    .subtract(90, "days")
+    .format("YYYY-MM-DD");
+  var q_endDate = moment()
+    .subtract(1, "days") // changed from 14 to 1 to get more recent data if possible
+    .format("YYYY-MM-DD");
+
+  var sic = auth.credentials;
+  var sic_user = sic.service_user;
+
+  analytics.reports.query(
+    {
+      auth: auth,
+      ids: "channel==MINE",
+      startDate: q_startDate,
+      endDate: q_endDate,
+      metrics:
+        "views,estimatedMinutesWatched,comments,likes,dislikes,averageViewDuration,averageViewPercentage",
+      dimensions: "video",
+      sort: "-views",
+      maxResults: 200 // Increased from 100
+    },
+    async function(err, response) {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      try {
+        fs.writeFileSync(
+          "tmp/report_" + sic_user + ".json",
+          JSON.stringify(response.data, null, 2)
+        );
+
+        var rows = response.data.rows;
+        if (rows) {
+          for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const video_id = row[0];
+            const views = row[1];
+            const estimatedMinutesWatched = row[2];
+            const comments = row[3];
+            const likes = row[4];
+            const dislikes = row[5];
+            const averageViewDuration = row[6];
+            const averageViewPercentage = row[7];
+
+            var tmp_data = {
+              viewCount: views,
+              estimatedMinutesWatched: estimatedMinutesWatched,
+              commentCount: comments,
+              likeCount: likes,
+              dislikeCount: dislikes,
+              averageViewDuration: averageViewDuration,
+              averageViewPercentage: averageViewPercentage
+            };
+
+            await ow_videos
+              .query()
+              .patch(tmp_data)
+              .where("service", "youtube")
+              .where("owner", sic_user)
+              .where("v_id", video_id);
+          }
+        }
+        console.log("Analytics Import done for " + sic_user);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  );
 }
