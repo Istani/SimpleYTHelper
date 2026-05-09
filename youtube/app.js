@@ -318,75 +318,48 @@ function getVideoDetails(socket, id) {
   );
 }
 
-function getAnalyticsChannel(socket, args) {
-  var q_startDate = moment()
-    .subtract(90, "days")
-    .format("YYYY-MM-DD");
-  var q_endDate = moment()
-    .subtract(14, "days")
-    .format("YYYY-MM-DD");
+async function getAnalyticsChannel(socket, args) {
+  try {
+    const data = await ow_channel.knex()
+      .select("*")
+      .from("channel_analytics_history")
+      .where("channel_id", socket.oauth2Client.credentials.name)
+      .orderBy("timestamp", "desc")
+      .limit(1);
 
-  analytics.reports.query(
-    {
-      auth: socket.oauth2Client,
-      ids: "channel==MINE",
-      startDate: q_startDate,
-      endDate: q_endDate,
-      metrics:
-        "views,comments,likes,dislikes,estimatedMinutesWatched,averageViewDuration,averageViewPercentage,subscribersGained,subscribersLost,grossRevenue,estimatedRevenue",
-      dimensions: "day",
-      sort: "day"
-    },
-    async function(err, response) {
-      if (err) {
-        socket.emit(
-          "API Error",
-          "The API returned an error: ",
-          JSON.stringify(err, null, 2)
-        );
-        console.error("AnalyticsChannel: ", JSON.stringify(err));
-        return;
-      }
-      var elemts = response;
-      socket.emit("AnalyticsChannel", elemts);
+    if (data.length > 0) {
+      socket.emit("AnalyticsChannel", { data: data[0] });
+    } else {
+      socket.emit("AnalyticsChannel", { data: null });
     }
-  );
+  } catch (err) {
+    socket.emit("API Error", "Database Error: " + err.message);
+  }
 }
 
-function getAnalyticsVideo(socket, args) {
-  var q_startDate = moment()
-    .subtract(90, "days")
-    .format("YYYY-MM-DD");
-  var q_endDate = moment()
-    .subtract(14, "days")
-    .format("YYYY-MM-DD");
+async function getAnalyticsVideo(socket, args) {
+  try {
+    // Get latest analytics for each video of this channel
+    const subquery = ow_videos.knex()
+      .select("video_id")
+      .max("timestamp as max_ts")
+      .from("video_analytics_history")
+      .where("channel_id", socket.oauth2Client.credentials.name)
+      .groupBy("video_id");
 
-  analytics.reports.query(
-    {
-      auth: socket.oauth2Client,
-      ids: "channel==MINE",
-      startDate: q_startDate,
-      endDate: q_endDate,
-      metrics:
-        "views,estimatedMinutesWatched,comments,likes,dislikes,averageViewDuration,averageViewPercentage",
-      dimensions: "video",
-      sort: "-views",
-      maxResults: 100
-    },
-    async function(err, response) {
-      if (err) {
-        socket.emit(
-          "API Error",
-          "The API returned an error: ",
-          JSON.stringify(err, null, 2)
-        );
-        console.error("AnalyticsVideo: ", JSON.stringify(err));
-        return;
-      }
-      var elemts = response;
-      socket.emit("AnalyticsVideo", elemts);
-    }
-  );
+    const data = await ow_videos.knex()
+      .select("h.*")
+      .from("video_analytics_history as h")
+      .join(subquery.as("latest"), function() {
+        this.on("h.video_id", "=", "latest.video_id").andOn("h.timestamp", "=", "latest.max_ts");
+      })
+      .orderBy("h.views", "desc")
+      .limit(100);
+
+    socket.emit("AnalyticsVideo", { data: { rows: data } });
+  } catch (err) {
+    socket.emit("API Error", "Database Error: " + err.message);
+  }
 }
 
 function getNewToken(socket, add_scope) {
@@ -552,24 +525,23 @@ async function ImportChannelAnalytics(auth) {
           }
 
           var channel_data = {
-            analytics_views: rows.reduce((a, b) => a + b[1], 0),
-            analytics_comments: rows.reduce((a, b) => a + b[2], 0),
-            analytics_likes: rows.reduce((a, b) => a + b[3], 0),
-            analytics_dislikes: rows.reduce((a, b) => a + b[4], 0),
-            analytics_estimatedMinutesWatched: rows.reduce((a, b) => a + b[5], 0),
-            analytics_averageViewDuration: rows.reduce((a, b) => a + Number(b[6]), 0) / rows.length,
-            analytics_averageViewPercentage: rows.reduce((a, b) => a + Number(b[7]), 0) / rows.length,
+            service: "youtube",
+            channel_id: sic_user,
+            views: rows.reduce((a, b) => a + b[1], 0),
+            comments: rows.reduce((a, b) => a + b[2], 0),
+            likes: rows.reduce((a, b) => a + b[3], 0),
+            dislikes: rows.reduce((a, b) => a + b[4], 0),
+            estimatedMinutesWatched: rows.reduce((a, b) => a + b[5], 0),
+            averageViewDuration: rows.reduce((a, b) => a + Number(b[6]), 0) / rows.length,
+            averageViewPercentage: rows.reduce((a, b) => a + Number(b[7]), 0) / rows.length,
             subscribersGained: totalSubGained,
             subscribersLost: totalSubLost,
             grossRevenue: totalGrossRevenue,
-            estimatedRevenue: totalEstimatedRevenue
+            estimatedRevenue: totalEstimatedRevenue,
+            timestamp: new Date().toISOString()
           };
 
-          await ow_channel
-            .query()
-            .patch(channel_data)
-            .where("service", "youtube")
-            .where("channel_id", sic_user);
+          await ow_channel.knex().insert(channel_data).into("channel_analytics_history");
         }
         console.log("Channel Analytics Import done for " + sic_user);
       } catch (e) {
@@ -1370,21 +1342,20 @@ async function ImportAnalytics(auth) {
             const averageViewPercentage = row[7];
 
             var tmp_data = {
-              viewCount: views,
+              service: "youtube",
+              channel_id: sic_user,
+              video_id: video_id,
+              views: views,
               estimatedMinutesWatched: estimatedMinutesWatched,
-              commentCount: comments,
-              likeCount: likes,
-              dislikeCount: dislikes,
+              comments: comments,
+              likes: likes,
+              dislikes: dislikes,
               averageViewDuration: averageViewDuration,
-              averageViewPercentage: averageViewPercentage
+              averageViewPercentage: averageViewPercentage,
+              timestamp: new Date().toISOString()
             };
 
-            await ow_videos
-              .query()
-              .patch(tmp_data)
-              .where("service", "youtube")
-              .where("owner", sic_user)
-              .where("v_id", video_id);
+            await ow_videos.knex().insert(tmp_data).into("video_analytics_history");
           }
         }
         console.log("Analytics Import done for " + sic_user);
