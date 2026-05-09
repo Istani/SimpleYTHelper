@@ -41,10 +41,11 @@ var SCOPES = [
 var OAuth2 = google.auth.OAuth2;
 var service = google.youtube("v3");
 var analytics = google.youtubeAnalytics("v2");
+const io = require("socket.io")();
 var q = new Queue(function(type, input, cb) {
   console.log("Start Import: " + type);
   input();
-  cb(null, result);
+  cb(null);
 });
 
 async function startTokens() {
@@ -96,6 +97,10 @@ function StartImport(auth) {
     auth.credentials = sic;
     ImportAnalytics(auth);
   });
+  q.push("ChannelAnalytics", () => {
+    auth.credentials = sic;
+    ImportChannelAnalytics(auth);
+  });
 
   cron.schedule("0 0 * * *", () => {
     q.push("Uploads", () => {
@@ -140,6 +145,10 @@ function StartImport(auth) {
     q.push("Analytics", () => {
       auth.credentials = sic;
       ImportAnalytics(auth);
+    });
+    q.push("ChannelAnalytics", () => {
+      auth.credentials = sic;
+      ImportChannelAnalytics(auth);
     });
   });
 
@@ -255,6 +264,316 @@ async function ListVideos(auth, pageToken = "", nextPage = true) {
           auth.credentials = sic;
           ListVideos(auth, pageToken + data.length);
         });
+      }
+    }
+  );
+}
+
+function getBroadcast(socket, nextPageToken) {
+  service.liveBroadcasts.list(
+    {
+      auth: socket.oauth2Client,
+      part: "id, snippet",
+      mine: true,
+      maxResults: 50,
+      pageToken: nextPageToken
+    },
+    async function(err, response) {
+      if (err) {
+        socket.emit(
+          "API Error",
+          "The API returned an error: ",
+          JSON.stringify(err, null, 2)
+        );
+        console.error("Broadcast: ", JSON.stringify(err));
+        return;
+      }
+      var elemts = response;
+      socket.emit("broadcasts", elemts);
+    }
+  );
+}
+
+function getVideoDetails(socket, id) {
+  service.videos.list(
+    {
+      auth: socket.oauth2Client,
+      part: "id, statistics",
+      id: id,
+      pageToken: ""
+    },
+    async function(err, response) {
+      if (err) {
+        socket.emit(
+          "API Error",
+          "The API returned an error: ",
+          JSON.stringify(err, null, 2)
+        );
+        console.error("Broadcast: ", JSON.stringify(err));
+        return;
+      }
+      var elemts = response.data.items;
+      socket.emit("videos", elemts);
+    }
+  );
+}
+
+function getAnalyticsChannel(socket, args) {
+  var q_startDate = moment()
+    .subtract(90, "days")
+    .format("YYYY-MM-DD");
+  var q_endDate = moment()
+    .subtract(14, "days")
+    .format("YYYY-MM-DD");
+
+  analytics.reports.query(
+    {
+      auth: socket.oauth2Client,
+      ids: "channel==MINE",
+      startDate: q_startDate,
+      endDate: q_endDate,
+      metrics:
+        "views,comments,likes,dislikes,estimatedMinutesWatched,averageViewDuration,averageViewPercentage,subscribersGained,subscribersLost,grossRevenue,estimatedRevenue",
+      dimensions: "day",
+      sort: "day"
+    },
+    async function(err, response) {
+      if (err) {
+        socket.emit(
+          "API Error",
+          "The API returned an error: ",
+          JSON.stringify(err, null, 2)
+        );
+        console.error("AnalyticsChannel: ", JSON.stringify(err));
+        return;
+      }
+      var elemts = response;
+      socket.emit("AnalyticsChannel", elemts);
+    }
+  );
+}
+
+function getAnalyticsVideo(socket, args) {
+  var q_startDate = moment()
+    .subtract(90, "days")
+    .format("YYYY-MM-DD");
+  var q_endDate = moment()
+    .subtract(14, "days")
+    .format("YYYY-MM-DD");
+
+  analytics.reports.query(
+    {
+      auth: socket.oauth2Client,
+      ids: "channel==MINE",
+      startDate: q_startDate,
+      endDate: q_endDate,
+      metrics:
+        "views,estimatedMinutesWatched,comments,likes,dislikes,averageViewDuration,averageViewPercentage",
+      dimensions: "video",
+      sort: "-views",
+      maxResults: 100
+    },
+    async function(err, response) {
+      if (err) {
+        socket.emit(
+          "API Error",
+          "The API returned an error: ",
+          JSON.stringify(err, null, 2)
+        );
+        console.error("AnalyticsVideo: ", JSON.stringify(err));
+        return;
+      }
+      var elemts = response;
+      socket.emit("AnalyticsVideo", elemts);
+    }
+  );
+}
+
+function getNewToken(socket, add_scope) {
+  var temp_scope = SCOPES;
+  if (typeof add_scope != "undefined") {
+    temp_scope = add_scope;
+  }
+  var authUrl = socket.oauth2Client.generateAuthUrl({
+    access_type: "offline",
+    scope: temp_scope
+  });
+  socket.emit("Link", authUrl);
+}
+function requestNewToken(code, socket) {
+  socket.oauth2Client.getToken(code, function(err, token) {
+    if (err) {
+      socket.emit(
+        "TOKEN Error",
+        "Error while trying to retrieve access token: ",
+        err
+      );
+      return;
+    }
+    socket.oauth2Client.credentials = token;
+    getSocketChannel(socket);
+  });
+}
+
+function getSocketChannel(socket, pageToken = "") {
+  service.channels.list(
+    {
+      auth: socket.oauth2Client,
+      part: "snippet,statistics",
+      mmaxResults: 10,
+      mine: true,
+      pageToken: pageToken
+    },
+    function(err, response) {
+      if (err) {
+        socket.emit(
+          "API Error",
+          "The API returned an error: ",
+          JSON.stringify(err)
+        );
+        console.error("Channel: ", JSON.stringify(err));
+        return;
+      }
+      var elemts = response.data.items;
+      socket.oauth2Client.credentials.name = elemts[0].id;
+      socket.emit("TOKEN", socket.oauth2Client.credentials);
+      socket.emit("channels", elemts);
+    }
+  );
+}
+
+io.on("connection", socket => {
+  console.log("Socket Connection");
+
+  var clientSecret = process.env.YOUTUBE_CLIENT_SECRET;
+  var clientId = process.env.YOUTUBE_CLIENT_ID;
+  var redirectUrl = process.env.YOUTUBE_CLINET_URI;
+
+  socket.on("New", (cfg, new_scopes) => {
+    if (typeof cfg != "undefined") {
+      socket.oauth2Client = new OAuth2(
+        cfg.clientId,
+        cfg.clientSecret,
+        cfg.redirectUrl
+      );
+    } else {
+      socket.oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl);
+    }
+    getNewToken(socket, new_scopes);
+  });
+  socket.on("Code", args => {
+    requestNewToken(args, socket);
+  });
+  socket.on("Auth", (args, cfg) => {
+    if (typeof cfg != "undefined") {
+      socket.oauth2Client = new OAuth2(
+        cfg.clientId,
+        cfg.clientSecret,
+        cfg.redirectUrl
+      );
+    } else {
+      socket.oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl);
+    }
+
+    socket.oauth2Client.credentials = JSON.parse(args);
+    getSocketChannel(socket);
+  });
+
+  socket.on("Search", nextPageToken => {
+    getBroadcast(socket, nextPageToken);
+  });
+  socket.on("VideoStatistic", args => {
+    getVideoDetails(socket, args);
+  });
+
+  socket.on("AnalyticsChannel", args => {
+    getAnalyticsChannel(socket, args);
+  });
+  socket.on("AnalyticsVideo", args => {
+    getAnalyticsVideo(socket, args);
+  });
+});
+
+io.listen(3006);
+
+async function ImportChannelAnalytics(auth) {
+  var q_startDate = moment()
+    .subtract(90, "days")
+    .format("YYYY-MM-DD");
+  var q_endDate = moment()
+    .subtract(1, "days")
+    .format("YYYY-MM-DD");
+
+  var sic = auth.credentials;
+  var sic_user = sic.service_user;
+
+  analytics.reports.query(
+    {
+      auth: auth,
+      ids: "channel==MINE",
+      startDate: q_startDate,
+      endDate: q_endDate,
+      metrics:
+        "views,comments,likes,dislikes,estimatedMinutesWatched,averageViewDuration,averageViewPercentage,subscribersGained,subscribersLost,grossRevenue,estimatedRevenue",
+      dimensions: "day",
+      sort: "day"
+    },
+    async function(err, response) {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      try {
+        fs.writeFileSync(
+          "tmp/report_channel_" + sic_user + ".json",
+          JSON.stringify(response.data, null, 2)
+        );
+
+        var rows = response.data.rows;
+        if (rows && rows.length > 0) {
+          // Sum up the values for the period or just take the latest?
+          // The request seems to imply getting the latest state or aggregation.
+          // For channel stats like revenue and subscribers, we'll sum them up for the 90 day period to get a total,
+          // or we could just take the last row if we want "current" stats.
+          // Given the table structure, let's sum them or take the most recent day's aggregated totals if that's how it's used.
+          // Looking at server.js, it just emits the whole thing.
+          // Let's sum them up to reflect the totals in the channel table.
+
+          let totalSubGained = 0;
+          let totalSubLost = 0;
+          let totalGrossRevenue = 0;
+          let totalEstimatedRevenue = 0;
+
+          for (let i = 0; i < rows.length; i++) {
+            totalSubGained += rows[i][8];
+            totalSubLost += rows[i][9];
+            totalGrossRevenue += rows[i][10];
+            totalEstimatedRevenue += rows[i][11];
+          }
+
+          var channel_data = {
+            analytics_views: rows.reduce((a, b) => a + b[1], 0),
+            analytics_comments: rows.reduce((a, b) => a + b[2], 0),
+            analytics_likes: rows.reduce((a, b) => a + b[3], 0),
+            analytics_dislikes: rows.reduce((a, b) => a + b[4], 0),
+            analytics_estimatedMinutesWatched: rows.reduce((a, b) => a + b[5], 0),
+            analytics_averageViewDuration: rows.reduce((a, b) => a + Number(b[6]), 0) / rows.length,
+            analytics_averageViewPercentage: rows.reduce((a, b) => a + Number(b[7]), 0) / rows.length,
+            subscribersGained: totalSubGained,
+            subscribersLost: totalSubLost,
+            grossRevenue: totalGrossRevenue,
+            estimatedRevenue: totalEstimatedRevenue
+          };
+
+          await ow_channel
+            .query()
+            .patch(channel_data)
+            .where("service", "youtube")
+            .where("channel_id", sic_user);
+        }
+        console.log("Channel Analytics Import done for " + sic_user);
+      } catch (e) {
+        console.error(e);
       }
     }
   );
