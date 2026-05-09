@@ -273,7 +273,7 @@ function getBroadcast(socket, nextPageToken) {
   service.liveBroadcasts.list(
     {
       auth: socket.oauth2Client,
-      part: "id, snippet",
+      part: "id, snippet, status",
       mine: true,
       maxResults: 50,
       pageToken: nextPageToken
@@ -290,6 +290,58 @@ function getBroadcast(socket, nextPageToken) {
       }
       var elemts = response;
       socket.emit("broadcasts", elemts);
+
+      // Save to database
+      for (let index = 0; index < response.data.items.length; index++) {
+        const element = response.data.items[index];
+
+        var obj = {};
+        obj.service = "youtube";
+        obj.b_id = element.id;
+        obj.owner = element.snippet.channelId;
+        obj.b_title = element.snippet.title;
+
+        if (typeof element.snippet.actualStartTime == "undefined") {
+          obj.actualStartTime = moment(
+            element.snippet.scheduledStartTime
+          ).toISOString();
+        } else {
+          obj.actualStartTime = moment(
+            element.snippet.actualStartTime
+          ).toISOString();
+        }
+        if (typeof element.snippet.actualEndTime == "undefined") {
+          obj.actualEndTime = null;
+        } else {
+          obj.actualEndTime = element.snippet.actualEndTime;
+        }
+        if (typeof element.snippet.liveChatId == "undefined") {
+          obj.liveChatId = "";
+        } else {
+          obj.liveChatId = element.snippet.liveChatId;
+        }
+
+        if (element.status.privacyStatus != "public") {
+          obj.liveChatId = "";
+        }
+
+        var m = await ow_broadcasts
+          .query()
+          .where("service", obj.service)
+          .where("owner", obj.owner)
+          .where("b_id", obj.b_id);
+
+        if (m.length > 0) {
+          await ow_broadcasts
+            .query()
+            .patch(obj)
+            .where("service", obj.service)
+            .where("owner", obj.owner)
+            .where("b_id", obj.b_id);
+        } else {
+          await ow_broadcasts.query().insert(obj);
+        }
+      }
     }
   );
 }
@@ -298,7 +350,7 @@ function getVideoDetails(socket, id) {
   service.videos.list(
     {
       auth: socket.oauth2Client,
-      part: "id, statistics",
+      part: "id, snippet, statistics, status",
       id: id,
       pageToken: ""
     },
@@ -314,6 +366,48 @@ function getVideoDetails(socket, id) {
       }
       var elemts = response.data.items;
       socket.emit("videos", elemts);
+
+      // Save to database
+      for (let index = 0; index < elemts.length; index++) {
+        const element = elemts[index];
+
+        var tmp_data = {};
+        tmp_data.service = "youtube";
+        tmp_data.v_id = element.id;
+        tmp_data.owner = element.snippet.channelId;
+        if (typeof element.snippet.thumbnails.standard != "undefined") {
+          tmp_data.thumbnail = element.snippet.thumbnails.standard.url;
+        } else {
+          tmp_data.thumbnail = element.snippet.thumbnails.default.url;
+        }
+        tmp_data.title = element.snippet.title;
+        tmp_data.description = element.snippet.description;
+        tmp_data.privacyStatus = element.status.privacyStatus;
+        tmp_data.publishedAt = moment(
+          element.snippet.publishedAt
+        ).toISOString();
+        tmp_data.viewCount = element.statistics.viewCount;
+        tmp_data.likeCount = element.statistics.likeCount;
+        tmp_data.dislikeCount = element.statistics.dislikeCount;
+        tmp_data.commentCount = element.statistics.commentCount;
+
+        var m = await ow_videos
+          .query()
+          .where("service", tmp_data.service)
+          .where("owner", tmp_data.owner)
+          .where("v_id", tmp_data.v_id);
+
+        if (m.length > 0) {
+          await ow_videos
+            .query()
+            .patch(tmp_data)
+            .where("service", tmp_data.service)
+            .where("owner", tmp_data.owner)
+            .where("v_id", tmp_data.v_id);
+        } else {
+          await ow_videos.query().insert(tmp_data);
+        }
+      }
     }
   );
 }
@@ -374,7 +468,7 @@ function getNewToken(socket, add_scope) {
   socket.emit("Link", authUrl);
 }
 function requestNewToken(code, socket) {
-  socket.oauth2Client.getToken(code, function(err, token) {
+  socket.oauth2Client.getToken(code, async function(err, token) {
     if (err) {
       socket.emit(
         "TOKEN Error",
@@ -384,6 +478,34 @@ function requestNewToken(code, socket) {
       return;
     }
     socket.oauth2Client.credentials = token;
+
+    // Save token to database
+    try {
+      var new_obj = {
+        user_id: 1, // Default user_id as seen in reg.js
+        service: "youtube",
+        access_token: token.access_token,
+        refresh_token: token.refresh_token,
+        scope: token.scope,
+        token_type: token.token_type,
+        expiry_date: token.expiry_date
+      };
+
+      // Check if token for this user and service already exists
+      var existing = await Token.query().where({
+        user_id: new_obj.user_id,
+        service: new_obj.service
+      });
+
+      if (existing.length > 0) {
+        await Token.query().patch(new_obj).where({ id: existing[0].id });
+      } else {
+        await Token.query().insert(new_obj);
+      }
+    } catch (e) {
+      console.error("Error saving token:", e);
+    }
+
     getSocketChannel(socket);
   });
 }
