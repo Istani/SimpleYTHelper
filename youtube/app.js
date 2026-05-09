@@ -29,6 +29,8 @@ const Chat_Server = require("./models/chat_server.js");
 const Chat_User = require("./models/chat_user.js");
 const Token = require("./models/syth_token.js");
 const SocketToken = require("./models/youtube_socket_token.js");
+const ChannelAnalyticsHistory = require("./models/channel_analytics_history.js");
+const VideoAnalyticsHistory = require("./models/video_analytics_history.js");
 
 var RepeatDealy = 30 * 1000;
 var SCOPES = [
@@ -443,9 +445,7 @@ function getVideoDetails(socket, id) {
 
 async function getAnalyticsChannel(socket, args) {
   try {
-    const data = await ow_channel.knex()
-      .select("*")
-      .from("channel_analytics_history")
+    const data = await ChannelAnalyticsHistory.query()
       .where("channel_id", socket.oauth2Client.credentials.name)
       .orderBy("timestamp", "desc")
       .limit(1);
@@ -463,16 +463,14 @@ async function getAnalyticsChannel(socket, args) {
 async function getAnalyticsVideo(socket, args) {
   try {
     // Get latest analytics for each video of this channel
-    const subquery = ow_videos.knex()
+    const subquery = VideoAnalyticsHistory.query()
       .select("video_id")
       .max("timestamp as max_ts")
-      .from("video_analytics_history")
       .where("channel_id", socket.oauth2Client.credentials.name)
       .groupBy("video_id");
 
-    const data = await ow_videos.knex()
-      .select("h.*")
-      .from("video_analytics_history as h")
+    const data = await VideoAnalyticsHistory.query()
+      .alias("h")
       .join(subquery.as("latest"), function() {
         this.on("h.video_id", "=", "latest.video_id").andOn("h.timestamp", "=", "latest.max_ts");
       })
@@ -546,7 +544,7 @@ function getSocketChannel(socket, pageToken = "") {
     {
       auth: socket.oauth2Client,
       part: "snippet,statistics",
-      mmaxResults: 10,
+      maxResults: 10,
       mine: true,
       pageToken: pageToken
     },
@@ -694,7 +692,7 @@ async function ImportChannelAnalytics(auth) {
             timestamp: new Date().toISOString()
           };
 
-          await ow_channel.knex().insert(channel_data).into("channel_analytics_history");
+          await ChannelAnalyticsHistory.query().insert(channel_data);
         }
         console.log("Channel Analytics Import done for " + sic_user);
       } catch (e) {
@@ -1514,7 +1512,7 @@ async function ImportAnalytics(auth) {
               timestamp: new Date().toISOString()
             };
 
-            await ow_videos.knex().insert(tmp_data).into("video_analytics_history");
+            await VideoAnalyticsHistory.query().insert(tmp_data);
           }
         }
         console.log("Analytics Import done for " + sic_user);
