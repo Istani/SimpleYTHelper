@@ -28,6 +28,7 @@ const Chat_Room = require("./models/chat_room.js");
 const Chat_Server = require("./models/chat_server.js");
 const Chat_User = require("./models/chat_user.js");
 const Token = require("./models/syth_token.js");
+const SocketToken = require("./models/youtube_socket_token.js");
 
 var RepeatDealy = 30 * 1000;
 var SCOPES = [
@@ -52,6 +53,8 @@ async function startTokens() {
   await Token.query()
     .where("service", "youtube")
     .patch({ is_importing: false });
+  await SocketToken.query()
+    .patch({ is_importing: false });
   authorize(StartImport);
 }
 
@@ -59,27 +62,48 @@ async function authorize(callback) {
   var clientSecret = process.env.YOUTUBE_CLIENT_SECRET;
   var clientId = process.env.YOUTUBE_CLIENT_ID;
   var redirectUrl = process.env.YOUTUBE_CLINET_URI;
-  var oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl);
 
-  var user_token = await Token.query()
+  // Process tokens from Token model (syth_token table)
+  var user_tokens = await Token.query()
     .where("service", "youtube")
     .where("is_importing", false);
-  if (user_token.length>0) {
-    let index = 0;
-    //for (let index = 0; index < user_token.length; index++) {
-    const element = user_token[index];
+
+  for (let index = 0; index < user_tokens.length; index++) {
+    const element = user_tokens[index];
     await Token.query()
-      .where(element)
+      .where({id: element.id})
       .patch({ is_importing: true });
+
+    var oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl);
     oauth2Client.credentials = element;
     callback(oauth2Client);
-    //}
   }
+
+  // Process tokens from SocketToken model (youtube_socket_token table)
+  var socket_tokens = await SocketToken.query()
+    .where("is_importing", false);
+
+  for (let index = 0; index < socket_tokens.length; index++) {
+    const element = socket_tokens[index];
+    await SocketToken.query()
+      .where({id: element.id})
+      .patch({ is_importing: true });
+
+    var oauth2Client = new OAuth2(
+      element.client_id || clientId,
+      element.client_secret || clientSecret,
+      element.redirect_url || redirectUrl
+    );
+    oauth2Client.credentials = element;
+    callback(oauth2Client);
+  }
+
   setTimeout(() => {
-    authorize(StartImport);
+    authorize(callback);
   }, 1000);
 }
 startTokens();
+GlobalCronSchedules();
 
 function StartImport(auth) {
   var sic = auth.credentials;
@@ -102,56 +126,6 @@ function StartImport(auth) {
     ImportChannelAnalytics(auth);
   });
 
-  cron.schedule("0 0 * * *", () => {
-    q.push("Uploads", () => {
-      auth.credentials = sic;
-      ListNewUploads(auth);
-    });
-  });
-
-  cron.schedule("*/20 * * * *", () => {
-    q.push("Broadcasts", () => {
-      auth.credentials = sic;
-      SearchBroadcasts(auth);
-    });
-  });
-
-  cron.schedule("50 21 * * *", () => {
-    q.push("Channels", () => {
-      auth.credentials = sic;
-      ListChannels(auth);
-    });
-    q.push("Sponsors", () => {
-      auth.credentials = sic;
-      ListMembers(auth);
-    });
-    setTimeout(() => {
-      // Damit dann Channels und Sponsors vielleicht schon fertig ist
-      q.push("Playlists", () => {
-        auth.credentials = sic;
-        ListPlaylists(auth);
-      });
-    }, RepeatDealy);
-  });
-
-  cron.schedule("50 22 * * *", () => {
-    q.push("Videos", () => {
-      auth.credentials = sic;
-      ListVideos(auth);
-    });
-  });
-
-  cron.schedule("0 3 * * *", () => {
-    q.push("Analytics", () => {
-      auth.credentials = sic;
-      ImportAnalytics(auth);
-    });
-    q.push("ChannelAnalytics", () => {
-      auth.credentials = sic;
-      ImportChannelAnalytics(auth);
-    });
-  });
-
   q.push("LiveChat", () => {
     auth.credentials = sic;
     LiveChat(auth);
@@ -161,6 +135,61 @@ function StartImport(auth) {
   if (sic.id == 5) {
     auth.credentials = sic;
     CheckForMessages(auth);
+  }
+}
+
+function GlobalCronSchedules() {
+  cron.schedule("0 0 * * *", () => {
+    RunForEveryToken("Uploads", ListNewUploads);
+  });
+
+  cron.schedule("*/20 * * * *", () => {
+    RunForEveryToken("Broadcasts", SearchBroadcasts);
+  });
+
+  cron.schedule("50 21 * * *", () => {
+    RunForEveryToken("Channels", ListChannels);
+    RunForEveryToken("Sponsors", ListMembers);
+    setTimeout(() => {
+      RunForEveryToken("Playlists", ListPlaylists);
+    }, RepeatDealy);
+  });
+
+  cron.schedule("50 22 * * *", () => {
+    RunForEveryToken("Videos", ListVideos);
+  });
+
+  cron.schedule("0 3 * * *", () => {
+    RunForEveryToken("Analytics", ImportAnalytics);
+    RunForEveryToken("ChannelAnalytics", ImportChannelAnalytics);
+  });
+}
+
+async function RunForEveryToken(type, callback) {
+  var clientSecret = process.env.YOUTUBE_CLIENT_SECRET;
+  var clientId = process.env.YOUTUBE_CLIENT_ID;
+  var redirectUrl = process.env.YOUTUBE_CLINET_URI;
+
+  var user_tokens = await Token.query().where("service", "youtube");
+  for (let element of user_tokens) {
+    q.push(type, () => {
+      var oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl);
+      oauth2Client.credentials = element;
+      callback(oauth2Client);
+    });
+  }
+
+  var socket_tokens = await SocketToken.query();
+  for (let element of socket_tokens) {
+    q.push(type, () => {
+      var oauth2Client = new OAuth2(
+        element.client_id || clientId,
+        element.client_secret || clientSecret,
+        element.redirect_url || redirectUrl
+      );
+      oauth2Client.credentials = element;
+      callback(oauth2Client);
+    });
   }
 }
 
@@ -479,11 +508,13 @@ function requestNewToken(code, socket) {
     }
     socket.oauth2Client.credentials = token;
 
-    // Save token to database
+    // Save token to database (youtube_socket_token table)
     try {
       var new_obj = {
         user_id: 1, // Default user_id as seen in reg.js
-        service: "youtube",
+        client_id: socket.oauth2Client._clientId,
+        client_secret: socket.oauth2Client._clientSecret,
+        redirect_url: socket.oauth2Client.redirectUri,
         access_token: token.access_token,
         refresh_token: token.refresh_token,
         scope: token.scope,
@@ -491,19 +522,19 @@ function requestNewToken(code, socket) {
         expiry_date: token.expiry_date
       };
 
-      // Check if token for this user and service already exists
-      var existing = await Token.query().where({
+      // Check if token for this user and custom client already exists
+      var existing = await SocketToken.query().where({
         user_id: new_obj.user_id,
-        service: new_obj.service
+        client_id: new_obj.client_id
       });
 
       if (existing.length > 0) {
-        await Token.query().patch(new_obj).where({ id: existing[0].id });
+        await SocketToken.query().patch(new_obj).where({ id: existing[0].id });
       } else {
-        await Token.query().insert(new_obj);
+        await SocketToken.query().insert(new_obj);
       }
     } catch (e) {
-      console.error("Error saving token:", e);
+      console.error("Error saving socket token:", e);
     }
 
     getSocketChannel(socket);
@@ -710,7 +741,13 @@ function ListChannels(auth, pageToken = "") {
 
       if (sic.service_user!=channel_obj.channel_id) {
         console.log("Change Token service_user, ", sic.id);
-        await Token.query().where({id: sic.id}).patch({ service_user: channel_obj.channel_id, is_importing: false });
+        if (sic.client_id) {
+            // It's a SocketToken (has client_id)
+            await SocketToken.query().where({id: sic.id}).patch({ service_user: channel_obj.channel_id, is_importing: false });
+        } else {
+            // It's a regular Token
+            await Token.query().where({id: sic.id}).patch({ service_user: channel_obj.channel_id, is_importing: false });
+        }
         process.exit(0);
       }
 
