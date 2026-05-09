@@ -474,7 +474,7 @@ async function ImportChannelAnalytics(auth) {
     .subtract(90, "days")
     .format("YYYY-MM-DD");
   var q_endDate = moment()
-    .subtract(1, "days")
+    .subtract(14, "days")
     .format("YYYY-MM-DD");
 
   var sic = auth.credentials;
@@ -1299,7 +1299,7 @@ async function ImportAnalytics(auth) {
     .subtract(90, "days")
     .format("YYYY-MM-DD");
   var q_endDate = moment()
-    .subtract(1, "days") // changed from 14 to 1 to get more recent data if possible
+    .subtract(14, "days")
     .format("YYYY-MM-DD");
 
   var sic = auth.credentials;
