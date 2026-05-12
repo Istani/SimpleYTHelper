@@ -1,0 +1,32 @@
+<h2>{{i18n "Members"}}</h2>
+
+<div class="ui-accordion ui-widget ui-helper-reset">
+    <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-all">
+        <table width="100%" cellpadding="5" cellspacing="0" border="1" style="border-collapse: collapse;">
+            <thead>
+                <tr class="ui-state-default">
+                    <th>{{i18n "Service"}}</th>
+                    <th>{{i18n "Title"}}</th>
+                    <th>{{i18n "Level"}}</th>
+                    <th>{{i18n "Since"}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each data.members}}
+                    <tr>
+                        <td align="center">
+                            <span class="service-{{service}}"></span>
+                        </td>
+                        <td>{{member_name}}</td>
+                        <td>{{level}}</td>
+                        <td>{{since}}</td>
+                    </tr>
+                {{#else}}
+                    <tr>
+                        <td colspan="4" align="center">No members found.</td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</div>

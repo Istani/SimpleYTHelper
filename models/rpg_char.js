@@ -21,6 +21,21 @@ class Char extends Model {
   $beforeUpdate() {
     this.updated_at = moment().format("YYYY-MM-DD HH:mm:ss");
   }
+
+  static get relationMappings() {
+    const Inventory = require("./rpg_inventory.js");
+
+    return {
+      inventory: {
+        relation: Model.HasManyRelation,
+        modelClass: Inventory,
+        join: {
+          from: "rpg_char.id",
+          to: "rpg_inventory.char_id"
+        }
+      }
+    };
+  }
 }
 
 module.exports = Char;

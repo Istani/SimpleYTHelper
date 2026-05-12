@@ -1,0 +1,33 @@
+<h2>{{i18n "Channels"}}</h2>
+
+<div class="ui-accordion ui-widget ui-helper-reset">
+    {{#each data.channels}}
+        {{#each channel}}
+            <h3 class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">
+                <span class="service-{{../service}}">{{channel_title}}</span>
+            </h3>
+            <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
+                {{#if banner}}
+                    <img src="{{banner}}" style="width: 100%; max-height: 150px; object-fit: cover; border-radius: 4px; margin-bottom: 10px;">
+                {{/if}}
+                <div style="display: flex; align-items: start;">
+                    <img src="{{thumbnail}}" width="88" style="margin-right: 15px; border-radius: 50%;">
+                    <div>
+                        <p><strong>{{i18n "Service"}}:</strong> {{../service}}</p>
+                        <p><strong>{{i18n "Subscribers"}}:</strong> {{subscriber}}</p>
+                        <p><strong>{{i18n "Views"}}:</strong> {{views}}</p>
+                        <p><strong>Videos:</strong> {{videos}}</p>
+                        <p><strong>{{i18n "Since"}}:</strong> {{start_date}}</p>
+                    </div>
+                </div>
+                <p><em>{{description}}</em></p>
+            </div>
+            <br>
+        {{/each}}
+        {{#unless channel}}
+            <div class="ui-state-highlight ui-corner-all" style="padding: 10px; margin-bottom: 10px;">
+                <span class="service-{{service}}">{{i18n "No Data!"}}</span>
+            </div>
+        {{/unless}}
+    {{/each}}
+</div>
