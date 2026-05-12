@@ -48,19 +48,23 @@ client.on("ready", () => {
 });
 
 function PruneAll() {
-  var allGuilds = client.guilds;
-  //console.log(allGuilds);
-  allGuilds.forEach(guild => {
-    guild
-      .pruneMembers(30, true)
-      .then(pruned => {
-        console.log(guild.name + " - " + pruned + " Prune!");
-        if (pruned > 0) {
-          guild.pruneMembers(30, false);
-        }
-      })
-      .catch(console.error);
-  });
+  try {
+    var allGuilds = client.guilds;
+    //console.log(allGuilds);
+    allGuilds.forEach(guild => {
+      guild
+        .pruneMembers(30, true)
+        .then(pruned => {
+          console.log(guild.name + " - " + pruned + " Prune!");
+          if (pruned > 0) {
+            guild.pruneMembers(30, false);
+          }
+        })
+        .catch(console.error);
+    });
+  } catch (e) {
+    console.error(e);
+  }
 }
 cron.schedule("0 15 * * *", () => {
   PruneAll();

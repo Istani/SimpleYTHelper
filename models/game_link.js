@@ -1,3 +1,4 @@
+const moment = require("moment");
 const { Model } = require("objection");
 const Knex = require("knex");
 
@@ -31,7 +32,7 @@ class Game_Link extends Model {
     var temp_link = await Short_URL.gen_link(this.link);
     temp_link = "http://games-on-sale.de/s/" + temp_link;
     this.link = temp_link;
-    this.updated_at = new Date().toISOString();
+    this.updated_at = moment().format("YYYY-MM-DD HH:mm:ss");
     this.name = this.name.toLowerCase();
   }
 }

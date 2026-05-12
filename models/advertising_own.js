@@ -1,3 +1,4 @@
+const moment = require("moment");
 const { Model } = require("objection");
 const Knex = require("knex");
 
@@ -15,11 +16,11 @@ class advertising_own extends Model {
 
   $beforeInsert() {
     this.$beforeUpdate();
-    this.created_at = new Date().toISOString();
+    this.created_at = moment().format("YYYY-MM-DD HH:mm:ss");
   }
 
   $beforeUpdate() {
-    this.updated_at = new Date().toISOString();
+    this.updated_at = moment().format("YYYY-MM-DD HH:mm:ss");
     //    if (this.output=="") {this.output=0;}
     //    if (this.output_total=="") {this.output_total=0;}
     this.output++;

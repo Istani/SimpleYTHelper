@@ -1,3 +1,4 @@
+const moment = require("moment");
 const { Model } = require("objection");
 const Knex = require("knex");
 const emoji = require("node-emoji");
@@ -19,7 +20,7 @@ class Logs extends Model {
   }
 
   $beforeUpdate() {
-    //this.updated_at = new Date().toISOString();
+    //this.updated_at = moment().format('YYYY-MM-DD HH:mm:ss');
     this.display_text = emoji.unemojify(this.display_text);
   }
 }

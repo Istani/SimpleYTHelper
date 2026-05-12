@@ -798,7 +798,7 @@ async function palim(msg_data) {
 
 async function streamplan(msg_data) {
   var output_string =
-    "Was ist der Plan? https://media.discordapp.net/attachments/213716270963621888/1365648823359377508/StreamplanSquare_20250428.jpg";
+    "https://www.youtube.com/channel/UC5DOhI70dI3PnLPMkUsosgw/community?lb=Ugkx0VzbSC3tNEJNh4dttnwGSNBt2arn9b2N";
   await outgoing(msg_data, output_string);
   output_string = "";
 }

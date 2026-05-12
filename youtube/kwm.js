@@ -14,10 +14,11 @@ const sleep = require("await-sleep");
 const moment = require("moment");
 
 var q_startDate = moment()
-  .subtract(90, "days")
+  //.subtract(90, "day")
+  .subtract(10, "years")
   .format("YYYY-MM-DD");
 var q_endDate = moment()
-  .subtract(14, "days")
+  //.subtract(14, "days")
   .format("YYYY-MM-DD");
 
 var readline = require("readline");
@@ -93,6 +94,7 @@ async function test_report(auth, pageToken = "") {
     {
       auth: sic,
       ids: "channel==MINE",
+
       startDate: q_startDate,
       endDate: q_endDate,
       //metrics: "views,comments,likes,dislikes,estimatedMinutesWatched,averageViewDuration,averageViewPercentage",//,subscribersGained,subscribersLost", // grossRevenue,estimatedRevenue,
@@ -100,11 +102,16 @@ async function test_report(auth, pageToken = "") {
       //dimensions: "video",//"day,video",
       //sort: "day"
       //alt: "csv" // In V2 nicht OK
-      metrics:
-        "views,estimatedMinutesWatched,comments,likes,dislikes,averageViewDuration,averageViewPercentage",
+      /*
+      metrics: "views,estimatedMinutesWatched,comments,likes,dislikes,averageViewDuration,averageViewPercentage",
       dimensions: "video",
       sort: "-views",
-      maxResults: 100
+      maxResults: 100,
+      */
+      dimensions: "video",
+      metrics: "views,likes,impressions",
+      maxResults: 10,
+      sort: "-views"
     },
     async function(err, response) {
       if (err) {

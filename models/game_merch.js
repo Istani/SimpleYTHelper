@@ -1,3 +1,4 @@
+const moment = require("moment");
 const { Model } = require("objection");
 const Knex = require("knex");
 
@@ -26,7 +27,7 @@ class Game_Merch extends Model {
   }
 
   $beforeUpdate() {
-    this.updated_at = new Date().toISOString();
+    this.updated_at = moment().format("YYYY-MM-DD HH:mm:ss");
     this.name = this.name.toLowerCase();
   }
 }

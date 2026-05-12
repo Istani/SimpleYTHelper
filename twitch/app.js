@@ -50,7 +50,7 @@ const client = new tmi.Client({
     username: process.env.TWITCH_Login,
     password: process.env.TWITCH_Passwort
   },
-  channels: ["#istani", "#yunkthreed"]
+  channels: ["#istani", "#yunkthreed", "#defender833"]
   // Todo: Read Channels from DB - Total dämchlich weil des is der Login Name, nicht die ID, nicht Display Name...
 });
 client.connect();
