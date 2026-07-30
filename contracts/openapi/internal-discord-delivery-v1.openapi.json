@@ -1,0 +1,100 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "SimpleYTH Internal Discord Delivery API",
+    "version": "1.0.0",
+    "description": "Versionierter interner Vertrag zwischen community-outbox-worker und discord-adapter. Nicht öffentlich; kein Ersatz für bestehende Web- oder Socket.IO-Routen."
+  },
+  "paths": {
+    "/internal/v1/deliveries": {
+      "post": {
+        "summary": "Einen Discord-Zustellauftrag idempotent annehmen",
+        "operationId": "acceptDiscordDelivery",
+        "security": [{ "internalServiceAuth": [] }],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "description": "UUID der Outbox-Nachricht. Der Adapter muss denselben Schlüssel dauerhaft deduplizieren.",
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DiscordDeliveryRequest" }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Der Adapter hat den Auftrag dauerhaft und idempotent zur Zustellung angenommen. Das ist keine Zusage, dass Discord die Nachricht bereits angezeigt hat.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DeliveryAccepted" }
+              }
+            }
+          },
+          "400": { "description": "Ungültige Payload; nicht erneut versuchen, bevor der Erzeuger korrigiert wurde." },
+          "401": { "description": "Fehlende oder ungültige interne Service-Authentisierung." },
+          "409": { "description": "Idempotency-Key wurde mit abweichender Payload erneut verwendet; manuelle Diagnose erforderlich." },
+          "429": { "description": "Temporäre Drosselung; Worker verwendet Retry-Backoff." },
+          "503": { "description": "Adapter temporär nicht verfügbar; Worker verwendet Retry-Backoff." }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "internalServiceAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "interner kurzlebiger Service-Token",
+        "description": "Konkrete Ausstellung, Rotation und Transport werden vor Implementierung als Security-Entscheidung festgelegt. Keine Discord-Credentials."
+      }
+    },
+    "schemas": {
+      "DiscordDeliveryRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["event_id", "event_type", "schema_version", "target", "content"],
+        "properties": {
+          "event_id": { "type": "string", "format": "uuid", "description": "Muss mit Idempotency-Key identisch sein." },
+          "event_type": { "type": "string", "const": "community.message.delivery-requested.v1" },
+          "schema_version": { "type": "integer", "const": 1 },
+          "target": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["channel_id"],
+            "properties": {
+              "channel_id": { "type": "string", "minLength": 1, "maxLength": 75 },
+              "guild_id": { "type": "string", "minLength": 1, "maxLength": 75 }
+            }
+          },
+          "content": { "type": "string", "minLength": 1, "maxLength": 2000 },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "source": { "type": "string", "maxLength": 100 },
+              "correlation_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "DeliveryAccepted": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["event_id", "adapter_delivery_id", "status", "accepted_at"],
+        "properties": {
+          "event_id": { "type": "string", "format": "uuid" },
+          "adapter_delivery_id": { "type": "string", "format": "uuid" },
+          "status": { "type": "string", "const": "accepted" },
+          "accepted_at": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  }
+}

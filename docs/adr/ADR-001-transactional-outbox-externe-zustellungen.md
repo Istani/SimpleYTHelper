@@ -41,8 +41,8 @@ Der Worker ist ein normaler Background-Worker. Er ist **kein Datenbankservice**,
 2. In **derselben PostgreSQL-Transaktion** speichert es einen Outbox-Eintrag, etwa `community.message.delivery-requested.v1`.
 3. `community-outbox-worker` claimt einen offenen Eintrag atomar und mit zeitlich begrenzter Lease.
 4. Der Worker ruft die versionierte interne Zustell-API des passenden Adapters auf, z. B. Discord.
-5. Bei bestätigter Annahme wird der Eintrag als `delivered` markiert; bei Fehlern wird er mit Backoff erneut versucht.
-6. Nach der maximalen Versuchszahl erhält der Eintrag `failed`; er bleibt für Diagnose und kontrolliertes Replay erhalten.
+5. Bei bestätigter Annahme wird der Eintrag als `accepted_by_adapter` markiert; bei Fehlern wird er mit Backoff erneut versucht.
+6. Nach der maximalen Versuchszahl erhält der Eintrag `failed`; er bleibt für Diagnose und kontrolliertes Replay erhalten. Die finale externe Zustellung wird im Adapter-Ledger geführt, nicht durch die Annahmeantwort behauptet.
 
 ## Mindestzustand eines Outbox-Eintrags
 
