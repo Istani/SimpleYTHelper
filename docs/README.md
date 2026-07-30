@@ -1,6 +1,6 @@
 # SimpleYTH – Arbeitsdokumentation
 
-Diese Dokumentation ist die zentrale Arbeitsablage des lokalen Architekturbranches `architecture/phase-0-workspace`.
+Diese Dokumentation ist die zentrale Arbeitsablage des Docker-/Modernisierungsbranches `docker-entwicklung`.
 
 ## Inhalte
 
@@ -8,6 +8,7 @@ Diese Dokumentation ist die zentrale Arbeitsablage des lokalen Architekturbranch
 - [Phase 0 – Bestandsaufnahme](phasen/phase-0-bestandsaufnahme.md)
 - [Phase 1 – Datenownership-Matrix](phasen/phase-1-datenownership-matrix.md)
 - [Phase 1 – Discord-Bot- und Selfbot-Bestand](phasen/phase-1-discord-bot-selfbot-bestand.md)
+- [Phase 1 – Kommunikationsgraph](phasen/phase-1-kommunikationsgraph.md)
 - `adr/` – Architekturentscheidungen (wird bei der ersten Entscheidung angelegt)
 
 ## Pflegeprinzip

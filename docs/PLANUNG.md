@@ -1,12 +1,12 @@
 # SimpleYTH – Architektur- und Migrationsplanung
 
-**Arbeitsbranch:** `architecture/phase-0-workspace`  
+**Arbeitsbranch:** `docker-entwicklung`
 **Geltungsbereich:** Architekturmodernisierung von SimpleYTH; der produktive PM2-/MariaDB-Betrieb auf `defender833` bleibt unverändert, bis ein ausdrücklich freigegebener Cutover validiert ist.
 
 ## Leitplanken
 
 - Keine produktiven Dienste stoppen, keine Daten löschen und keine Migration ohne Freigabe ausführen.
-- Neue serviceübergreifende Kommunikation ausschließlich über dokumentierte, versionierte HTTP APIs – keine neuen direkten Datenbankzugriffe.
+- Neue serviceübergreifende Kommunikation ausschließlich über dokumentierte, versionierte HTTP APIs oder – für bestätigte asynchrone Domänen – einen explizit entschieden Event-Mechanismus; keine neuen direkten Datenbankzugriffe. Die bestehenden Web-/Socket.IO-Ports gelten nicht als vorhandene HTTP-API-Verträge.
 - Discord-Bot und ein möglicher Discord-Selfbot werden als getrennte Services mit getrennten Laufzeit-, Konfigurations- und Berechtigungsgrenzen behandelt.
 - Secrets gehören weder in Git noch in Images oder Logs.
 
