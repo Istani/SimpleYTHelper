@@ -6,6 +6,7 @@ Diese Dokumentation ist die zentrale Arbeitsablage des lokalen Architekturbranch
 
 - [Planung und Phasenübersicht](PLANUNG.md)
 - [Phase 0 – Bestandsaufnahme](phasen/phase-0-bestandsaufnahme.md)
+- [Phase 1 – Datenownership-Matrix](phasen/phase-1-datenownership-matrix.md)
 - `adr/` – Architekturentscheidungen (wird bei der ersten Entscheidung angelegt)
 
 ## Pflegeprinzip
