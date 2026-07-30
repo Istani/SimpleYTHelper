@@ -141,6 +141,6 @@ Ein Adapter-Timeout bleibt absichtlich wiederholbar: Derselbe Key führt beim Ad
 - Öffentliche HTTP-Endpunkte oder die Wiederverwendung bestehender Browser-Socket.IO-Verbindungen.
 - Finales Secrets-/mTLS-/Token-Rotationsdesign; dafür wird Mia vor Implementierung eingebunden.
 
-## 7. Nächste technische Entscheidung
+## 7. Festgelegte technische Basis
 
-Vor Codebeginn muss die Runtime des ersten Community-Kontexts festgelegt werden: neues Node.js/TypeScript-Projekt mit PostgreSQL-Client und Migrationstool oder eine bewusst begründete Alternative. Die Empfehlung lautet Node.js/TypeScript, weil der Bestand JavaScript/Node nutzt, aber die konkrete Toolchain ist noch nicht beschlossen.
+Der erste Community-Kontext wird gemäß [ADR-002](../adr/ADR-002-node-express-next-prisma-standard.md) als modernes Node.js-/JavaScript-Projekt umgesetzt: Express.js für die interne API, Prisma für PostgreSQL-Zugriff und Migrationen. TypeScript und Next.js sind für diesen Worker-/Adapter-Slice nicht erforderlich; Next.js bleibt der Standard, sobald ein Website-Slice umgesetzt wird.
