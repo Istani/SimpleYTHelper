@@ -7,6 +7,7 @@ Diese Dokumentation ist die zentrale Arbeitsablage des lokalen Architekturbranch
 - [Planung und Phasenübersicht](PLANUNG.md)
 - [Phase 0 – Bestandsaufnahme](phasen/phase-0-bestandsaufnahme.md)
 - [Phase 1 – Datenownership-Matrix](phasen/phase-1-datenownership-matrix.md)
+- [Phase 1 – Discord-Bot- und Selfbot-Bestand](phasen/phase-1-discord-bot-selfbot-bestand.md)
 - `adr/` – Architekturentscheidungen (wird bei der ersten Entscheidung angelegt)
 
 ## Pflegeprinzip
