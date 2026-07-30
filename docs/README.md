@@ -9,7 +9,7 @@ Diese Dokumentation ist die zentrale Arbeitsablage des Docker-/Modernisierungsbr
 - [Phase 1 – Datenownership-Matrix](phasen/phase-1-datenownership-matrix.md)
 - [Phase 1 – Discord-Bot- und Selfbot-Bestand](phasen/phase-1-discord-bot-selfbot-bestand.md)
 - [Phase 1 – Kommunikationsgraph](phasen/phase-1-kommunikationsgraph.md)
-- `adr/` – Architekturentscheidungen (wird bei der ersten Entscheidung angelegt)
+- [ADR-001 – Transactional Outbox für externe Zustellungen](adr/ADR-001-transactional-outbox-externe-zustellungen.md)
 
 ## Pflegeprinzip
 
