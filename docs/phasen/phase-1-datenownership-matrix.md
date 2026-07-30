@@ -1,7 +1,7 @@
 # SimpleYTH – Phase 1: Datenownership-Matrix (statische Erhebung)
 
 **Stand:** 2026-07-30  
-**Evidenz:** ausschliesslich lesende statische Analyse des produktiv eingesetzten Checkouts `/root/SimpleYTHelper` auf `defender833`, korreliert mit dem Phase-0-PM2-Bestand und MariaDB-Schema-Metadaten.
+**Evidenz:** ausschliesslich lesende statische Analyse des produktiv eingesetzten Checkouts `/root/SimpleYTHelper` auf `defender833`, korreliert mit dem Phase-0-PM2-Bestand und MariaDB-Schema-Metadaten. Die Analyse umfasst die Service-Einstiegspunkte **und** rekursiv alle handgeschriebenen JavaScript-Dateien ausserhalb von `node_modules`, `.git` und den kopierten `models/`-Verzeichnissen.
 
 > **Wichtig:** `R`, `C`, `U`, `D` beschreiben potenzielle Lese-, Create-, Update- und Delete-Operationen, die aus Model-Imports und zugehörigen `query()`-Aufrufen statisch abgeleitet wurden. Das ist noch kein Runtime-Beweis und kein berechtigter Produktions-Query-Log-Ersatz. Ein Service kann durch seine kopierten Model-Dateien eine Tabelle kennen, ohne sie in seiner Einstiegspunktdatei tatsächlich zu verwenden.
 
@@ -67,6 +67,7 @@ Das bedeutet nicht, dass sie unbenutzt sind. Mögliche Ursachen: Aufrufe in impo
 ## 5. Erkenntnisse aus der Implementierungsstruktur
 
 - 22 Modulordner enthalten je eigene Kopien identischer Modelldateien. Das erhöht die Gefahr unterschiedlicher Modellstände und verdeckt Abhängigkeiten.
+- Die rekursive Analyse bestätigte die wesentlichen Zugriffsgrenzen der Einstiegspunkte. Zusätzliche Datenzugriffe wurden nur in `gamesite/img_importer.js` (`game_link`, `game_overview`) sowie YouTube-Hilfsdateien (`syth_token`) gefunden; sie verschärfen die bestehende Ownership-Bewertung, eröffnen aber keine neue Tabellen-Domäne.
 - `discord/app.js` verwendet `discord.js` und ist als Discord-Bot-Adapter einzustufen. Ein Selfbot wurde durch diese Analyse weiterhin nicht belegt.
 - Mindestens `gamesite/app.js` sowie einzelne Migrationen enthalten `knex.raw()`; sie sind bei der PostgreSQL-Kompatibilitätsprüfung separat zu behandeln.
 - Die Tabellen `migrations` und `migrations_lock` gehören in eine künftige Migrationsstrategie, sind aber keine Produktdomäne und dürfen nicht zwischen neuen Services geteilt werden.
