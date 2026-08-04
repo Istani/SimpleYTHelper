@@ -1,34 +1,45 @@
 # SimpleYTH – Architektur- und Migrationsplanung
 
 **Arbeitsbranch:** `docker-entwicklung`
-**Geltungsbereich:** Architekturmodernisierung von SimpleYTH; der produktive PM2-/MariaDB-Betrieb auf `defender833` bleibt unverändert, bis ein ausdrücklich freigegebener Cutover validiert ist.
+**Aktualisiert:** 2026-08-04
+**Geltungsbereich:** Architekturmodernisierung von SimpleYTH. Der produktive PM2-/MariaDB-Betrieb auf `defender833` bleibt unverändert, bis ein ausdrücklich freigegebener Cutover mit validierter Datenübernahme und Rollback vorliegt.
 
 ## Leitplanken
 
-- Keine produktiven Dienste stoppen, keine Daten löschen und keine Migration ohne Freigabe ausführen.
-- Neue serviceübergreifende Kommunikation ausschließlich über dokumentierte, versionierte HTTP APIs oder – für bestätigte asynchrone Domänen – einen explizit entschieden Event-Mechanismus; keine neuen direkten Datenbankzugriffe. Die bestehenden Web-/Socket.IO-Ports gelten nicht als vorhandene HTTP-API-Verträge.
-- Discord-Bot und ein möglicher Discord-Selfbot werden als getrennte Services mit getrennten Laufzeit-, Konfigurations- und Berechtigungsgrenzen behandelt.
-- Secrets gehören weder in Git noch in Images oder Logs.
+- Keine produktiven Dienste stoppen, keine Daten löschen und keine Migration ohne ausdrückliche Freigabe ausführen.
+- Neue serviceübergreifende Kommunikation erfolgt ausschließlich über dokumentierte, versionierte HTTP-APIs oder einen explizit entschiedenen Event-Mechanismus. Neue direkte Datenbankzugriffe zwischen Services sind ausgeschlossen.
+- Bestehende Web-, OAuth- und Socket.IO-Ports sind keine bestehenden HTTP-API-Verträge. Ihre Rolle wird nur mit Konsumenten- und Quellcode-Evidenz klassifiziert.
+- Discord-Bot und ein später nachgewiesener Discord-Selfbot bleiben getrennte Services: keine gemeinsamen Prozesse, Tokens, direkten Datenbankzugriffe oder Laufzeitkonfigurationen.
+- Secrets gehören weder in Git noch in Images, Contracts, Testfixtures oder Logs.
 
-## Phasenübersicht
+## Status der Phasen
 
-| Phase | Ziel | Abnahmeevidenz | Status |
+| Phase | Ziel | Status | Abnahmeevidenz / nächster Gate |
 |---|---|---|---|
-| 0 | Bestand und Risiken erfassen | Laufzeit-, Repo-, DB- und Listenerinventar | abgeschlossen (Erstinventar) |
-| 1 | Datenownership und Ziel-Service-Schnitt entscheiden | Tabelle-zu-Service-Matrix, Kontextgrenzen, offene ADRs | offen |
-| 2 | HTTP-API-Verträge definieren | versionierte OpenAPI-/Contract-Artefakte, Auth- und Fehlerkonzept | offen |
-| 3 | PostgreSQL-Migrationsdesign validieren | Typ-/SQL-Kompatibilitätsmatrix, Probelauf, Validierungsplan | offen |
-| 4 | Compose- und Implementierungsbacklog aufbauen | Service-Definitionen, Build/Test/Healthcheck-Konzept | offen |
-| 5 | Staging, Cutover und Rollback testen | vollständige Smoke- und Datenvalidierung, freigegebener Runbook-Entwurf | offen |
+| 0 | Produktivbestand und Risiken erfassen | Erstinventar abgeschlossen | PM2-, Repo-, MariaDB- und Listenerinventar; vor Produktionseingriff erneut lesend aktualisieren |
+| 1 | Datenownership, Kommunikation und Discord-Grenze erheben | Statische Analyse abgeschlossen, Entscheidung offen | Matrix und Kommunikationsgraph vorhanden; Runtime-/Helper-/Raw-SQL-Evidenz und Owner-ADR fehlen |
+| 2 | API- und Delivery-Vertrag definieren | Discord-Contract v1 vorbereitet | OpenAPI und Retrysemantik vorhanden; Authentisierung/Rotation und persistentes Ledger offen |
+| 3 | ersten vertikalen Slice planen | Gamecheck→Discord als Kandidat vorbereitet | Slicebeschreibung vorhanden; Owner-Grenze Game-Katalog/Community vor Implementierung entscheiden |
+| 4 | Arbeitsstand und Implementierungsgrundlage absichern | offen | untracked Prototyp reproduzierbar auf Node 22 validieren und reviewen |
+| 5 | Compose-/PostgreSQL-Implementierung | gesperrt bis Owner- und Security-Gate | PostgreSQL, Worker, Adapter, Healthchecks und E2E-Smoke müssen erst implementiert und getestet werden |
+| 6 | Staging, Cutover und Rollback | gesperrt bis Implementierungs- und Stagingevidenz | Kompatibilitätsmatrix, Probelauf, Datenvalidierung und Runbook |
 
-## Nächste verbindliche Arbeitspakete
+Die ausführliche, priorisierte Abfolge mit Abhängigkeiten und Akzeptanzkriterien steht in [Phase 4 – Planreview](phasen/phase-4-planreview-2026-08-04.md).
 
-1. Jede Tabelle des Schemas `simpleyth` genau einem schreibenden fachlichen Owner zuordnen; Leser und Schreibpfade mit Quell- und Runtime-Evidenz erfassen.
-2. Den tatsächlichen Standort und Umfang eines Discord-Selfbots klären. Der Phase-0-Bestand belegt nur den Bot-Service `SYTH-Discord`.
-3. Für die lokalen Listener und öffentlichen Eintrittspunkte Reverse Proxy, Verbraucher und gewünschte Healthchecks erheben.
-4. Die beiden lokalen Änderungen im produktiven Checkout fachlich sichern und bewerten, ohne sie dort zu verändern.
-5. Erst danach einen vertikalen Migrationsslice auswählen; empfohlen ist ein klar abgegrenzter, risikoarmer Bereich ohne OAuth-/Token-Tabellen.
+## Verbindliche nächste Meilensteine
 
-## Entscheidungslog
+1. **M0 – Reproduzierbarer Arbeitsstand:** Unversionierte Paket-, Prisma-, Adapter- und Testartefakte getrennt reviewen; Node 22 verwenden; Tests, Contract- und Prisma-Validierung grün ausführen.
+2. **M1 – Ergänzende lesende Evidenz:** Vollständige Datenzugriffs- und Entry-Point-Evidenz auf `defender833` aufnehmen, ohne Query-Logging oder Betriebsänderung ohne separate Freigabe.
+3. **M2 – Owner-ADR:** Den Owner- und Ereignisfluss für Angebotsbenachrichtigungen entscheiden. Aktuelle Empfehlung: `game-catalog-api` besitzt Katalogzustand und erzeugt ein versioniertes Sale-Event; Community bestimmt Empfänger und erzeugt Zustellaufträge.
+4. **M3 – Security-Gate mit Mia:** Authentisierung, Rotation, Netzgrenze und Secret-Injektion für den internen Discord-Adaptervertrag entscheiden.
+5. **M4/M5 – Implementierung und lokales Compose:** Erst danach PostgreSQL-Outbox, Worker, persistentes Ledger, Adapter und automatisierten End-to-End-Smoke-Test umsetzen.
+6. **M6/M7 – Staging und freigegebener Cutover:** Datenübernahme, Vergleich, Rollback und Go/No-Go prüfen, bevor PM2 oder MariaDB produktiv berührt werden.
 
-Architekturentscheidungen werden künftig als eigene ADRs unter `docs/adr/` abgelegt. Jede ADR dokumentiert Kontext, Optionen, Empfehlung, Auswirkungen und Freigabestatus.
+## Offene Architekturentscheidungen
+
+- **D1:** Game-Katalog-/Community-Owner- und Eventgrenze im ersten Slice.
+- **D2:** Interne Adapter-Authentisierung und Token-/Zertifikatsrotation (mit Mia).
+- **D3:** PostgreSQL-Zielversion, Stagingstrategie, Datenhaltungs- und Downtime-Vorgaben.
+- **D4:** Selfbot bleibt außerhalb des Zielsystems, bis ein separater Bestand nachgewiesen und entschieden ist.
+
+Offene Entscheidungen werden als ADR mit Optionen, Auswirkungen, Empfehlung und Freigabestatus geführt; sie werden nicht stillschweigend durch Implementierung ersetzt.
