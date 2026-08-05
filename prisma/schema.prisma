@@ -50,6 +50,7 @@ model OutboxEvent {
 model AdapterDelivery {
   id               String                @id @default(uuid()) @db.Uuid
   eventId          String                @unique @map("event_id") @db.Uuid
+  botId            String?               @map("bot_id")
   payload          Json
   status           AdapterDeliveryStatus @default(accepted)
   acceptedAt       DateTime              @map("accepted_at") @db.Timestamptz(6)
@@ -61,6 +62,19 @@ model AdapterDelivery {
   createdAt        DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt        DateTime              @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  @@index([status, nextAttemptAt, createdAt], map: "adapter_delivery_ready_idx")
+  @@index([botId, status, nextAttemptAt, createdAt], map: "adapter_delivery_ready_idx")
   @@map("discord_adapter_delivery")
+}
+
+model DiscordBotRegistration {
+  botId            String    @id @map("bot_id")
+  tokenHash        String    @map("token_hash")
+  settings         Json      @default("{}")
+  discordUserId    String?   @map("discord_user_id")
+  isActive         Boolean   @default(true) @map("is_active")
+  rotatedAt        DateTime? @map("rotated_at") @db.Timestamptz(6)
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("discord_bot_registration")
 }
