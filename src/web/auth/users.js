@@ -1,8 +1,10 @@
-import { timingSafeEqual } from "node:crypto";
+import { randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
 export const roles = ["admin", "creator", "viewer"];
+const PASSWORD_HASH_PREFIX = 'scrypt';
+const PASSWORD_KEY_LENGTH = 64;
 
 let prismaInstance = null;
 function getPrisma() {
@@ -34,6 +36,19 @@ function safeTextEqual(left, right) {
   return timingSafeEqual(a, b);
 }
 
+export function hashPassword(password) {
+  const salt = randomBytes(16).toString('base64url');
+  const hash = scryptSync(String(password), salt, PASSWORD_KEY_LENGTH).toString('base64url');
+  return `${PASSWORD_HASH_PREFIX}$${salt}$${hash}`;
+}
+
+export function verifyPasswordHash(password, storedValue) {
+  const [prefix, salt, expectedHash] = String(storedValue).split('$');
+  if (prefix !== PASSWORD_HASH_PREFIX || !salt || !expectedHash) return false;
+  const actualHash = scryptSync(String(password), salt, PASSWORD_KEY_LENGTH).toString('base64url');
+  return safeTextEqual(actualHash, expectedHash);
+}
+
 export async function authenticate(email, password) {
   const cleanEmail = String(email || "").toLowerCase();
   const prisma = getPrisma();
@@ -41,7 +56,7 @@ export async function authenticate(email, password) {
   if (prisma) {
     try {
       const dbUser = await prisma.webUser.findUnique({ where: { email: cleanEmail } });
-      if (dbUser && safeTextEqual(dbUser.password, password || "")) {
+      if (dbUser && verifyPasswordHash(password || '', dbUser.password)) {
         return {
           id: dbUser.id,
           email: dbUser.email,

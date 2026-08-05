@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { authenticate } from "../src/web/auth/users.js";
+import { authenticate, hashPassword, verifyPasswordHash } from "../src/web/auth/users.js";
 import { createSessionToken, verifySessionToken } from "../src/web/auth/session.js";
 
 const users = [
@@ -24,6 +24,13 @@ test("authenticates every configured account and returns all its roles", async (
 
 test("rejects invalid credentials", async () => {
   assert.equal(await authenticate(users[2].email, "wrong"), null);
+});
+
+test("hashes database passwords with a salted scrypt value", () => {
+  const hash = hashPassword("test-password");
+  assert.match(hash, /^scrypt\$/);
+  assert.equal(verifyPasswordHash("test-password", hash), true);
+  assert.equal(verifyPasswordHash("wrong-password", hash), false);
 });
 
 test("signs and verifies a role-bound session", async () => {
