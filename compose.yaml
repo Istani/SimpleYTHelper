@@ -21,6 +21,27 @@ services:
     networks:
       - edge
 
+  discord-adapter:
+    build:
+      context: .
+      dockerfile: Dockerfile.discord-adapter
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL outside Git.}
+      INTERNAL_ADAPTER_TOKEN: ${INTERNAL_ADAPTER_TOKEN:?Set INTERNAL_ADAPTER_TOKEN outside Git.}
+      PORT: 3000
+    ports:
+      - "${DISCORD_ADAPTER_PORT:-3001}:3000"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - internal
+      - edge
+
   postgres:
     image: postgres:16.11-alpine
     profiles:

@@ -1,0 +1,16 @@
+FROM node:22.22.0-alpine AS dependencies
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
+
+FROM node:22.22.0-alpine AS runtime
+WORKDIR /app
+ENV NODE_ENV=production PORT=3000
+RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 discord
+COPY --from=dependencies /app/node_modules ./node_modules
+COPY prisma ./prisma
+COPY src ./src
+COPY package.json ./
+USER discord
+EXPOSE 3000
+CMD ["node", "src/discord-adapter/server.js"]
