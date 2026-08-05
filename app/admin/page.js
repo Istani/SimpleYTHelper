@@ -51,15 +51,21 @@ export default async function AdminPage() {
     try {
       const records = await prisma.discordBotRegistration.findMany({ orderBy: { createdAt: "desc" } });
       const statusMap = await fetchAdapterBotStatuses();
-      bots = records.map((record) => publicBotRegistration(record, statusMap.get(record.botId) || { online: false, ready: false }));
+      bots = records.map((record) => {
+        const liveStatus = statusMap.get(record.botId);
+        // If the adapter returned the bot, or if record is active, treat as online
+        const online = liveStatus ? liveStatus.online : Boolean(record.isActive);
+        const ready = liveStatus ? liveStatus.ready : Boolean(record.isActive);
+        return publicBotRegistration(record, { online, ready });
+      });
+
       const messages = await prisma.discordMessage.findMany({
         take: 15,
         orderBy: { createdAt: "desc" },
         include: { author: true, channel: true, guild: true },
       });
 
-      // Determine which bot received/sent each message based on guild/client mapping or default to active bot
-      const activeBotId = bots.find(b => b.isActive && b.online)?.botId || (bots[0]?.botId ?? "SimpleYTH");
+      const activeBotId = bots.find(b => b.isActive)?.botId || (bots[0]?.botId ?? "SimpleYTH");
       recentMessages = messages.map(msg => ({ ...msg, botId: activeBotId }));
     } catch {
       // The database-backed panels remain empty while PostgreSQL is unavailable.
@@ -69,7 +75,7 @@ export default async function AdminPage() {
   return <DashboardShell user={user} label="Verwaltung" title="Alles läuft ruhig.">
     <div>
       <div className="stats">
-        <article><span>Reg. Bots</span><strong>{bots.length}</strong><small>{bots.filter((bot) => bot.isActive && bot.online).length} verbunden ({bots.filter((bot) => bot.isActive).length} aktiv)</small></article>
+        <article><span>Reg. Bots</span><strong>{bots.length}</strong><small>{bots.filter((bot) => bot.isActive).length} aktiv</small></article>
         <article><span>Nachrichten</span><strong>{recentMessages.length}</strong><small>erfasst</small></article>
         <article><span>System</span><strong className="good">Online</strong><small>Webfrontend & DB</small></article>
       </div>
@@ -97,14 +103,19 @@ export default async function AdminPage() {
                 </thead>
                 <tbody>
                   {recentMessages.map((message) => {
-                    const localTime = new Intl.DateTimeFormat("de-DE", {
-                      timeZone: "Europe/Berlin",
-                      dateStyle: "short",
-                      timeStyle: "medium",
-                    }).format(new Date(message.createdAt));
+                    const d = new Date(message.createdAt);
+                    const pad = (n) => String(n).padStart(2, "0");
+                    const day = pad(d.toLocaleString("de-DE", { timeZone: "Europe/Berlin", day: "2-digit" }));
+                    const month = pad(d.toLocaleString("de-DE", { timeZone: "Europe/Berlin", month: "2-digit" }));
+                    const year = d.toLocaleString("de-DE", { timeZone: "Europe/Berlin", year: "numeric" });
+                    const hours = pad(d.toLocaleString("de-DE", { timeZone: "Europe/Berlin", hour: "2-digit", hour12: false }));
+                    const minutes = pad(d.toLocaleString("de-DE", { timeZone: "Europe/Berlin", minute: "2-digit" }));
+                    const seconds = pad(d.toLocaleString("de-DE", { timeZone: "Europe/Berlin", second: "2-digit" }));
+                    const localTimeFormatted = `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
+
                     return (
                       <tr key={message.id} style={{ borderBottom: "1px solid #e5e5e5" }}>
-                        <td style={{ padding: "8px", whiteSpace: "nowrap" }}>{localTime}</td>
+                        <td style={{ padding: "8px", whiteSpace: "nowrap" }}>{localTimeFormatted}</td>
                         <td style={{ padding: "8px" }}><code>{message.botId}</code></td>
                         <td style={{ padding: "8px" }}>{message.guild?.name || message.guildId}</td>
                         <td style={{ padding: "8px" }}>#{message.channel?.name || message.channelId}</td>
