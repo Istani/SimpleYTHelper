@@ -18,6 +18,7 @@ Diese Dokumentation ist die zentrale Arbeitsablage des Docker-/Modernisierungsbr
 - [Phase 4 – Planreview und priorisierte Umsetzungsgates (2026-08-04)](phasen/phase-4-planreview-2026-08-04.md)
 - [Phase 4 – Lokale Container-Grundlage](phasen/phase-4-container-foundation.md)
 - [Phase 5 – Discord-Adapter-Runtime](phasen/phase-5-discord-adapter-runtime.md)
+- [Phase 5 – Remote-Initialmigration auf ym-server](phasen/phase-5-remote-migration-applied.md)
 
 ## Pflegeprinzip
 
