@@ -11,6 +11,7 @@ Diese Dokumentation ist die zentrale Arbeitsablage des Docker-/Modernisierungsbr
 - [Phase 1 – Kommunikationsgraph](phasen/phase-1-kommunikationsgraph.md)
 - [ADR-001 – Transactional Outbox für externe Zustellungen](adr/ADR-001-transactional-outbox-externe-zustellungen.md)
 - [ADR-002 – Node.js, Express, Next.js und Prisma](adr/ADR-002-node-express-next-prisma-standard.md)
+- [ADR-003 – PostgreSQL-Ziel auf ym-server](adr/ADR-003-ym-server-postgresql-ziel.md)
 - [Phase 2 – Interner Discord-Zustellvertrag v1](phasen/phase-2-internal-discord-delivery-contract.md)
 - [Phase 3 – Gamecheck-zu-Discord-Migrationsslice](phasen/phase-3-gamecheck-discord-slice.md)
 - [Phase 4 – Planreview und priorisierte Umsetzungsgates (2026-08-04)](phasen/phase-4-planreview-2026-08-04.md)

@@ -3,6 +3,8 @@ name: simpleyth-modernization
 services:
   postgres:
     image: postgres:16.11-alpine
+    profiles:
+      - local-smoke
     environment:
       POSTGRES_DB: simpleyth
       POSTGRES_USER: simpleyth
