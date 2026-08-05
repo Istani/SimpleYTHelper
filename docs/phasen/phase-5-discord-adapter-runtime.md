@@ -53,9 +53,10 @@ Verbindung zur Produktivdatenbank auf `ym-server` ausgeführt.
 
 1. **Mia:** Runtime-Secret-Injektion, Token-Rotation und finale interne
    Docker-/VPN-Netzgrenze abstimmen; kein Token in Compose oder Image ablegen.
-2. **Abhängigkeiten:** `npm audit --omit=dev` meldet aktuell eine transitive
-   High-Schwachstelle in `fast-uri`. Vor einem Deployment muss der konkrete
-   Upstream-Fix bewertet und eingespielt werden.
+2. **Abhängigkeiten:** Die transitive `fast-uri`-Schwachstelle wurde mit
+   `npm audit fix` auf `fast-uri@3.1.5` aktualisiert. Die erneute
+   Produktionsprüfung (`npm audit --omit=dev --audit-level=high`) meldet
+   keine Vulnerabilities.
 3. **Datenbank:** Erst nach expliziter Nutzerfreigabe die Initialmigration in
    `postgres.public` auf `ym-server` anwenden und einen echten Ledger-Smoke-Test
    ausführen.
