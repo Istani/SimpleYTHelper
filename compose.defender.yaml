@@ -7,6 +7,7 @@ services:
     # No Docker host port is published.
     environment:
       PORT: "80"
+      DISCORD_ADAPTER_INTERNAL_URL: "http://discord-adapter:80"
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:80/api/health"]
     ports: !reset []
@@ -15,6 +16,12 @@ services:
         ipv4_address: ${SIMPLEYTH_WEB_WG_IP:-10.10.13.10}
 
   discord-adapter:
+    # This service also listens directly on its dedicated WireGuard address.
+    # Its management endpoint remains Bearer-authenticated.
+    environment:
+      PORT: "80"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:80/healthz"]
     ports: !reset []
     networks:
       edge:
