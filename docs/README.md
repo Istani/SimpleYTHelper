@@ -20,6 +20,7 @@ Diese Dokumentation ist die zentrale Arbeitsablage des Docker-/Modernisierungsbr
 - [Phase 5 – Discord-Adapter-Runtime](phasen/phase-5-discord-adapter-runtime.md)
 - [Phase 5 – Remote-Initialmigration auf ym-server](phasen/phase-5-remote-migration-applied.md)
 - [Phase 5 – Discord-Client-Adapter](phasen/phase-5-discord-client-adapter.md)
+- [Phase 5 – Multi-Bot-Manager](phasen/phase-5-multi-bot-manager.md)
 
 ## Pflegeprinzip
 
