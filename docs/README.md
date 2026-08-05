@@ -19,6 +19,7 @@ Diese Dokumentation ist die zentrale Arbeitsablage des Docker-/Modernisierungsbr
 - [Phase 4 – Lokale Container-Grundlage](phasen/phase-4-container-foundation.md)
 - [Phase 5 – Discord-Adapter-Runtime](phasen/phase-5-discord-adapter-runtime.md)
 - [Phase 5 – Remote-Initialmigration auf ym-server](phasen/phase-5-remote-migration-applied.md)
+- [Phase 5 – Discord-Client-Adapter](phasen/phase-5-discord-client-adapter.md)
 
 ## Pflegeprinzip
 
