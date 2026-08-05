@@ -2,13 +2,13 @@ import { createBearerTokenAuthenticator } from './auth.js';
 import { createDiscordAdapterApp } from './app.js';
 import { PrismaDeliveryLedger } from './prisma-delivery-ledger.js';
 
-export function createDiscordAdapterRuntime({ environment, createPrismaClient, now }) {
+export function createDiscordAdapterRuntime({ environment, createPrismaClient, now, botManager }) {
   const authenticate = createBearerTokenAuthenticator({ token: environment.INTERNAL_ADAPTER_TOKEN });
   const prisma = createPrismaClient();
   const ledger = new PrismaDeliveryLedger({ prisma, now });
 
   return {
-    app: createDiscordAdapterApp({ ledger, authenticate }),
+    app: createDiscordAdapterApp({ ledger, authenticate, botManager }),
     prisma,
   };
 }

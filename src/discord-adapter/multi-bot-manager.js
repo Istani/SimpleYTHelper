@@ -52,6 +52,21 @@ export function createMultiBotManager({ clientFactory, registrationRepository })
       return activeBots.get(botId);
     },
 
+    listActiveBotsStatus() {
+      const statusList = [];
+      for (const [botId, bot] of activeBots.entries()) {
+        const isReady = bot.client && typeof bot.client.isReady === 'function' ? bot.client.isReady() : false;
+        const discordUserId = bot.client && bot.client.user ? bot.client.user.id : null;
+        statusList.push({
+          bot_id: botId,
+          settings: bot.settings,
+          discord_user_id: discordUserId,
+          ready: isReady,
+        });
+      }
+      return statusList;
+    },
+
     async shutdownAll() {
       for (const [botId, bot] of activeBots.entries()) {
         if (bot.client && typeof bot.client.destroy === 'function') {

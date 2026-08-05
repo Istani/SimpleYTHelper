@@ -12,7 +12,7 @@ function isDeliveryRequest(value, idempotencyKey) {
     && value.content.length <= 2000;
 }
 
-export function createDiscordAdapterApp({ ledger, authenticate }) {
+export function createDiscordAdapterApp({ ledger, authenticate, botManager }) {
   if (typeof authenticate !== 'function') {
     throw new TypeError('authenticate must be a function');
   }
@@ -22,6 +22,24 @@ export function createDiscordAdapterApp({ ledger, authenticate }) {
 
   app.get('/healthz', (_request, response) => {
     response.status(200).json({ status: 'ok' });
+  });
+
+  app.get('/internal/v1/bots', async (request, response, next) => {
+    try {
+      const isAuthenticated = await authenticate({ authorization: request.get('authorization') });
+      if (!isAuthenticated) {
+        return response.status(401).json({ error: 'unauthorized' });
+      }
+
+      if (!botManager || typeof botManager.listActiveBotsStatus !== 'function') {
+        return response.status(200).json({ bots: [] });
+      }
+
+      const bots = botManager.listActiveBotsStatus();
+      return response.status(200).json({ bots });
+    } catch (error) {
+      return next(error);
+    }
   });
 
   app.post('/internal/v1/deliveries', async (request, response, next) => {

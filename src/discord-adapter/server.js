@@ -14,15 +14,18 @@ export function createPostgresPrismaClient({ databaseUrl }) {
 }
 
 async function start() {
-  const runtime = createDiscordAdapterRuntime({
-    environment: process.env,
-    createPrismaClient: () => createPostgresPrismaClient({ databaseUrl: process.env.DATABASE_URL }),
-  });
+  const prisma = createPostgresPrismaClient({ databaseUrl: process.env.DATABASE_URL });
   const botRuntime = createDiscordBotRuntime({
-    prisma: runtime.prisma,
+    prisma,
     clientFactory: createDiscordJsClientFactory(),
   });
   const startedBots = await botRuntime.start();
+
+  const runtime = createDiscordAdapterRuntime({
+    environment: process.env,
+    createPrismaClient: () => prisma,
+    botManager: botRuntime.manager,
+  });
   const port = Number.parseInt(process.env.PORT ?? '3000', 10);
   const server = runtime.app.listen(port, '0.0.0.0', () => {
     console.info(`Discord adapter listening on port ${port}; started ${startedBots.length} bot(s)`);

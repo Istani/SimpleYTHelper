@@ -115,3 +115,36 @@ test('rejects a delivery before the ledger when internal service authentication 
   assert.equal(response.status, 401);
   assert.equal(ledger.entries.size, 0);
 });
+
+test('lists active bots status when authenticated', async () => {
+  const ledger = new MemoryLedger();
+  const botManager = {
+    listActiveBotsStatus: () => [{
+      bot_id: 'announcements',
+      settings: { allowReports: true },
+      discord_user_id: '111222333',
+      ready: true,
+    }],
+  };
+  const app = createDiscordAdapterApp({ ledger, authenticate: () => true, botManager });
+  const server = app.listen(0);
+  await once(server, 'listening');
+  const { port } = server.address();
+  try {
+    const res = await fetch(`http://127.0.0.1:${port}/internal/v1/bots`, {
+      headers: { authorization: 'Bearer secret' },
+    });
+    assert.equal(res.status, 200);
+    assert.deepEqual(await res.json(), {
+      bots: [{
+        bot_id: 'announcements',
+        settings: { allowReports: true },
+        discord_user_id: '111222333',
+        ready: true,
+      }],
+    });
+  } finally {
+    server.close();
+    await once(server, 'close');
+  }
+});
