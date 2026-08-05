@@ -53,9 +53,9 @@ export default async function AdminPage() {
       const statusMap = await fetchAdapterBotStatuses();
       bots = records.map((record) => {
         const liveStatus = statusMap.get(record.botId);
-        // If the adapter returned the bot, or if record is active, treat as online
-        const online = liveStatus ? liveStatus.online : Boolean(record.isActive);
-        const ready = liveStatus ? liveStatus.ready : Boolean(record.isActive);
+        // If record is active, treat as online (or use live status if available)
+        const online = Boolean(record.isActive);
+        const ready = liveStatus ? liveStatus.ready : online;
         return publicBotRegistration(record, { online, ready });
       });
 
@@ -105,12 +105,12 @@ export default async function AdminPage() {
                   {recentMessages.map((message) => {
                     const d = new Date(message.createdAt);
                     const pad = (n) => String(n).padStart(2, "0");
-                    const day = pad(d.toLocaleString("de-DE", { timeZone: "Europe/Berlin", day: "2-digit" }));
-                    const month = pad(d.toLocaleString("de-DE", { timeZone: "Europe/Berlin", month: "2-digit" }));
-                    const year = d.toLocaleString("de-DE", { timeZone: "Europe/Berlin", year: "numeric" });
-                    const hours = pad(d.toLocaleString("de-DE", { timeZone: "Europe/Berlin", hour: "2-digit", hour12: false }));
-                    const minutes = pad(d.toLocaleString("de-DE", { timeZone: "Europe/Berlin", minute: "2-digit" }));
-                    const seconds = pad(d.toLocaleString("de-DE", { timeZone: "Europe/Berlin", second: "2-digit" }));
+                    const day = pad(d.toLocaleDateString("de-DE", { timeZone: "Europe/Berlin", day: "2-digit" }));
+                    const month = pad(d.toLocaleDateString("de-DE", { timeZone: "Europe/Berlin", month: "2-digit" }));
+                    const year = d.toLocaleDateString("de-DE", { timeZone: "Europe/Berlin", year: "numeric" });
+                    const hours = pad(d.toLocaleTimeString("de-DE", { timeZone: "Europe/Berlin", hour: "2-digit", hour12: false }));
+                    const minutes = pad(d.toLocaleTimeString("de-DE", { timeZone: "Europe/Berlin", minute: "2-digit" }));
+                    const seconds = pad(d.toLocaleTimeString("de-DE", { timeZone: "Europe/Berlin", second: "2-digit" }));
                     const localTimeFormatted = `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
 
                     return (
