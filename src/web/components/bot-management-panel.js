@@ -27,9 +27,23 @@ function CreateBotForm() {
 
 function BotEditForm({ bot }) {
   const [state, action, pending] = useActionState(updateBotAction, initialState);
+  const statusLabel = bot.online ? (bot.ready ? "Online & Bereit" : "Verbunden (lädt...)") : "Offline";
+  const statusClass = bot.online ? (bot.ready ? "good-bg" : "muted-bg") : "muted-bg";
   return <form action={action} className="bot-card">
     <input type="hidden" name="botId" value={bot.botId} />
-    <div className="bot-card-heading"><div><strong>{bot.botId}</strong><small>Discord User ID: {bot.discordUserId || "Noch nicht verbunden"}</small></div><label className="switch"><input type="checkbox" name="isActive" defaultChecked={bot.isActive} /><span>Aktiv</span></label></div>
+    <div className="bot-card-heading">
+      <div>
+        <strong>{bot.botId}</strong>
+        <small>Discord User ID: {bot.discordUserId || "Noch nicht verbunden"}</small>
+      </div>
+      <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <span className={`dot ${statusClass}`} style={{ display: "inline-block" }}></span>
+          <small style={{ fontWeight: 700 }}>{statusLabel}</small>
+        </div>
+        <label className="switch"><input type="checkbox" name="isActive" defaultChecked={bot.isActive} /><span>Aktiv</span></label>
+      </div>
+    </div>
     <label>Capabilities (JSON)<textarea name="settings" required defaultValue={JSON.stringify(bot.settings || {}, null, 2)} rows="4" spellCheck="false" /></label>
     <label>Token rotieren <input name="token" type="password" minLength="20" autoComplete="new-password" placeholder="leer lassen, um den bestehenden Token zu behalten" /></label>
     <p className="form-hint">Ein eingetragener Token ersetzt den alten sofort; er kann anschließend nicht angezeigt werden.</p>

@@ -18,6 +18,29 @@ function getPrisma() {
   }
 }
 
+async function fetchAdapterBotStatuses() {
+  const adapterUrl = process.env.DISCORD_ADAPTER_INTERNAL_URL || process.env.DISCORD_ADAPTER_URL || "http://discord-adapter:3000";
+  const internalToken = process.env.INTERNAL_ADAPTER_TOKEN;
+  if (!internalToken) return new Map();
+
+  try {
+    const res = await fetch(`${adapterUrl}/internal/v1/bots`, {
+      headers: { Authorization: `Bearer ${internalToken}` },
+      cache: "no-store",
+      signal: AbortSignal.timeout(2000),
+    });
+    if (!res.ok) return new Map();
+    const data = await res.json();
+    const map = new Map();
+    for (const bot of (data.bots || [])) {
+      map.set(bot.bot_id, { online: true, ready: Boolean(bot.ready) });
+    }
+    return map;
+  } catch {
+    return new Map();
+  }
+}
+
 export default async function AdminPage() {
   const user = await requireRole("admin");
   const prisma = getPrisma();
@@ -27,7 +50,8 @@ export default async function AdminPage() {
   if (prisma) {
     try {
       const records = await prisma.discordBotRegistration.findMany({ orderBy: { createdAt: "desc" } });
-      bots = records.map(publicBotRegistration);
+      const statusMap = await fetchAdapterBotStatuses();
+      bots = records.map((record) => publicBotRegistration(record, statusMap.get(record.botId) || { online: false, ready: false }));
       recentMessages = await prisma.discordMessage.findMany({
         take: 15,
         orderBy: { createdAt: "desc" },
@@ -41,7 +65,7 @@ export default async function AdminPage() {
   return <DashboardShell user={user} label="Verwaltung" title="Alles läuft ruhig.">
     <div>
       <div className="stats">
-        <article><span>Reg. Bots</span><strong>{bots.length}</strong><small>{bots.filter((bot) => bot.isActive).length} aktiv</small></article>
+        <article><span>Reg. Bots</span><strong>{bots.length}</strong><small>{bots.filter((bot) => bot.isActive && bot.online).length} verbunden ({bots.filter((bot) => bot.isActive).length} aktiv)</small></article>
         <article><span>Nachrichten</span><strong>{recentMessages.length}</strong><small>erfasst</small></article>
         <article><span>System</span><strong className="good">Online</strong><small>Webfrontend & DB</small></article>
       </div>
