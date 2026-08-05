@@ -113,7 +113,7 @@ model DiscordUser {
 
 model DiscordChannel {
   id          String   @id @map("channel_id")
-  guildId     String   @map("guild_id")
+  guildId     String?  @map("guild_id")
   name        String   @map("name")
   type        Int      @map("type")
   topic       String?  @map("topic")
@@ -122,7 +122,7 @@ model DiscordChannel {
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  guild       DiscordGuild @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  guild       DiscordGuild? @relation(fields: [guildId], references: [id], onDelete: Cascade)
   messages    DiscordMessage[]
 
   @@index([guildId], map: "discord_channel_guild_idx")
@@ -152,13 +152,13 @@ model DiscordRole {
 model DiscordMessage {
   id        String   @id @map("message_id")
   channelId String   @map("channel_id")
-  guildId   String   @map("guild_id")
+  guildId   String?  @map("guild_id")
   authorId  String   @map("author_id")
   content   String   @map("content")
   createdAt DateTime @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  guild     DiscordGuild   @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  guild     DiscordGuild?  @relation(fields: [guildId], references: [id], onDelete: Cascade)
   channel   DiscordChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
   author    DiscordUser    @relation(fields: [authorId], references: [id], onDelete: Cascade)
 

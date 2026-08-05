@@ -4,6 +4,7 @@ import { pathToFileURL } from 'node:url';
 import { createDiscordAdapterRuntime } from './runtime.js';
 import { createDiscordBotRuntime } from './bot-runtime.js';
 import { createDiscordJsClientFactory } from './discordjs-client-factory.js';
+import { createApplicationLogger } from '../shared/application-logger.js';
 
 export function createPostgresPrismaClient({ databaseUrl }) {
   if (typeof databaseUrl !== 'string' || databaseUrl.length === 0) {
@@ -14,10 +15,12 @@ export function createPostgresPrismaClient({ databaseUrl }) {
 }
 
 async function start() {
+  const logger = createApplicationLogger({ service: 'simpleyth-discord-adapter' });
   const prisma = createPostgresPrismaClient({ databaseUrl: process.env.DATABASE_URL });
   const botRuntime = createDiscordBotRuntime({
     prisma,
     clientFactory: createDiscordJsClientFactory(),
+    logger,
   });
   const startedBots = await botRuntime.start();
 
@@ -28,7 +31,7 @@ async function start() {
   });
   const port = Number.parseInt(process.env.PORT ?? '3000', 10);
   const server = runtime.app.listen(port, '0.0.0.0', () => {
-    console.info(`Discord adapter listening on port ${port}; started ${startedBots.length} bot(s)`);
+    logger.info('adapter_listening', { port, startedBotCount: startedBots.length });
   });
 
   const pollIntervalMs = Number.parseInt(process.env.DISCORD_BOT_POLL_INTERVAL_MS ?? String(60 * 1000), 10);
@@ -36,16 +39,20 @@ async function start() {
     try {
       const syncResult = await botRuntime.manager.pollAndSyncBots();
       if (syncResult.started.length > 0 || syncResult.stopped.length > 0 || syncResult.updated.length > 0) {
-        console.info(`Bot poll sync: started=${syncResult.started.join(',') || 'none'}, stopped=${syncResult.stopped.join(',') || 'none'}, updated=${syncResult.updated.join(',') || 'none'}`);
+        logger.info('bot_poll_synchronized', {
+          started: syncResult.started,
+          stopped: syncResult.stopped,
+          updated: syncResult.updated,
+        });
       }
     } catch (error) {
-      console.error('Failed to poll and synchronize bot registrations', error);
+      logger.error('bot_poll_sync_failed', { error: error?.message });
     }
   }, pollIntervalMs);
   if (typeof pollTimer.unref === 'function') pollTimer.unref();
 
   const shutdown = (signal) => {
-    console.info(`Discord adapter received ${signal}; shutting down`);
+    logger.info('adapter_shutdown_requested', { signal });
     clearInterval(pollTimer);
     server.close(() => {
       botRuntime.shutdown()
@@ -59,8 +66,8 @@ async function start() {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  start().catch(() => {
-    console.error('Discord adapter startup failed');
+  start().catch((error) => {
+    createApplicationLogger({ service: 'simpleyth-discord-adapter' }).error('adapter_startup_failed', { error: error?.message });
     process.exitCode = 1;
   });
 }

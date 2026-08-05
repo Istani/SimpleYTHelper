@@ -9,12 +9,13 @@ test('creates a Discord client with only the gateway intents required by its set
       created.push(options);
     }
   }
-  const intents = { Guilds: 1, GuildMessages: 2, MessageContent: 4 };
-  const createClient = createDiscordJsClientFactory({ Client: FakeClient, GatewayIntentBits: intents });
+  const intents = { Guilds: 1, GuildMessages: 2, MessageContent: 4, DirectMessages: 8 };
+  const partials = { Channel: 'CHANNEL' };
+  const createClient = createDiscordJsClientFactory({ Client: FakeClient, GatewayIntentBits: intents, Partials: partials });
 
   createClient({ settings: { listenMessages: true, allowCommands: true } });
 
-  assert.deepEqual(created, [{ intents: [1, 2, 4] }]);
+  assert.deepEqual(created, [{ intents: [1, 2, 4, 8], partials: ['CHANNEL'] }]);
 });
 
 test('does not request message-reading intents for a send-only reporting bot', () => {
@@ -30,4 +31,20 @@ test('does not request message-reading intents for a send-only reporting bot', (
   createClient({ settings: { allowReports: true } });
 
   assert.deepEqual(created, [{ intents: [1] }]);
+});
+
+test('requests direct-message support and channel partials when inbound message listening is enabled', () => {
+  const created = [];
+  class FakeClient {
+    constructor(options) {
+      created.push(options);
+    }
+  }
+  const intents = { Guilds: 1, GuildMessages: 2, MessageContent: 4, DirectMessages: 8 };
+  const partials = { Channel: 'CHANNEL' };
+  const createClient = createDiscordJsClientFactory({ Client: FakeClient, GatewayIntentBits: intents, Partials: partials });
+
+  createClient({ settings: { listenMessages: true } });
+
+  assert.deepEqual(created, [{ intents: [1, 2, 4, 8], partials: ['CHANNEL'] }]);
 });

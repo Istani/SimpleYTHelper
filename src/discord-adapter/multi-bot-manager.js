@@ -6,6 +6,13 @@ export function createMultiBotManager({ clientFactory, registrationRepository, o
       throw new Error(`Token is required for bot_id ${reg.bot_id}`);
     }
     const client = clientFactory ? clientFactory(reg) : null;
+    if (client && typeof client.once === 'function') {
+      const recoverOnConnectionFault = () => {
+        void stopBot(reg.bot_id);
+      };
+      client.once('error', recoverOnConnectionFault);
+      client.once('shardDisconnect', recoverOnConnectionFault);
+    }
     if (client && typeof onClientStarted === 'function') {
       onClientStarted({ client, registration: reg });
     }

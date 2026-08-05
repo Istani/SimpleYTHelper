@@ -1,3 +1,9 @@
+import { unemojify } from 'node-emoji';
+
+export function normalizeDiscordMessageContent(content) {
+  return unemojify(String(content ?? ''));
+}
+
 function channelData(channel, guildId) {
   return {
     id: channel.id,
@@ -70,21 +76,23 @@ export function attachDiscordEventHandlers({ client, dataRepository, settings = 
 
   if (settings.listenMessages) {
     client.on('messageCreate', safely(async (message) => {
-      if (!message.guild || message.author?.bot) return;
-      await dataRepository.upsertGuild({
-        id: message.guild.id,
-        name: message.guild.name,
-        icon: message.guild.icon ?? null,
-        ownerId: message.guild.ownerId ?? null,
-      });
+      const guildId = message.guild?.id ?? null;
+      if (message.guild) {
+        await dataRepository.upsertGuild({
+          id: message.guild.id,
+          name: message.guild.name,
+          icon: message.guild.icon ?? null,
+          ownerId: message.guild.ownerId ?? null,
+        });
+      }
       await dataRepository.upsertUser(userData(message.author));
-      await dataRepository.upsertChannel(channelData(message.channel, message.guild.id));
+      await dataRepository.upsertChannel(channelData(message.channel, guildId));
       await dataRepository.saveMessage({
         id: message.id,
         channelId: message.channel.id,
-        guildId: message.guild.id,
+        guildId,
         authorId: message.author.id,
-        content: message.content ?? '',
+        content: normalizeDiscordMessageContent(message.content),
         createdAt: message.createdAt,
       });
     }, 'messageCreate'));

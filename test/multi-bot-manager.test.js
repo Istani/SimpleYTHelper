@@ -81,3 +81,18 @@ test('prevents duplicate bot_id registration and handles missing tokens graceful
     { message: /token is required/i }
   );
 });
+
+test('removes a bot with a Discord connection failure so the registration poller can reconnect it', async () => {
+  const { EventEmitter } = await import('node:events');
+  const client = new EventEmitter();
+  client.user = { id: 'bot-discord-user' };
+  client.login = async () => {};
+  client.destroy = async () => {};
+
+  const manager = createMultiBotManager({ clientFactory: () => client });
+  await manager.initializeBots([{ bot_id: 'recoverable-bot', token: 'token', settings: {} }]);
+  client.emit('error', new Error('gateway connection failed'));
+  await new Promise((resolve) => setImmediate(resolve));
+
+  assert.equal(manager.getBot('recoverable-bot'), undefined);
+});

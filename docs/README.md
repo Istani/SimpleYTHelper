@@ -24,6 +24,7 @@ Diese Dokumentation ist die zentrale Arbeitsablage des Docker-/Modernisierungsbr
 - [Phase 5 – Multi-Bot-Manager](phasen/phase-5-multi-bot-manager.md)
 - [Phase 5 – Datenbank-Kopplung für Multi-Bot-Registrierungen](phasen/phase-5-database-bot-coupling.md)
 - [Phase 5 – Zentraler Datenbank-Start für Discord-Bots](phasen/phase-5-zentraler-discord-bot-start.md)
+- [Phase 5 – Legacy-Discord-Parität (2026-08-05)](phasen/phase-5-legacy-discord-paritaet-2026-08-05.md)
 - [Phase 6 – Webfrontend-Container und Rollenbereiche](phasen/phase-6-webfrontend-rollencontainer.md)
 
 ## Pflegeprinzip

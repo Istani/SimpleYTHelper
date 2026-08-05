@@ -22,9 +22,11 @@
     "express": "^5.1.0",
     "jose": "^6.1.0",
     "next": "^16.3.0",
+    "node-emoji": "^2.2.0",
     "pg": "^8.22.0",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "winston": "^3.19.0"
   },
   "devDependencies": {
     "prisma": "^7.9.1"
