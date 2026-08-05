@@ -1,4 +1,4 @@
-export function createMultiBotManager({ clientFactory }) {
+export function createMultiBotManager({ clientFactory, registrationRepository }) {
   const activeBots = new Map();
 
   return {
@@ -33,6 +33,18 @@ export function createMultiBotManager({ clientFactory }) {
         });
       }
 
+      return results;
+    },
+
+    async loadActiveBotsFromDatabase() {
+      if (!registrationRepository) {
+        throw new Error('Bot registration repository is required');
+      }
+
+      const results = await this.initializeBots(await registrationRepository.listActiveBots());
+      for (const result of results) {
+        await registrationRepository.recordDiscordUserId(result.bot_id, result.discord_user_id);
+      }
       return results;
     },
 

@@ -2,6 +2,8 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
 import { pathToFileURL } from 'node:url';
 import { createDiscordAdapterRuntime } from './runtime.js';
+import { createDiscordBotRuntime } from './bot-runtime.js';
+import { createDiscordJsClientFactory } from './discordjs-client-factory.js';
 
 export function createPostgresPrismaClient({ databaseUrl }) {
   if (typeof databaseUrl !== 'string' || databaseUrl.length === 0) {
@@ -11,20 +13,27 @@ export function createPostgresPrismaClient({ databaseUrl }) {
   return new PrismaClient({ adapter: new PrismaPg({ connectionString: databaseUrl }) });
 }
 
-function start() {
+async function start() {
   const runtime = createDiscordAdapterRuntime({
     environment: process.env,
     createPrismaClient: () => createPostgresPrismaClient({ databaseUrl: process.env.DATABASE_URL }),
   });
+  const botRuntime = createDiscordBotRuntime({
+    prisma: runtime.prisma,
+    clientFactory: createDiscordJsClientFactory(),
+  });
+  const startedBots = await botRuntime.start();
   const port = Number.parseInt(process.env.PORT ?? '3000', 10);
   const server = runtime.app.listen(port, '0.0.0.0', () => {
-    console.info(`Discord adapter listening on port ${port}`);
+    console.info(`Discord adapter listening on port ${port}; started ${startedBots.length} bot(s)`);
   });
 
   const shutdown = (signal) => {
     console.info(`Discord adapter received ${signal}; shutting down`);
     server.close(() => {
-      runtime.prisma.$disconnect().finally(() => process.exit(0));
+      botRuntime.shutdown()
+        .finally(() => runtime.prisma.$disconnect())
+        .finally(() => process.exit(0));
     });
   };
 
@@ -33,5 +42,8 @@ function start() {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  start();
+  start().catch(() => {
+    console.error('Discord adapter startup failed');
+    process.exitCode = 1;
+  });
 }

@@ -13,6 +13,7 @@ Diese Dokumentation ist die zentrale Arbeitsablage des Docker-/Modernisierungsbr
 - [ADR-002 – Node.js, Express, Next.js und Prisma](adr/ADR-002-node-express-next-prisma-standard.md)
 - [ADR-003 – PostgreSQL-Ziel auf ym-server](adr/ADR-003-ym-server-postgresql-ziel.md)
 - [ADR-004 – Interne Authentifizierung des Discord-Adapters](adr/ADR-004-discord-adapter-interne-authentifizierung.md)
+- [ADR-005 – Zentrale Discord-Token-Verwaltung](adr/ADR-005-zentrale-discord-token-verwaltung.md)
 - [Phase 2 – Interner Discord-Zustellvertrag v1](phasen/phase-2-internal-discord-delivery-contract.md)
 - [Phase 3 – Gamecheck-zu-Discord-Migrationsslice](phasen/phase-3-gamecheck-discord-slice.md)
 - [Phase 4 – Planreview und priorisierte Umsetzungsgates (2026-08-04)](phasen/phase-4-planreview-2026-08-04.md)
@@ -22,6 +23,7 @@ Diese Dokumentation ist die zentrale Arbeitsablage des Docker-/Modernisierungsbr
 - [Phase 5 – Discord-Client-Adapter](phasen/phase-5-discord-client-adapter.md)
 - [Phase 5 – Multi-Bot-Manager](phasen/phase-5-multi-bot-manager.md)
 - [Phase 5 – Datenbank-Kopplung für Multi-Bot-Registrierungen](phasen/phase-5-database-bot-coupling.md)
+- [Phase 5 – Zentraler Datenbank-Start für Discord-Bots](phasen/phase-5-zentraler-discord-bot-start.md)
 
 ## Pflegeprinzip
 

@@ -6,7 +6,7 @@
 ## Ziel dieses Slices
 
 Kopplung des Multi-Bot-Managers und des Idempotenz-Ledgers an die persistente PostgreSQL-Datenbank (`postgres.public` auf `ym-server`):
-1. **Tabelle `discord_bot_registration`**: Speichert dauerhaft Bot-Registrierungen, gehashte Tokens (`token_hash`), spezifische `settings` (JSONB für Capabilities wie Befehle, Reports etc.), die zugehörige Discord User ID, den Aktivstatus (`is_active`) sowie Zeitstempel für Token-Rotationen (`rotated_at`).
+1. **Tabelle `discord_bot_registration`**: Speichert dauerhaft Bot-Registrierungen, die vom Betreiber bewusst zentral verwalteten Tokens im Klartext (`token`), spezifische `settings` (JSONB für Capabilities wie Befehle, Reports etc.), die zugehörige Discord User ID, den Aktivstatus (`is_active`) sowie Zeitstempel für Token-Rotationen (`rotated_at`).
 2. **Erweiterung `discord_adapter_delivery`**: Das Delivery-Ledger wurde um `bot_id` erweitert und der Index (`adapter_delivery_ready_idx`) optimiert, damit Zustellungen und Idempotenz pro Bot isoliert und performant verwaltet werden.
 
 ## Ausführung & Evidenz

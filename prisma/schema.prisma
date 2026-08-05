@@ -68,7 +68,7 @@ model AdapterDelivery {
 
 model DiscordBotRegistration {
   botId            String    @id @map("bot_id")
-  tokenHash        String    @map("token_hash")
+  token            String    @map("token")
   settings         Json      @default("{}")
   discordUserId    String?   @map("discord_user_id")
   isActive         Boolean   @default(true) @map("is_active")

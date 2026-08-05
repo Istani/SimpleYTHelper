@@ -29,6 +29,35 @@ test('registers and starts bots with their respective tokens, settings, and repo
   assert.equal(results[1].discord_user_id, 'bot-user-for-beta');
 });
 
+test('loads active bot registrations from the database repository and persists returned Discord user IDs', async () => {
+  const recordedUserIds = [];
+  const registrationRepository = {
+    listActiveBots: async () => [
+      {
+        bot_id: 'reporting-bot',
+        token: 'db-managed-token',
+        settings: { allowReports: true, allowCommands: false },
+      },
+    ],
+    recordDiscordUserId: async (botId, discordUserId) => {
+      recordedUserIds.push({ botId, discordUserId });
+    },
+  };
+  const manager = createMultiBotManager({
+    clientFactory: () => ({
+      user: { id: '987654321012345678' },
+      login: async () => {},
+    }),
+    registrationRepository,
+  });
+
+  const result = await manager.loadActiveBotsFromDatabase();
+
+  assert.deepEqual(result, [{ bot_id: 'reporting-bot', discord_user_id: '987654321012345678' }]);
+  assert.deepEqual(recordedUserIds, [{ botId: 'reporting-bot', discordUserId: '987654321012345678' }]);
+  assert.equal(manager.getBot('reporting-bot').settings.allowReports, true);
+});
+
 test('prevents duplicate bot_id registration and handles missing tokens gracefully', async () => {
   const manager = createMultiBotManager({
     clientFactory: () => ({
