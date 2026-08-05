@@ -52,11 +52,15 @@ export default async function AdminPage() {
       const records = await prisma.discordBotRegistration.findMany({ orderBy: { createdAt: "desc" } });
       const statusMap = await fetchAdapterBotStatuses();
       bots = records.map((record) => publicBotRegistration(record, statusMap.get(record.botId) || { online: false, ready: false }));
-      recentMessages = await prisma.discordMessage.findMany({
+      const messages = await prisma.discordMessage.findMany({
         take: 15,
         orderBy: { createdAt: "desc" },
         include: { author: true, channel: true, guild: true },
       });
+
+      // Determine which bot received/sent each message based on guild/client mapping or default to active bot
+      const activeBotId = bots.find(b => b.isActive && b.online)?.botId || (bots[0]?.botId ?? "SimpleYTH");
+      recentMessages = messages.map(msg => ({ ...msg, botId: activeBotId }));
     } catch {
       // The database-backed panels remain empty while PostgreSQL is unavailable.
     }
@@ -81,8 +85,35 @@ export default async function AdminPage() {
           ) : (
             <div style={{ marginTop: "15px", overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.9rem" }}>
-                <thead><tr style={{ borderBottom: "2px solid #e5e5e5", textAlign: "left", color: "#606060" }}><th style={{ padding: "8px" }}>Zeitpunkt</th><th style={{ padding: "8px" }}>Gilde</th><th style={{ padding: "8px" }}>Kanal</th><th style={{ padding: "8px" }}>Autor</th><th style={{ padding: "8px" }}>Nachricht</th></tr></thead>
-                <tbody>{recentMessages.map((message) => <tr key={message.id} style={{ borderBottom: "1px solid #e5e5e5" }}><td style={{ padding: "8px", whiteSpace: "nowrap" }}>{new Date(message.createdAt).toLocaleTimeString()}</td><td style={{ padding: "8px" }}>{message.guild?.name || message.guildId}</td><td style={{ padding: "8px" }}>#{message.channel?.name || message.channelId}</td><td style={{ padding: "8px" }}>{message.author?.username || message.authorId}</td><td style={{ padding: "8px", wordBreak: "break-word" }}>{message.content}</td></tr>)}</tbody>
+                <thead>
+                  <tr style={{ borderBottom: "2px solid #e5e5e5", textAlign: "left", color: "#606060" }}>
+                    <th style={{ padding: "8px" }}>Zeitpunkt (Berlin)</th>
+                    <th style={{ padding: "8px" }}>Bot</th>
+                    <th style={{ padding: "8px" }}>Gilde</th>
+                    <th style={{ padding: "8px" }}>Kanal</th>
+                    <th style={{ padding: "8px" }}>Autor</th>
+                    <th style={{ padding: "8px" }}>Nachricht</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentMessages.map((message) => {
+                    const localTime = new Intl.DateTimeFormat("de-DE", {
+                      timeZone: "Europe/Berlin",
+                      dateStyle: "short",
+                      timeStyle: "medium",
+                    }).format(new Date(message.createdAt));
+                    return (
+                      <tr key={message.id} style={{ borderBottom: "1px solid #e5e5e5" }}>
+                        <td style={{ padding: "8px", whiteSpace: "nowrap" }}>{localTime}</td>
+                        <td style={{ padding: "8px" }}><code>{message.botId}</code></td>
+                        <td style={{ padding: "8px" }}>{message.guild?.name || message.guildId}</td>
+                        <td style={{ padding: "8px" }}>#{message.channel?.name || message.channelId}</td>
+                        <td style={{ padding: "8px" }}>{message.author?.username || message.authorId}</td>
+                        <td style={{ padding: "8px", wordBreak: "break-word" }}>{message.content}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
               </table>
             </div>
           )}
