@@ -1,0 +1,6 @@
+# Deployment override for defender833: containers join the WireGuard LAN so they can reach
+# PostgreSQL at 10.10.14.253 without exposing either service to the public internet.
+networks:
+  edge:
+    external: true
+    name: ${EDGE_NETWORK_NAME:-wireguard_net}
