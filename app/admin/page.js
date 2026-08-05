@@ -2,6 +2,7 @@ import { DashboardShell } from "../../src/web/components/dashboard-shell.js";
 import { BotManagementPanel } from "../../src/web/components/bot-management-panel.js";
 import { requireRole } from "../../src/web/auth/session.js";
 import { publicBotRegistration } from "../../src/web/admin/bot-management.js";
+import { formatBerlinTimestamp, mergeBotRuntimeStatus } from "../../src/web/admin/live-status.js";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
@@ -21,7 +22,7 @@ function getPrisma() {
 async function fetchAdapterBotStatuses() {
   const adapterUrl = process.env.DISCORD_ADAPTER_INTERNAL_URL || process.env.DISCORD_ADAPTER_URL || "http://discord-adapter:3000";
   const internalToken = process.env.INTERNAL_ADAPTER_TOKEN;
-  if (!internalToken) return new Map();
+  if (!internalToken) return [];
 
   try {
     const res = await fetch(`${adapterUrl}/internal/v1/bots`, {
@@ -29,15 +30,11 @@ async function fetchAdapterBotStatuses() {
       cache: "no-store",
       signal: AbortSignal.timeout(2000),
     });
-    if (!res.ok) return new Map();
+    if (!res.ok) return [];
     const data = await res.json();
-    const map = new Map();
-    for (const bot of (data.bots || [])) {
-      map.set(bot.bot_id, { online: true, ready: Boolean(bot.ready) });
-    }
-    return map;
+    return Array.isArray(data.bots) ? data.bots : [];
   } catch {
-    return new Map();
+    return [];
   }
 }
 
@@ -50,14 +47,8 @@ export default async function AdminPage() {
   if (prisma) {
     try {
       const records = await prisma.discordBotRegistration.findMany({ orderBy: { createdAt: "desc" } });
-      const statusMap = await fetchAdapterBotStatuses();
-      bots = records.map((record) => {
-        const liveStatus = statusMap.get(record.botId);
-        // If record is active, treat as online (or use live status if available)
-        const online = Boolean(record.isActive);
-        const ready = liveStatus ? liveStatus.ready : online;
-        return publicBotRegistration(record, { online, ready });
-      });
+      const adapterBots = await fetchAdapterBotStatuses();
+      bots = mergeBotRuntimeStatus(records, adapterBots).map((record) => publicBotRegistration(record, record));
 
       const messages = await prisma.discordMessage.findMany({
         take: 15,
@@ -103,15 +94,7 @@ export default async function AdminPage() {
                 </thead>
                 <tbody>
                   {recentMessages.map((message) => {
-                    const d = new Date(message.createdAt);
-                    const pad = (n) => String(n).padStart(2, "0");
-                    const day = pad(d.toLocaleDateString("de-DE", { timeZone: "Europe/Berlin", day: "2-digit" }));
-                    const month = pad(d.toLocaleDateString("de-DE", { timeZone: "Europe/Berlin", month: "2-digit" }));
-                    const year = d.toLocaleDateString("de-DE", { timeZone: "Europe/Berlin", year: "numeric" });
-                    const hours = pad(d.toLocaleTimeString("de-DE", { timeZone: "Europe/Berlin", hour: "2-digit", hour12: false }));
-                    const minutes = pad(d.toLocaleTimeString("de-DE", { timeZone: "Europe/Berlin", minute: "2-digit" }));
-                    const seconds = pad(d.toLocaleTimeString("de-DE", { timeZone: "Europe/Berlin", second: "2-digit" }));
-                    const localTimeFormatted = `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
+                    const localTimeFormatted = formatBerlinTimestamp(message.createdAt);
 
                     return (
                       <tr key={message.id} style={{ borderBottom: "1px solid #e5e5e5" }}>

@@ -61,7 +61,7 @@ export async function updateBotRegistration({ prisma, botId, isActive, token, se
   });
 }
 
-export function publicBotRegistration(record) {
+export function publicBotRegistration(record, runtimeStatus = {}) {
   return {
     botId: record.botId,
     settings: record.settings,
@@ -69,5 +69,7 @@ export function publicBotRegistration(record) {
     isActive: record.isActive,
     createdAt: record.createdAt,
     updatedAt: record.updatedAt,
+    online: Boolean(runtimeStatus.online),
+    ready: Boolean(runtimeStatus.ready),
   };
 }

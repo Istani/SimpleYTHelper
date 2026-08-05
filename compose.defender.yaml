@@ -1,5 +1,20 @@
-# Deployment override for defender833: containers join the WireGuard LAN so they can reach
-# PostgreSQL at 10.10.14.253 without exposing either service to the public internet.
+# defender833 deployment: every application service has a stable, directly
+# reachable WireGuard-LAN address. Do not publish host ports for these services.
+# Keep secrets in the host-local .env only.
+services:
+  web:
+    ports: !reset []
+    networks:
+      edge:
+        ipv4_address: ${SIMPLEYTH_WEB_WG_IP:-10.10.13.10}
+
+  discord-adapter:
+    ports: !reset []
+    networks:
+      edge:
+        ipv4_address: ${SIMPLEYTH_DISCORD_ADAPTER_WG_IP:-10.10.13.11}
+      internal: {}
+
 networks:
   edge:
     external: true
