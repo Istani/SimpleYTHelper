@@ -3,6 +3,12 @@
 # Keep secrets in the host-local .env only.
 services:
   web:
+    # The user-facing HTTP service listens directly on its dedicated WireGuard IP.
+    # No Docker host port is published.
+    environment:
+      PORT: "80"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:80/api/health"]
     ports: !reset []
     networks:
       edge:
