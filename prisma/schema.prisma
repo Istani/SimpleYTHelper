@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["community"]
+}
+
+enum OutboxStatus {
+  pending
+  processing
+  accepted_by_adapter
+  failed
+
+  @@schema("community")
+}
+
+model OutboxEvent {
+  id                String       @id @db.Uuid
+  eventType         String       @map("event_type")
+  schemaVersion     Int          @map("schema_version")
+  aggregateType     String       @map("aggregate_type")
+  aggregateId       String       @map("aggregate_id")
+  destination       String
+  payload           Json
+  status            OutboxStatus @default(pending)
+  attemptCount      Int          @default(0) @map("attempt_count")
+  nextAttemptAt     DateTime     @default(now()) @map("next_attempt_at") @db.Timestamptz(6)
+  leaseOwner        String?      @map("lease_owner")
+  leaseExpiresAt    DateTime?    @map("lease_expires_at") @db.Timestamptz(6)
+  lastErrorCode     String?      @map("last_error_code")
+  lastErrorMessage  String?      @map("last_error_message")
+  acceptedAt        DateTime?    @map("accepted_at") @db.Timestamptz(6)
+  createdAt         DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([destination, nextAttemptAt, createdAt], map: "outbox_event_ready_idx")
+  @@map("outbox_event")
+  @@schema("community")
+}

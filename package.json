@@ -1,0 +1,21 @@
+{
+  "name": "simpleyth-modernization",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test",
+    "test:contract": "node scripts/validate-openapi-contract.mjs",
+    "prisma:validate": "prisma validate --schema prisma/schema.prisma"
+  },
+  "dependencies": {
+    "@prisma/client": "^7.9.1",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "prisma": "^7.9.1"
+  }
+}
