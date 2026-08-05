@@ -20,6 +20,10 @@ export function createDiscordAdapterApp({ ledger, authenticate }) {
   const app = express();
   app.use(express.json({ limit: '16kb' }));
 
+  app.get('/healthz', (_request, response) => {
+    response.status(200).json({ status: 'ok' });
+  });
+
   app.post('/internal/v1/deliveries', async (request, response, next) => {
     try {
       const isAuthenticated = await authenticate({ authorization: request.get('authorization') });

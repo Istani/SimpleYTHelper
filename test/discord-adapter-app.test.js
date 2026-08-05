@@ -51,9 +51,28 @@ async function post(app, body, { idempotencyKey = eventId, authorization } = {})
   }
 }
 
+async function get(app, path) {
+  const server = app.listen(0);
+  await once(server, 'listening');
+  const { port } = server.address();
+  try {
+    return await fetch(`http://127.0.0.1:${port}${path}`);
+  } finally {
+    server.close();
+    await once(server, 'close');
+  }
+}
+
 function trustedAdapterApp(ledger = new MemoryLedger()) {
   return createDiscordAdapterApp({ ledger, authenticate: () => true });
 }
+
+test('reports adapter readiness without requiring internal authentication', async () => {
+  const response = await get(trustedAdapterApp(), '/healthz');
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { status: 'ok' });
+});
 
 test('accepts a valid Discord delivery and returns its durable acceptance', async () => {
   const response = await post(trustedAdapterApp(), request);

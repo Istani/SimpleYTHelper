@@ -9,11 +9,14 @@
   "scripts": {
     "test": "node --test",
     "test:contract": "node scripts/validate-openapi-contract.mjs",
-    "prisma:validate": "prisma validate --schema prisma/schema.prisma"
+    "prisma:validate": "prisma validate --schema prisma/schema.prisma",
+    "start:discord-adapter": "node src/discord-adapter/server.js"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "pg": "^8.22.0"
   },
   "devDependencies": {
     "prisma": "^7.9.1"
