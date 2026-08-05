@@ -78,3 +78,88 @@ model DiscordBotRegistration {
 
   @@map("discord_bot_registration")
 }
+
+model DiscordGuild {
+  id        String   @id @map("guild_id")
+  name      String   @map("name")
+  icon      String?  @map("icon")
+  ownerId   String?  @map("owner_id")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  channels  DiscordChannel[]
+  roles     DiscordRole[]
+  messages  DiscordMessage[]
+
+  @@map("discord_guild")
+}
+
+model DiscordUser {
+  id            String   @id @map("user_id")
+  username      String   @map("username")
+  discriminator String?  @map("discriminator")
+  globalName    String?  @map("global_name")
+  avatar        String?  @map("avatar")
+  isBot         Boolean  @default(false) @map("is_bot")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  messages      DiscordMessage[]
+
+  @@map("discord_user")
+}
+
+model DiscordChannel {
+  id          String   @id @map("channel_id")
+  guildId     String   @map("guild_id")
+  name        String   @map("name")
+  type        Int      @map("type")
+  topic       String?  @map("topic")
+  position    Int      @default(0) @map("position")
+  parentId    String?  @map("parent_id")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  guild       DiscordGuild @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  messages    DiscordMessage[]
+
+  @@index([guildId], map: "discord_channel_guild_idx")
+  @@map("discord_channel")
+}
+
+model DiscordRole {
+  id          String   @id @map("role_id")
+  guildId     String   @map("guild_id")
+  name        String   @map("name")
+  color       Int      @default(0) @map("color")
+  hoist       Boolean  @default(false) @map("hoist")
+  position    Int      @default(0) @map("position")
+  permissions String   @map("permissions")
+  managed     Boolean  @default(false) @map("managed")
+  mentionable Boolean  @default(false) @map("mentionable")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  guild       DiscordGuild @relation(fields: [guildId], references: [id], onDelete: Cascade)
+
+  @@index([guildId], map: "discord_role_guild_idx")
+  @@map("discord_role")
+}
+
+model DiscordMessage {
+  id        String   @id @map("message_id")
+  channelId String   @map("channel_id")
+  guildId   String   @map("guild_id")
+  authorId  String   @map("author_id")
+  content   String   @map("content")
+  createdAt DateTime @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  guild     DiscordGuild   @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  channel   DiscordChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  author    DiscordUser    @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([guildId, channelId], map: "discord_message_channel_idx")
+  @@index([authorId], map: "discord_message_author_idx")
+  @@map("discord_message")
+}
