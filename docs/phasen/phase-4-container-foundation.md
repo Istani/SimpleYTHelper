@@ -5,7 +5,8 @@
 
 ## Umgesetzte Grundlage
 
-`compose.yaml` definiert eine lokale PostgreSQL-16-Instanz als private Compose-Ressource:
+`compose.yaml` definiert eine lokale PostgreSQL-16-Instanz als private Compose-Ressource
+im expliziten Profil `local-smoke`:
 
 - kein veröffentlichter Host-Port;
 - internes Compose-Netzwerk;
@@ -30,13 +31,13 @@ POSTGRES_PASSWORD=local-validation-only docker compose -f compose.yaml config --
 Am 2026-08-05 wurde der Docker-Daemon erreicht und ein echter, vollständig
 temporärer Smoke-Test ausgeführt:
 
-1. PostgreSQL 16 wurde ausschließlich im internen Compose-Netz gestartet und
+1. PostgreSQL 16 wurde ausschließlich in einem temporären internen Docker-Netz gestartet und
    erreichte seinen Healthcheck.
 2. Prisma erzeugte und applizierte die Initialmigration
-   `prisma/migrations/20260805174249_init/migration.sql` gegen diese frische,
+   `prisma/migrations/20260805180312_init/migration.sql` gegen diese frische,
    lokale Datenbank.
 3. Eine SQL-Prüfung innerhalb des PostgreSQL-Containers bestätigte die Tabellen
-   `community.outbox_event` und `discord_adapter.adapter_delivery`.
+   `public.community_outbox_event` und `public.discord_adapter_delivery`.
 4. Der Test verwendete ein prozesslokal zufällig erzeugtes Passwort; danach
    wurden Container, Netzwerk und benanntes Volume wieder entfernt. Es wurde
    weder ein Datenbankport dauerhaft veröffentlicht noch eine Secret-Datei

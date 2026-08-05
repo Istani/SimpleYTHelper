@@ -34,11 +34,11 @@ Die Zuordnung von `chat_room` zum Community-Kontext ist eine **Arbeitsannahme f√
 Alle folgenden Tabellen liegen im Schema des Community-Owners. Sie sind keine globale Shared-DB-Schnittstelle.
 
 ```sql
-CREATE TYPE community.outbox_status AS ENUM (
+CREATE TYPE community_outbox_status AS ENUM (
   'pending', 'processing', 'accepted_by_adapter', 'failed'
 );
 
-CREATE TABLE community.outbox_event (
+CREATE TABLE community_outbox_event (
   id uuid PRIMARY KEY,
   event_type text NOT NULL,
   schema_version integer NOT NULL CHECK (schema_version > 0),
@@ -46,7 +46,7 @@ CREATE TABLE community.outbox_event (
   aggregate_id text NOT NULL,
   destination text NOT NULL,
   payload jsonb NOT NULL,
-  status community.outbox_status NOT NULL DEFAULT 'pending',
+  status community_outbox_status NOT NULL DEFAULT 'pending',
   attempt_count integer NOT NULL DEFAULT 0 CHECK (attempt_count >= 0),
   next_attempt_at timestamptz NOT NULL DEFAULT now(),
   lease_owner text,
@@ -62,7 +62,7 @@ CREATE TABLE community.outbox_event (
 );
 
 CREATE INDEX outbox_event_ready_idx
-  ON community.outbox_event (destination, next_attempt_at, created_at)
+  ON community_outbox_event (destination, next_attempt_at, created_at)
   WHERE status = 'pending';
 ```
 
@@ -73,7 +73,7 @@ Beispiel f√ºr sicheres Claiming durch mehrere Worker-Instanzen:
 ```sql
 WITH candidate AS (
   SELECT id
-  FROM community.outbox_event
+  FROM community_outbox_event
   WHERE destination = 'discord'
     AND status = 'pending'
     AND next_attempt_at <= now()
@@ -81,7 +81,7 @@ WITH candidate AS (
   FOR UPDATE SKIP LOCKED
   LIMIT 1
 )
-UPDATE community.outbox_event event
+UPDATE community_outbox_event event
 SET status = 'processing',
     lease_owner = $1,
     lease_expires_at = now() + interval '5 minutes',
@@ -95,7 +95,7 @@ RETURNING event.*;
 Der Discord-Adapter besitzt sein eigenes Ledger. Seine konkrete Datenbank wird nicht vom Community-Kontext direkt gelesen oder beschrieben:
 
 ```sql
-CREATE TABLE discord_adapter.delivery_ledger (
+CREATE TABLE discord_adapter_delivery (
   event_id uuid PRIMARY KEY,
   payload_hash text NOT NULL,
   status text NOT NULL CHECK (status IN ('accepted', 'sent', 'failed')),

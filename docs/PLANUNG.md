@@ -8,6 +8,7 @@
 
 - Keine produktiven Dienste stoppen, keine Daten löschen und keine Migration ohne ausdrückliche Freigabe ausführen.
 - Neue serviceübergreifende Kommunikation erfolgt ausschließlich über dokumentierte, versionierte HTTP-APIs oder einen explizit entschiedenen Event-Mechanismus. Neue direkte Datenbankzugriffe zwischen Services sind ausgeschlossen.
+- Mehrere Dienste dürfen dieselbe PostgreSQL-Datenbank und das Schema `public` nutzen; diese physische gemeinsame Ablage ändert weder Tabellenownership noch das Verbot direkter serviceübergreifender Tabellenzugriffe.
 - Bestehende Web-, OAuth- und Socket.IO-Ports sind keine bestehenden HTTP-API-Verträge. Ihre Rolle wird nur mit Konsumenten- und Quellcode-Evidenz klassifiziert.
 - Discord-Bot und ein später nachgewiesener Discord-Selfbot bleiben getrennte Services: keine gemeinsamen Prozesse, Tokens, direkten Datenbankzugriffe oder Laufzeitkonfigurationen.
 - Secrets gehören weder in Git noch in Images, Contracts, Testfixtures oder Logs.

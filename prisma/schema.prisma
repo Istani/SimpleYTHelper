@@ -5,7 +5,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  schemas  = ["community", "discord_adapter"]
 }
 
 enum OutboxStatus {
@@ -14,7 +13,7 @@ enum OutboxStatus {
   accepted_by_adapter
   failed
 
-  @@schema("community")
+  @@map("community_outbox_status")
 }
 
 enum AdapterDeliveryStatus {
@@ -23,7 +22,7 @@ enum AdapterDeliveryStatus {
   sent
   failed
 
-  @@schema("discord_adapter")
+  @@map("discord_adapter_delivery_status")
 }
 
 model OutboxEvent {
@@ -46,8 +45,7 @@ model OutboxEvent {
   updatedAt         DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   @@index([destination, nextAttemptAt, createdAt], map: "outbox_event_ready_idx")
-  @@map("outbox_event")
-  @@schema("community")
+  @@map("community_outbox_event")
 }
 
 model AdapterDelivery {
@@ -65,6 +63,5 @@ model AdapterDelivery {
   updatedAt        DateTime              @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   @@index([status, nextAttemptAt, createdAt], map: "adapter_delivery_ready_idx")
-  @@map("adapter_delivery")
-  @@schema("discord_adapter")
+  @@map("discord_adapter_delivery")
 }
