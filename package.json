@@ -4,10 +4,13 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=22"
+    "node": ">=22.12"
   },
   "scripts": {
     "test": "node --test",
+    "dev:web": "next dev",
+    "build:web": "next build --webpack",
+    "start:web": "next start",
     "test:contract": "node scripts/validate-openapi-contract.mjs",
     "prisma:validate": "prisma validate --schema prisma/schema.prisma",
     "start:discord-adapter": "node src/discord-adapter/server.js"
@@ -17,7 +20,11 @@
     "@prisma/client": "^7.9.1",
     "discord.js": "^14.27.0",
     "express": "^5.1.0",
-    "pg": "^8.22.0"
+    "jose": "^6.1.0",
+    "next": "^16.3.0",
+    "pg": "^8.22.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "prisma": "^7.9.1"

@@ -24,6 +24,7 @@
 | 4 | Arbeitsstand und Implementierungsgrundlage absichern | offen | untracked Prototyp reproduzierbar auf Node 22 validieren und reviewen |
 | 5 | Compose-/PostgreSQL-Implementierung | PostgreSQL-Ziel entschieden; Security-Gate offen | `ym-server`-PostgreSQL ist festgelegt; separater DB-Principal, Secret-Injektion, Worker, Adapter, Healthchecks und E2E-Smoke folgen erst nach dem Security-Gate |
 | 6 | Staging, Cutover und Rollback | gesperrt bis Implementierungs- und Stagingevidenz | Kompatibilitätsmatrix, Probelauf, Datenvalidierung und Runbook |
+| Webfrontend | Next.js-Container, automatischer Login und Mehrfachrollen | lokaler UI-Slice implementiert | Container healthy; Rollenüberschneidungen geprüft; Login, Rollen und Nutzerdaten müssen über `identity-api` an PostgreSQL angebunden werden |
 
 Die ausführliche, priorisierte Abfolge mit Abhängigkeiten und Akzeptanzkriterien steht in [Phase 4 – Planreview](phasen/phase-4-planreview-2026-08-04.md).
 
@@ -35,6 +36,7 @@ Die ausführliche, priorisierte Abfolge mit Abhängigkeiten und Akzeptanzkriteri
 4. **M3 – Security-Gate mit Mia:** Authentisierung, Rotation, Netzgrenze und Secret-Injektion für den internen Discord-Adaptervertrag entscheiden.
 5. **M4/M5 – Implementierung und lokales Compose:** Erst danach PostgreSQL-Outbox, Worker, persistentes Ledger, Adapter und automatisierten End-to-End-Smoke-Test umsetzen.
 6. **M6/M7 – Staging und freigegebener Cutover:** Datenübernahme, Vergleich, Rollback und Go/No-Go prüfen, bevor PM2 oder MariaDB produktiv berührt werden.
+7. **Identity-/PostgreSQL-Slice:** Identity-ADR erstellen; Konten, Passwort-Hashes bzw. OAuth-Identitäten, Mehrfachrollen, Creator-Profile und Community-Zuordnungen in PostgreSQL modellieren; `WEB_USERS_JSON` vor öffentlichem Betrieb vollständig ersetzen.
 
 ## Offene Architekturentscheidungen
 
@@ -42,5 +44,6 @@ Die ausführliche, priorisierte Abfolge mit Abhängigkeiten und Akzeptanzkriteri
 - **D2:** Interne Adapter-Authentisierung und Token-/Zertifikatsrotation (mit Mia).
 - **D3:** PostgreSQL-Laufzeit-Ziel ist entschieden (ADR-003); Stagingstrategie, Datenhaltungs- und Downtime-Vorgaben bleiben offen.
 - **D4:** Selfbot bleibt außerhalb des Zielsystems, bis ein separater Bestand nachgewiesen und entschieden ist.
+- **D5:** Identity-Ownership, PostgreSQL-Tabellenschema, Session-Widerruf, OAuth-Provider sowie Datenschutz- und Aufbewahrungsregeln für Webkonten.
 
 Offene Entscheidungen werden als ADR mit Optionen, Auswirkungen, Empfehlung und Freigabestatus geführt; sie werden nicht stillschweigend durch Implementierung ersetzt.

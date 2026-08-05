@@ -1,6 +1,26 @@
 name: simpleyth-modernization
 
 services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    environment:
+      WEB_AUTH_SECRET: ${WEB_AUTH_SECRET:?Set WEB_AUTH_SECRET outside Git (at least 32 characters).}
+      WEB_USERS_JSON: ${WEB_USERS_JSON:?Set WEB_USERS_JSON outside Git.}
+      WEB_COOKIE_SECURE: ${WEB_COOKIE_SECURE:-true}
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000/api/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+      start_period: 15s
+    restart: unless-stopped
+    networks:
+      - edge
+
   postgres:
     image: postgres:16.11-alpine
     profiles:
@@ -21,6 +41,7 @@ services:
       - internal
 
 networks:
+  edge:
   internal:
     internal: true
 
