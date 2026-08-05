@@ -1,6 +1,6 @@
 # Phase 4 – Lokale Container-Grundlage
 
-**Stand:** in Arbeit  
+**Stand:** lokale PostgreSQL-Grundlage und Initialmigration validiert
 **Geltungsbereich:** ausschließlich der Modernisierungsbranch `docker-entwicklung`
 
 ## Umgesetzte Grundlage
@@ -27,4 +27,20 @@ Die Compose-Konfiguration wird ohne Secretpersistenz mit einem nur prozesslokal 
 POSTGRES_PASSWORD=local-validation-only docker compose -f compose.yaml config --quiet
 ```
 
-Ein echter Container-Smoke-Test bleibt blockiert, bis auf der Entwicklungsmaschine ein laufender Docker-Daemon erreichbar ist.
+Am 2026-08-05 wurde der Docker-Daemon erreicht und ein echter, vollständig
+temporärer Smoke-Test ausgeführt:
+
+1. PostgreSQL 16 wurde ausschließlich im internen Compose-Netz gestartet und
+   erreichte seinen Healthcheck.
+2. Prisma erzeugte und applizierte die Initialmigration
+   `prisma/migrations/20260805174249_init/migration.sql` gegen diese frische,
+   lokale Datenbank.
+3. Eine SQL-Prüfung innerhalb des PostgreSQL-Containers bestätigte die Tabellen
+   `community.outbox_event` und `discord_adapter.adapter_delivery`.
+4. Der Test verwendete ein prozesslokal zufällig erzeugtes Passwort; danach
+   wurden Container, Netzwerk und benanntes Volume wieder entfernt. Es wurde
+   weder ein Datenbankport dauerhaft veröffentlicht noch eine Secret-Datei
+   angelegt.
+
+Der produktive PM2-/MariaDB-Bestand auf `defender833` war nicht Teil dieses
+Tests und blieb unverändert.
