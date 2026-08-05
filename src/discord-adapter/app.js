@@ -12,12 +12,21 @@ function isDeliveryRequest(value, idempotencyKey) {
     && value.content.length <= 2000;
 }
 
-export function createDiscordAdapterApp({ ledger }) {
+export function createDiscordAdapterApp({ ledger, authenticate }) {
+  if (typeof authenticate !== 'function') {
+    throw new TypeError('authenticate must be a function');
+  }
+
   const app = express();
   app.use(express.json({ limit: '16kb' }));
 
   app.post('/internal/v1/deliveries', async (request, response, next) => {
     try {
+      const isAuthenticated = await authenticate({ authorization: request.get('authorization') });
+      if (!isAuthenticated) {
+        return response.status(401).json({ error: 'unauthorized' });
+      }
+
       const idempotencyKey = request.get('Idempotency-Key');
       if (!idempotencyKey || !isDeliveryRequest(request.body, idempotencyKey)) {
         return response.status(400).json({ error: 'invalid_delivery_request' });

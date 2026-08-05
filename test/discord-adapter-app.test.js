@@ -31,7 +31,7 @@ class MemoryLedger {
   }
 }
 
-async function post(app, body, idempotencyKey = eventId) {
+async function post(app, body, { idempotencyKey = eventId, authorization } = {}) {
   const server = app.listen(0);
   await once(server, 'listening');
   const { port } = server.address();
@@ -41,6 +41,7 @@ async function post(app, body, idempotencyKey = eventId) {
       headers: {
         'content-type': 'application/json',
         'idempotency-key': idempotencyKey,
+        ...(authorization ? { authorization } : {}),
       },
       body: JSON.stringify(body),
     });
@@ -50,8 +51,12 @@ async function post(app, body, idempotencyKey = eventId) {
   }
 }
 
+function trustedAdapterApp(ledger = new MemoryLedger()) {
+  return createDiscordAdapterApp({ ledger, authenticate: () => true });
+}
+
 test('accepts a valid Discord delivery and returns its durable acceptance', async () => {
-  const response = await post(createDiscordAdapterApp({ ledger: new MemoryLedger() }), request);
+  const response = await post(trustedAdapterApp(), request);
 
   assert.equal(response.status, 202);
   assert.deepEqual(await response.json(), {
@@ -64,7 +69,7 @@ test('accepts a valid Discord delivery and returns its durable acceptance', asyn
 
 test('returns the existing acceptance for a duplicate idempotency key and payload', async () => {
   const ledger = new MemoryLedger();
-  const app = createDiscordAdapterApp({ ledger });
+  const app = trustedAdapterApp(ledger);
   await post(app, request);
   const duplicate = await post(app, request);
 
@@ -75,9 +80,19 @@ test('returns the existing acceptance for a duplicate idempotency key and payloa
 
 test('rejects reuse of an idempotency key with a different payload', async () => {
   const ledger = new MemoryLedger();
-  const app = createDiscordAdapterApp({ ledger });
+  const app = trustedAdapterApp(ledger);
   await post(app, request);
   const conflict = await post(app, { ...request, content: 'Andere Nachricht' });
 
   assert.equal(conflict.status, 409);
+});
+
+test('rejects a delivery before the ledger when internal service authentication fails', async () => {
+  const ledger = new MemoryLedger();
+  const app = createDiscordAdapterApp({ ledger, authenticate: () => false });
+
+  const response = await post(app, request, { authorization: 'Bearer invalid' });
+
+  assert.equal(response.status, 401);
+  assert.equal(ledger.entries.size, 0);
 });
