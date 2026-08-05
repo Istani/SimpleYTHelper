@@ -1,6 +1,21 @@
 import { timingSafeEqual } from "node:crypto";
+import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 
 export const roles = ["admin", "creator", "viewer"];
+
+let prismaInstance = null;
+function getPrisma() {
+  if (prismaInstance) return prismaInstance;
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) return null;
+  try {
+    prismaInstance = new PrismaClient({ adapter: new PrismaPg({ connectionString }) });
+    return prismaInstance;
+  } catch {
+    return null;
+  }
+}
 
 function configuredUsers() {
   let parsed;
@@ -20,7 +35,26 @@ function safeTextEqual(left, right) {
 }
 
 export async function authenticate(email, password) {
-  const candidate = configuredUsers().find((user) => user.email === String(email || "").toLowerCase());
+  const cleanEmail = String(email || "").toLowerCase();
+  const prisma = getPrisma();
+
+  if (prisma) {
+    try {
+      const dbUser = await prisma.webUser.findUnique({ where: { email: cleanEmail } });
+      if (dbUser && safeTextEqual(dbUser.password, password || "")) {
+        return {
+          id: dbUser.id,
+          email: dbUser.email,
+          name: dbUser.name,
+          roles: dbUser.roles.filter((r) => roles.includes(r)),
+        };
+      }
+    } catch {
+      // Fallback to WEB_USERS_JSON if DB query fails
+    }
+  }
+
+  const candidate = configuredUsers().find((user) => user.email === cleanEmail);
   if (!candidate || !safeTextEqual(candidate.password, password || "")) return null;
   const { password: ignored, ...user } = candidate;
   return user;

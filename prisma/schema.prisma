@@ -195,3 +195,15 @@ model DiscordMemberRole {
   @@index([roleId], map: "discord_member_role_role_idx")
   @@map("discord_member_role")
 }
+
+model WebUser {
+  id        String   @id @default(uuid()) @map("user_id")
+  email     String   @unique @map("email")
+  name      String   @map("name")
+  password  String   @map("password")
+  roles     String[] @map("roles")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("web_user")
+}
