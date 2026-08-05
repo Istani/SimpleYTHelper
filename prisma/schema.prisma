@@ -5,7 +5,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  schemas  = ["community"]
+  schemas  = ["community", "discord_adapter"]
 }
 
 enum OutboxStatus {
@@ -15,6 +15,15 @@ enum OutboxStatus {
   failed
 
   @@schema("community")
+}
+
+enum AdapterDeliveryStatus {
+  accepted
+  processing
+  sent
+  failed
+
+  @@schema("discord_adapter")
 }
 
 model OutboxEvent {
@@ -39,4 +48,23 @@ model OutboxEvent {
   @@index([destination, nextAttemptAt, createdAt], map: "outbox_event_ready_idx")
   @@map("outbox_event")
   @@schema("community")
+}
+
+model AdapterDelivery {
+  id               String                @id @default(uuid()) @db.Uuid
+  eventId          String                @unique @map("event_id") @db.Uuid
+  payload          Json
+  status           AdapterDeliveryStatus @default(accepted)
+  acceptedAt       DateTime              @map("accepted_at") @db.Timestamptz(6)
+  attemptCount     Int                   @default(0) @map("attempt_count")
+  nextAttemptAt    DateTime?             @map("next_attempt_at") @db.Timestamptz(6)
+  lastErrorCode    String?               @map("last_error_code")
+  lastErrorMessage String?               @map("last_error_message")
+  sentAt           DateTime?             @map("sent_at") @db.Timestamptz(6)
+  createdAt        DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime              @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([status, nextAttemptAt, createdAt], map: "adapter_delivery_ready_idx")
+  @@map("adapter_delivery")
+  @@schema("discord_adapter")
 }
