@@ -7,8 +7,9 @@ services:
       dockerfile: Dockerfile.web
     environment:
       WEB_AUTH_SECRET: ${WEB_AUTH_SECRET:?Set WEB_AUTH_SECRET outside Git (at least 32 characters).}
-      WEB_USERS_JSON: ${WEB_USERS_JSON:?Set WEB_USERS_JSON outside Git.}
-      WEB_COOKIE_SECURE: ${WEB_COOKIE_SECURE:-true}
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL outside Git.}
+      WEB_USERS_JSON: ${WEB_USERS_JSON:-[]}
+      WEB_COOKIE_SECURE: ${WEB_COOKIE_SECURE:-false}
     ports:
       - "${WEB_PORT:-3000}:3000"
     healthcheck:

@@ -1,4 +1,4 @@
-export function createMultiBotManager({ clientFactory, registrationRepository }) {
+export function createMultiBotManager({ clientFactory, registrationRepository, onClientStarted }) {
   const activeBots = new Map();
 
   return {
@@ -14,6 +14,9 @@ export function createMultiBotManager({ clientFactory, registrationRepository })
         }
 
         const client = clientFactory ? clientFactory(reg) : null;
+        if (client && typeof onClientStarted === 'function') {
+          onClientStarted({ client, registration: reg });
+        }
         if (client && typeof client.login === 'function') {
           await client.login(reg.token);
         }
