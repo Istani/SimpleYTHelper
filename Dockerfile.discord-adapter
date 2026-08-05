@@ -1,3 +1,10 @@
+FROM node:22.22.0-alpine AS prisma-generate
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY prisma ./prisma
+RUN npx prisma generate --schema prisma/schema.prisma
+
 FROM node:22.22.0-alpine AS dependencies
 WORKDIR /app
 COPY package.json package-lock.json ./
@@ -8,6 +15,7 @@ WORKDIR /app
 ENV NODE_ENV=production PORT=3000
 RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 discord
 COPY --from=dependencies /app/node_modules ./node_modules
+COPY --from=prisma-generate /app/node_modules/.prisma ./node_modules/.prisma
 COPY prisma ./prisma
 COPY src ./src
 COPY package.json ./
