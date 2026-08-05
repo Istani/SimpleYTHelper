@@ -90,6 +90,7 @@ model DiscordGuild {
   channels  DiscordChannel[]
   roles     DiscordRole[]
   messages  DiscordMessage[]
+  members   DiscordGuildMember[]
 
   @@map("discord_guild")
 }
@@ -105,6 +106,7 @@ model DiscordUser {
   updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   messages      DiscordMessage[]
+  members       DiscordGuildMember[]
 
   @@map("discord_user")
 }
@@ -162,4 +164,34 @@ model DiscordMessage {
   @@index([guildId, channelId], map: "discord_message_channel_idx")
   @@index([authorId], map: "discord_message_author_idx")
   @@map("discord_message")
+}
+
+model DiscordGuildMember {
+  guildId   String   @map("guild_id")
+  userId    String   @map("user_id")
+  nickname  String?  @map("nickname")
+  joinedAt  DateTime? @map("joined_at") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  guild     DiscordGuild @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  user      DiscordUser  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roles     DiscordMemberRole[]
+
+  @@id([guildId, userId])
+  @@index([userId], map: "discord_guild_member_user_idx")
+  @@map("discord_guild_member")
+}
+
+model DiscordMemberRole {
+  guildId   String @map("guild_id")
+  userId    String @map("user_id")
+  roleId    String @map("role_id")
+
+  member    DiscordGuildMember @relation(fields: [guildId, userId], references: [guildId, userId], onDelete: Cascade)
+  role      DiscordRole        @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([guildId, userId, roleId])
+  @@index([roleId], map: "discord_member_role_role_idx")
+  @@map("discord_member_role")
 }

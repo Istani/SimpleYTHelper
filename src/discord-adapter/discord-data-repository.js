@@ -71,5 +71,31 @@ export function createDiscordDataRepository({ prisma }) {
         },
       });
     },
+
+    async upsertGuildMember({ guildId, userId, nickname, joinedAt }) {
+      return prisma.discordGuildMember.upsert({
+        where: { guildId_userId: { guildId, userId } },
+        create: { guildId, userId, nickname, joinedAt: joinedAt ? new Date(joinedAt) : null },
+        update: { nickname, joinedAt: joinedAt ? new Date(joinedAt) : undefined },
+      });
+    },
+
+    async assignMemberRole({ guildId, userId, roleId }) {
+      return prisma.discordMemberRole.upsert({
+        where: { guildId_userId_roleId: { guildId, userId, roleId } },
+        create: { guildId, userId, roleId },
+        update: {},
+      });
+    },
+
+    async removeMemberRole({ guildId, userId, roleId }) {
+      try {
+        return await prisma.discordMemberRole.delete({
+          where: { guildId_userId_roleId: { guildId, userId, roleId } },
+        });
+      } catch {
+        return null;
+      }
+    },
   };
 }
