@@ -57,6 +57,23 @@ Sie brauchen eigene Abfragen und Detailseiten, nicht Discord-spezifische
 Relationen. Das hält Administration, Datenownership und spätere API-Grenzen
 klar getrennt.
 
+## Testbetriebs-Abnahme
+
+Am 2026-08-06 wurde der Webservice im freigegebenen Docker-Testsystem auf
+`defender833` aus dem Commit `279043bd` neu gebaut und ausschließlich mit
+`docker compose ... up -d --no-deps web` recreated. Der Discord-Adapter wurde
+nicht recreated.
+
+Nachweis:
+
+- Web-Image: `sha256:28e75b3373963a9fb562efe45c213f60952a0f774af60fd38ab1edde19a9f8df`
+- Docker-Health: Web und Discord-Adapter jeweils `healthy`
+- HTTP-Smoke im Compose-Netz: `GET http://web:80/api/health` →
+  `{"status":"ok","service":"simpleyth-web"}`
+- Die Webruntime lauscht gemäß Container-Konfiguration auf Port 80; Docker
+  veröffentlicht keinen Hostport für den Testservice.
+- Legacy-PM2-Prozess `SYTH-Discord`: `online`, PID `1378`; keine Änderung.
+
 ## Abgrenzung
 
 Diese Entscheidung führt keine Versandberechtigung, keine Antwortlogik und
