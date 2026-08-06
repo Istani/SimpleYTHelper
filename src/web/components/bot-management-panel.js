@@ -42,9 +42,14 @@ function TokenRotationDialog({ bot }) {
   return <Dialog title={`${bot.botId}: Token rotieren`} triggerLabel="Token rotieren"><form action={action} className="bot-form dialog-form"><input type="hidden" name="botId" value={bot.botId} /><input type="hidden" name="isActive" value={bot.isActive ? 'on' : ''} /><input type="hidden" name="settings" value={JSON.stringify(bot.settings || {})} /><label>Neuer Discord Bot Token<input name="token" type="password" required minLength="20" autoComplete="new-password" /></label><p className="form-hint">Der bisherige Token wird ersetzt und kann nicht wiederhergestellt oder angezeigt werden.</p><Notice state={state} /><button className="button button-primary" disabled={pending}>{pending ? 'Rotiere …' : 'Token ersetzen'}</button></form></Dialog>;
 }
 
+function AuditFacts({ audits = [] }) {
+  if (!audits.length) return <p className="form-hint">Noch keine Konfigurationsänderung protokolliert.</p>;
+  return <div className="audit-facts">{audits.map((audit, index) => <p key={`${audit.createdAt}-${index}`}><strong>{audit.action === 'created' ? 'Registriert' : 'Konfiguration geändert'}</strong> · {new Date(audit.createdAt).toLocaleString('de-DE')} · Akteur: <code>{audit.actorId}</code>{audit.details?.tokenRotated ? ' · Token rotiert' : ''}{Object.keys(audit.details?.capabilities || {}).length ? ` · Capabilities: ${Object.entries(audit.details.capabilities).map(([key, value]) => `${key} ${value.from ? 'an' : 'aus'}→${value.to ? 'an' : 'aus'}`).join(', ')}` : ''}</p>)}</div>;
+}
+
 function BotCard({ bot }) {
   const status = bot.online ? (bot.ready ? 'Online & bereit' : 'Verbunden, startet …') : 'Offline';
-  return <article className="bot-card"><div className="bot-card-heading"><div><strong>{bot.botId}</strong><small>Discord-ID: {bot.discordUserId || 'Noch nicht verbunden'}</small></div><span className={`status-pill ${bot.online && bot.ready ? 'status-good' : 'status-muted'}`}>{status}</span></div><dl className="bot-meta"><div><dt>Instanz</dt><dd>{bot.isActive ? 'Aktiv' : 'Deaktiviert'}</dd></div><div><dt>Erstellt</dt><dd>{new Date(bot.createdAt).toLocaleDateString('de-DE')}</dd></div></dl><div className="bot-actions"><BotConfigDialog bot={bot} /><TokenRotationDialog bot={bot} /></div></article>;
+  return <article className="bot-card"><div className="bot-card-heading"><div><strong>{bot.botId}</strong><small>Discord-ID: {bot.discordUserId || 'Noch nicht verbunden'}</small></div><span className={`status-pill ${bot.online && bot.ready ? 'status-good' : 'status-muted'}`}>{status}</span></div><dl className="bot-meta"><div><dt>Instanz</dt><dd>{bot.isActive ? 'Aktiv' : 'Deaktiviert'}</dd></div><div><dt>Erstellt</dt><dd>{new Date(bot.createdAt).toLocaleDateString('de-DE')}</dd></div></dl><section className="bot-audit"><span className="kicker">Änderungshistorie</span><AuditFacts audits={bot.audits} /></section><div className="bot-actions"><BotConfigDialog bot={bot} /><TokenRotationDialog bot={bot} /></div></article>;
 }
 
 export function BotManagementPanel({ bots }) {

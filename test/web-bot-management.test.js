@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   createBotRegistration,
   updateBotRegistration,
+  publicBotRegistration,
 } from "../src/web/admin/bot-management.js";
 
 function fakePrisma() {
@@ -109,4 +110,13 @@ test("audits configuration diffs and token rotation without retaining the token"
     tokenRotated: true,
   });
   assert.equal(JSON.stringify(audit).includes('replacement-discord-token-that-is-long-enough'), false);
+});
+
+test("exposes only token-safe audit facts to the bot UI", () => {
+  const visible = publicBotRegistration({
+    botId: 'community-reporter', settings: {}, isActive: true, createdAt: new Date(), updatedAt: new Date(), token: 'must-not-leak',
+    audits: [{ actorId: 'admin-1', action: 'updated', details: { tokenRotated: true }, createdAt: new Date() }],
+  });
+  assert.deepEqual(visible.audits, [{ actorId: 'admin-1', action: 'updated', details: { tokenRotated: true }, createdAt: visible.audits[0].createdAt }]);
+  assert.equal(JSON.stringify(visible).includes('must-not-leak'), false);
 });

@@ -99,6 +99,12 @@ export function publicBotRegistration(record, runtimeStatus = {}) {
     isActive: record.isActive,
     createdAt: record.createdAt,
     updatedAt: record.updatedAt,
+    audits: Array.isArray(record.audits) ? record.audits.map((audit) => ({
+      actorId: audit.actorId,
+      action: audit.action,
+      details: audit.details,
+      createdAt: audit.createdAt,
+    })) : [],
     online: Boolean(runtimeStatus.online),
     ready: Boolean(runtimeStatus.ready),
   };

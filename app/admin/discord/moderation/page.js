@@ -4,11 +4,20 @@ import { requireRole } from '../../../../src/web/auth/session.js';
 import { getAdminPrisma } from '../../../../src/web/admin/prisma.js';
 import { discordModerationDestination } from '../../../../src/web/admin/discord-moderation.js';
 
+function formatSyncTime(value) {
+  return value ? new Date(value).toLocaleString('de-DE') : 'noch kein erfolgreicher Full Sync';
+}
+
+function GuildSyncFact({ guild }) {
+  if (guild.lastFullSyncFailedAt && (!guild.lastFullSyncAt || new Date(guild.lastFullSyncFailedAt) > new Date(guild.lastFullSyncAt))) return <small>Letzter Full-Sync-Versuch fehlgeschlagen: {new Date(guild.lastFullSyncFailedAt).toLocaleString('de-DE')}</small>;
+  return <small>Letzter Full Sync: {formatSyncTime(guild.lastFullSyncAt)}</small>;
+}
+
 function SourceList({ title, description, records, kind }) {
   return <section className="panel moderation-list"><div className="panel-title"><span className="kicker">Discord · Moderation</span><h2>{title}</h2><p>{description}</p></div>
     {records.length === 0 ? <p>Noch keine bekannten Einträge.</p> : <div className="entity-list">{records.map((record) => {
       const destination = discordModerationDestination(record, kind);
-      return <Link href={destination.href} className="entity-row" key={record.id}><span className="entity-mark">{kind === 'dm' ? '✉' : '◆'}</span><span><strong>{destination.label}</strong><small>{record._count?.messages ?? 0} gespeicherte Nachrichten</small></span><b>›</b></Link>;
+      return <Link href={destination.href} className="entity-row" key={record.id}><span className="entity-mark">{kind === 'dm' ? '✉' : '◆'}</span><span><strong>{destination.label}</strong><small>{record._count?.messages ?? 0} gespeicherte Nachrichten</small>{kind === 'guild' ? <GuildSyncFact guild={record} /> : null}</span><b>›</b></Link>;
     })}</div>}</section>;
 }
 

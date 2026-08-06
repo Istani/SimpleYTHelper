@@ -23,7 +23,7 @@ export default async function DiscordBotsPage() {
   let bots = [];
   if (prisma) {
     try {
-      const [records, runtime] = await Promise.all([prisma.discordBotRegistration.findMany({ orderBy: { createdAt: 'desc' } }), fetchAdapterBotStatuses()]);
+      const [records, runtime] = await Promise.all([prisma.discordBotRegistration.findMany({ orderBy: { createdAt: 'desc' }, include: { audits: { orderBy: { createdAt: 'desc' }, take: 10 } } }), fetchAdapterBotStatuses()]);
       bots = mergeBotRuntimeStatus(records, runtime).map((record) => publicBotRegistration(record, record));
     } catch {}
   }
