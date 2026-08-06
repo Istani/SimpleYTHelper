@@ -16,9 +16,9 @@ ENV NODE_ENV=production PORT=3000
 RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 discord
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY --from=prisma-generate /app/node_modules/.prisma ./node_modules/.prisma
-COPY prisma ./prisma
-COPY src ./src
-COPY package.json ./
+COPY --chown=discord:nodejs prisma ./prisma
+COPY --chown=discord:nodejs src ./src
+COPY --chown=discord:nodejs package.json ./
 USER discord
 EXPOSE 3000
 CMD ["node", "src/discord-adapter/server.js"]
