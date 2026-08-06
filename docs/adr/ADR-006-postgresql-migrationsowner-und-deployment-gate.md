@@ -62,11 +62,34 @@ Superuser-Zugangsdaten in einen Produktivbetrieb.
   `1e8e6e2b0d2b`.
 - Der PM2-Bestand, insbesondere `SYTH-Discord`, blieb unverändert online.
 
-## Nächste Testabnahme
+## Observability-Abnahme
 
-1. Die tatsächliche Grafana/Loki-Ingestion der Winston-JSON-Logs lesend prüfen.
-2. Den Befund zentral dokumentieren. Eine Änderung an Grafana oder Loki ist
-   dafür nicht Bestandteil dieses Rollouts.
+Die Grafana/Loki-Ingestion wurde ausschließlich lesend über `defender833` gegen
+den in Alloy konfigurierten Zielpfad geprüft:
+
+```text
+http://10.10.14.251:3100/loki/api/v1/push
+```
+
+- Alloy läuft auf `defender833`; beide SimpleYTH-Container verwenden den
+  Docker-Logdriver `json-file`.
+- Die Loki-Query-API lieferte HTTP 200. Ein einmaliges `/ready` mit HTTP 503 war
+  bei Wiederholung unmittelbar `HTTP 200` mit `ready`; ein aktueller Loki-Ausfall
+  ist daher nicht belegt.
+- Im Zeitfenster `2026-08-06T09:29:50Z` bis `09:31:10Z` lieferte die Abfrage
+  `{service_name="defender833-simpleyth-modernization-web-1"}` einen Stream mit
+  acht gültigen JSON-Einträgen (`simpleyth-web`).
+- Die Abfrage
+  `{service_name="defender833-simpleyth-modernization-discord-adapter-1"}`
+  lieferte einen Stream mit zwei gültigen JSON-Einträgen
+  (`simpleyth-discord-adapter`).
+- Im erweiterten Fenster von 09:23 bis 09:31 UTC enthielt Web 46 valide
+  Winston-JSON-Einträge und der Adapter drei. Die erwarteten Felder `level`,
+  `message`, `service` und `timestamp` sind im Logkörper vorhanden.
+
+Für Loki-Abfragen ist `service_name` das Docker-Containerlabel. Der Winston-
+Wert `service` bleibt ein Feld im JSON-Logkörper und ist nicht das passende
+Loki-Streamlabel.
 
 ## Folgen
 
