@@ -16,6 +16,19 @@ Discord-Gateway-Events sind für die laufende Reconciliation nützlich, können 
 5. Bot-Anlage und -Änderungen erhalten tokenfreie Auditfakten mit Akteur, Aktion, Aktivstatus-/Capability-Diff und der Tatsache einer Tokenrotation. Tokenwerte werden nie in Audit, UI oder Logs geschrieben.
 6. Der `GuildMembers`-Schalter im Discord Developer Portal bleibt externe Voraussetzung. Fehlt er oder scheitert der Fetch, wird kein erfolgreicher Vollständigkeitsstatus behauptet.
 
+## Abnahme im Docker-Testbetrieb
+
+Am 2026-08-06 wurde die Migration `20260806150000_add_discord_sync_status_and_bot_audit` auf `defender833` über die vorhandene PostgreSQL-Verbindung als Principal `postgres` ausgeführt. `prisma migrate status` bestätigte anschließend: **Database schema is up to date**.
+
+Der Docker-Teststack wurde danach aus `docker-entwicklung` neu gebaut und ersetzt. Beide Dienste meldeten `healthy`; die Runtime-Healthchecks lieferten:
+
+```json
+{"status":"ok","service":"simpleyth-web"}
+{"status":"ok"}
+```
+
+Der Discord-Adapter protokollierte `adapter_listening` auf Port 80 mit einem gestarteten Bot. Der vorhandene PM2-Prozess `SYTH-Discord` blieb dabei online (PID 1378) und wurde nicht angefasst.
+
 ## Folgen
 
 Die neue additive PostgreSQL-Migration `20260806150000_add_discord_sync_status_and_bot_audit` ist vor Ausrollen des neuen Adapters anzuwenden. Die PM2-/MariaDB-Produktivinstallation bleibt davon unberührt; Änderungen werden ausschließlich am Docker-Teststack auf `defender833` abgenommen.
