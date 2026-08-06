@@ -30,8 +30,8 @@ export async function createBotAction(_previousState, formData) {
       token: formData.get("token"),
       settingsInput: formData.get("settings"),
     });
-    revalidatePath("/admin");
-    return { success: "Bot gespeichert. Der Discord-Adapter übernimmt aktive Bots beim nächsten Neustart." };
+    revalidatePath("/admin", "layout");
+    return { success: "Bot gespeichert. Der Discord-Adapter übernimmt aktive Bots beim nächsten Polling-Intervall." };
   } catch (error) {
     return { error: actionError(error) };
   }
@@ -47,7 +47,7 @@ export async function updateBotAction(_previousState, formData) {
       token: formData.get("token"),
       settingsInput: formData.get("settings"),
     });
-    revalidatePath("/admin");
+    revalidatePath("/admin", "layout");
     return { success: "Bot-Konfiguration gespeichert. Ein neu gesetzter Token wird nie wieder angezeigt." };
   } catch (error) {
     return { error: actionError(error) };
