@@ -85,6 +85,30 @@ Bei einer gültigen HTTP(S)-URL ist der Name ein externer Link mit
 verlinkt. Es werden keine `<img>`-, Video-, Audio- oder Embed-Elemente
 verwendet.
 
+## Testbetriebs-Abnahme
+
+Am 2026-08-06 wurde die Migration im freigegebenen Docker-Testsystem auf
+`defender833` mit dem bestehenden PostgreSQL-Principal `postgres` angewendet.
+`prisma migrate status` meldete anschließend: `Database schema is up to date!`.
+
+Der erste Einmal-Migrator war fälschlich nur im Docker-Default-Netz und konnte
+die Datenbank über WireGuard nicht erreichen (`P1001`). Dabei wurde weder eine
+Migration angewendet noch ein Container verändert. Die Wiederholung im
+`wireguard_net` war erfolgreich.
+
+Danach wurden ausschließlich die Docker-Testdienste `web` und
+`discord-adapter` neu gebaut und recreated. Belegt sind:
+
+- beide Container: `healthy`;
+- Web-Healthcheck: `{"status":"ok","service":"simpleyth-web"}`;
+- Adapter-Healthcheck: `{"status":"ok"}`;
+- Adapter-Winston-Startlog: `adapter_listening`, `startedBotCount: 1`;
+- PM2-Produktivdienst `SYTH-Discord`: weiterhin `online`.
+
+Die lokale Suite hatte vor dem Rollout 52 erfolgreiche Tests; darunter die
+neuen Projektion-, Repository- und Frontend-Darstellungstests. Der lokale
+Next-Produktionsbuild war ebenfalls erfolgreich.
+
 ## Abgrenzung
 
 Die Relation ist Eigentum des Discord-Adapters. Andere SimpleYTH-Services
