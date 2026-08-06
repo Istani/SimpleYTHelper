@@ -6,7 +6,7 @@ export function createDiscordJsClientFactory({
   Partials: partials = Partials,
 } = {}) {
   return ({ settings = {} }) => {
-    const requestedIntents = [intents.Guilds];
+    const requestedIntents = [intents.Guilds, intents.GuildMembers];
     const options = { intents: requestedIntents };
     if (settings.listenMessages || settings.allowCommands) {
       requestedIntents.push(intents.GuildMessages, intents.MessageContent);

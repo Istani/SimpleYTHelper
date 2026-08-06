@@ -93,6 +93,18 @@ test('removes a bot with a Discord connection failure so the registration poller
   await manager.initializeBots([{ bot_id: 'recoverable-bot', token: 'token', settings: {} }]);
   client.emit('error', new Error('gateway connection failed'));
   await new Promise((resolve) => setImmediate(resolve));
-
   assert.equal(manager.getBot('recoverable-bot'), undefined);
+});
+
+test('releases a client lifecycle cleanup before destroying a stopped bot', async () => {
+  const lifecycle = [];
+  const manager = createMultiBotManager({
+    clientFactory: () => ({ user: { id: 'bot-user' }, login: async () => {}, destroy: async () => lifecycle.push('destroy') }),
+    onClientStarted: () => () => lifecycle.push('cleanup'),
+  });
+
+  await manager.initializeBots([{ bot_id: 'timer-bot', token: 'token', settings: {} }]);
+  await manager.shutdownAll();
+
+  assert.deepEqual(lifecycle, ['cleanup', 'destroy']);
 });

@@ -86,6 +86,16 @@ export function projectDiscordMessageMedia(message) {
   return [...attachments, ...embeds, ...stickers];
 }
 
+function memberData(member, guildId) {
+  return {
+    guildId,
+    userId: member.user.id,
+    nickname: member.nickname ?? null,
+    joinedAt: member.joinedAt ?? null,
+    roleIds: collectionValues(member.roles?.cache).map((role) => role.id),
+  };
+}
+
 async function syncGuild(dataRepository, guild) {
   await dataRepository.upsertGuild({
     id: guild.id,
@@ -101,22 +111,55 @@ async function syncGuild(dataRepository, guild) {
 
   await dataRepository.bulkUpsertChannels(channels);
   await dataRepository.bulkUpsertRoles(roles);
+
+  const fetchedMembers = await guild.members.fetch();
+  const members = collectionValues(fetchedMembers).map((member) => memberData(member, guild.id));
+  for (const member of collectionValues(fetchedMembers)) await dataRepository.upsertUser(userData(member.user));
+  await dataRepository.replaceGuildMembers({ guildId: guild.id, members });
+  await dataRepository.recordGuildFullSync({ guildId: guild.id, syncedAt: new Date() });
+}
+
+function syncErrorMessage(error) {
+  const message = String(error?.message || 'Unbekannter Discord-Synchronisationsfehler');
+  return message.replace(/(token|authorization|password)\s*[:=]\s*\S+/gi, '$1=[REDACTED]').slice(0, 500);
 }
 
 /** Attach DB persistence to one discord.js client. Errors stay isolated to a single event. */
-export function attachDiscordEventHandlers({ client, dataRepository, settings = {}, logger = console }) {
-  if (!client || typeof client.on !== 'function') return;
+export function attachDiscordEventHandlers({ client, dataRepository, settings = {}, logger = console, setIntervalFn = setInterval, clearIntervalFn = clearInterval }) {
+  if (!client || typeof client.on !== 'function') return () => {};
+  let dailySyncTimer = null;
 
+  const syncOneGuild = async (guild) => {
+    try {
+      await syncGuild(dataRepository, guild);
+    } catch (error) {
+      const errorMessage = syncErrorMessage(error);
+      try {
+        await dataRepository.recordGuildFullSyncFailure({ guildId: guild.id, failedAt: new Date(), errorMessage });
+      } catch (recordError) {
+        logger.error('Discord full-sync failure state could not be saved', { guildId: guild.id, message: syncErrorMessage(recordError) });
+      }
+      logger.error('Discord guild full sync failed', { guildId: guild.id, message: errorMessage });
+    }
+  };
+
+  const syncCachedGuilds = async () => {
+    for (const guild of client.guilds.cache.values()) await syncOneGuild(guild);
+  };
   const safely = (operation, eventName) => (...args) => {
     Promise.resolve(operation(...args)).catch((error) => {
       logger.error(`Discord ${eventName} persistence failed`, { message: error?.message });
     });
   };
 
-  client.on('guildCreate', safely((guild) => syncGuild(dataRepository, guild), 'guildCreate'));
+  client.on('guildCreate', safely((guild) => syncOneGuild(guild), 'guildCreate'));
 
   client.on('clientReady', safely(async () => {
-    for (const guild of client.guilds.cache.values()) await syncGuild(dataRepository, guild);
+    await syncCachedGuilds();
+    if (!dailySyncTimer) {
+      dailySyncTimer = setIntervalFn(() => syncCachedGuilds().catch((error) => logger.error('Discord daily guild sync failed', { message: error?.message })), 24 * 60 * 60 * 1000);
+      dailySyncTimer.unref?.();
+    }
   }, 'clientReady'));
 
   if (settings.listenMessages) {
@@ -143,4 +186,9 @@ export function attachDiscordEventHandlers({ client, dataRepository, settings = 
       });
     }, 'messageCreate'));
   }
+
+  return () => {
+    if (dailySyncTimer) clearIntervalFn(dailySyncTimer);
+    dailySyncTimer = null;
+  };
 }

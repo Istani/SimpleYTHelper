@@ -22,10 +22,11 @@ function actionError(error) {
 }
 
 export async function createBotAction(_previousState, formData) {
-  await requireRole("admin");
+  const session = await requireRole("admin");
   try {
     await createBotRegistration({
       prisma: getPrisma(),
+      actorId: session.user.id,
       botId: formData.get("botId"),
       token: formData.get("token"),
       settingsInput: formData.get("settings"),
@@ -38,10 +39,11 @@ export async function createBotAction(_previousState, formData) {
 }
 
 export async function updateBotAction(_previousState, formData) {
-  await requireRole("admin");
+  const session = await requireRole("admin");
   try {
     await updateBotRegistration({
       prisma: getPrisma(),
+      actorId: session.user.id,
       botId: formData.get("botId"),
       isActive: formData.get("isActive") === "on",
       token: formData.get("token"),

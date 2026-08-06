@@ -9,13 +9,13 @@ test('creates a Discord client with only the gateway intents required by its set
       created.push(options);
     }
   }
-  const intents = { Guilds: 1, GuildMessages: 2, MessageContent: 4, DirectMessages: 8 };
+  const intents = { Guilds: 1, GuildMembers: 2, GuildMessages: 4, MessageContent: 8, DirectMessages: 16 };
   const partials = { Channel: 'CHANNEL' };
   const createClient = createDiscordJsClientFactory({ Client: FakeClient, GatewayIntentBits: intents, Partials: partials });
 
   createClient({ settings: { listenMessages: true, allowCommands: true } });
 
-  assert.deepEqual(created, [{ intents: [1, 2, 4, 8], partials: ['CHANNEL'] }]);
+  assert.deepEqual(created, [{ intents: [1, 2, 4, 8, 16], partials: ['CHANNEL'] }]);
 });
 
 test('does not request message-reading intents for a send-only reporting bot', () => {
@@ -25,12 +25,12 @@ test('does not request message-reading intents for a send-only reporting bot', (
       created.push(options);
     }
   }
-  const intents = { Guilds: 1, GuildMessages: 2, MessageContent: 4 };
+  const intents = { Guilds: 1, GuildMembers: 2, GuildMessages: 4, MessageContent: 8 };
   const createClient = createDiscordJsClientFactory({ Client: FakeClient, GatewayIntentBits: intents });
 
   createClient({ settings: { allowReports: true } });
 
-  assert.deepEqual(created, [{ intents: [1] }]);
+  assert.deepEqual(created, [{ intents: [1, 2] }]);
 });
 
 test('requests direct-message support and channel partials when inbound message listening is enabled', () => {
@@ -40,11 +40,11 @@ test('requests direct-message support and channel partials when inbound message 
       created.push(options);
     }
   }
-  const intents = { Guilds: 1, GuildMessages: 2, MessageContent: 4, DirectMessages: 8 };
+  const intents = { Guilds: 1, GuildMembers: 2, GuildMessages: 4, MessageContent: 8, DirectMessages: 16 };
   const partials = { Channel: 'CHANNEL' };
   const createClient = createDiscordJsClientFactory({ Client: FakeClient, GatewayIntentBits: intents, Partials: partials });
 
   createClient({ settings: { listenMessages: true } });
 
-  assert.deepEqual(created, [{ intents: [1, 2, 4, 8], partials: ['CHANNEL'] }]);
+  assert.deepEqual(created, [{ intents: [1, 2, 4, 8, 16], partials: ['CHANNEL'] }]);
 });

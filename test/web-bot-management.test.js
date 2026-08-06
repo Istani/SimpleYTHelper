@@ -7,7 +7,7 @@ import {
 
 function fakePrisma() {
   const calls = [];
-  return {
+  const prisma = {
     calls,
     discordBotRegistration: {
       create: async (argument) => {
@@ -18,8 +18,14 @@ function fakePrisma() {
         calls.push({ method: "update", argument });
         return { botId: argument.where.botId, ...argument.data };
       },
+      findUnique: async () => ({ botId: 'community-reporter', isActive: true, settings: { allowCommands: false, allowReports: true, listenMessages: false } }),
+    },
+    discordBotAdminAudit: {
+      create: async (argument) => { calls.push({ method: 'audit', argument }); return argument.data; },
     },
   };
+  prisma.$transaction = async (operation) => typeof operation === "function" ? operation(prisma) : Promise.all(operation);
+  return prisma;
 }
 
 test("creates an active bot registration with validated settings", async () => {
@@ -39,6 +45,15 @@ test("creates an active bot registration with validated settings", async () => {
     settings: { allowReports: true, listenMessages: false },
     isActive: true,
   });
+});
+
+
+test("audits bot creation without including its token", async () => {
+  const prisma = fakePrisma();
+  await createBotRegistration({ prisma, actorId: 'admin-1', botId: 'new-bot', token: 'discord-test-token-that-is-long-enough', settingsInput: '{"allowReports":true}' });
+  const audit = prisma.calls.find((call) => call.method === 'audit').argument.data;
+  assert.deepEqual(audit, { botId: 'new-bot', actorId: 'admin-1', action: 'created', details: { isActive: true, capabilities: { allowReports: true }, tokenRotated: true } });
+  assert.equal(JSON.stringify(audit).includes('discord-test-token-that-is-long-enough'), false);
 });
 
 test("rejects malformed identifiers, short tokens, and non-object settings", async () => {
@@ -76,4 +91,22 @@ test("rotates a token only when a valid replacement is supplied", async () => {
 
   assert.equal(prisma.calls[0].argument.data.token, "new-discord-token-that-is-long-enough");
   assert.ok(prisma.calls[0].argument.data.rotatedAt instanceof Date);
+});
+
+test("audits configuration diffs and token rotation without retaining the token", async () => {
+  const prisma = fakePrisma();
+  await updateBotRegistration({
+    prisma, actorId: 'admin-1', botId: 'community-reporter', isActive: false,
+    token: 'replacement-discord-token-that-is-long-enough', settingsInput: '{"allowCommands":true,"allowReports":true}',
+  });
+
+  const audit = prisma.calls.find((call) => call.method === 'audit').argument.data;
+  assert.equal(audit.actorId, 'admin-1');
+  assert.equal(audit.action, 'updated');
+  assert.deepEqual(audit.details, {
+    isActive: { from: true, to: false },
+    capabilities: { allowCommands: { from: false, to: true }, listenMessages: { from: false, to: undefined } },
+    tokenRotated: true,
+  });
+  assert.equal(JSON.stringify(audit).includes('replacement-discord-token-that-is-long-enough'), false);
 });

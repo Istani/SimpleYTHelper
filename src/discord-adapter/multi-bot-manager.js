@@ -6,6 +6,7 @@ export function createMultiBotManager({ clientFactory, registrationRepository, o
       throw new Error(`Token is required for bot_id ${reg.bot_id}`);
     }
     const client = clientFactory ? clientFactory(reg) : null;
+    let clientCleanup = null;
     if (client && typeof client.once === 'function') {
       const recoverOnConnectionFault = () => {
         void stopBot(reg.bot_id);
@@ -14,7 +15,7 @@ export function createMultiBotManager({ clientFactory, registrationRepository, o
       client.once('shardDisconnect', recoverOnConnectionFault);
     }
     if (client && typeof onClientStarted === 'function') {
-      onClientStarted({ client, registration: reg });
+      clientCleanup = onClientStarted({ client, registration: reg });
     }
     if (client && typeof client.login === 'function') {
       await client.login(reg.token);
@@ -28,6 +29,7 @@ export function createMultiBotManager({ clientFactory, registrationRepository, o
       token: reg.token,
       settings: reg.settings || {},
       client,
+      clientCleanup,
       discordUserId,
     });
 
@@ -40,6 +42,7 @@ export function createMultiBotManager({ clientFactory, registrationRepository, o
   async function stopBot(botId) {
     const bot = activeBots.get(botId);
     if (bot) {
+      if (typeof bot.clientCleanup === 'function') await bot.clientCleanup();
       if (bot.client && typeof bot.client.destroy === 'function') {
         await bot.client.destroy();
       }

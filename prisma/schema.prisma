@@ -84,6 +84,8 @@ model DiscordBotRegistration {
   createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
 
+  audits           DiscordBotAdminAudit[]
+
   @@map("discord_bot_registration")
 }
 
@@ -91,9 +93,12 @@ model DiscordGuild {
   id        String   @id @map("guild_id")
   name      String   @map("name")
   icon      String?  @map("icon")
-  ownerId   String?  @map("owner_id")
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  ownerId              String?  @map("owner_id")
+  lastFullSyncAt       DateTime? @map("last_full_sync_at") @db.Timestamptz(6)
+  lastFullSyncFailedAt DateTime? @map("last_full_sync_failed_at") @db.Timestamptz(6)
+  lastFullSyncError    String?  @map("last_full_sync_error")
+  createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   channels  DiscordChannel[]
   roles     DiscordRole[]
@@ -228,6 +233,21 @@ model DiscordMemberRole {
   @@id([guildId, userId, roleId])
   @@index([roleId], map: "discord_member_role_role_idx")
   @@map("discord_member_role")
+}
+
+model DiscordBotAdminAudit {
+  id        String   @id @default(uuid()) @db.Uuid
+  botId     String   @map("bot_id")
+  actorId   String   @map("actor_id")
+  action    String
+  details   Json     @default("{}")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  bot DiscordBotRegistration @relation(fields: [botId], references: [botId], onDelete: Restrict)
+
+  @@index([botId, createdAt], map: "discord_bot_admin_audit_bot_created_idx")
+  @@index([actorId, createdAt], map: "discord_bot_admin_audit_actor_created_idx")
+  @@map("discord_bot_admin_audit")
 }
 
 model WebUser {

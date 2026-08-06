@@ -13,6 +13,9 @@ function fakeRepository() {
     saveMessage: async (value) => calls.push(['message', value]),
     bulkUpsertChannels: async (value) => calls.push(['channels', value]),
     bulkUpsertRoles: async (value) => calls.push(['roles', value]),
+    replaceGuildMembers: async (value) => calls.push(['members', value]),
+    recordGuildFullSync: async (value) => calls.push(['guildFullSync', value]),
+    recordGuildFullSyncFailure: async (value) => calls.push(['guildFullSyncFailure', value]),
   };
 }
 
@@ -20,6 +23,7 @@ const guild = {
   id: 'guild-1', name: 'Test guild', icon: null, ownerId: 'owner-1',
   channels: { cache: new Map([['channel-1', { id: 'channel-1', guildId: 'guild-1', name: 'general', type: 0, topic: null, rawPosition: 2, parentId: null }]]) },
   roles: { cache: new Map([['role-1', { id: 'role-1', name: 'Member', color: 0, hoist: false, position: 1, permissions: { bitfield: 1024n }, managed: false, mentionable: false }]]) },
+  members: { fetch: async () => new Map([['user-1', { user: { id: 'user-1', username: 'Sascha', discriminator: '0', globalName: 'Sascha', avatar: null, bot: false }, nickname: 'Boss', joinedAt: new Date('2026-08-01T12:00:00Z'), roles: { cache: new Map([['role-1', { id: 'role-1' }]]) } }]]) },
 };
 
 test('persists a received guild message with its dependencies when message listening is enabled', async () => {
@@ -69,9 +73,11 @@ test('syncs guild channels and roles on guildCreate', async () => {
   client.emit('guildCreate', guild);
   await new Promise((resolve) => setImmediate(resolve));
 
-  assert.deepEqual(repository.calls.map(([type]) => type), ['guild', 'channels', 'roles']);
-  assert.equal(repository.calls[1][1][0].id, 'channel-1');
-  assert.equal(repository.calls[2][1][0].permissions, 1024n);
+  assert.deepEqual(repository.calls.map(([type]) => type), ['guild', 'channels', 'roles', 'user', 'members', 'guildFullSync']);
+  assert.deepEqual(repository.calls[4][1], {
+    guildId: 'guild-1',
+    members: [{ guildId: 'guild-1', userId: 'user-1', nickname: 'Boss', joinedAt: new Date('2026-08-01T12:00:00Z'), roleIds: ['role-1'] }],
+  });
 });
 
 test('syncs cached guilds on the Discord.js clientReady event', async () => {
@@ -83,5 +89,48 @@ test('syncs cached guilds on the Discord.js clientReady event', async () => {
   client.emit('clientReady');
   await new Promise((resolve) => setImmediate(resolve));
 
-  assert.deepEqual(repository.calls.map(([type]) => type), ['guild', 'channels', 'roles']);
+  assert.deepEqual(repository.calls.map(([type]) => type), ['guild', 'channels', 'roles', 'user', 'members', 'guildFullSync']);
+  assert.ok(repository.calls[5][1].syncedAt instanceof Date);
+});
+
+
+test('records a failed guild sync without replacing the last successful full-sync state', async () => {
+  const client = new EventEmitter();
+  const repository = fakeRepository();
+  const logged = [];
+  const inaccessibleGuild = { ...guild, members: { fetch: async () => { throw new Error('Missing Access: privileged GuildMembers intent'); } } };
+  client.guilds = { cache: new Map([[inaccessibleGuild.id, inaccessibleGuild]]) };
+  attachDiscordEventHandlers({ client, dataRepository: repository, logger: { error: (...args) => logged.push(args) } });
+
+  client.emit('clientReady');
+  await new Promise((resolve) => setImmediate(resolve));
+
+  const failure = repository.calls.find(([type]) => type === 'guildFullSyncFailure');
+  assert.ok(failure);
+  assert.equal(failure[1].guildId, 'guild-1');
+  assert.match(failure[1].errorMessage, /privileged GuildMembers intent/);
+  assert.equal(repository.calls.some(([type]) => type === 'guildFullSync'), false);
+  assert.equal(logged.length, 1);
+});
+
+test('reconciles every guild daily after clientReady and clears the timer on shutdown', async () => {
+  const client = new EventEmitter();
+  client.guilds = { cache: new Map([[guild.id, guild]]) };
+  const repository = fakeRepository();
+  const timers = [];
+  const cleared = [];
+  const stop = attachDiscordEventHandlers({
+    client, dataRepository: repository, logger: { error: () => {} },
+    setIntervalFn: (callback, intervalMs) => { const timer = { callback, intervalMs }; timers.push(timer); return timer; },
+    clearIntervalFn: (timer) => cleared.push(timer),
+  });
+
+  client.emit('clientReady');
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(timers.length, 1);
+  assert.equal(timers[0].intervalMs, 24 * 60 * 60 * 1000);
+  await timers[0].callback();
+  assert.equal(repository.calls.filter(([type]) => type === 'guildFullSync').length, 2);
+  stop();
+  assert.deepEqual(cleared, [timers[0]]);
 });

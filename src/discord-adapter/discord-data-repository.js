@@ -123,6 +123,37 @@ export function createDiscordDataRepository({ prisma }) {
       return savedMessage;
     },
 
+    async replaceGuildMembers({ guildId, members }) {
+      const snapshot = Array.isArray(members) ? members : [];
+      const userIds = snapshot.map((member) => member.userId);
+      const memberRoles = snapshot.flatMap((member) => (member.roleIds || []).map((roleId) => ({ guildId, userId: member.userId, roleId })));
+      const operations = [
+        prisma.discordMemberRole.deleteMany({ where: { guildId } }),
+        prisma.discordGuildMember.deleteMany({ where: { guildId, userId: { notIn: userIds } } }),
+        ...snapshot.map((member) => prisma.discordGuildMember.upsert({
+          where: { guildId_userId: { guildId, userId: member.userId } },
+          create: { guildId, userId: member.userId, nickname: member.nickname ?? null, joinedAt: member.joinedAt ? new Date(member.joinedAt) : null },
+          update: { nickname: member.nickname ?? null, joinedAt: member.joinedAt ? new Date(member.joinedAt) : null },
+        })),
+      ];
+      if (memberRoles.length > 0) operations.push(prisma.discordMemberRole.createMany({ data: memberRoles }));
+      return prisma.$transaction(operations);
+    },
+
+    async recordGuildFullSync({ guildId, syncedAt }) {
+      return prisma.discordGuild.update({
+        where: { id: guildId },
+        data: { lastFullSyncAt: new Date(syncedAt), lastFullSyncFailedAt: null, lastFullSyncError: null },
+      });
+    },
+
+    async recordGuildFullSyncFailure({ guildId, failedAt, errorMessage }) {
+      return prisma.discordGuild.update({
+        where: { id: guildId },
+        data: { lastFullSyncFailedAt: new Date(failedAt), lastFullSyncError: String(errorMessage).slice(0, 500) },
+      });
+    },
+
     async upsertGuildMember({ guildId, userId, nickname, joinedAt }) {
       return prisma.discordGuildMember.upsert({
         where: { guildId_userId: { guildId, userId } },

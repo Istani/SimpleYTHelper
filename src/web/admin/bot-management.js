@@ -36,28 +36,58 @@ export function parseBotSettings(settingsInput) {
   return parsed;
 }
 
-export async function createBotRegistration({ prisma, botId, token, settingsInput }) {
+function booleanDiff(before = {}, after = {}) {
+  const changes = {};
+  for (const key of new Set([...Object.keys(before), ...Object.keys(after)])) {
+    if (before[key] !== after[key]) changes[key] = { from: before[key], to: after[key] };
+  }
+  return changes;
+}
+
+export async function createBotRegistration({ prisma, actorId = null, botId, token, settingsInput }) {
   const data = {
     botId: validateBotId(botId),
     token: validateToken(token),
     settings: parseBotSettings(settingsInput),
     isActive: true,
   };
-  return prisma.discordBotRegistration.create({ data });
+  if (!actorId) return prisma.discordBotRegistration.create({ data });
+  return prisma.$transaction(async (tx) => {
+    const saved = await tx.discordBotRegistration.create({ data });
+    await tx.discordBotAdminAudit.create({
+      data: { botId: data.botId, actorId: String(actorId), action: 'created', details: { isActive: true, capabilities: data.settings, tokenRotated: true } },
+    });
+    return saved;
+  });
 }
 
-export async function updateBotRegistration({ prisma, botId, isActive, token, settingsInput }) {
-  const data = {
-    isActive: Boolean(isActive),
-    settings: parseBotSettings(settingsInput),
-  };
-  if (String(token || "").trim()) {
+export async function updateBotRegistration({ prisma, actorId = null, botId, isActive, token, settingsInput }) {
+  const settings = parseBotSettings(settingsInput);
+  const data = { isActive: Boolean(isActive), settings };
+  const tokenRotated = Boolean(String(token || "").trim());
+  if (tokenRotated) {
     data.token = validateToken(token);
     data.rotatedAt = new Date();
   }
-  return prisma.discordBotRegistration.update({
-    where: { botId: validateBotId(botId) },
-    data,
+  const cleanBotId = validateBotId(botId);
+  if (!actorId) return prisma.discordBotRegistration.update({ where: { botId: cleanBotId }, data });
+
+  return prisma.$transaction(async (tx) => {
+    const previous = await tx.discordBotRegistration.findUnique({ where: { botId: cleanBotId }, select: { isActive: true, settings: true } });
+    const saved = await tx.discordBotRegistration.update({ where: { botId: cleanBotId }, data });
+    await tx.discordBotAdminAudit.create({
+      data: {
+        botId: cleanBotId,
+        actorId: String(actorId),
+        action: 'updated',
+        details: {
+          isActive: previous?.isActive === Boolean(isActive) ? undefined : { from: previous?.isActive, to: Boolean(isActive) },
+          capabilities: booleanDiff(previous?.settings || {}, settings),
+          tokenRotated,
+        },
+      },
+    });
+    return saved;
   });
 }
 
