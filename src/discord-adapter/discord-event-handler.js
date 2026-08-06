@@ -70,9 +70,9 @@ export function attachDiscordEventHandlers({ client, dataRepository, settings = 
 
   client.on('guildCreate', safely((guild) => syncGuild(dataRepository, guild), 'guildCreate'));
 
-  client.on('ready', safely(async () => {
+  client.on('clientReady', safely(async () => {
     for (const guild of client.guilds.cache.values()) await syncGuild(dataRepository, guild);
-  }, 'ready'));
+  }, 'clientReady'));
 
   if (settings.listenMessages) {
     client.on('messageCreate', safely(async (message) => {

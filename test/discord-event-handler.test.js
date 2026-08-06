@@ -50,3 +50,15 @@ test('syncs guild channels and roles on guildCreate', async () => {
   assert.equal(repository.calls[1][1][0].id, 'channel-1');
   assert.equal(repository.calls[2][1][0].permissions, 1024n);
 });
+
+test('syncs cached guilds on the Discord.js clientReady event', async () => {
+  const client = new EventEmitter();
+  client.guilds = { cache: new Map([[guild.id, guild]]) };
+  const repository = fakeRepository();
+  attachDiscordEventHandlers({ client, dataRepository: repository, logger: { error: () => {} } });
+
+  client.emit('clientReady');
+  await new Promise((resolve) => setImmediate(resolve));
+
+  assert.deepEqual(repository.calls.map(([type]) => type), ['guild', 'channels', 'roles']);
+});
