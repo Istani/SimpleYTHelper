@@ -11,7 +11,7 @@ COPY prisma ./prisma
 RUN npx prisma generate --schema prisma/schema.prisma
 COPY app ./app
 COPY src ./src
-COPY proxy.js next.config.mjs package.json ./
+COPY instrumentation.js proxy.js next.config.mjs package.json ./
 RUN npm run build:web
 
 FROM node:22.22.0-alpine AS runtime
