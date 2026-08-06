@@ -48,22 +48,25 @@ Superuser-Zugangsdaten in einen Produktivbetrieb.
 
 ## Container- und Build-Status
 
-- Der Discord-Adapter wurde als neues Image `b5d403ad2da1` gebaut.
 - Das Web-Image wurde als `35918247e713` erfolgreich gebaut. Der Next.js-
   Produktionsbuild inklusive der Winston-Instrumentation war erfolgreich.
-- Auf ausdrückliche Vorgabe wurde kein Container ersetzt oder neu gestartet.
-  Die noch laufenden Web- und Adapter-Container verwenden weiterhin die älteren,
-  gesunden Images.
+- Die Web- und Adapter-Compose-Container wurden im freigegebenen Testbetrieb
+  kontrolliert ersetzt; beide meldeten anschließend `healthy`.
+- Web-Healthcheck: `{"status":"ok","service":"simpleyth-web"}`.
+- Adapter-Healthcheck: `{"status":"ok"}`.
+- Docker-stdout enthält strukturierte Winston-JSON-Ereignisse, unter anderem
+  `web_runtime_started`, `healthcheck_served` und `adapter_listening`.
+- Die vorherige Discord.js-Deprecation (`ready`) wurde testgetrieben korrigiert:
+  Adapter-Commit `e7a0d949` nutzt nun `clientReady`. Das frisch gestartete
+  Adapter-Log enthält die Warnung nicht mehr; das aktuelle Image lautet
+  `1e8e6e2b0d2b`.
 - Der PM2-Bestand, insbesondere `SYTH-Discord`, blieb unverändert online.
 
-## Vor dem ausdrücklich freizugebenden Container-Rollout
+## Nächste Testabnahme
 
-1. Compose-Services kontrolliert mit den bereits gebauten Images ersetzen.
-2. Web- und Adapter-Healthchecks sowie die vereinbarten Smoke-Tests ausführen.
-3. Docker-stdout darauf prüfen, dass SimpleYTH-Anwendungsereignisse als
-   Winston-JSON erscheinen.
-4. Erst nach diesem Nachweis Ben mit der Grafana/Loki-Prüfung der tatsächlichen
-   Log-Ingestion beauftragen.
+1. Die tatsächliche Grafana/Loki-Ingestion der Winston-JSON-Logs lesend prüfen.
+2. Den Befund zentral dokumentieren. Eine Änderung an Grafana oder Loki ist
+   dafür nicht Bestandteil dieses Rollouts.
 
 ## Folgen
 
