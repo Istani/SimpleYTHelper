@@ -41,6 +41,51 @@ function userData(user) {
   };
 }
 
+function collectionValues(value) {
+  if (!value) return [];
+  return Array.from(typeof value.values === 'function' ? value.values() : value);
+}
+
+function nullableNumber(value) {
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
+function mediaItem({ kind, position, sourceId = null, label, url = null, contentType = null, sizeBytes = null, width = null, height = null, description = null, isSpoiler = false }) {
+  return {
+    kind,
+    position,
+    sourceId,
+    label: label || `${kind} ${position + 1}`,
+    url,
+    contentType,
+    sizeBytes: nullableNumber(sizeBytes),
+    width: nullableNumber(width),
+    height: nullableNumber(height),
+    description,
+    isSpoiler: Boolean(isSpoiler),
+  };
+}
+
+export function projectDiscordMessageMedia(message) {
+  const attachments = collectionValues(message.attachments).map((attachment, position) => mediaItem({
+    kind: 'attachment', position, sourceId: attachment.id ?? null,
+    label: attachment.name ?? attachment.filename, url: attachment.url ?? null,
+    contentType: attachment.contentType ?? null, sizeBytes: attachment.size,
+    width: attachment.width, height: attachment.height,
+    description: attachment.description ?? null, isSpoiler: attachment.spoiler,
+  }));
+  const embeds = collectionValues(message.embeds).map((embed, position) => mediaItem({
+    kind: 'embed', position, label: embed.title ?? embed.provider?.name ?? 'Discord-Embed',
+    url: embed.url ?? embed.thumbnail?.url ?? embed.image?.url ?? embed.video?.url ?? null,
+    description: embed.description ?? null,
+  }));
+  const stickers = collectionValues(message.stickers).map((sticker, position) => mediaItem({
+    kind: 'sticker', position, sourceId: sticker.id ?? null, label: sticker.name,
+    url: sticker.url ?? null, description: sticker.description ?? null,
+  }));
+  return [...attachments, ...embeds, ...stickers];
+}
+
 async function syncGuild(dataRepository, guild) {
   await dataRepository.upsertGuild({
     id: guild.id,
@@ -93,6 +138,7 @@ export function attachDiscordEventHandlers({ client, dataRepository, settings = 
         guildId,
         authorId: message.author.id,
         content: normalizeDiscordMessageContent(message.content),
+        media: projectDiscordMessageMedia(message),
         createdAt: message.createdAt,
       });
     }, 'messageCreate'));

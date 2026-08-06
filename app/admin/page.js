@@ -3,6 +3,7 @@ import { BotManagementPanel } from "../../src/web/components/bot-management-pane
 import { requireRole } from "../../src/web/auth/session.js";
 import { publicBotRegistration } from "../../src/web/admin/bot-management.js";
 import { formatBerlinTimestamp, mergeBotRuntimeStatus } from "../../src/web/admin/live-status.js";
+import { formatDiscordMessageMedia } from "../../src/web/message-media.js";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
@@ -53,7 +54,7 @@ export default async function AdminPage() {
       const messages = await prisma.discordMessage.findMany({
         take: 15,
         orderBy: { createdAt: "desc" },
-        include: { author: true, channel: true, guild: true },
+        include: { author: true, channel: true, guild: true, media: { orderBy: [{ kind: 'asc' }, { position: 'asc' }] } },
       });
 
       const activeBotId = bots.find(b => b.isActive)?.botId || (bots[0]?.botId ?? "SimpleYTH");
@@ -103,7 +104,23 @@ export default async function AdminPage() {
                         <td style={{ padding: "8px" }}>{message.guild?.name || message.guildId}</td>
                         <td style={{ padding: "8px" }}>#{message.channel?.name || message.channelId}</td>
                         <td style={{ padding: "8px" }}>{message.author?.username || message.authorId}</td>
-                        <td style={{ padding: "8px", wordBreak: "break-word" }}>{message.content}</td>
+                        <td style={{ padding: "8px", wordBreak: "break-word" }}>
+                          <div>{message.content}</div>
+                          {message.media?.length > 0 && (
+                            <ul style={{ listStyle: "none", margin: "6px 0 0", padding: 0, display: "grid", gap: "3px" }} aria-label="Zugehörige Medien">
+                              {message.media.map((media) => {
+                                const presentation = formatDiscordMessageMedia(media);
+                                return <li key={media.id}>
+                                  {presentation.href ? (
+                                    <a href={presentation.href} target="_blank" rel="noreferrer">{presentation.icon} {presentation.text}</a>
+                                  ) : (
+                                    <span>{presentation.icon} {presentation.text}</span>
+                                  )}
+                                </li>;
+                              })}
+                            </ul>
+                          )}
+                        </td>
                       </tr>
                     );
                   })}

@@ -100,8 +100,8 @@ export function createDiscordDataRepository({ prisma }) {
       );
     },
 
-    async saveMessage({ id, channelId, guildId, authorId, content, createdAt }) {
-      return prisma.discordMessage.upsert({
+    async saveMessage({ id, channelId, guildId, authorId, content, media = [], createdAt }) {
+      const message = prisma.discordMessage.upsert({
         where: { id },
         create: {
           id,
@@ -115,6 +115,12 @@ export function createDiscordDataRepository({ prisma }) {
           content,
         },
       });
+      const replaceMedia = prisma.discordMessageMedia.deleteMany({ where: { messageId: id } });
+      const createMedia = prisma.discordMessageMedia.createMany({
+        data: media.map((item) => ({ ...item, messageId: id })),
+      });
+      const [savedMessage] = await prisma.$transaction([message, replaceMedia, createMedia]);
+      return savedMessage;
     },
 
     async upsertGuildMember({ guildId, userId, nickname, joinedAt }) {

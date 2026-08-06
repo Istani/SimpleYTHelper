@@ -38,6 +38,29 @@ test('persists a received guild message with its dependencies when message liste
   assert.equal(repository.calls[3][1].content, 'Hallo Discord');
 });
 
+test('projects attachments, embeds and stickers as ordered structured message media', async () => {
+  const client = new EventEmitter();
+  const repository = fakeRepository();
+  attachDiscordEventHandlers({ client, dataRepository: repository, settings: { listenMessages: true }, logger: { error: () => {} } });
+
+  client.emit('messageCreate', {
+    id: 'message-media-1', guild, channel: guild.channels.cache.get('channel-1'),
+    author: { id: 'user-1', username: 'Sascha', discriminator: '0', globalName: 'Sascha', avatar: null, bot: false },
+    content: 'Mit Medien', createdAt: new Date('2026-08-06T11:00:00Z'),
+    attachments: new Map([['attachment-1', { id: 'attachment-1', name: 'diagram.png', url: 'https://cdn.discordapp.com/attachments/1/diagram.png', contentType: 'image/png', size: 1234, width: 640, height: 480, description: 'Architekturdiagramm', spoiler: false }]]),
+    embeds: [{ title: 'Release notes', url: 'https://example.test/release-notes', type: 'article' }],
+    stickers: new Map([['sticker-1', { id: 'sticker-1', name: 'Daumen hoch', url: 'https://cdn.discordapp.com/stickers/sticker-1.png', format: 1 }]]),
+  });
+  await new Promise((resolve) => setImmediate(resolve));
+
+  const message = repository.calls.find(([type]) => type === 'message')[1];
+  assert.deepEqual(message.media, [
+    { kind: 'attachment', position: 0, sourceId: 'attachment-1', label: 'diagram.png', url: 'https://cdn.discordapp.com/attachments/1/diagram.png', contentType: 'image/png', sizeBytes: 1234, width: 640, height: 480, description: 'Architekturdiagramm', isSpoiler: false },
+    { kind: 'embed', position: 0, sourceId: null, label: 'Release notes', url: 'https://example.test/release-notes', contentType: null, sizeBytes: null, width: null, height: null, description: null, isSpoiler: false },
+    { kind: 'sticker', position: 0, sourceId: 'sticker-1', label: 'Daumen hoch', url: 'https://cdn.discordapp.com/stickers/sticker-1.png', contentType: null, sizeBytes: null, width: null, height: null, description: null, isSpoiler: false },
+  ]);
+});
+
 test('syncs guild channels and roles on guildCreate', async () => {
   const client = new EventEmitter();
   const repository = fakeRepository();

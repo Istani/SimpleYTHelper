@@ -15,6 +15,7 @@ Diese Dokumentation ist die zentrale Arbeitsablage des Docker-/Modernisierungsbr
 - [ADR-004 – Interne Authentifizierung des Discord-Adapters](adr/ADR-004-discord-adapter-interne-authentifizierung.md)
 - [ADR-005 – Zentrale Discord-Token-Verwaltung](adr/ADR-005-zentrale-discord-token-verwaltung.md)
 - [ADR-006 – PostgreSQL-Migrationsowner und Deployment-Gate](adr/ADR-006-postgresql-migrationsowner-und-deployment-gate.md)
+- [ADR-007 – Strukturierte Medien zu Discord-Nachrichten](adr/ADR-007-discord-message-attachments.md)
 - [Phase 2 – Interner Discord-Zustellvertrag v1](phasen/phase-2-internal-discord-delivery-contract.md)
 - [Phase 3 – Gamecheck-zu-Discord-Migrationsslice](phasen/phase-3-gamecheck-discord-slice.md)
 - [Phase 4 – Planreview und priorisierte Umsetzungsgates (2026-08-04)](phasen/phase-4-planreview-2026-08-04.md)

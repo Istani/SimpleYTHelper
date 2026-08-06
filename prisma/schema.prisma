@@ -24,6 +24,14 @@ enum AdapterDeliveryStatus {
   @@map("discord_adapter_delivery_status")
 }
 
+enum DiscordMessageMediaKind {
+  attachment
+  embed
+  sticker
+
+  @@map("discord_message_media_kind")
+}
+
 model OutboxEvent {
   id                String       @id @db.Uuid
   eventType         String       @map("event_type")
@@ -158,13 +166,38 @@ model DiscordMessage {
   createdAt DateTime @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  guild     DiscordGuild?  @relation(fields: [guildId], references: [id], onDelete: Cascade)
-  channel   DiscordChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
-  author    DiscordUser    @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  guild     DiscordGuild?        @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  channel   DiscordChannel       @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  author    DiscordUser          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  media     DiscordMessageMedia[]
 
   @@index([guildId, channelId], map: "discord_message_channel_idx")
   @@index([authorId], map: "discord_message_author_idx")
   @@map("discord_message")
+}
+
+model DiscordMessageMedia {
+  id          String                  @id @default(uuid()) @db.Uuid
+  messageId   String                  @map("message_id")
+  kind        DiscordMessageMediaKind
+  position    Int
+  sourceId    String?                 @map("source_id")
+  label       String
+  url         String?
+  contentType String?                 @map("content_type")
+  sizeBytes   Int?                    @map("size_bytes")
+  width       Int?
+  height      Int?
+  description String?
+  isSpoiler   Boolean                 @default(false) @map("is_spoiler")
+  createdAt   DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime                @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  message DiscordMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, kind, position], map: "discord_message_media_position_key")
+  @@index([messageId], map: "discord_message_media_message_idx")
+  @@map("discord_message_media")
 }
 
 model DiscordGuildMember {

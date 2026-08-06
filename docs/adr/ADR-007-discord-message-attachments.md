@@ -1,90 +1,93 @@
-# ADR-007: Discord-Nachrichtenanhänge als eigene Relation
+# ADR-007: Strukturierte Medien zu Discord-Nachrichten
 
-**Status:** vorgeschlagen – Entscheidung von Sascha ausstehend
+**Status:** akzeptiert – Umsetzung im Docker-Testbetrieb
 **Datum:** 2026-08-06
 
 ## Kontext
 
 Der SimpleYTH-Discord-Adapter persistiert eingehende Nachrichten derzeit in
-`discord_message`. Der parallele Legacy-Selfbot unter
-`/root/yours-mine/apps/discord_selfbot3` serialisiert Discord-Anhänge zwar,
-hängt deren URLs jedoch zur Anzeige als `<img>`-Markup an den Nachrichtentext.
+`discord_message`. Der Legacy-Selfbot unter
+`/root/yours-mine/apps/discord_selfbot3` hängt Attachment-, Embed- und
+Sticker-URLs zur Darstellung als `<img>`-Markup an den Nachrichtentext.
 
-Dieser Ansatz ist nicht für die relationale Zielarchitektur geeignet: Eine
-Nachricht kann mehrere Anhänge verschiedener Typen enthalten; der Text ist
-damit nicht mehr fachlich rein und Datei-Metadaten gehen verloren. Embeds und
-Stickers sind separate Discord-Objekte und werden nicht als Anhänge vermischt.
+Das ist für die relationale Zielarchitektur ungeeignet: Der Text ist nicht
+mehr fachlich rein, mehrere Medien sind nicht zuverlässig abbildbar und
+Datei-/Typ-Metadaten bleiben unstrukturiert. Sascha hat entschieden, dass
+Attachments, Embeds und Stickers zur eingehenden Nachricht gehören und im
+Frontend sichtbar sein müssen — ohne Inline-Bilder oder Medienvorschauen.
 
-## Entscheidungsvorschlag
+## Entscheidung
 
-Für jeden Discord-Attachment wird eine eigene Relation
-`discord_message_attachment` angelegt. Sie gehört ausschließlich dem
-Discord-Adapter; externe bzw. andere SimpleYTH-Services verwenden später eine
-versionierte HTTP-API statt direkter Datenbankzugriffe.
-
-Vorgeschlagenes Prisma-Modell:
+Der Discord-Adapter besitzt die Relation `discord_message_media`. Jede Zeile
+referenziert genau eine Discord-Nachricht und hat einen expliziten Typ:
 
 ```prisma
-model DiscordMessageAttachment {
-  id          String   @id @map("attachment_id")
-  messageId   String   @map("message_id")
-  position    Int      @map("position")
-  filename    String   @map("filename")
-  url         String   @map("url")
-  contentType String?  @map("content_type")
-  sizeBytes   BigInt   @map("size_bytes")
-  width       Int?     @map("width")
-  height      Int?     @map("height")
-  description String?  @map("description")
-  isSpoiler   Boolean  @default(false) @map("is_spoiler")
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+enum DiscordMessageMediaKind {
+  attachment
+  embed
+  sticker
+}
+
+model DiscordMessageMedia {
+  id          String                  @id @default(uuid()) @db.Uuid
+  messageId   String                  @map("message_id")
+  kind        DiscordMessageMediaKind
+  position    Int
+  sourceId    String?                 @map("source_id")
+  label       String
+  url         String?
+  contentType String?                 @map("content_type")
+  sizeBytes   Int?                    @map("size_bytes")
+  width       Int?
+  height      Int?
+  description String?
+  isSpoiler   Boolean                 @default(false) @map("is_spoiler")
 
   message DiscordMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
 
-  @@unique([messageId, position], map: "discord_message_attachment_position_key")
-  @@index([messageId], map: "discord_message_attachment_message_idx")
-  @@map("discord_message_attachment")
+  @@unique([messageId, kind, position])
+  @@index([messageId])
 }
 ```
 
-`DiscordMessage` erhält die inverse Relation `attachments
-DiscordMessageAttachment[]`.
+Die Prisma-Migration `20260806113837_add_discord_message_media` wurde aus dem
+Schema gegen ein isoliertes, temporäres PostgreSQL erzeugt und dort per
+`prisma migrate deploy` erfolgreich angewendet. Tabelle und PostgreSQL-Enum
+wurden anschließend ausschließlich über Schema-Metadaten nachgewiesen. Der
+Temporärcontainer und das zugehörige Docker-Netz wurden entfernt.
 
 ## Daten- und Laufzeitsemantik
 
-- Der Event-Handler projiziert `message.attachments` als vollständige,
-  geordnete Liste in strukturierte Attachment-Werte.
-- `saveMessage` und die Attachment-Persistenz laufen in einer Prisma-
-  Transaktion: Eine eingehende Nachricht und ihre zugehörigen Anhänge sind
-  gemeinsam dauerhaft oder gar nicht gespeichert.
-- Die Discord-`attachment_id` ist der Primärschlüssel. `position` bewahrt die
-  Reihenfolge für die spätere Darstellung.
-- Gespeichert werden nur von Discord gelieferte Metadaten und die CDN-URL.
-  Ein Attachment wird nicht heruntergeladen, nicht proxyed und nicht in
-  PostgreSQL als Blob gespeichert.
-- CDN-/Proxy-URLs sind kein belastbarer Archivspeicher. Falls später eine
-  revisionssichere Dateiaufbewahrung benötigt wird, ist dies ein separates
-  Opt-in-Projekt mit Objekt-Storage, Malware-Scan, Größenlimits,
-  Zugriffskontrolle und Lösch-/Retention-Konzept.
-- Bei einer späteren `messageUpdate`-Unterstützung muss eine vollständige
-  Attachment-Snapshot-Synchronisation veraltete Zeilen gezielt entfernen.
-  Der aktuelle `messageCreate`-Pfad benötigt keine Löschung.
+- `message.attachments`, `message.embeds` und `message.stickers` werden als
+  vollständige, geordnete Liste zu strukturierten Medienzeilen projiziert.
+- Für Attachments und Stickers speichert `source_id` die Discord-Objekt-ID;
+  Embeds benötigen keine vorgetäuschte externe ID.
+- `saveMessage` ersetzt den vollständigen Medien-Snapshot zusammen mit der
+  Nachricht in einer Prisma-Transaktion. Das ist auch für eine spätere
+  `messageUpdate`-Synchronisierung geeignet.
+- Persistiert werden ausschließlich Metadaten und von Discord gelieferte
+  URLs. Es gibt weder Download noch Proxy noch Blob-Speicherung in PostgreSQL.
+- Discord-CDN-/Proxy-URLs sind kein Archivspeicher. Dauerhafte Dateisicherung
+  ist ein bewusst separates Opt-in mit Objekt-Storage, Größenlimits,
+  Malware-Scan, Zugriffskontrolle und Retention-Konzept.
 
-## Verworfene Alternativen
+## Frontend-Verhalten
 
-1. **URLs in `discord_message.content` einfügen:** Verlust der Textreinheit,
-   keine strukturierten Metadaten, mehrdeutige Darstellung und schlechte
-   Mehrfachanhang-Unterstützung.
-2. **`attachments` als JSON-Spalte in `discord_message`:** Schnell umsetzbar,
-   aber keine referenzielle Integrität, keine zielgerichtete Indizierung und
-   spätere Abfragen/Migrationen bleiben unnötig aufwendig.
-3. **Dateiblobs direkt in PostgreSQL speichern:** Für den aktuellen
-   Ingestionsschritt unnötig teuer und sicherheits-/betriebsintensiv.
+Die Verwaltungsansicht zeigt Medien direkt unter dem Nachrichtentext als
+Textliste, nicht als Vorschau:
 
-## Implementierungs-Gate
+- `📎 Datei: <Dateiname>`
+- `🔗 Embed: <Titel>`
+- `🏷️ Sticker: <Name>`
 
-Vor einer Umsetzung braucht es Saschas ausdrückliche Freigabe dieses Modells.
-Danach folgen testgetrieben: Prisma-Migration, Repository-Transaktion,
-Event-Projektion, gezielte Tests für mehrere Anhänge/DMs/Dateitypen sowie die
-bestehenden Build-, Healthcheck- und Loki-Abnahmen im Test-Compose-Betrieb.
+Bei einer gültigen HTTP(S)-URL ist der Name ein externer Link mit
+`target="_blank"` und `rel="noreferrer"`. Nicht-HTTP(S)-URLs werden nicht
+verlinkt. Es werden keine `<img>`-, Video-, Audio- oder Embed-Elemente
+verwendet.
+
+## Abgrenzung
+
+Die Relation ist Eigentum des Discord-Adapters. Andere SimpleYTH-Services
+verwenden künftig eine versionierte HTTP-API und erhalten keinen neuen
+Direktzugriff auf diese Tabellen. Der bestehende PM2-Produktivbestand bleibt
+bei Umsetzung und Testrollout unverändert.
