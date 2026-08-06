@@ -7,7 +7,7 @@ export function DashboardShell({ user, label, title, children }) {
       <Logo />
       <nav>
         <Link className="nav-active" href="/dashboard">Start</Link>
-        {user.roles.includes("admin") && <Link href="/admin">Verwaltung</Link>}
+        {user.roles.includes("admin") && <><Link href="/admin">Verwaltung</Link><Link href="/admin/discord/moderation">Discord-Moderation</Link><Link href="/admin/discord/bots">Discord-Bots</Link></>}
         {user.roles.includes("creator") && <Link href="/creator">Creator Studio</Link>}
         {user.roles.includes("viewer") && <Link href="/viewer">Viewer Space</Link>}
         <span>Einstellungen</span>

@@ -26,7 +26,7 @@ export async function createBotAction(_previousState, formData) {
   try {
     await createBotRegistration({
       prisma: getPrisma(),
-      actorId: session.user.id,
+      actorId: session.sub,
       botId: formData.get("botId"),
       token: formData.get("token"),
       settingsInput: formData.get("settings"),
@@ -43,7 +43,7 @@ export async function updateBotAction(_previousState, formData) {
   try {
     await updateBotRegistration({
       prisma: getPrisma(),
-      actorId: session.user.id,
+      actorId: session.sub,
       botId: formData.get("botId"),
       isActive: formData.get("isActive") === "on",
       token: formData.get("token"),
