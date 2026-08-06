@@ -1,6 +1,6 @@
-# ADR-006: PostgreSQL-Tabelleneigentümerschaft als Gate für SimpleYTH-Migrationen
+# ADR-006: Einheitlicher PostgreSQL-Principal für den SimpleYTH-Testbetrieb
 
-**Status:** offen – Deployment auf Wunsch angehalten
+**Status:** angenommen – Container-Rollout bewusst ausstehend
 **Datum:** 2026-08-06
 
 ## Kontext
@@ -10,69 +10,66 @@ Migration `20260806001500_support_direct_messages`. Sie erlaubt Direct Messages,
 ohne künstlichen Guild-Datensatz zu erzeugen, indem sie `guild_id` in
 `discord_channel` und `discord_message` nullable macht.
 
-Vor dem vorgesehenen Compose-Rollout auf `defender833` wurde die produktive
-PostgreSQL-Migrationslage geprüft. Es wurden ausschließlich Metadaten abgefragt;
-keine fachlichen Tabellenzeilen oder Zugangsdaten wurden gelesen bzw. ausgegeben.
+Der SimpleYTH-Betrieb befindet sich laut Saschas Vorgabe weiterhin im Test.
+Dafür soll bei Tabellenanlage, Prisma-Migrationen und Anwendungslaufzeit stets
+dieselbe vorhandene PostgreSQL-Identität verwendet werden.
 
-## Befund vom 2026-08-06
+## Befund und Ausführung vom 2026-08-06
 
-- Der Laufzeit- und Migrationsprincipal ist `simpleyth_defender`.
-- Eigentümer der beiden betroffenen Tabellen ist `postgres`.
-- Beide `guild_id`-Spalten sind weiterhin `NOT NULL`.
-- `prisma migrate status` erkannte genau eine ausstehende Migration:
-  `20260806001500_support_direct_messages`.
-- `prisma migrate deploy` brach beim ersten `ALTER TABLE` mit PostgreSQL-Fehler
-  `42501` ab: Der Migrationsprincipal muss Eigentümer von `discord_channel` sein.
-- Prisma hat deshalb einen unvollständigen, nicht zurückgerollten Eintrag für diese
-  Migration in `_prisma_migrations` angelegt. Da der erste DDL-Schritt abgewiesen
-  wurde und beide Spalten weiterhin `NOT NULL` sind, liegt kein angewendeter
-  fachlicher Schemawechsel vor.
+- Die betroffenen Tabellen gehören dem PostgreSQL-Principal `postgres`.
+- Der zuvor in `DATABASE_URL` verwendete Principal `simpleyth_defender` konnte
+  deshalb keine DDL-Änderung ausführen. Prisma brach beim ersten `ALTER TABLE`
+  mit PostgreSQL-Fehler `42501` ab und registrierte einen unvollständigen
+  Migrationseintrag.
+- Es wurden dabei keine fachlichen Tabellenzeilen gelesen oder ausgegeben. Die
+  Spalten waren nach der Ablehnung weiterhin `NOT NULL`.
+- Der `POSTGRES_PASSWORD`-Secretwert ist bereits ausschließlich im PostgreSQL-
+  Container auf `ym-server` hinterlegt. Er wurde ohne Ausgabe, Git-Übernahme
+  oder Log-Ausgabe in die hostlokale `/opt/simpleyth/.env` auf `defender833`
+  für die bestehende `postgres`-Verbindung übernommen.
+- Die Verbindung wurde aus dem Compose-relevanten Docker-Netz geprüft; der
+  angemeldete Principal war `postgres`.
+- Der fehlgeschlagene Prisma-Eintrag wurde mit
+  `prisma migrate resolve --rolled-back 20260806001500_support_direct_messages`
+  sauber zurückgesetzt.
+- `prisma migrate deploy` wendete die Migration erfolgreich an; ein anschließendes
+  `prisma migrate status` bestätigte: **Database schema is up to date**.
 
 ## Entscheidung
 
-Der Compose-Rollout der neuen Web- und Discord-Adapter-Images wird angehalten,
-bis eine bewusste Datenbank-Eigentümerschaftsentscheidung vorliegt. Es werden
-keine Berechtigungen, Eigentümer, Secrets oder Daten eigenmächtig geändert.
+Im SimpleYTH-Testbetrieb verwenden die Anwendungen und Prisma-Migrationen den
+vorhandenen PostgreSQL-Principal `postgres` über die hostlokale Secret-Injektion
+auf `defender833`. Die Zugangsdaten bleiben außerhalb von Git, Images und Logs.
 
-Damit bleiben die derzeit laufenden Compose-Container und der gesamte produktive
-PM2-/MariaDB-Bestand, insbesondere `SYTH-Discord`, unverändert. Die bereits
-versionierten Änderungen bleiben auf `docker-entwicklung` bereit, sind aber nicht
-in die laufenden Container ausgerollt.
+Das ist eine bewusste **Testbetriebsentscheidung**. Vor einem späteren
+Produktiv-Cutover wird die Datenbank-Principal- und Berechtigungsgrenze erneut
+als separates Security-Gate bewertet; diese ADR legitimiert keine Übernahme von
+Superuser-Zugangsdaten in einen Produktivbetrieb.
 
-## Optionen für die Freigabe
+## Container- und Build-Status
 
-1. **Empfohlen:** Ein PostgreSQL-Administrator überträgt die Eigentümerschaft der
-   beiden SimpleYTH-Tabellen an `simpleyth_defender`. Der Migrationsprincipal ist
-   damit Eigentümer seiner eigenen Schemaobjekte und kann künftige Prisma-DDL
-   kontrolliert ausführen.
-2. Ein PostgreSQL-Administrator führt diese Migration einmalig als vorhandener
-   Eigentümer `postgres` aus. Der Laufzeitprincipal bleibt eingeschränkt; die
-   Migrationsverantwortung wäre danach jedoch dauerhaft getrennt und muss als
-   eigener Betriebsprozess dokumentiert werden.
-3. Die Direct-Message-Unterstützung wird vorerst zurückgestellt und der
-   Deployment-Branch bleibt unverändert nicht ausgerollt.
+- Der Discord-Adapter wurde als neues Image `b5d403ad2da1` gebaut.
+- Das Web-Image wurde als `35918247e713` erfolgreich gebaut. Der Next.js-
+  Produktionsbuild inklusive der Winston-Instrumentation war erfolgreich.
+- Auf ausdrückliche Vorgabe wurde kein Container ersetzt oder neu gestartet.
+  Die noch laufenden Web- und Adapter-Container verwenden weiterhin die älteren,
+  gesunden Images.
+- Der PM2-Bestand, insbesondere `SYTH-Discord`, blieb unverändert online.
 
-## Erforderliche Wiederaufnahme nach einer Freigabe
+## Vor dem ausdrücklich freizugebenden Container-Rollout
 
-1. Eigentümerschaft bzw. ein einmaliger Migrationsweg wird von Sascha ausdrücklich
-   freigegeben und durch einen autorisierten PostgreSQL-Administrator umgesetzt.
-2. Den fehlgeschlagenen Prisma-Eintrag erst nach erneuter lesender Schema-Prüfung
-   mit `prisma migrate resolve --rolled-back 20260806001500_support_direct_messages`
-   bereinigen.
-3. `prisma migrate status` prüfen, die Migration anwenden und den Status erneut
-   validieren.
-4. Compose-Images bauen und kontrolliert starten; Web- und Adapter-Healthchecks
-   sowie die vereinbarten Smoke-Tests ausführen.
-5. In Docker-stdout verifizieren, dass die SimpleYTH-Anwendungslogs als
-   Winston-JSON erscheinen. Erst danach Ben mit der Grafana/Loki-Prüfung der
-   tatsächlichen Log-Ingestion beauftragen.
+1. Compose-Services kontrolliert mit den bereits gebauten Images ersetzen.
+2. Web- und Adapter-Healthchecks sowie die vereinbarten Smoke-Tests ausführen.
+3. Docker-stdout darauf prüfen, dass SimpleYTH-Anwendungsereignisse als
+   Winston-JSON erscheinen.
+4. Erst nach diesem Nachweis Ben mit der Grafana/Loki-Prüfung der tatsächlichen
+   Log-Ingestion beauftragen.
 
 ## Folgen
 
-- Der Produktivbestand bleibt sicher und unverändert, statt durch eine
-  unberechtigte oder teilweise DB-Migration in einen undefinierten Zustand zu
-  geraten.
-- Die neue DM-Funktion und die Winston-Logging-Auslieferung bleiben bis zum
-  Datenbank-Gate ausstehend.
-- Die Datenbank-Eigentümerschaft ist nun als explizite Architektur- und
-  Betriebsentscheidung zentral versioniert, nicht nur im Chat dokumentiert.
+- Der DDL-Blocker ist im Testbetrieb behoben und die DM-Schemaunterstützung ist
+  in PostgreSQL vorhanden.
+- Der getestete Laufzeit- und Migrationsweg verwendet durchgehend dieselbe
+  PostgreSQL-Identität.
+- Ein Anwendungsausfall oder unbeabsichtigter Containerwechsel wurde vermieden:
+  der Build ist validiert, der Rollout bleibt eine eigene, explizite Freigabe.
