@@ -13,9 +13,16 @@ function fakeRepository() {
     saveMessage: async (value) => calls.push(['message', value]),
     bulkUpsertChannels: async (value) => calls.push(['channels', value]),
     bulkUpsertRoles: async (value) => calls.push(['roles', value]),
+    upsertRole: async (value) => calls.push(['role', value]),
+    upsertGuildMember: async (value) => calls.push(['member', value]),
     replaceGuildMembers: async (value) => calls.push(['members', value]),
     recordGuildFullSync: async (value) => calls.push(['guildFullSync', value]),
     recordGuildFullSyncFailure: async (value) => calls.push(['guildFullSyncFailure', value]),
+    deleteGuild: async (guildId) => calls.push(['deleteGuild', guildId]),
+    deleteChannel: async (channelId) => calls.push(['deleteChannel', channelId]),
+    deleteRole: async (roleId) => calls.push(['deleteRole', roleId]),
+    removeGuildMember: async (value) => calls.push(['removeMember', value]),
+    replaceGuildMemberRoles: async (value) => calls.push(['replaceMemberRoles', value]),
   };
 }
 
@@ -133,4 +140,35 @@ test('reconciles every guild daily after clientReady and clears the timer on shu
   assert.equal(repository.calls.filter(([type]) => type === 'guildFullSync').length, 2);
   stop();
   assert.deepEqual(cleared, [timers[0]]);
+});
+
+test('reconciles Discord guild, channel, role and member events without waiting for the daily snapshot', async () => {
+  const client = new EventEmitter();
+  const repository = fakeRepository();
+  attachDiscordEventHandlers({ client, dataRepository: repository, logger: { error: () => {} } });
+  const channel = guild.channels.cache.get('channel-1');
+  const role = { ...guild.roles.cache.get('role-1'), guild };
+  const member = (await guild.members.fetch()).get('user-1');
+  const changedMember = { ...member, nickname: 'Updated', roles: { cache: new Map([['role-1', { id: 'role-1' }]]) } };
+
+  client.emit('guildUpdate', guild, { ...guild, name: 'Renamed guild' });
+  client.emit('channelUpdate', channel, { ...channel, name: 'renamed-general' });
+  client.emit('channelDelete', channel);
+  client.emit('roleCreate', role);
+  client.emit('roleDelete', role);
+  client.emit('guildMemberAdd', { ...member, guild });
+  client.emit('guildMemberUpdate', { ...member, guild }, { ...changedMember, guild });
+  client.emit('guildMemberRemove', { ...member, guild });
+  client.emit('guildDelete', guild);
+  await new Promise((resolve) => setImmediate(resolve));
+
+  assert.deepEqual(repository.calls.map(([type]) => type), [
+    'guild', 'channel', 'deleteChannel', 'role', 'deleteRole',
+    'user', 'member', 'replaceMemberRoles', 'user', 'member', 'replaceMemberRoles',
+    'removeMember', 'deleteGuild',
+  ]);
+  assert.equal(repository.calls[0][1].name, 'Renamed guild');
+  assert.equal(repository.calls[1][1].name, 'renamed-general');
+  assert.deepEqual(repository.calls[7][1], { guildId: 'guild-1', userId: 'user-1', roleIds: ['role-1'] });
+  assert.deepEqual(repository.calls[11][1], { guildId: 'guild-1', userId: 'user-1' });
 });

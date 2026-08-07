@@ -128,8 +128,18 @@ function syncErrorMessage(error) {
 export function attachDiscordEventHandlers({ client, dataRepository, settings = {}, logger = console, setIntervalFn = setInterval, clearIntervalFn = clearInterval }) {
   if (!client || typeof client.on !== 'function') return () => {};
   let dailySyncTimer = null;
+  const guildReconciliationQueues = new Map();
+  const enqueueGuildReconciliation = (guildId, operation) => {
+    const previous = guildReconciliationQueues.get(guildId) || Promise.resolve();
+    const queued = previous.catch(() => {}).then(operation);
+    const tracked = queued.finally(() => {
+      if (guildReconciliationQueues.get(guildId) === tracked) guildReconciliationQueues.delete(guildId);
+    });
+    guildReconciliationQueues.set(guildId, tracked);
+    return tracked;
+  };
 
-  const syncOneGuild = async (guild) => {
+  const syncOneGuild = (guild) => enqueueGuildReconciliation(guild.id, async () => {
     try {
       await syncGuild(dataRepository, guild);
     } catch (error) {
@@ -141,10 +151,21 @@ export function attachDiscordEventHandlers({ client, dataRepository, settings = 
       }
       logger.error('Discord guild full sync failed', { guildId: guild.id, message: errorMessage });
     }
-  };
+  });
 
   const syncCachedGuilds = async () => {
     for (const guild of client.guilds.cache.values()) await syncOneGuild(guild);
+  };
+  const syncMember = async (member) => {
+    const guildId = member.guild?.id ?? member.guildId;
+    if (!guildId || !member.user?.id) return;
+    await dataRepository.upsertUser(userData(member.user));
+    await dataRepository.upsertGuildMember(memberData(member, guildId));
+    await dataRepository.replaceGuildMemberRoles({
+      guildId,
+      userId: member.user.id,
+      roleIds: collectionValues(member.roles?.cache).map((role) => role.id),
+    });
   };
   const safely = (operation, eventName) => (...args) => {
     Promise.resolve(operation(...args)).catch((error) => {
@@ -153,6 +174,17 @@ export function attachDiscordEventHandlers({ client, dataRepository, settings = 
   };
 
   client.on('guildCreate', safely((guild) => syncOneGuild(guild), 'guildCreate'));
+  client.on('guildUpdate', safely((_oldGuild, guild) => enqueueGuildReconciliation(guild.id, () => dataRepository.upsertGuild({ id: guild.id, name: guild.name, icon: guild.icon ?? null, ownerId: guild.ownerId ?? null })), 'guildUpdate'));
+  client.on('guildDelete', safely((guild) => enqueueGuildReconciliation(guild.id, () => dataRepository.deleteGuild(guild.id)), 'guildDelete'));
+  client.on('channelCreate', safely((channel) => { const guildId = channel.guild?.id ?? channel.guildId ?? null; return guildId ? enqueueGuildReconciliation(guildId, () => dataRepository.upsertChannel(channelData(channel, guildId))) : dataRepository.upsertChannel(channelData(channel, null)); }, 'channelCreate'));
+  client.on('channelUpdate', safely((_oldChannel, channel) => { const guildId = channel.guild?.id ?? channel.guildId ?? null; return guildId ? enqueueGuildReconciliation(guildId, () => dataRepository.upsertChannel(channelData(channel, guildId))) : dataRepository.upsertChannel(channelData(channel, null)); }, 'channelUpdate'));
+  client.on('channelDelete', safely((channel) => { const guildId = channel.guild?.id ?? channel.guildId ?? null; return guildId ? enqueueGuildReconciliation(guildId, () => dataRepository.deleteChannel(channel.id)) : dataRepository.deleteChannel(channel.id); }, 'channelDelete'));
+  client.on('roleCreate', safely((role) => enqueueGuildReconciliation(role.guild.id, () => dataRepository.upsertRole(roleData(role, role.guild.id))), 'roleCreate'));
+  client.on('roleUpdate', safely((_oldRole, role) => enqueueGuildReconciliation(role.guild.id, () => dataRepository.upsertRole(roleData(role, role.guild.id))), 'roleUpdate'));
+  client.on('roleDelete', safely((role) => enqueueGuildReconciliation(role.guild.id, () => dataRepository.deleteRole(role.id)), 'roleDelete'));
+  client.on('guildMemberAdd', safely((member) => enqueueGuildReconciliation(member.guild.id, () => syncMember(member)), 'guildMemberAdd'));
+  client.on('guildMemberUpdate', safely((_oldMember, member) => enqueueGuildReconciliation(member.guild.id, () => syncMember(member)), 'guildMemberUpdate'));
+  client.on('guildMemberRemove', safely((member) => enqueueGuildReconciliation(member.guild.id, () => dataRepository.removeGuildMember({ guildId: member.guild.id, userId: member.user.id })), 'guildMemberRemove'));
 
   client.on('clientReady', safely(async () => {
     await syncCachedGuilds();

@@ -175,6 +175,51 @@ export function createDiscordDataRepository({ prisma }) {
       );
     },
 
+    async replaceGuildMemberRoles({ guildId, userId, roleIds = [] }) {
+      const uniqueRoleIds = Array.from(new Set(roleIds));
+      const operations = [
+        prisma.discordMemberRole.deleteMany({ where: { guildId, userId } }),
+      ];
+      if (uniqueRoleIds.length > 0) {
+        operations.push(prisma.discordMemberRole.createMany({
+          data: uniqueRoleIds.map((roleId) => ({ guildId, userId, roleId })),
+        }));
+      }
+      return prisma.$transaction(operations);
+    },
+
+    async removeGuildMember({ guildId, userId }) {
+      try {
+        return await prisma.discordGuildMember.delete({ where: { guildId_userId: { guildId, userId } } });
+      } catch {
+        return null;
+      }
+    },
+
+    async deleteChannel(channelId) {
+      try {
+        return await prisma.discordChannel.delete({ where: { id: channelId } });
+      } catch {
+        return null;
+      }
+    },
+
+    async deleteRole(roleId) {
+      try {
+        return await prisma.discordRole.delete({ where: { id: roleId } });
+      } catch {
+        return null;
+      }
+    },
+
+    async deleteGuild(guildId) {
+      try {
+        return await prisma.discordGuild.delete({ where: { id: guildId } });
+      } catch {
+        return null;
+      }
+    },
+
     async assignMemberRole({ guildId, userId, roleId }) {
       return prisma.discordMemberRole.upsert({
         where: { guildId_userId_roleId: { guildId, userId, roleId } },
