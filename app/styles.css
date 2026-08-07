@@ -116,6 +116,11 @@ button, input { font: inherit; }
 .entity-row.entity-row-deleted { background: #fff4f4; border-color: #efc3c3; }
 .entity-row.entity-row-deleted:hover { background: #ffeaea; border-color: #df9999; }
 .deleted-note { color: #a63d3d !important; }
+.detail-historical { background: #fff4f4; border: 1px solid #efc3c3; border-radius: 11px; padding: 14px; }
+.history-row { background: #fff4f4; }
+.history-row td { border-bottom-color: #efc3c3; }
+.history-badge { display: block; width: max-content; max-width: 100%; margin-top: 4px; color: #943b3b; background: #ffe5e5; border: 1px solid #efc3c3; border-radius: 999px; padding: 3px 7px; font-size: .72rem; line-height: 1.25; }
+.history-inline { color: #943b3b; }
 .entity-row strong, .entity-row small { display: block; }
 .entity-row small { margin-top: 3px; color: var(--muted); font-size: .77rem; }
 .entity-mark { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: #f5e4e4; color: var(--red); }
