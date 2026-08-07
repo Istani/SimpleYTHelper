@@ -17,7 +17,7 @@ function SourceList({ title, description, records, kind }) {
   return <section className="panel moderation-list"><div className="panel-title"><span className="kicker">Discord · Moderation</span><h2>{title}</h2><p>{description}</p></div>
     {records.length === 0 ? <p>Noch keine bekannten Einträge.</p> : <div className="entity-list">{records.map((record) => {
       const destination = discordModerationDestination(record, kind);
-      return <Link href={destination.href} className="entity-row" key={record.id}><span className="entity-mark">{kind === 'dm' ? '✉' : '◆'}</span><span><strong>{destination.label}</strong><small>{record._count?.messages ?? 0} gespeicherte Nachrichten</small>{kind === 'guild' ? <GuildSyncFact guild={record} /> : null}</span><b>›</b></Link>;
+      return <Link href={destination.href} className={`entity-row${record.deletedAt ? ' entity-row-deleted' : ''}`} key={record.id}><span className="entity-mark">{kind === 'dm' ? '✉' : '◆'}</span><span><strong>{destination.label}</strong><small>{record._count?.messages ?? 0} gespeicherte Nachrichten</small>{record.deletedAt ? <small className="deleted-note">In Discord gelöscht: {new Date(record.deletedAt).toLocaleString('de-DE')}</small> : null}{kind === 'guild' ? <GuildSyncFact guild={record} /> : null}</span><b>›</b></Link>;
     })}</div>}</section>;
 }
 

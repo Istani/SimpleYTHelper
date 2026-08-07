@@ -7,8 +7,8 @@ export function createDiscordDataRepository({ prisma }) {
     async upsertGuild({ id, name, icon, ownerId }) {
       return prisma.discordGuild.upsert({
         where: { id },
-        create: { id, name, icon, ownerId },
-        update: { name, icon, ownerId },
+        create: { id, name, icon, ownerId, deletedAt: null },
+        update: { name, icon, ownerId, deletedAt: null },
       });
     },
 
@@ -23,8 +23,8 @@ export function createDiscordDataRepository({ prisma }) {
     async upsertChannel({ id, guildId, name, type, topic, position, parentId }) {
       return prisma.discordChannel.upsert({
         where: { id },
-        create: { id, guildId, name, type, topic, position: position ?? 0, parentId },
-        update: { guildId, name, type, topic, position: position ?? 0, parentId },
+        create: { id, guildId, name, type, topic, position: position ?? 0, parentId, deletedAt: null },
+        update: { guildId, name, type, topic, position: position ?? 0, parentId, deletedAt: null },
       });
     },
 
@@ -34,8 +34,8 @@ export function createDiscordDataRepository({ prisma }) {
         channels.map((ch) =>
           prisma.discordChannel.upsert({
             where: { id: ch.id },
-            create: { id: ch.id, guildId: ch.guildId, name: ch.name, type: ch.type, topic: ch.topic, position: ch.position ?? 0, parentId: ch.parentId },
-            update: { guildId: ch.guildId, name: ch.name, type: ch.type, topic: ch.topic, position: ch.position ?? 0, parentId: ch.parentId },
+            create: { id: ch.id, guildId: ch.guildId, name: ch.name, type: ch.type, topic: ch.topic, position: ch.position ?? 0, parentId: ch.parentId, deletedAt: null },
+            update: { guildId: ch.guildId, name: ch.name, type: ch.type, topic: ch.topic, position: ch.position ?? 0, parentId: ch.parentId, deletedAt: null },
           })
         )
       );
@@ -54,6 +54,7 @@ export function createDiscordDataRepository({ prisma }) {
           permissions: String(permissions),
           managed: !!managed,
           mentionable: !!mentionable,
+          deletedAt: null,
         },
         update: {
           guildId,
@@ -64,6 +65,7 @@ export function createDiscordDataRepository({ prisma }) {
           permissions: String(permissions),
           managed: !!managed,
           mentionable: !!mentionable,
+          deletedAt: null,
         },
       });
     },
@@ -84,6 +86,7 @@ export function createDiscordDataRepository({ prisma }) {
               permissions: String(r.permissions),
               managed: !!r.managed,
               mentionable: !!r.mentionable,
+              deletedAt: null,
             },
             update: {
               guildId: r.guildId,
@@ -94,6 +97,7 @@ export function createDiscordDataRepository({ prisma }) {
               permissions: String(r.permissions),
               managed: !!r.managed,
               mentionable: !!r.mentionable,
+              deletedAt: null,
             },
           })
         )
@@ -128,12 +132,12 @@ export function createDiscordDataRepository({ prisma }) {
       const userIds = snapshot.map((member) => member.userId);
       const memberRoles = snapshot.flatMap((member) => (member.roleIds || []).map((roleId) => ({ guildId, userId: member.userId, roleId })));
       const operations = [
-        prisma.discordMemberRole.deleteMany({ where: { guildId } }),
-        prisma.discordGuildMember.deleteMany({ where: { guildId, userId: { notIn: userIds } } }),
+        prisma.discordMemberRole.deleteMany({ where: { guildId, userId: { in: userIds } } }),
+        prisma.discordGuildMember.updateMany({ where: { guildId, userId: { notIn: userIds }, deletedAt: null }, data: { deletedAt: new Date() } }),
         ...snapshot.map((member) => prisma.discordGuildMember.upsert({
           where: { guildId_userId: { guildId, userId: member.userId } },
-          create: { guildId, userId: member.userId, nickname: member.nickname ?? null, joinedAt: member.joinedAt ? new Date(member.joinedAt) : null },
-          update: { nickname: member.nickname ?? null, joinedAt: member.joinedAt ? new Date(member.joinedAt) : null },
+          create: { guildId, userId: member.userId, nickname: member.nickname ?? null, joinedAt: member.joinedAt ? new Date(member.joinedAt) : null, deletedAt: null },
+          update: { nickname: member.nickname ?? null, joinedAt: member.joinedAt ? new Date(member.joinedAt) : null, deletedAt: null },
         })),
       ];
       if (memberRoles.length > 0) operations.push(prisma.discordMemberRole.createMany({ data: memberRoles }));
@@ -157,8 +161,8 @@ export function createDiscordDataRepository({ prisma }) {
     async upsertGuildMember({ guildId, userId, nickname, joinedAt }) {
       return prisma.discordGuildMember.upsert({
         where: { guildId_userId: { guildId, userId } },
-        create: { guildId, userId, nickname, joinedAt: joinedAt ? new Date(joinedAt) : null },
-        update: { nickname, joinedAt: joinedAt ? new Date(joinedAt) : undefined },
+        create: { guildId, userId, nickname, joinedAt: joinedAt ? new Date(joinedAt) : null, deletedAt: null },
+        update: { nickname, joinedAt: joinedAt ? new Date(joinedAt) : undefined, deletedAt: null },
       });
     },
 
@@ -189,35 +193,19 @@ export function createDiscordDataRepository({ prisma }) {
     },
 
     async removeGuildMember({ guildId, userId }) {
-      try {
-        return await prisma.discordGuildMember.delete({ where: { guildId_userId: { guildId, userId } } });
-      } catch {
-        return null;
-      }
+      return prisma.discordGuildMember.updateMany({ where: { guildId, userId, deletedAt: null }, data: { deletedAt: new Date() } });
     },
 
     async deleteChannel(channelId) {
-      try {
-        return await prisma.discordChannel.delete({ where: { id: channelId } });
-      } catch {
-        return null;
-      }
+      return prisma.discordChannel.updateMany({ where: { id: channelId, deletedAt: null }, data: { deletedAt: new Date() } });
     },
 
     async deleteRole(roleId) {
-      try {
-        return await prisma.discordRole.delete({ where: { id: roleId } });
-      } catch {
-        return null;
-      }
+      return prisma.discordRole.updateMany({ where: { id: roleId, deletedAt: null }, data: { deletedAt: new Date() } });
     },
 
     async deleteGuild(guildId) {
-      try {
-        return await prisma.discordGuild.delete({ where: { id: guildId } });
-      } catch {
-        return null;
-      }
+      return prisma.discordGuild.updateMany({ where: { id: guildId, deletedAt: null }, data: { deletedAt: new Date() } });
     },
 
     async assignMemberRole({ guildId, userId, roleId }) {

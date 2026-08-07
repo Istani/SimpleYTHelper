@@ -8,7 +8,7 @@ test('replaces a guild member snapshot and records the successful full-sync time
     $transaction: async (operations) => Promise.all(operations),
     discordGuild: { update: async (args) => { calls.push(['guild', args]); return args; } },
     discordGuildMember: {
-      deleteMany: async (args) => { calls.push(['deleteMembers', args]); return { count: 1 }; },
+      updateMany: async (args) => { calls.push(['softDeleteMembers', args]); return { count: 1 }; },
       upsert: async (args) => { calls.push(['member', args]); return args; },
     },
     discordMemberRole: {
@@ -23,40 +23,46 @@ test('replaces a guild member snapshot and records the successful full-sync time
   await repository.recordGuildFullSync({ guildId: 'guild-1', syncedAt });
   await repository.recordGuildFullSyncFailure({ guildId: 'guild-1', failedAt: new Date('2026-08-06T15:00:00Z'), errorMessage: 'Missing Access' });
 
-  assert.deepEqual(calls.map(([kind]) => kind), ['deleteMemberRoles', 'deleteMembers', 'member', 'memberRoles', 'guild', 'guild']);
-  assert.deepEqual(calls[1][1], { where: { guildId: 'guild-1', userId: { notIn: ['user-1'] } } });
+  assert.deepEqual(calls.map(([kind]) => kind), ['deleteMemberRoles', 'softDeleteMembers', 'member', 'memberRoles', 'guild', 'guild']);
+  assert.deepEqual(calls[1][1].where, { guildId: 'guild-1', userId: { notIn: ['user-1'] }, deletedAt: null });
+  assert.ok(calls[1][1].data.deletedAt instanceof Date);
   assert.deepEqual(calls[3][1], { data: [{ guildId: 'guild-1', userId: 'user-1', roleId: 'role-1' }] });
   assert.deepEqual(calls[4][1], { where: { id: 'guild-1' }, data: { lastFullSyncAt: syncedAt, lastFullSyncFailedAt: null, lastFullSyncError: null } });
   assert.deepEqual(calls[5][1], { where: { id: 'guild-1' }, data: { lastFullSyncFailedAt: new Date('2026-08-06T15:00:00Z'), lastFullSyncError: 'Missing Access' } });
 });
 
-test('reconciles event-driven removals and replaces one member role snapshot atomically', async () => {
+const expectAnyDate = { [Symbol.for('nodejs.util.inspect.custom')]: () => 'expectAnyDate' };
+
+test('marks removed Discord records as deleted without removing their history', async () => {
   const calls = [];
   const prisma = {
-    $transaction: async (operations) => Promise.all(operations),
-    discordGuild: { delete: async (args) => { calls.push(['guild', args]); return args; } },
-    discordChannel: { delete: async (args) => { calls.push(['channel', args]); return args; } },
-    discordRole: { delete: async (args) => { calls.push(['role', args]); return args; } },
-    discordGuildMember: { delete: async (args) => { calls.push(['member', args]); return args; } },
-    discordMemberRole: {
-      deleteMany: async (args) => { calls.push(['deleteMemberRoles', args]); return args; },
-      createMany: async (args) => { calls.push(['memberRoles', args]); return args; },
-    },
+    discordGuild: { updateMany: async (args) => { calls.push(['guild', args]); return args; } },
+    discordChannel: { updateMany: async (args) => { calls.push(['channel', args]); return args; } },
+    discordRole: { updateMany: async (args) => { calls.push(['role', args]); return args; } },
+    discordGuildMember: { updateMany: async (args) => { calls.push(['member', args]); return args; } },
   };
   const repository = createDiscordDataRepository({ prisma });
 
-  await repository.replaceGuildMemberRoles({ guildId: 'guild-1', userId: 'user-1', roleIds: ['role-1', 'role-2'] });
   await repository.removeGuildMember({ guildId: 'guild-1', userId: 'user-1' });
   await repository.deleteChannel('channel-1');
   await repository.deleteRole('role-1');
   await repository.deleteGuild('guild-1');
 
-  assert.deepEqual(calls, [
-    ['deleteMemberRoles', { where: { guildId: 'guild-1', userId: 'user-1' } }],
-    ['memberRoles', { data: [{ guildId: 'guild-1', userId: 'user-1', roleId: 'role-1' }, { guildId: 'guild-1', userId: 'user-1', roleId: 'role-2' }] }],
-    ['member', { where: { guildId_userId: { guildId: 'guild-1', userId: 'user-1' } } }],
-    ['channel', { where: { id: 'channel-1' } }],
-    ['role', { where: { id: 'role-1' } }],
-    ['guild', { where: { id: 'guild-1' } }],
-  ]);
+  assert.deepEqual(calls.map(([kind]) => kind), ['member', 'channel', 'role', 'guild']);
+  for (const [, args] of calls) {
+    assert.equal(args.where.deletedAt, null);
+    assert.ok(args.data.deletedAt instanceof Date);
+  }
+  assert.deepEqual(calls[0][1].where, { guildId: 'guild-1', userId: 'user-1', deletedAt: null });
+});
+
+test('restores a previously deleted record on a later Discord upsert', async () => {
+  const calls = [];
+  const prisma = {
+    discordGuild: { upsert: async (args) => { calls.push(args); return args; } },
+  };
+  const repository = createDiscordDataRepository({ prisma });
+  await repository.upsertGuild({ id: 'guild-1', name: 'Wieder da', icon: null, ownerId: 'owner-1' });
+  assert.equal(calls[0].update.deletedAt, null);
+  assert.equal(calls[0].create.deletedAt, null);
 });

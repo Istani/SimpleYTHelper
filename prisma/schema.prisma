@@ -97,6 +97,7 @@ model DiscordGuild {
   lastFullSyncAt       DateTime? @map("last_full_sync_at") @db.Timestamptz(6)
   lastFullSyncFailedAt DateTime? @map("last_full_sync_failed_at") @db.Timestamptz(6)
   lastFullSyncError    String?  @map("last_full_sync_error")
+  deletedAt            DateTime? @map("deleted_at") @db.Timestamptz(6)
   createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt            DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
@@ -132,6 +133,7 @@ model DiscordChannel {
   topic       String?  @map("topic")
   position    Int      @default(0) @map("position")
   parentId    String?  @map("parent_id")
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(6)
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
@@ -152,6 +154,7 @@ model DiscordRole {
   permissions String   @map("permissions")
   managed     Boolean  @default(false) @map("managed")
   mentionable Boolean  @default(false) @map("mentionable")
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(6)
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
@@ -210,6 +213,7 @@ model DiscordGuildMember {
   userId    String   @map("user_id")
   nickname  String?  @map("nickname")
   joinedAt  DateTime? @map("joined_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 

@@ -30,6 +30,12 @@ Der Docker-Teststack wurde danach aus `docker-entwicklung` neu gebaut und ersetz
 
 Der Discord-Adapter protokollierte `adapter_listening` auf Port 80 mit einem gestarteten Bot. Der vorhandene PM2-Prozess `SYTH-Discord` blieb dabei online (PID 1378) und wurde nicht angefasst.
 
+## Event-Reconciliation und Soft Deletes
+
+Discord-Lifecycle-Events aktualisieren Guilds, Channels, Rollen und Member zeitnah zwischen den Full-Sync-Läufen. Jede Guild wird seriell reconciliert, damit schnelle Ereignisfolgen nicht konkurrierend persistieren.
+
+Entfernungen sind fachlich **Soft Deletes**: `DiscordGuild`, `DiscordChannel`, `DiscordRole` und `DiscordGuildMember` erhalten bei einem Discord-Löschereignis `deleted_at`. Es erfolgt kein physisches Löschen der historischen Moderations- oder Statistikbasis. Ein späterer Discord-Upsert setzt `deleted_at` wieder auf `NULL` und reaktiviert denselben Datensatz. Fachliche Folgeaufgaben müssen gelöschte Datensätze standardmäßig mit `deletedAt: null` ausschließen; Moderationsansichten dürfen sie ausschließlich als ausdrücklich gekennzeichnete Historie einschließen.
+
 ## Folgen
 
 Die neue additive PostgreSQL-Migration `20260806150000_add_discord_sync_status_and_bot_audit` ist vor Ausrollen des neuen Adapters anzuwenden. Die PM2-/MariaDB-Produktivinstallation bleibt davon unberührt; Änderungen werden ausschließlich am Docker-Teststack auf `defender833` abgenommen.
