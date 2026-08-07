@@ -28,6 +28,20 @@ export function createDiscordDataRepository({ prisma }) {
       });
     },
 
+    async replaceGuildChannels({ guildId, channels }) {
+      const snapshot = Array.isArray(channels) ? channels : [];
+      const channelIds = snapshot.map((channel) => channel.id);
+      const operations = [
+        prisma.discordChannel.updateMany({ where: { guildId, id: { notIn: channelIds }, deletedAt: null }, data: { deletedAt: new Date() } }),
+        ...snapshot.map((channel) => prisma.discordChannel.upsert({
+          where: { id: channel.id },
+          create: { id: channel.id, guildId, name: channel.name, type: channel.type, topic: channel.topic, position: channel.position ?? 0, parentId: channel.parentId, deletedAt: null },
+          update: { guildId, name: channel.name, type: channel.type, topic: channel.topic, position: channel.position ?? 0, parentId: channel.parentId, deletedAt: null },
+        })),
+      ];
+      return prisma.$transaction(operations);
+    },
+
     async bulkUpsertChannels(channels) {
       if (!channels || channels.length === 0) return [];
       return prisma.$transaction(
@@ -68,6 +82,20 @@ export function createDiscordDataRepository({ prisma }) {
           deletedAt: null,
         },
       });
+    },
+
+    async replaceGuildRoles({ guildId, roles }) {
+      const snapshot = Array.isArray(roles) ? roles : [];
+      const roleIds = snapshot.map((role) => role.id);
+      const operations = [
+        prisma.discordRole.updateMany({ where: { guildId, id: { notIn: roleIds }, deletedAt: null }, data: { deletedAt: new Date() } }),
+        ...snapshot.map((role) => prisma.discordRole.upsert({
+          where: { id: role.id },
+          create: { id: role.id, guildId, name: role.name, color: role.color ?? 0, hoist: !!role.hoist, position: role.position ?? 0, permissions: String(role.permissions), managed: !!role.managed, mentionable: !!role.mentionable, deletedAt: null },
+          update: { guildId, name: role.name, color: role.color ?? 0, hoist: !!role.hoist, position: role.position ?? 0, permissions: String(role.permissions), managed: !!role.managed, mentionable: !!role.mentionable, deletedAt: null },
+        })),
+      ];
+      return prisma.$transaction(operations);
     },
 
     async bulkUpsertRoles(roles) {
@@ -172,8 +200,8 @@ export function createDiscordDataRepository({ prisma }) {
         members.map((m) =>
           prisma.discordGuildMember.upsert({
             where: { guildId_userId: { guildId: m.guildId, userId: m.userId } },
-            create: { guildId: m.guildId, userId: m.userId, nickname: m.nickname, joinedAt: m.joinedAt ? new Date(m.joinedAt) : null },
-            update: { nickname: m.joinedAt ? new Date(m.joinedAt) : undefined },
+            create: { guildId: m.guildId, userId: m.userId, nickname: m.nickname ?? null, joinedAt: m.joinedAt ? new Date(m.joinedAt) : null, deletedAt: null },
+            update: { nickname: m.nickname ?? null, joinedAt: m.joinedAt ? new Date(m.joinedAt) : undefined, deletedAt: null },
           })
         )
       );

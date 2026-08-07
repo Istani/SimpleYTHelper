@@ -55,6 +55,9 @@ test('upserts guild, user, channel, role, message, member, member roles and bulk
   assert.equal(calls[3].model, 'channel');
   assert.equal(calls[4].model, 'role');
   assert.equal(calls[5].model, 'guildMember');
+  assert.equal(calls[5].args.create.deletedAt, null);
+  assert.equal(calls[5].args.update.deletedAt, null);
+  assert.equal(calls[5].args.update.nickname, 'Boss');
   assert.equal(calls[6].model, 'memberRole');
 });
 

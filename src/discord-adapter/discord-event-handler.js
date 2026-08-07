@@ -109,8 +109,8 @@ async function syncGuild(dataRepository, guild) {
     .map((channel) => channelData(channel, guild.id));
   const roles = [...guild.roles.cache.values()].map((role) => roleData(role, guild.id));
 
-  await dataRepository.bulkUpsertChannels(channels);
-  await dataRepository.bulkUpsertRoles(roles);
+  await dataRepository.replaceGuildChannels({ guildId: guild.id, channels });
+  await dataRepository.replaceGuildRoles({ guildId: guild.id, roles });
 
   const fetchedMembers = await guild.members.fetch();
   const members = collectionValues(fetchedMembers).map((member) => memberData(member, guild.id));

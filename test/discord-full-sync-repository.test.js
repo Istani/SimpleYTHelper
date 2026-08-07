@@ -33,6 +33,32 @@ test('replaces a guild member snapshot and records the successful full-sync time
 
 const expectAnyDate = { [Symbol.for('nodejs.util.inspect.custom')]: () => 'expectAnyDate' };
 
+test('soft-deletes active channels and roles absent from a successful guild snapshot', async () => {
+  const calls = [];
+  const prisma = {
+    $transaction: async (operations) => Promise.all(operations),
+    discordChannel: {
+      updateMany: async (args) => { calls.push(['channelsAbsent', args]); return args; },
+      upsert: async (args) => { calls.push(['channel', args]); return args; },
+    },
+    discordRole: {
+      updateMany: async (args) => { calls.push(['rolesAbsent', args]); return args; },
+      upsert: async (args) => { calls.push(['role', args]); return args; },
+    },
+  };
+  const repository = createDiscordDataRepository({ prisma });
+
+  await repository.replaceGuildChannels({ guildId: 'guild-1', channels: [{ id: 'channel-1', guildId: 'guild-1', name: 'allgemein', type: 0 }] });
+  await repository.replaceGuildRoles({ guildId: 'guild-1', roles: [{ id: 'role-1', guildId: 'guild-1', name: 'Mitglied', permissions: '0' }] });
+
+  assert.deepEqual(calls[0][1].where, { guildId: 'guild-1', id: { notIn: ['channel-1'] }, deletedAt: null });
+  assert.ok(calls[0][1].data.deletedAt instanceof Date);
+  assert.equal(calls[1][1].update.deletedAt, null);
+  assert.deepEqual(calls[2][1].where, { guildId: 'guild-1', id: { notIn: ['role-1'] }, deletedAt: null });
+  assert.ok(calls[2][1].data.deletedAt instanceof Date);
+  assert.equal(calls[3][1].update.deletedAt, null);
+});
+
 test('marks removed Discord records as deleted without removing their history', async () => {
   const calls = [];
   const prisma = {
