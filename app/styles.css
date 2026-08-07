@@ -120,6 +120,8 @@ button, input { font: inherit; }
 .discord-entity-heading, .discord-member-link { display: flex; align-items: center; gap: 10px; }
 .discord-avatar { width: 48px; height: 48px; flex: 0 0 48px; border-radius: 50%; object-fit: cover; background: #f1f1f1; border: 1px solid var(--line); }
 .discord-avatar-small { width: 30px; height: 30px; flex-basis: 30px; }
+.discord-channel-name { display: inline-flex; flex-direction: column; align-items: flex-start; }
+.discord-channel-parent { color: var(--muted); font-weight: 400; margin-top: 2px; }
 .avatar-fallback { display: grid; place-items: center; color: var(--muted); font-size: .78rem; font-weight: 800; }
 .history-row { background: #fff4f4; }
 .history-row td { border-bottom-color: #efc3c3; }

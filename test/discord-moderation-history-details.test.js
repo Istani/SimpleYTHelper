@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
+const moderationPage = new URL('../app/admin/discord/moderation/page.js', import.meta.url);
 const guildPage = new URL('../app/admin/discord/moderation/guilds/[guildId]/page.js', import.meta.url);
 const channelPage = new URL('../app/admin/discord/moderation/channels/[channelId]/page.js', import.meta.url);
 const memberPage = new URL('../app/admin/discord/moderation/guilds/[guildId]/members/[userId]/page.js', import.meta.url);
@@ -21,6 +22,13 @@ test('keeps a deleted channel visible but explicitly marks its history', async (
   assert.match(source, /history-badge/);
 });
 
+test('uses Discord-like channel ordering, readable type labels and thread parent context', async () => {
+  const source = await readFile(guildPage, 'utf8');
+  assert.match(source, /sortDiscordGuildChannels/);
+  assert.match(source, /describeDiscordChannel/);
+  assert.match(source, /Thread zu/);
+});
+
 test('offers a dedicated member history detail view from the guild moderation page', async () => {
   const [guildSource, memberSource] = await Promise.all([readFile(guildPage, 'utf8'), readFile(memberPage, 'utf8')]);
   assert.match(guildSource, /members\/\$\{encodeURIComponent\(member\.userId\)\}/);
@@ -36,4 +44,11 @@ test('renders persisted Discord guild and user avatars with accessible text fall
   assert.match(memberSource, /cdn\.discordapp\.com\/avatars/);
   assert.match(memberSource, /member\.user\.avatar/);
   assert.match(memberSource, /avatar-fallback/);
+});
+
+test('renders persisted guild icons in the moderation overview with an accessible fallback', async () => {
+  const source = await readFile(moderationPage, 'utf8');
+  assert.match(source, /cdn\.discordapp\.com\/icons/);
+  assert.match(source, /guild\.icon/);
+  assert.match(source, /avatar-fallback/);
 });

@@ -172,3 +172,20 @@ test('reconciles Discord guild, channel, role and member events without waiting 
   assert.deepEqual(repository.calls[7][1], { guildId: 'guild-1', userId: 'user-1', roleIds: ['role-1'] });
   assert.deepEqual(repository.calls[11][1], { guildId: 'guild-1', userId: 'user-1' });
 });
+
+test('catches up recent messages after client readiness when inbound listening is enabled', async () => {
+  const client = new EventEmitter();
+  const channel = { id: 'channel-1', guildId: 'guild-1', name: 'general', type: 0, topic: null, rawPosition: 0, parentId: null, isTextBased: () => true };
+  const recoveringGuild = { ...guild, channels: { cache: new Map([[channel.id, channel]]) } };
+  const missedMessage = { id: 'missed-message-1', guild: recoveringGuild, channel, author: { id: 'user-1', username: 'Ada', discriminator: null, globalName: null, avatar: null, bot: false }, content: 'recovered', createdAt: new Date('2026-08-07T10:00:00Z'), attachments: new Map(), embeds: [], stickers: new Map() };
+  channel.messages = { fetch: async () => new Map([[missedMessage.id, missedMessage]]) };
+  client.guilds = { cache: new Map([[recoveringGuild.id, recoveringGuild]]) };
+  const repository = fakeRepository();
+  attachDiscordEventHandlers({ client, dataRepository: repository, settings: { listenMessages: true }, logger: { error: () => {} } });
+
+  client.emit('clientReady');
+  await new Promise((resolve) => setImmediate(resolve));
+  await new Promise((resolve) => setImmediate(resolve));
+
+  assert.equal(repository.calls.filter(([method]) => method === 'message').some(([, value]) => value.id === 'missed-message-1'), true);
+});

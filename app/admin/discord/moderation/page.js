@@ -13,11 +13,16 @@ function GuildSyncFact({ guild }) {
   return <small>Letzter Full Sync: {formatSyncTime(guild.lastFullSyncAt)}</small>;
 }
 
+function GuildAvatar({ guild }) {
+  const label = guild.name.slice(0, 1).toUpperCase();
+  return guild.icon ? <img className="discord-avatar discord-avatar-small" src={`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png?size=64`} alt={`Guild-Logo von ${guild.name}`} /> : <span className="discord-avatar discord-avatar-small avatar-fallback" aria-label={`Kein Guild-Logo für ${guild.name}`}>{label}</span>;
+}
+
 function SourceList({ title, description, records, kind }) {
   return <section className="panel moderation-list"><div className="panel-title"><span className="kicker">Discord · Moderation</span><h2>{title}</h2><p>{description}</p></div>
     {records.length === 0 ? <p>Noch keine bekannten Einträge.</p> : <div className="entity-list">{records.map((record) => {
       const destination = discordModerationDestination(record, kind);
-      return <Link href={destination.href} className={`entity-row${record.deletedAt ? ' entity-row-deleted' : ''}`} key={record.id}><span className="entity-mark">{kind === 'dm' ? '✉' : '◆'}</span><span><strong>{destination.label}</strong><small>{record._count?.messages ?? 0} gespeicherte Nachrichten</small>{record.deletedAt ? <small className="deleted-note">In Discord gelöscht: {new Date(record.deletedAt).toLocaleString('de-DE')}</small> : null}{kind === 'guild' ? <GuildSyncFact guild={record} /> : null}</span><b>›</b></Link>;
+      return <Link href={destination.href} className={`entity-row${record.deletedAt ? ' entity-row-deleted' : ''}`} key={record.id}>{kind === 'guild' ? <GuildAvatar guild={record} /> : <span className="entity-mark">✉</span>}<span><strong>{destination.label}</strong><small>{record._count?.messages ?? 0} gespeicherte Nachrichten</small>{record.deletedAt ? <small className="deleted-note">In Discord gelöscht: {new Date(record.deletedAt).toLocaleString('de-DE')}</small> : null}{kind === 'guild' ? <GuildSyncFact guild={record} /> : null}</span><b>›</b></Link>;
     })}</div>}</section>;
 }
 
