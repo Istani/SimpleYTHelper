@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useRef, useState } from 'react';
 import { createBotAction, updateBotAction } from '../../../app/admin/actions.js';
+import { activeBotCapabilities } from '../admin/discord-bot-capabilities.js';
 
 const initialState = {};
 const defaultSettings = { allowReports: true, allowCommands: false, listenMessages: false };
@@ -47,9 +48,14 @@ function AuditFacts({ audits = [] }) {
   return <div className="audit-facts">{audits.map((audit, index) => <p key={`${audit.createdAt}-${index}`}><strong>{audit.action === 'created' ? 'Registriert' : 'Konfiguration geändert'}</strong> · {new Date(audit.createdAt).toLocaleString('de-DE')} · Akteur: <code>{audit.actorId}</code>{audit.details?.tokenRotated ? ' · Token rotiert' : ''}{Object.keys(audit.details?.capabilities || {}).length ? ` · Capabilities: ${Object.entries(audit.details.capabilities).map(([key, value]) => `${key} ${value.from ? 'an' : 'aus'}→${value.to ? 'an' : 'aus'}`).join(', ')}` : ''}</p>)}</div>;
 }
 
+function ActiveCapabilities({ settings }) {
+  const capabilities = activeBotCapabilities(settings);
+  return <section className="bot-capabilities" aria-label="Aktive Capabilities"><span className="kicker">Aktive Capabilities</span>{capabilities.length ? <ul>{capabilities.map((capability) => <li key={capability.key}>{capability.label}</li>)}</ul> : <p>Keine aktiven Capabilities.</p>}</section>;
+}
+
 function BotCard({ bot }) {
   const status = bot.online ? (bot.ready ? 'Online & bereit' : 'Verbunden, startet …') : 'Offline';
-  return <article className="bot-card"><div className="bot-card-heading"><div><strong>{bot.botId}</strong><small>Discord-ID: {bot.discordUserId || 'Noch nicht verbunden'}</small></div><span className={`status-pill ${bot.online && bot.ready ? 'status-good' : 'status-muted'}`}>{status}</span></div><dl className="bot-meta"><div><dt>Instanz</dt><dd>{bot.isActive ? 'Aktiv' : 'Deaktiviert'}</dd></div><div><dt>Erstellt</dt><dd>{new Date(bot.createdAt).toLocaleDateString('de-DE')}</dd></div></dl><section className="bot-audit"><span className="kicker">Änderungshistorie</span><AuditFacts audits={bot.audits} /></section><div className="bot-actions"><BotConfigDialog bot={bot} /><TokenRotationDialog bot={bot} /></div></article>;
+  return <article className="bot-card"><div className="bot-card-heading"><div><strong>{bot.botId}</strong><small>Discord-ID: {bot.discordUserId || 'Noch nicht verbunden'}</small></div><span className={`status-pill ${bot.online && bot.ready ? 'status-good' : 'status-muted'}`}>{status}</span></div><dl className="bot-meta"><div><dt>Instanz</dt><dd>{bot.isActive ? 'Aktiv' : 'Deaktiviert'}</dd></div><div><dt>Erstellt</dt><dd>{new Date(bot.createdAt).toLocaleDateString('de-DE')}</dd></div></dl><ActiveCapabilities settings={bot.settings} /><section className="bot-audit"><span className="kicker">Änderungshistorie</span><AuditFacts audits={bot.audits} /></section><div className="bot-actions"><BotConfigDialog bot={bot} /><TokenRotationDialog bot={bot} /></div></article>;
 }
 
 export function BotManagementPanel({ bots }) {
