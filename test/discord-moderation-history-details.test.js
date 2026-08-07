@@ -28,3 +28,12 @@ test('offers a dedicated member history detail view from the guild moderation pa
   assert.match(memberSource, /member\.deletedAt/);
   assert.match(memberSource, /history-badge/);
 });
+
+test('renders persisted Discord guild and user avatars with accessible text fallbacks', async () => {
+  const [guildSource, memberSource] = await Promise.all([readFile(guildPage, 'utf8'), readFile(memberPage, 'utf8')]);
+  assert.match(guildSource, /cdn\.discordapp\.com\/icons/);
+  assert.match(guildSource, /guild\.icon/);
+  assert.match(memberSource, /cdn\.discordapp\.com\/avatars/);
+  assert.match(memberSource, /member\.user\.avatar/);
+  assert.match(memberSource, /avatar-fallback/);
+});

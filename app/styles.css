@@ -117,6 +117,10 @@ button, input { font: inherit; }
 .entity-row.entity-row-deleted:hover { background: #ffeaea; border-color: #df9999; }
 .deleted-note { color: #a63d3d !important; }
 .detail-historical { background: #fff4f4; border: 1px solid #efc3c3; border-radius: 11px; padding: 14px; }
+.discord-entity-heading, .discord-member-link { display: flex; align-items: center; gap: 10px; }
+.discord-avatar { width: 48px; height: 48px; flex: 0 0 48px; border-radius: 50%; object-fit: cover; background: #f1f1f1; border: 1px solid var(--line); }
+.discord-avatar-small { width: 30px; height: 30px; flex-basis: 30px; }
+.avatar-fallback { display: grid; place-items: center; color: var(--muted); font-size: .78rem; font-weight: 800; }
 .history-row { background: #fff4f4; }
 .history-row td { border-bottom-color: #efc3c3; }
 .history-badge { display: block; width: max-content; max-width: 100%; margin-top: 4px; color: #943b3b; background: #ffe5e5; border: 1px solid #efc3c3; border-radius: 999px; padding: 3px 7px; font-size: .72rem; line-height: 1.25; }
