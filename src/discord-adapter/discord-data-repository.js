@@ -1,3 +1,14 @@
+const SNAPSHOT_BATCH_SIZE = 50;
+
+async function runBatches(prisma, values, makeOperation, batchSize = SNAPSHOT_BATCH_SIZE) {
+  const results = [];
+  for (let start = 0; start < values.length; start += batchSize) {
+    const batch = values.slice(start, start + batchSize);
+    results.push(...await prisma.$transaction(batch.map(makeOperation)));
+  }
+  return results;
+}
+
 export function createDiscordDataRepository({ prisma }) {
   if (!prisma) {
     throw new TypeError('prisma client is required');
@@ -31,15 +42,14 @@ export function createDiscordDataRepository({ prisma }) {
     async replaceGuildChannels({ guildId, channels, sourceId = null }) {
       const snapshot = Array.isArray(channels) ? channels : [];
       const channelIds = snapshot.map((channel) => channel.id);
-      const operations = [
-        ...(sourceId ? [] : [prisma.discordChannel.updateMany({ where: { guildId, id: { notIn: channelIds }, deletedAt: null }, data: { deletedAt: new Date() } })]),
-        ...snapshot.map((channel) => prisma.discordChannel.upsert({
-          where: { id: channel.id },
-          create: { id: channel.id, guildId, name: channel.name, type: channel.type, topic: channel.topic, position: channel.position ?? 0, parentId: channel.parentId, deletedAt: null },
-          update: { guildId, name: channel.name, type: channel.type, topic: channel.topic, position: channel.position ?? 0, parentId: channel.parentId, deletedAt: null },
-        })),
-      ];
-      return prisma.$transaction(operations);
+      if (!sourceId) {
+        await prisma.discordChannel.updateMany({ where: { guildId, id: { notIn: channelIds }, deletedAt: null }, data: { deletedAt: new Date() } });
+      }
+      return runBatches(prisma, snapshot, (channel) => prisma.discordChannel.upsert({
+        where: { id: channel.id },
+        create: { id: channel.id, guildId, name: channel.name, type: channel.type, topic: channel.topic, position: channel.position ?? 0, parentId: channel.parentId, deletedAt: null },
+        update: { guildId, name: channel.name, type: channel.type, topic: channel.topic, position: channel.position ?? 0, parentId: channel.parentId, deletedAt: null },
+      }));
     },
 
     async bulkUpsertChannels(channels) {
@@ -87,15 +97,14 @@ export function createDiscordDataRepository({ prisma }) {
     async replaceGuildRoles({ guildId, roles, sourceId = null }) {
       const snapshot = Array.isArray(roles) ? roles : [];
       const roleIds = snapshot.map((role) => role.id);
-      const operations = [
-        ...(sourceId ? [] : [prisma.discordRole.updateMany({ where: { guildId, id: { notIn: roleIds }, deletedAt: null }, data: { deletedAt: new Date() } })]),
-        ...snapshot.map((role) => prisma.discordRole.upsert({
-          where: { id: role.id },
-          create: { id: role.id, guildId, name: role.name, color: role.color ?? 0, hoist: !!role.hoist, position: role.position ?? 0, permissions: String(role.permissions), managed: !!role.managed, mentionable: !!role.mentionable, deletedAt: null },
-          update: { guildId, name: role.name, color: role.color ?? 0, hoist: !!role.hoist, position: role.position ?? 0, permissions: String(role.permissions), managed: !!role.managed, mentionable: !!role.mentionable, deletedAt: null },
-        })),
-      ];
-      return prisma.$transaction(operations);
+      if (!sourceId) {
+        await prisma.discordRole.updateMany({ where: { guildId, id: { notIn: roleIds }, deletedAt: null }, data: { deletedAt: new Date() } });
+      }
+      return runBatches(prisma, snapshot, (role) => prisma.discordRole.upsert({
+        where: { id: role.id },
+        create: { id: role.id, guildId, name: role.name, color: role.color ?? 0, hoist: !!role.hoist, position: role.position ?? 0, permissions: String(role.permissions), managed: !!role.managed, mentionable: !!role.mentionable, deletedAt: null },
+        update: { guildId, name: role.name, color: role.color ?? 0, hoist: !!role.hoist, position: role.position ?? 0, permissions: String(role.permissions), managed: !!role.managed, mentionable: !!role.mentionable, deletedAt: null },
+      }));
     },
 
     async bulkUpsertRoles(roles) {
@@ -183,17 +192,19 @@ export function createDiscordDataRepository({ prisma }) {
       const snapshot = Array.isArray(members) ? members : [];
       const userIds = snapshot.map((member) => member.userId);
       const memberRoles = snapshot.flatMap((member) => (member.roleIds || []).map((roleId) => ({ guildId, userId: member.userId, roleId })));
-      const operations = [
-        prisma.discordMemberRole.deleteMany({ where: { guildId, userId: { in: userIds } } }),
-        ...(sourceId ? [] : [prisma.discordGuildMember.updateMany({ where: { guildId, userId: { notIn: userIds }, deletedAt: null }, data: { deletedAt: new Date() } })]),
-        ...snapshot.map((member) => prisma.discordGuildMember.upsert({
-          where: { guildId_userId: { guildId, userId: member.userId } },
-          create: { guildId, userId: member.userId, nickname: member.nickname ?? null, joinedAt: member.joinedAt ? new Date(member.joinedAt) : null, deletedAt: null },
-          update: { nickname: member.nickname ?? null, joinedAt: member.joinedAt ? new Date(member.joinedAt) : null, deletedAt: null },
-        })),
-      ];
-      if (memberRoles.length > 0) operations.push(prisma.discordMemberRole.createMany({ data: memberRoles }));
-      return prisma.$transaction(operations);
+      await prisma.discordMemberRole.deleteMany({ where: { guildId, userId: { in: userIds } } });
+      if (!sourceId) {
+        await prisma.discordGuildMember.updateMany({ where: { guildId, userId: { notIn: userIds }, deletedAt: null }, data: { deletedAt: new Date() } });
+      }
+      const savedMembers = await runBatches(prisma, snapshot, (member) => prisma.discordGuildMember.upsert({
+        where: { guildId_userId: { guildId, userId: member.userId } },
+        create: { guildId, userId: member.userId, nickname: member.nickname ?? null, joinedAt: member.joinedAt ? new Date(member.joinedAt) : null, deletedAt: null },
+        update: { nickname: member.nickname ?? null, joinedAt: member.joinedAt ? new Date(member.joinedAt) : null, deletedAt: null },
+      }));
+      for (let start = 0; start < memberRoles.length; start += SNAPSHOT_BATCH_SIZE) {
+        await prisma.$transaction([prisma.discordMemberRole.createMany({ data: memberRoles.slice(start, start + SNAPSHOT_BATCH_SIZE) })]);
+      }
+      return savedMembers;
     },
 
     async recordGuildFullSync({ guildId, syncedAt }) {

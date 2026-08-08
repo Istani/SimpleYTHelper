@@ -89,3 +89,24 @@ test('persists a complete structured media snapshot together with its Discord me
   assert.equal(calls[2].args.data[0].messageId, 'message-1');
   assert.equal(calls[2].args.data[1].kind, 'sticker');
 });
+
+test('splits a large guild channel snapshot into bounded transactions', async () => {
+  const transactionSizes = [];
+  const prisma = {
+    $transaction: async (operations) => {
+      transactionSizes.push(operations.length);
+      return Promise.all(operations);
+    },
+    discordChannel: {
+      updateMany: async () => ({ count: 0 }),
+      upsert: async (args) => ({ id: args.where.id }),
+    },
+  };
+  const channels = Array.from({ length: 201 }, (_, index) => ({
+    id: `channel-${index}`, guildId: 'guild-1', name: `channel-${index}`, type: 0,
+  }));
+
+  await createDiscordDataRepository({ prisma }).replaceGuildChannels({ guildId: 'guild-1', channels });
+
+  assert.deepEqual(transactionSizes, [50, 50, 50, 50, 1]);
+});
