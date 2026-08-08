@@ -15,6 +15,7 @@ function fakeRepository() {
     replaceGuildRoles: async (value) => calls.push(['roles', value]),
     upsertRole: async (value) => calls.push(['role', value]),
     upsertGuildMember: async (value) => calls.push(['member', value]),
+    upsertScheduledEvent: async (value) => calls.push(['scheduledEvent', value]),
     replaceGuildMembers: async (value) => calls.push(['members', value]),
     recordGuildFullSync: async (value) => calls.push(['guildFullSync', value]),
     recordGuildFullSyncFailure: async (value) => calls.push(['guildFullSyncFailure', value]),
@@ -257,6 +258,27 @@ test('catches up recent direct messages after client readiness when inbound list
   const recovered = repository.calls.find(([method, value]) => method === 'message' && value.id === 'missed-dm-1');
   assert.ok(recovered);
   assert.equal(recovered[1].guildId, null);
+});
+
+test('normalizes selfbot scheduled event enum names before persistence', async () => {
+  const client = new EventEmitter();
+  const repository = fakeRepository();
+  const scheduledEvent = {
+    id: 'event-1', guildId: guild.id, channelId: null, creatorId: 'owner-1', name: 'Community event', description: null,
+    scheduledStartAt: new Date('2026-11-06T11:00:00Z'), scheduledEndAt: null, status: 'SCHEDULED', entityType: 'EXTERNAL', image: null,
+  };
+  const eventGuild = { ...guild, scheduledEvents: { fetch: async () => new Map([[scheduledEvent.id, scheduledEvent]]) } };
+  client.guilds = { cache: new Map([[eventGuild.id, eventGuild]]) };
+  attachDiscordEventHandlers({ client, dataRepository: repository, logger: { error: () => {} } });
+
+  client.emit('clientReady');
+  await new Promise((resolve) => setImmediate(resolve));
+  await new Promise((resolve) => setImmediate(resolve));
+
+  const persisted = repository.calls.find(([kind]) => kind === 'scheduledEvent');
+  assert.ok(persisted);
+  assert.equal(persisted[1].status, 1);
+  assert.equal(persisted[1].entityType, 3);
 });
 
 test('catches up recent messages after client readiness when inbound listening is enabled', async () => {

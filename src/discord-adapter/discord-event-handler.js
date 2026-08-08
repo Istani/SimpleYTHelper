@@ -209,6 +209,27 @@ async function persistInboundMessage(dataRepository, message, sourceId = null) {
   }
 }
 
+const DISCORD_SCHEDULED_EVENT_STATUS_BY_NAME = Object.freeze({
+  SCHEDULED: 1,
+  ACTIVE: 2,
+  COMPLETED: 3,
+  CANCELED: 4,
+  CANCELLED: 4,
+});
+
+const DISCORD_SCHEDULED_EVENT_ENTITY_TYPE_BY_NAME = Object.freeze({
+  STAGE_INSTANCE: 1,
+  VOICE: 2,
+  EXTERNAL: 3,
+});
+
+function canonicalScheduledEventEnum(value, valuesByName) {
+  if (Number.isInteger(value)) return value;
+  if (typeof value === 'string' && Number.isInteger(valuesByName[value])) return valuesByName[value];
+  const numeric = Number(value);
+  return Number.isInteger(numeric) ? numeric : 0;
+}
+
 function scheduledEventData(event) {
   return {
     id: event.id,
@@ -219,8 +240,8 @@ function scheduledEventData(event) {
     description: event.description ?? null,
     scheduledStartAt: event.scheduledStartAt ?? null,
     scheduledEndAt: event.scheduledEndAt ?? null,
-    status: Number(event.status ?? 0),
-    entityType: Number(event.entityType ?? 0),
+    status: canonicalScheduledEventEnum(event.status, DISCORD_SCHEDULED_EVENT_STATUS_BY_NAME),
+    entityType: canonicalScheduledEventEnum(event.entityType, DISCORD_SCHEDULED_EVENT_ENTITY_TYPE_BY_NAME),
     image: event.image ?? null,
   };
 }
