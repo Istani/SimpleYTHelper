@@ -216,9 +216,15 @@ async function persistScheduledEvent(dataRepository, event, sourceId = null) {
   }
 }
 
+function isTextBasedChannel(channel) {
+  if (typeof channel?.isTextBased === 'function') return channel.isTextBased();
+  if (typeof channel?.isText === 'function') return channel.isText();
+  return false;
+}
+
 async function catchUpGuildMessages(dataRepository, guild, logger, sourceId = null) {
   for (const channel of guild.channels.cache.values()) {
-    if (typeof channel.isTextBased !== 'function' || !channel.isTextBased() || !channel.messages?.fetch) continue;
+    if (!isTextBasedChannel(channel) || !channel.messages?.fetch) continue;
     try {
       const messages = await channel.messages.fetch({ limit: 100 });
       for (const message of collectionValues(messages).reverse()) await persistInboundMessage(dataRepository, message, sourceId);
@@ -233,7 +239,7 @@ async function catchUpDirectMessages(dataRepository, client, logger, sourceId = 
     .filter((channel) => channel?.type === 1 || channel?.type === 'DM' || channel?.isDMBased?.());
 
   for (const channel of channels) {
-    if (typeof channel.isTextBased !== 'function' || !channel.isTextBased() || !channel.messages?.fetch) continue;
+    if (!isTextBasedChannel(channel) || !channel.messages?.fetch) continue;
     try {
       const messages = await channel.messages.fetch({ limit: 100 });
       for (const message of collectionValues(messages).reverse()) await persistInboundMessage(dataRepository, message, sourceId);

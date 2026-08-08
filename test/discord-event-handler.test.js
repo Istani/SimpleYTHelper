@@ -193,7 +193,7 @@ test('reconciles Discord guild, channel, role and member events without waiting 
 
 test('catches up recent direct messages after client readiness when inbound listening is enabled', async () => {
   const client = new EventEmitter();
-  const dmChannel = { id: 'dm-channel-1', guildId: null, name: 'Sascha', type: 'DM', topic: null, rawPosition: 0, parentId: null, isTextBased: () => true };
+  const dmChannel = { id: 'dm-channel-1', guildId: null, name: 'Sascha', type: 'DM', topic: null, rawPosition: 0, parentId: null, isText: () => true };
   const missedDirectMessage = { id: 'missed-dm-1', guild: null, channel: dmChannel, author: { id: 'user-1', username: 'Sascha', discriminator: null, globalName: null, avatar: null, bot: false }, content: 'recovered direct message', createdAt: new Date('2026-08-08T12:00:00Z'), attachments: new Map(), embeds: [], stickers: new Map() };
   dmChannel.messages = { fetch: async () => new Map([[missedDirectMessage.id, missedDirectMessage]]) };
   client.guilds = { cache: new Map() };
