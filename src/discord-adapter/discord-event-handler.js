@@ -72,6 +72,21 @@ function collectionValues(value) {
   return Array.from(typeof value.values === 'function' ? value.values() : value);
 }
 
+async function hydrateGuildCache(client) {
+  if (typeof client.guilds?.fetch !== 'function' || !client.guilds?.cache?.has) return;
+  let after;
+  do {
+    const discovered = collectionValues(await client.guilds.fetch({ limit: 200, ...(after ? { after } : {}) }));
+    for (const partialGuild of discovered) {
+      if (!partialGuild?.id || client.guilds.cache.has(partialGuild.id)) continue;
+      const fullGuild = await client.guilds.fetch({ guild: partialGuild.id, force: true });
+      if (fullGuild?.id && !client.guilds.cache.has(fullGuild.id)) client.guilds.cache.set(fullGuild.id, fullGuild);
+    }
+    after = discovered.at(-1)?.id;
+    if (discovered.length < 200 || !after) return;
+  } while (true);
+}
+
 function nullableNumber(value) {
   return typeof value === 'number' && Number.isFinite(value) ? value : null;
 }
@@ -250,7 +265,7 @@ async function catchUpDirectMessages(dataRepository, client, logger, sourceId = 
 }
 
 /** Attach DB persistence to one discord.js client. Errors stay isolated to a single event. */
-export function attachDiscordEventHandlers({ client, dataRepository, sourceId = null, settings = {}, logger = console, setIntervalFn = setInterval, clearIntervalFn = clearInterval }) {
+export function attachDiscordEventHandlers({ client, dataRepository, sourceId = null, settings = {}, logger = console, hydrateGuildCache: shouldHydrateGuildCache = false, setIntervalFn = setInterval, clearIntervalFn = clearInterval }) {
   if (!client || typeof client.on !== 'function') return () => {};
   let dailySyncTimer = null;
   const guildReconciliationQueues = new Map();
@@ -279,6 +294,13 @@ export function attachDiscordEventHandlers({ client, dataRepository, sourceId = 
   });
 
   const syncCachedGuilds = async () => {
+    if (shouldHydrateGuildCache) {
+      try {
+        await hydrateGuildCache(client);
+      } catch (error) {
+        logger.error('Discord guild cache hydration failed', { message: syncErrorMessage(error) });
+      }
+    }
     for (const guild of client.guilds.cache.values()) await syncOneGuild(guild);
   };
   const syncMember = async (member) => {

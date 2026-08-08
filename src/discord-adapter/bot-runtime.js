@@ -15,6 +15,7 @@ export function createDiscordAccountRuntime({ prisma, clientFactory, logger, acc
       dataRepository,
       sourceId: registration.bot_id,
       settings: registration.settings,
+      hydrateGuildCache: accountKind === 'selfbot',
       logger,
     }),
   });

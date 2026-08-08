@@ -131,6 +131,29 @@ test('syncs cached guilds on the selfbot ready event', async () => {
   assert.deepEqual(repository.calls.map(([type]) => type), ['guild', 'channels', 'roles', 'user', 'members', 'guildFullSync']);
 });
 
+test('hydrates the selfbot guild cache before running the full sync', async () => {
+  const client = new EventEmitter();
+  const repository = fakeRepository();
+  const fetchCalls = [];
+  client.guilds = {
+    cache: new Map(),
+    fetch: async (options) => {
+      fetchCalls.push(options);
+      if (options.guild) return guild;
+      return new Map([[guild.id, { id: guild.id }]]);
+    },
+  };
+
+  const stop = attachDiscordEventHandlers({ client, dataRepository: repository, settings: { listenMessages: false }, sourceId: 'Istani', hydrateGuildCache: true });
+  client.emit('ready');
+  await new Promise((resolve) => setImmediate(resolve));
+  await new Promise((resolve) => setImmediate(resolve));
+
+  assert.deepEqual(fetchCalls, [{ limit: 200 }, { guild: guild.id, force: true }]);
+  assert.ok(repository.calls.some(([kind, value]) => kind === 'guild' && value.id === guild.id));
+  stop();
+});
+
 test('records a failed guild sync without replacing the last successful full-sync state', async () => {
   const client = new EventEmitter();
   const repository = fakeRepository();
