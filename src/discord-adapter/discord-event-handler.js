@@ -177,7 +177,10 @@ async function syncGuild(dataRepository, guild, sourceId = null) {
 
 function syncErrorMessage(error) {
   const message = String(error?.message || 'Unbekannter Discord-Synchronisationsfehler');
-  return message.replace(/(token|authorization|password)\s*[:=]\s*\S+/gi, '$1=[REDACTED]').slice(0, 500);
+  return message
+    .replace(/description:\s*"(?:\\.|[^"\\])*"/gs, 'description: "[REDACTED]"')
+    .replace(/(token|authorization|password)\s*[:=]\s*\S+/gi, '$1=[REDACTED]')
+    .slice(0, 500);
 }
 
 async function persistInboundMessage(dataRepository, message, sourceId = null) {
