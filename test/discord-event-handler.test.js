@@ -119,6 +119,18 @@ test('syncs cached guilds on the Discord.js clientReady event', async () => {
 });
 
 
+test('syncs cached guilds on the selfbot ready event', async () => {
+  const client = new EventEmitter();
+  client.guilds = { cache: new Map([[guild.id, guild]]) };
+  const repository = fakeRepository();
+  attachDiscordEventHandlers({ client, dataRepository: repository, logger: { error: () => {} } });
+
+  client.emit('ready');
+  await new Promise((resolve) => setImmediate(resolve));
+
+  assert.deepEqual(repository.calls.map(([type]) => type), ['guild', 'channels', 'roles', 'user', 'members', 'guildFullSync']);
+});
+
 test('records a failed guild sync without replacing the last successful full-sync state', async () => {
   const client = new EventEmitter();
   const repository = fakeRepository();

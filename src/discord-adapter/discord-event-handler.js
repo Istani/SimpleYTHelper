@@ -316,7 +316,10 @@ export function attachDiscordEventHandlers({ client, dataRepository, sourceId = 
     ? dataRepository.removeSourceObservation({ sourceId, entityType: 'scheduled_event', entityId: event.id })
     : dataRepository.deleteScheduledEvent(event.id), 'guildScheduledEventDelete'));
 
-  client.on('clientReady', safely(async () => {
+  let initialSyncStarted = false;
+  const handleClientReady = safely(async () => {
+    if (initialSyncStarted) return;
+    initialSyncStarted = true;
     await syncCachedGuilds();
     if (settings.listenMessages) {
       for (const guild of client.guilds.cache.values()) await catchUpGuildMessages(dataRepository, guild, logger, sourceId);
@@ -326,7 +329,9 @@ export function attachDiscordEventHandlers({ client, dataRepository, sourceId = 
       dailySyncTimer = setIntervalFn(() => syncCachedGuilds().catch((error) => logger.error('Discord daily guild sync failed', { message: error?.message })), 24 * 60 * 60 * 1000);
       dailySyncTimer.unref?.();
     }
-  }, 'clientReady'));
+  }, 'ready');
+  client.once('clientReady', handleClientReady);
+  client.once('ready', handleClientReady);
 
   if (settings.listenMessages) {
     client.on('messageCreate', safely((message) => persistInboundMessage(dataRepository, message, sourceId), 'messageCreate'));
