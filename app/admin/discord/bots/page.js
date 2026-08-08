@@ -5,8 +5,7 @@ import { getAdminPrisma } from '../../../../src/web/admin/prisma.js';
 import { publicBotRegistration } from '../../../../src/web/admin/bot-management.js';
 import { mergeBotRuntimeStatus } from '../../../../src/web/admin/live-status.js';
 
-async function fetchAdapterBotStatuses() {
-  const adapterUrl = process.env.DISCORD_ADAPTER_INTERNAL_URL || process.env.DISCORD_ADAPTER_URL || 'http://discord-adapter:3000';
+async function fetchAdapterBotStatuses(adapterUrl) {
   const token = process.env.INTERNAL_ADAPTER_TOKEN;
   if (!token) return [];
   try {
@@ -23,8 +22,14 @@ export default async function DiscordBotsPage() {
   let bots = [];
   if (prisma) {
     try {
-      const [records, runtime] = await Promise.all([prisma.discordBotRegistration.findMany({ orderBy: { createdAt: 'desc' }, include: { audits: { orderBy: { createdAt: 'desc' }, take: 10 } } }), fetchAdapterBotStatuses()]);
-      bots = mergeBotRuntimeStatus(records, runtime).map((record) => publicBotRegistration(record, record));
+      const botAdapterUrl = process.env.DISCORD_ADAPTER_INTERNAL_URL || process.env.DISCORD_ADAPTER_URL || 'http://discord-adapter:3000';
+      const selfbotAdapterUrl = process.env.DISCORD_SELFBOT_ADAPTER_INTERNAL_URL || 'http://discord-selfbot-adapter:3000';
+      const [records, botRuntime, selfbotRuntime] = await Promise.all([
+        prisma.discordBotRegistration.findMany({ orderBy: { createdAt: 'desc' }, include: { audits: { orderBy: { createdAt: 'desc' }, take: 10 } } }),
+        fetchAdapterBotStatuses(botAdapterUrl),
+        fetchAdapterBotStatuses(selfbotAdapterUrl),
+      ]);
+      bots = mergeBotRuntimeStatus(records, [...botRuntime, ...selfbotRuntime]).map((record) => publicBotRegistration(record, record));
     } catch {}
   }
   return <DashboardShell user={user} label="Discord · Bots" title="Bots gezielt verwalten.">

@@ -32,6 +32,13 @@ enum DiscordMessageMediaKind {
   @@map("discord_message_media_kind")
 }
 
+enum DiscordAccountKind {
+  bot
+  selfbot
+
+  @@map("discord_account_kind")
+}
+
 model OutboxEvent {
   id                String       @id @db.Uuid
   eventType         String       @map("event_type")
@@ -75,9 +82,10 @@ model AdapterDelivery {
 }
 
 model DiscordBotRegistration {
-  botId            String    @id @map("bot_id")
-  token            String    @map("token")
-  settings         Json      @default("{}")
+  botId            String             @id @map("bot_id")
+  token            String             @map("token")
+  accountKind      DiscordAccountKind @default(bot) @map("account_kind")
+  settings         Json               @default("{}")
   discordUserId    String?   @map("discord_user_id")
   isActive         Boolean   @default(true) @map("is_active")
   rotatedAt        DateTime? @map("rotated_at") @db.Timestamptz(6)
@@ -85,6 +93,7 @@ model DiscordBotRegistration {
   updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   audits           DiscordBotAdminAudit[]
+  observations     DiscordSourceObservation[]
 
   @@map("discord_bot_registration")
 }
@@ -104,9 +113,47 @@ model DiscordGuild {
   channels  DiscordChannel[]
   roles     DiscordRole[]
   messages  DiscordMessage[]
-  members   DiscordGuildMember[]
+  members          DiscordGuildMember[]
+  scheduledEvents  DiscordScheduledEvent[]
 
   @@map("discord_guild")
+}
+
+model DiscordScheduledEvent {
+  id               String    @id @map("scheduled_event_id")
+  guildId          String    @map("guild_id")
+  channelId        String?   @map("channel_id")
+  creatorId        String?   @map("creator_id")
+  name             String    @map("name")
+  description      String?   @map("description")
+  scheduledStartAt DateTime? @map("scheduled_start_at") @db.Timestamptz(6)
+  scheduledEndAt   DateTime? @map("scheduled_end_at") @db.Timestamptz(6)
+  status           Int       @map("status")
+  entityType       Int       @map("entity_type")
+  image            String?   @map("image")
+  deletedAt        DateTime? @map("deleted_at") @db.Timestamptz(6)
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  guild DiscordGuild @relation(fields: [guildId], references: [id], onDelete: Cascade)
+
+  @@index([guildId, scheduledStartAt], map: "discord_scheduled_event_guild_start_idx")
+  @@map("discord_scheduled_event")
+}
+
+model DiscordSourceObservation {
+  sourceId   String   @map("source_id")
+  entityType String   @map("entity_type")
+  entityId   String   @map("entity_id")
+  observedAt DateTime @default(now()) @map("observed_at") @db.Timestamptz(6)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  source DiscordBotRegistration @relation(fields: [sourceId], references: [botId], onDelete: Cascade)
+
+  @@id([sourceId, entityType, entityId])
+  @@index([entityType, entityId], map: "discord_source_observation_entity_idx")
+  @@map("discord_source_observation")
 }
 
 model DiscordUser {

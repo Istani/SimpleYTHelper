@@ -15,8 +15,7 @@ function getPrisma() {
   return prismaInstance;
 }
 
-async function fetchAdapterBots() {
-  const adapterUrl = process.env.DISCORD_ADAPTER_INTERNAL_URL || process.env.DISCORD_ADAPTER_URL || "http://discord-adapter:3000";
+async function fetchAdapterBots(adapterUrl) {
   const internalToken = process.env.INTERNAL_ADAPTER_TOKEN;
   if (!internalToken) throw new Error("INTERNAL_ADAPTER_TOKEN is not configured");
 
@@ -37,11 +36,14 @@ export async function GET() {
   }
 
   try {
-    const [records, adapterBots] = await Promise.all([
+    const botAdapterUrl = process.env.DISCORD_ADAPTER_INTERNAL_URL || process.env.DISCORD_ADAPTER_URL || "http://discord-adapter:3000";
+    const selfbotAdapterUrl = process.env.DISCORD_SELFBOT_ADAPTER_INTERNAL_URL || "http://discord-selfbot-adapter:3000";
+    const [records, botAdapterBots, selfbotAdapterBots] = await Promise.all([
       getPrisma().discordBotRegistration.findMany({ orderBy: { createdAt: "desc" } }),
-      fetchAdapterBots(),
+      fetchAdapterBots(botAdapterUrl),
+      fetchAdapterBots(selfbotAdapterUrl),
     ]);
-    const bots = mergeBotRuntimeStatus(records, adapterBots).map((record) => publicBotRegistration(record, record));
+    const bots = mergeBotRuntimeStatus(records, [...botAdapterBots, ...selfbotAdapterBots]).map((record) => publicBotRegistration(record, record));
     return NextResponse.json({ bots }, {
       headers: { "Cache-Control": "no-store, max-age=0" },
     });

@@ -96,7 +96,14 @@ function memberData(member, guildId) {
   };
 }
 
-async function syncGuild(dataRepository, guild) {
+async function recordObservations(dataRepository, sourceId, entityType, entityIds) {
+  if (!sourceId || typeof dataRepository.recordSourceObservation !== 'function') return;
+  for (const entityId of entityIds.filter(Boolean)) {
+    await dataRepository.recordSourceObservation({ sourceId, entityType, entityId });
+  }
+}
+
+async function syncGuild(dataRepository, guild, sourceId = null) {
   await dataRepository.upsertGuild({
     id: guild.id,
     name: guild.name,
@@ -109,13 +116,21 @@ async function syncGuild(dataRepository, guild) {
     .map((channel) => channelData(channel, guild.id));
   const roles = [...guild.roles.cache.values()].map((role) => roleData(role, guild.id));
 
-  await dataRepository.replaceGuildChannels({ guildId: guild.id, channels });
-  await dataRepository.replaceGuildRoles({ guildId: guild.id, roles });
+  await dataRepository.replaceGuildChannels({ guildId: guild.id, channels, ...(sourceId ? { sourceId } : {}) });
+  await dataRepository.replaceGuildRoles({ guildId: guild.id, roles, ...(sourceId ? { sourceId } : {}) });
+  await recordObservations(dataRepository, sourceId, 'guild', [guild.id]);
+  await recordObservations(dataRepository, sourceId, 'channel', channels.map((channel) => channel.id));
+  await recordObservations(dataRepository, sourceId, 'role', roles.map((role) => role.id));
 
   const fetchedMembers = await guild.members.fetch();
   const members = collectionValues(fetchedMembers).map((member) => memberData(member, guild.id));
   for (const member of collectionValues(fetchedMembers)) await dataRepository.upsertUser(userData(member.user));
-  await dataRepository.replaceGuildMembers({ guildId: guild.id, members });
+  await dataRepository.replaceGuildMembers({ guildId: guild.id, members, ...(sourceId ? { sourceId } : {}) });
+  await recordObservations(dataRepository, sourceId, 'member', members.map((member) => `${member.guildId}:${member.userId}`));
+  if (guild.scheduledEvents?.fetch) {
+    const scheduledEvents = collectionValues(await guild.scheduledEvents.fetch());
+    for (const event of scheduledEvents) await persistScheduledEvent(dataRepository, event, sourceId);
+  }
   await dataRepository.recordGuildFullSync({ guildId: guild.id, syncedAt: new Date() });
 }
 
@@ -124,7 +139,7 @@ function syncErrorMessage(error) {
   return message.replace(/(token|authorization|password)\s*[:=]\s*\S+/gi, '$1=[REDACTED]').slice(0, 500);
 }
 
-async function persistInboundMessage(dataRepository, message) {
+async function persistInboundMessage(dataRepository, message, sourceId = null) {
   const guildId = message.guild?.id ?? null;
   if (message.guild) {
     await dataRepository.upsertGuild({
@@ -145,14 +160,42 @@ async function persistInboundMessage(dataRepository, message) {
     media: projectDiscordMessageMedia(message),
     createdAt: message.createdAt,
   });
+  if (sourceId && typeof dataRepository.recordSourceObservation === 'function') {
+    await dataRepository.recordSourceObservation({ sourceId, entityType: 'message', entityId: message.id });
+  }
 }
 
-async function catchUpGuildMessages(dataRepository, guild, logger) {
+function scheduledEventData(event) {
+  return {
+    id: event.id,
+    guildId: event.guildId ?? event.guild?.id,
+    channelId: event.channelId ?? null,
+    creatorId: event.creatorId ?? event.creator?.id ?? null,
+    name: event.name ?? '',
+    description: event.description ?? null,
+    scheduledStartAt: event.scheduledStartAt ?? null,
+    scheduledEndAt: event.scheduledEndAt ?? null,
+    status: Number(event.status ?? 0),
+    entityType: Number(event.entityType ?? 0),
+    image: event.image ?? null,
+  };
+}
+
+async function persistScheduledEvent(dataRepository, event, sourceId = null) {
+  const projected = scheduledEventData(event);
+  if (!projected.id || !projected.guildId) return;
+  await dataRepository.upsertScheduledEvent(projected);
+  if (sourceId && typeof dataRepository.recordSourceObservation === 'function') {
+    await dataRepository.recordSourceObservation({ sourceId, entityType: 'scheduled_event', entityId: projected.id });
+  }
+}
+
+async function catchUpGuildMessages(dataRepository, guild, logger, sourceId = null) {
   for (const channel of guild.channels.cache.values()) {
     if (typeof channel.isTextBased !== 'function' || !channel.isTextBased() || !channel.messages?.fetch) continue;
     try {
       const messages = await channel.messages.fetch({ limit: 100 });
-      for (const message of collectionValues(messages).reverse()) await persistInboundMessage(dataRepository, message);
+      for (const message of collectionValues(messages).reverse()) await persistInboundMessage(dataRepository, message, sourceId);
     } catch (error) {
       logger.error('Discord message catch-up failed', { guildId: guild.id, channelId: channel.id, message: syncErrorMessage(error) });
     }
@@ -160,7 +203,7 @@ async function catchUpGuildMessages(dataRepository, guild, logger) {
 }
 
 /** Attach DB persistence to one discord.js client. Errors stay isolated to a single event. */
-export function attachDiscordEventHandlers({ client, dataRepository, settings = {}, logger = console, setIntervalFn = setInterval, clearIntervalFn = clearInterval }) {
+export function attachDiscordEventHandlers({ client, dataRepository, sourceId = null, settings = {}, logger = console, setIntervalFn = setInterval, clearIntervalFn = clearInterval }) {
   if (!client || typeof client.on !== 'function') return () => {};
   let dailySyncTimer = null;
   const guildReconciliationQueues = new Map();
@@ -176,7 +219,7 @@ export function attachDiscordEventHandlers({ client, dataRepository, settings = 
 
   const syncOneGuild = (guild) => enqueueGuildReconciliation(guild.id, async () => {
     try {
-      await syncGuild(dataRepository, guild);
+      await syncGuild(dataRepository, guild, sourceId);
     } catch (error) {
       const errorMessage = syncErrorMessage(error);
       try {
@@ -220,11 +263,16 @@ export function attachDiscordEventHandlers({ client, dataRepository, settings = 
   client.on('guildMemberAdd', safely((member) => enqueueGuildReconciliation(member.guild.id, () => syncMember(member)), 'guildMemberAdd'));
   client.on('guildMemberUpdate', safely((_oldMember, member) => enqueueGuildReconciliation(member.guild.id, () => syncMember(member)), 'guildMemberUpdate'));
   client.on('guildMemberRemove', safely((member) => enqueueGuildReconciliation(member.guild.id, () => dataRepository.removeGuildMember({ guildId: member.guild.id, userId: member.user.id })), 'guildMemberRemove'));
+  client.on('guildScheduledEventCreate', safely((event) => persistScheduledEvent(dataRepository, event, sourceId), 'guildScheduledEventCreate'));
+  client.on('guildScheduledEventUpdate', safely((_oldEvent, event) => persistScheduledEvent(dataRepository, event, sourceId), 'guildScheduledEventUpdate'));
+  client.on('guildScheduledEventDelete', safely((event) => sourceId && typeof dataRepository.removeSourceObservation === 'function'
+    ? dataRepository.removeSourceObservation({ sourceId, entityType: 'scheduled_event', entityId: event.id })
+    : dataRepository.deleteScheduledEvent(event.id), 'guildScheduledEventDelete'));
 
   client.on('clientReady', safely(async () => {
     await syncCachedGuilds();
     if (settings.listenMessages) {
-      for (const guild of client.guilds.cache.values()) await catchUpGuildMessages(dataRepository, guild, logger);
+      for (const guild of client.guilds.cache.values()) await catchUpGuildMessages(dataRepository, guild, logger, sourceId);
     }
     if (!dailySyncTimer) {
       dailySyncTimer = setIntervalFn(() => syncCachedGuilds().catch((error) => logger.error('Discord daily guild sync failed', { message: error?.message })), 24 * 60 * 60 * 1000);
@@ -233,7 +281,7 @@ export function attachDiscordEventHandlers({ client, dataRepository, settings = 
   }, 'clientReady'));
 
   if (settings.listenMessages) {
-    client.on('messageCreate', safely((message) => persistInboundMessage(dataRepository, message), 'messageCreate'));
+    client.on('messageCreate', safely((message) => persistInboundMessage(dataRepository, message, sourceId), 'messageCreate'));
   }
 
   return () => {

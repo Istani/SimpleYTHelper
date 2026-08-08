@@ -43,17 +43,25 @@ test("creates an active bot registration with validated settings", async () => {
   assert.deepEqual(prisma.calls[0].argument.data, {
     botId: "community-reporter",
     token: "discord-test-token-that-is-long-enough",
+    accountKind: 'bot',
     settings: { allowReports: true, listenMessages: false },
     isActive: true,
   });
 });
 
 
+test("creates a selfbot registration as an isolated account type", async () => {
+  const prisma = fakePrisma();
+  await createBotRegistration({ prisma, botId: "inbound-selfbot", accountKind: 'selfbot', token: "discord-test-token-that-is-long-enough", settingsInput: '{"listenMessages":true}' });
+  assert.equal(prisma.calls[0].argument.data.accountKind, 'selfbot');
+  assert.equal(prisma.calls[0].argument.data.settings.listenMessages, true);
+});
+
 test("audits bot creation without including its token", async () => {
   const prisma = fakePrisma();
   await createBotRegistration({ prisma, actorId: 'admin-1', botId: 'new-bot', token: 'discord-test-token-that-is-long-enough', settingsInput: '{"allowReports":true}' });
   const audit = prisma.calls.find((call) => call.method === 'audit').argument.data;
-  assert.deepEqual(audit, { botId: 'new-bot', actorId: 'admin-1', action: 'created', details: { isActive: true, capabilities: { allowReports: true }, tokenRotated: true } });
+  assert.deepEqual(audit, { botId: 'new-bot', actorId: 'admin-1', action: 'created', details: { accountKind: 'bot', isActive: true, capabilities: { allowReports: true }, tokenRotated: true } });
   assert.equal(JSON.stringify(audit).includes('discord-test-token-that-is-long-enough'), false);
 });
 

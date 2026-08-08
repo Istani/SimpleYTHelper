@@ -29,6 +29,7 @@ export async function createBotAction(_previousState, formData) {
       actorId: session.sub,
       botId: formData.get("botId"),
       token: formData.get("token"),
+      accountKind: formData.get("accountKind"),
       settingsInput: formData.get("settings"),
     });
     revalidatePath("/admin", "layout");

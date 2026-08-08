@@ -1,14 +1,15 @@
-export function createPrismaBotRegistrationRepository({ prisma }) {
+export function createPrismaBotRegistrationRepository({ prisma, accountKind = 'bot' }) {
   return {
     async listActiveBots() {
       const records = await prisma.discordBotRegistration.findMany({
-        where: { isActive: true },
+        where: { isActive: true, accountKind },
       });
 
       return records.map((record) => ({
         bot_id: record.botId,
         token: record.token,
         settings: record.settings,
+        account_kind: record.accountKind,
       }));
     },
 

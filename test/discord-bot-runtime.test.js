@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createDiscordBotRuntime } from '../src/discord-adapter/bot-runtime.js';
+import { createDiscordBotRuntime, createDiscordAccountRuntime } from '../src/discord-adapter/bot-runtime.js';
 
 test('starts every active database registration and writes its Discord user ID back through Prisma', async () => {
   const prismaCalls = [];
@@ -30,4 +30,18 @@ test('starts every active database registration and writes its Discord user ID b
     where: { botId: 'announcements' },
     data: { discordUserId: '444444444444444444' },
   }]);
+});
+
+test('uses the shared runtime core while filtering an isolated selfbot entrypoint', async () => {
+  const queries = [];
+  const prisma = {
+    discordBotRegistration: {
+      findMany: async (args) => { queries.push(args); return []; },
+      update: async () => {},
+    },
+  };
+  const runtime = createDiscordAccountRuntime({ prisma, accountKind: 'selfbot', clientFactory: () => null, logger: { error: () => {} } });
+
+  assert.deepEqual(await runtime.start(), []);
+  assert.deepEqual(queries, [{ where: { isActive: true, accountKind: 'selfbot' } }]);
 });

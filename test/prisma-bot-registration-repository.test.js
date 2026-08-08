@@ -8,7 +8,7 @@ test('lists only active database registrations and records the Discord user ID',
     discordBotRegistration: {
       findMany: async (args) => {
         calls.push({ operation: 'findMany', args });
-        return [{ botId: 'reports', token: 'database-token', settings: { allowReports: true } }];
+        return [{ botId: 'reports', token: 'database-token', settings: { allowReports: true }, accountKind: 'bot' }];
       },
       update: async (args) => {
         calls.push({ operation: 'update', args });
@@ -21,10 +21,10 @@ test('lists only active database registrations and records the Discord user ID',
   await repository.recordDiscordUserId('reports', '123456789012345678');
 
   assert.deepEqual(registrations, [{
-    bot_id: 'reports', token: 'database-token', settings: { allowReports: true },
+    bot_id: 'reports', token: 'database-token', settings: { allowReports: true }, account_kind: 'bot',
   }]);
   assert.deepEqual(calls, [
-    { operation: 'findMany', args: { where: { isActive: true } } },
+    { operation: 'findMany', args: { where: { isActive: true, accountKind: 'bot' } } },
     {
       operation: 'update',
       args: {

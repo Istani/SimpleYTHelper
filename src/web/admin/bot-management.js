@@ -17,6 +17,11 @@ function validateToken(token) {
   return cleanToken;
 }
 
+function validateAccountKind(accountKind = 'bot') {
+  if (!['bot', 'selfbot'].includes(accountKind)) throw new TypeError('account_kind must be bot or selfbot');
+  return accountKind;
+}
+
 export function parseBotSettings(settingsInput) {
   let parsed;
   try {
@@ -44,10 +49,11 @@ function booleanDiff(before = {}, after = {}) {
   return changes;
 }
 
-export async function createBotRegistration({ prisma, actorId = null, botId, token, settingsInput }) {
+export async function createBotRegistration({ prisma, actorId = null, botId, token, settingsInput, accountKind = 'bot' }) {
   const data = {
     botId: validateBotId(botId),
     token: validateToken(token),
+    accountKind: validateAccountKind(accountKind),
     settings: parseBotSettings(settingsInput),
     isActive: true,
   };
@@ -55,7 +61,7 @@ export async function createBotRegistration({ prisma, actorId = null, botId, tok
   return prisma.$transaction(async (tx) => {
     const saved = await tx.discordBotRegistration.create({ data });
     await tx.discordBotAdminAudit.create({
-      data: { botId: data.botId, actorId: String(actorId), action: 'created', details: { isActive: true, capabilities: data.settings, tokenRotated: true } },
+      data: { botId: data.botId, actorId: String(actorId), action: 'created', details: { accountKind: data.accountKind, isActive: true, capabilities: data.settings, tokenRotated: true } },
     });
     return saved;
   });
@@ -94,6 +100,7 @@ export async function updateBotRegistration({ prisma, actorId = null, botId, isA
 export function publicBotRegistration(record, runtimeStatus = {}) {
   return {
     botId: record.botId,
+    accountKind: record.accountKind || 'bot',
     settings: record.settings,
     discordUserId: record.discordUserId,
     isActive: record.isActive,
