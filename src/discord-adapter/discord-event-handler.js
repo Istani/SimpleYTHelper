@@ -228,6 +228,21 @@ async function catchUpGuildMessages(dataRepository, guild, logger, sourceId = nu
   }
 }
 
+async function catchUpDirectMessages(dataRepository, client, logger, sourceId = null) {
+  const channels = collectionValues(client.channels?.cache)
+    .filter((channel) => channel?.type === 1 || channel?.type === 'DM' || channel?.isDMBased?.());
+
+  for (const channel of channels) {
+    if (typeof channel.isTextBased !== 'function' || !channel.isTextBased() || !channel.messages?.fetch) continue;
+    try {
+      const messages = await channel.messages.fetch({ limit: 100 });
+      for (const message of collectionValues(messages).reverse()) await persistInboundMessage(dataRepository, message, sourceId);
+    } catch (error) {
+      logger.error('Discord direct-message catch-up failed', { channelId: channel.id, message: syncErrorMessage(error) });
+    }
+  }
+}
+
 /** Attach DB persistence to one discord.js client. Errors stay isolated to a single event. */
 export function attachDiscordEventHandlers({ client, dataRepository, sourceId = null, settings = {}, logger = console, setIntervalFn = setInterval, clearIntervalFn = clearInterval }) {
   if (!client || typeof client.on !== 'function') return () => {};
@@ -299,6 +314,7 @@ export function attachDiscordEventHandlers({ client, dataRepository, sourceId = 
     await syncCachedGuilds();
     if (settings.listenMessages) {
       for (const guild of client.guilds.cache.values()) await catchUpGuildMessages(dataRepository, guild, logger, sourceId);
+      await catchUpDirectMessages(dataRepository, client, logger, sourceId);
     }
     if (!dailySyncTimer) {
       dailySyncTimer = setIntervalFn(() => syncCachedGuilds().catch((error) => logger.error('Discord daily guild sync failed', { message: error?.message })), 24 * 60 * 60 * 1000);

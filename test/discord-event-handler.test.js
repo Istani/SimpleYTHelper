@@ -191,6 +191,25 @@ test('reconciles Discord guild, channel, role and member events without waiting 
   assert.deepEqual(repository.calls[11][1], { guildId: 'guild-1', userId: 'user-1' });
 });
 
+test('catches up recent direct messages after client readiness when inbound listening is enabled', async () => {
+  const client = new EventEmitter();
+  const dmChannel = { id: 'dm-channel-1', guildId: null, name: 'Sascha', type: 'DM', topic: null, rawPosition: 0, parentId: null, isTextBased: () => true };
+  const missedDirectMessage = { id: 'missed-dm-1', guild: null, channel: dmChannel, author: { id: 'user-1', username: 'Sascha', discriminator: null, globalName: null, avatar: null, bot: false }, content: 'recovered direct message', createdAt: new Date('2026-08-08T12:00:00Z'), attachments: new Map(), embeds: [], stickers: new Map() };
+  dmChannel.messages = { fetch: async () => new Map([[missedDirectMessage.id, missedDirectMessage]]) };
+  client.guilds = { cache: new Map() };
+  client.channels = { cache: new Map([[dmChannel.id, dmChannel]]) };
+  const repository = fakeRepository();
+  attachDiscordEventHandlers({ client, dataRepository: repository, settings: { listenMessages: true }, logger: { error: () => {} } });
+
+  client.emit('clientReady');
+  await new Promise((resolve) => setImmediate(resolve));
+  await new Promise((resolve) => setImmediate(resolve));
+
+  const recovered = repository.calls.find(([method, value]) => method === 'message' && value.id === 'missed-dm-1');
+  assert.ok(recovered);
+  assert.equal(recovered[1].guildId, null);
+});
+
 test('catches up recent messages after client readiness when inbound listening is enabled', async () => {
   const client = new EventEmitter();
   const channel = { id: 'channel-1', guildId: 'guild-1', name: 'general', type: 0, topic: null, rawPosition: 0, parentId: null, isTextBased: () => true };
