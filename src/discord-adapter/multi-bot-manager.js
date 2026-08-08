@@ -143,6 +143,17 @@ export function createMultiBotManager({ clientFactory, registrationRepository, o
       return statusList;
     },
 
+    listActiveBotsGuildInventory() {
+      return Array.from(activeBots.entries(), ([botId, bot]) => {
+        const ready = bot.client && typeof bot.client.isReady === 'function' ? bot.client.isReady() : false;
+        const guilds = Array.from(bot.client?.guilds?.cache?.values?.() ?? [])
+          .filter((guild) => guild?.id)
+          .map((guild) => ({ id: guild.id, name: guild.name ?? null }))
+          .sort((left, right) => left.id.localeCompare(right.id));
+        return { bot_id: botId, discord_user_id: bot.discordUserId, ready, guilds };
+      });
+    },
+
     async shutdownAll() {
       for (const botId of Array.from(activeBots.keys())) {
         await stopBot(botId);

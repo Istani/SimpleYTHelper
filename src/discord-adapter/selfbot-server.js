@@ -30,6 +30,14 @@ export async function startDiscordSelfbotServer({ environment = process.env, pri
       response.end(JSON.stringify({ bots: accountRuntime.manager.listActiveBotsStatus() }));
       return;
     }
+    if (request.method === 'GET' && request.url === '/internal/v1/bots/guilds') {
+      if (!internalToken || request.headers.authorization !== `Bearer ${internalToken}`) {
+        response.writeHead(401); response.end(); return;
+      }
+      response.writeHead(200, { 'content-type': 'application/json' });
+      response.end(JSON.stringify({ bots: accountRuntime.manager.listActiveBotsGuildInventory() }));
+      return;
+    }
     if (request.method === 'GET' && request.url === '/healthz') {
       response.writeHead(200, { 'content-type': 'application/json' });
       response.end(JSON.stringify({ status: 'ok', accountKind: 'selfbot' }));
