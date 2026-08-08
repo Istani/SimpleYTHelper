@@ -280,8 +280,10 @@ export function attachDiscordEventHandlers({ client, dataRepository, sourceId = 
   };
 
   const syncOneGuild = (guild) => enqueueGuildReconciliation(guild.id, async () => {
+    logger.info?.('Discord guild full sync starting', { guildId: guild.id, sourceId });
     try {
       await syncGuild(dataRepository, guild, sourceId);
+      logger.info?.('Discord guild full sync completed', { guildId: guild.id, sourceId });
     } catch (error) {
       const errorMessage = syncErrorMessage(error);
       try {
