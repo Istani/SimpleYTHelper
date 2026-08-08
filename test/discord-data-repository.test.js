@@ -108,5 +108,5 @@ test('splits a large guild channel snapshot into bounded transactions', async ()
 
   await createDiscordDataRepository({ prisma }).replaceGuildChannels({ guildId: 'guild-1', channels });
 
-  assert.deepEqual(transactionSizes, [50, 50, 50, 50, 1]);
+  assert.deepEqual(transactionSizes, Array(40).fill(5).concat(1));
 });

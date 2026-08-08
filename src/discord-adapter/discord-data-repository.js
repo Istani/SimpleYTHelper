@@ -1,4 +1,4 @@
-const SNAPSHOT_BATCH_SIZE = 50;
+const SNAPSHOT_BATCH_SIZE = 5;
 
 async function runBatches(prisma, values, makeOperation, batchSize = SNAPSHOT_BATCH_SIZE) {
   const results = [];
