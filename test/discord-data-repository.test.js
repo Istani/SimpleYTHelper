@@ -90,8 +90,9 @@ test('persists a complete structured media snapshot together with its Discord me
   assert.equal(calls[2].args.data[1].kind, 'sticker');
 });
 
-test('splits a large guild channel snapshot into bounded transactions', async () => {
+test('persists a large guild channel snapshot without a long-running transaction', async () => {
   const transactionSizes = [];
+  let upsertCount = 0;
   const prisma = {
     $transaction: async (operations) => {
       transactionSizes.push(operations.length);
@@ -99,7 +100,7 @@ test('splits a large guild channel snapshot into bounded transactions', async ()
     },
     discordChannel: {
       updateMany: async () => ({ count: 0 }),
-      upsert: async (args) => ({ id: args.where.id }),
+      upsert: async (args) => { upsertCount += 1; return { id: args.where.id }; },
     },
   };
   const channels = Array.from({ length: 201 }, (_, index) => ({
@@ -108,5 +109,25 @@ test('splits a large guild channel snapshot into bounded transactions', async ()
 
   await createDiscordDataRepository({ prisma }).replaceGuildChannels({ guildId: 'guild-1', channels });
 
-  assert.deepEqual(transactionSizes, Array(40).fill(5).concat(1));
+  assert.equal(upsertCount, 201);
+  assert.deepEqual(transactionSizes, []);
+});
+
+test('records source observations with explicit timestamps for required database columns', async () => {
+  let call;
+  const prisma = {
+    discordSourceObservation: {
+      upsert: async (args) => { call = args; return args.create; },
+    },
+  };
+
+  await createDiscordDataRepository({ prisma }).recordSourceObservation({
+    sourceId: 'Istani', entityType: 'guild', entityId: 'guild-1',
+  });
+
+  assert.ok(call.create.createdAt instanceof Date);
+  assert.ok(call.create.observedAt instanceof Date);
+  assert.ok(call.create.updatedAt instanceof Date);
+  assert.ok(call.update.observedAt instanceof Date);
+  assert.ok(call.update.updatedAt instanceof Date);
 });

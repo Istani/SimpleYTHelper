@@ -1,11 +1,8 @@
 const SNAPSHOT_BATCH_SIZE = 5;
 
-async function runBatches(prisma, values, makeOperation, batchSize = SNAPSHOT_BATCH_SIZE) {
+async function runBatches(_prisma, values, makeOperation) {
   const results = [];
-  for (let start = 0; start < values.length; start += batchSize) {
-    const batch = values.slice(start, start + batchSize);
-    results.push(...await prisma.$transaction(batch.map(makeOperation)));
-  }
+  for (const value of values) results.push(await makeOperation(value));
   return results;
 }
 
@@ -177,10 +174,11 @@ export function createDiscordDataRepository({ prisma }) {
     },
 
     async recordSourceObservation({ sourceId, entityType, entityId }) {
+      const observedAt = new Date();
       return prisma.discordSourceObservation.upsert({
         where: { sourceId_entityType_entityId: { sourceId, entityType, entityId } },
-        create: { sourceId, entityType, entityId },
-        update: { observedAt: new Date() },
+        create: { sourceId, entityType, entityId, observedAt, createdAt: observedAt, updatedAt: observedAt },
+        update: { observedAt, updatedAt: observedAt },
       });
     },
 
