@@ -162,10 +162,11 @@ export function createDiscordDataRepository({ prisma }) {
     },
 
     async upsertScheduledEvent({ id, guildId, channelId, creatorId, name, description, scheduledStartAt, scheduledEndAt, status, entityType, image }) {
+      const persistedAt = new Date();
       return prisma.discordScheduledEvent.upsert({
         where: { id },
-        create: { id, guildId, channelId, creatorId, name, description, scheduledStartAt: scheduledStartAt ? new Date(scheduledStartAt) : null, scheduledEndAt: scheduledEndAt ? new Date(scheduledEndAt) : null, status, entityType, image, deletedAt: null },
-        update: { guildId, channelId, creatorId, name, description, scheduledStartAt: scheduledStartAt ? new Date(scheduledStartAt) : null, scheduledEndAt: scheduledEndAt ? new Date(scheduledEndAt) : null, status, entityType, image, deletedAt: null },
+        create: { id, guildId, channelId, creatorId, name, description, scheduledStartAt: scheduledStartAt ? new Date(scheduledStartAt) : null, scheduledEndAt: scheduledEndAt ? new Date(scheduledEndAt) : null, status, entityType, image, deletedAt: null, createdAt: persistedAt, updatedAt: persistedAt },
+        update: { guildId, channelId, creatorId, name, description, scheduledStartAt: scheduledStartAt ? new Date(scheduledStartAt) : null, scheduledEndAt: scheduledEndAt ? new Date(scheduledEndAt) : null, status, entityType, image, deletedAt: null, updatedAt: persistedAt },
       });
     },
 

@@ -131,3 +131,22 @@ test('records source observations with explicit timestamps for required database
   assert.ok(call.update.observedAt instanceof Date);
   assert.ok(call.update.updatedAt instanceof Date);
 });
+
+test('persists scheduled event timestamps explicitly for required database columns', async () => {
+  let call;
+  const prisma = {
+    discordScheduledEvent: {
+      upsert: async (args) => { call = args; return args.create; },
+    },
+  };
+
+  await createDiscordDataRepository({ prisma }).upsertScheduledEvent({
+    id: 'event-1', guildId: 'guild-1', channelId: null, creatorId: 'user-1',
+    name: 'Passion Hamburg', description: 'Messe', scheduledStartAt: '2026-11-06T15:00:00.000Z',
+    scheduledEndAt: null, status: 1, entityType: 3, image: null,
+  });
+
+  assert.ok(call.create.createdAt instanceof Date);
+  assert.ok(call.create.updatedAt instanceof Date);
+  assert.ok(call.update.updatedAt instanceof Date);
+});
