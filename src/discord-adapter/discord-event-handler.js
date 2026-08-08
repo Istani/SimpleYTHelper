@@ -306,12 +306,24 @@ export function attachDiscordEventHandlers({ client, dataRepository, sourceId = 
   const syncMember = async (member) => {
     const guildId = member.guild?.id ?? member.guildId;
     if (!guildId || !member.user?.id) return;
+    if (member.guild) {
+      await dataRepository.upsertGuild({
+        id: guildId,
+        name: member.guild.name,
+        icon: member.guild.icon ?? null,
+        ownerId: member.guild.ownerId ?? null,
+      });
+    }
+    const memberRoles = collectionValues(member.roles?.cache)
+      .map((role) => member.guild?.roles?.cache?.get(role.id) ?? role)
+      .filter((role) => role?.id && typeof role.name === 'string');
+    for (const role of memberRoles) await dataRepository.upsertRole(roleData(role, guildId));
     await dataRepository.upsertUser(userData(member.user));
     await dataRepository.upsertGuildMember(memberData(member, guildId));
     await dataRepository.replaceGuildMemberRoles({
       guildId,
       userId: member.user.id,
-      roleIds: collectionValues(member.roles?.cache).map((role) => role.id),
+      roleIds: memberRoles.map((role) => role.id),
     });
   };
   const safely = (operation, eventName) => (...args) => {

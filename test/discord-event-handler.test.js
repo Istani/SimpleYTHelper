@@ -217,13 +217,27 @@ test('reconciles Discord guild, channel, role and member events without waiting 
 
   assert.deepEqual(repository.calls.map(([type]) => type), [
     'guild', 'channel', 'deleteChannel', 'role', 'deleteRole',
-    'user', 'member', 'replaceMemberRoles', 'user', 'member', 'replaceMemberRoles',
+    'guild', 'role', 'user', 'member', 'replaceMemberRoles',
+    'guild', 'role', 'user', 'member', 'replaceMemberRoles',
     'removeMember', 'deleteGuild',
   ]);
   assert.equal(repository.calls[0][1].name, 'Renamed guild');
   assert.equal(repository.calls[1][1].name, 'renamed-general');
-  assert.deepEqual(repository.calls[7][1], { guildId: 'guild-1', userId: 'user-1', roleIds: ['role-1'] });
-  assert.deepEqual(repository.calls[11][1], { guildId: 'guild-1', userId: 'user-1' });
+  assert.deepEqual(repository.calls[9][1], { guildId: 'guild-1', userId: 'user-1', roleIds: ['role-1'] });
+  assert.deepEqual(repository.calls[15][1], { guildId: 'guild-1', userId: 'user-1' });
+});
+
+test('persists guild and referenced roles before an isolated guild member update', async () => {
+  const client = new EventEmitter();
+  const repository = fakeRepository();
+  const member = (await guild.members.fetch()).get('user-1');
+  const changedMember = { ...member, guild, nickname: 'Updated' };
+  attachDiscordEventHandlers({ client, dataRepository: repository, logger: { error: () => {} } });
+
+  client.emit('guildMemberUpdate', { ...member, guild }, changedMember);
+  await new Promise((resolve) => setImmediate(resolve));
+
+  assert.deepEqual(repository.calls.map(([type]) => type), ['guild', 'role', 'user', 'member', 'replaceMemberRoles']);
 });
 
 test('catches up recent direct messages after client readiness when inbound listening is enabled', async () => {
