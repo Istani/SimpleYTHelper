@@ -18,6 +18,7 @@ Diese Dokumentation ist die zentrale Arbeitsablage des Docker-/Modernisierungsbr
 - [ADR-007 – Strukturierte Medien zu Discord-Nachrichten](adr/ADR-007-discord-message-attachments.md)
 - [ADR-008 – Service-orientierte Adminverwaltung mit Discord-Moderation](adr/ADR-008-service-oriented-admin-discord-moderation.md)
 - [ADR-009 – Discord-Guild-Full-Sync und tokenfreier Bot-Audit](adr/ADR-009-discord-guild-full-sync-und-bot-audit.md)
+- [ADR-010 – Isolierte, inbound-only Discord-Selfbot-Runtime](adr/ADR-010-isolierte-inbound-selfbot-runtime.md)
 - [Phase 2 – Interner Discord-Zustellvertrag v1](phasen/phase-2-internal-discord-delivery-contract.md)
 - [Phase 3 – Gamecheck-zu-Discord-Migrationsslice](phasen/phase-3-gamecheck-discord-slice.md)
 - [Phase 4 – Planreview und priorisierte Umsetzungsgates (2026-08-04)](phasen/phase-4-planreview-2026-08-04.md)
