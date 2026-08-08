@@ -36,6 +36,15 @@ export function createDiscordDataRepository({ prisma }) {
       });
     },
 
+    async replaceChannelParticipants({ channelId, users }) {
+      const snapshot = Array.isArray(users) ? users.filter((user) => user?.id) : [];
+      if (snapshot.length === 0) return [];
+      const userIds = [...new Set(snapshot.map((user) => user.id))];
+      await prisma.discordChannelParticipant.deleteMany({ where: { channelId, userId: { notIn: userIds } } });
+      await prisma.discordChannelParticipant.createMany({ data: userIds.map((userId) => ({ channelId, userId })), skipDuplicates: true });
+      return userIds;
+    },
+
     async replaceGuildChannels({ guildId, channels, sourceId = null }) {
       const snapshot = Array.isArray(channels) ? channels : [];
       const channelIds = snapshot.map((channel) => channel.id);

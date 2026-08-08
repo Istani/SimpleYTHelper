@@ -42,6 +42,21 @@ function channelData(channel, guildId) {
   };
 }
 
+function directMessageParticipants(channel) {
+  const type = canonicalChannelType(channel.type);
+  const users = type === 3 ? collectionValues(channel.recipients) : [channel.recipient, channel.client?.user];
+  return users.filter((user) => user?.id).filter((user, index, values) => values.findIndex((candidate) => candidate.id === user.id) === index);
+}
+
+async function persistDirectMessageChannel(dataRepository, channel) {
+  const users = directMessageParticipants(channel);
+  await dataRepository.upsertChannel(channelData(channel, null));
+  for (const user of users) await dataRepository.upsertUser(userData(user));
+  if (users.length && typeof dataRepository.replaceChannelParticipants === 'function') {
+    await dataRepository.replaceChannelParticipants({ channelId: channel.id, users });
+  }
+}
+
 function roleData(role, guildId) {
   return {
     id: role.id,
@@ -194,7 +209,8 @@ async function persistInboundMessage(dataRepository, message, sourceId = null) {
     });
   }
   await dataRepository.upsertUser(userData(message.author));
-  await dataRepository.upsertChannel(channelData(message.channel, guildId));
+  if (guildId === null) await persistDirectMessageChannel(dataRepository, message.channel);
+  else await dataRepository.upsertChannel(channelData(message.channel, guildId));
   await dataRepository.saveMessage({
     id: message.id,
     channelId: message.channel.id,
@@ -278,8 +294,9 @@ async function catchUpDirectMessages(dataRepository, client, logger, sourceId = 
     .filter((channel) => channel?.type === 1 || channel?.type === 'DM' || channel?.isDMBased?.());
 
   for (const channel of channels) {
-    if (!isTextBasedChannel(channel) || !channel.messages?.fetch) continue;
     try {
+      await persistDirectMessageChannel(dataRepository, channel);
+      if (!isTextBasedChannel(channel) || !channel.messages?.fetch) continue;
       const messages = await channel.messages.fetch({ limit: 100 });
       for (const message of collectionValues(messages).reverse()) await persistInboundMessage(dataRepository, message, sourceId);
     } catch (error) {

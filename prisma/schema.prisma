@@ -168,6 +168,7 @@ model DiscordUser {
 
   messages      DiscordMessage[]
   members       DiscordGuildMember[]
+  directMessageParticipants DiscordChannelParticipant[]
 
   @@map("discord_user")
 }
@@ -186,9 +187,24 @@ model DiscordChannel {
 
   guild       DiscordGuild? @relation(fields: [guildId], references: [id], onDelete: Cascade)
   messages    DiscordMessage[]
+  participants DiscordChannelParticipant[]
 
   @@index([guildId], map: "discord_channel_guild_idx")
   @@map("discord_channel")
+}
+
+model DiscordChannelParticipant {
+  channelId String @map("channel_id")
+  userId    String @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  channel DiscordChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user    DiscordUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([channelId, userId])
+  @@index([userId], map: "discord_channel_participant_user_idx")
+  @@map("discord_channel_participant")
 }
 
 model DiscordRole {

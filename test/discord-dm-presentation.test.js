@@ -13,5 +13,9 @@ test('keeps a group name and deduplicates latest known authors', () => {
   const result = describeDirectMessage({ type: 3, name: 'Planung', messages: [{ author: { id: '1', username: 'alice', avatar: null } }, { author: { id: '1', username: 'alice', avatar: null } }, { author: { id: '2', username: 'bob', avatar: null } }] });
   assert.equal(result.label, 'Planung');
   assert.equal(result.description, 'Gruppen-DM · zuletzt geschrieben von alice, bob');
-  assert.deepEqual(result.participants.map(({ name }) => name), ['alice', 'bob']);
+});
+
+test('lists all persisted group participants including silent people', () => {
+  const result = describeDirectMessage({ type: 3, name: 'Planung', participants: [{ user: { id: '1', username: 'alice', avatar: null } }, { user: { id: '2', username: 'bob', avatar: null } }, { user: { id: '3', username: 'carol', avatar: null } }], messages: [{ author: { id: '1', username: 'alice' } }] });
+  assert.deepEqual(result.participants.map(({ name }) => name), ['alice', 'bob', 'carol']);
 });

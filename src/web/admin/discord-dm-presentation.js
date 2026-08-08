@@ -10,8 +10,8 @@ function userName(user) {
 export function describeDirectMessage(channel) {
   const participants = [];
   const seen = new Set();
-  for (const message of channel?.messages ?? []) {
-    const user = message?.author;
+  for (const participant of channel?.participants?.length ? channel.participants : (channel?.messages ?? []).map((message) => ({ user: message?.author }))) {
+    const user = participant?.user ?? participant;
     if (!user?.id || seen.has(user.id)) continue;
     seen.add(user.id);
     participants.push({ id: user.id, name: userName(user), avatarUrl: discordAvatarUrl(user) });
