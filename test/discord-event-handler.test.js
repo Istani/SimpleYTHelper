@@ -49,6 +49,24 @@ test('persists a received guild message with its dependencies when message liste
   assert.equal(repository.calls[3][1].content, 'Hallo Discord');
 });
 
+test('persists a direct message from a selfbot with Discord channel type DM as canonical type 1', async () => {
+  const client = new EventEmitter();
+  const repository = fakeRepository();
+  attachDiscordEventHandlers({ client, dataRepository: repository, settings: { listenMessages: true }, logger: { error: () => {} } });
+
+  client.emit('messageCreate', {
+    id: 'lara-direct-message-1', guild: null,
+    channel: { id: 'dm-channel-1', guildId: null, name: 'Sascha', type: 'DM', topic: null, rawPosition: 0, parentId: null },
+    author: { id: 'user-1', username: 'Sascha', discriminator: '0', globalName: 'Sascha', avatar: null, bot: false },
+    content: 'Hallo Lara', createdAt: new Date('2026-08-08T12:40:00Z'),
+  });
+  await new Promise((resolve) => setImmediate(resolve));
+
+  assert.deepEqual(repository.calls.map(([type]) => type), ['user', 'channel', 'message']);
+  assert.equal(repository.calls.find(([type]) => type === 'channel')[1].type, 1);
+  assert.equal(repository.calls.find(([type]) => type === 'message')[1].guildId, null);
+});
+
 test('projects attachments, embeds and stickers as ordered structured message media', async () => {
   const client = new EventEmitter();
   const repository = fakeRepository();

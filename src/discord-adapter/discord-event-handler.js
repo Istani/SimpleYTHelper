@@ -4,12 +4,38 @@ export function normalizeDiscordMessageContent(content) {
   return unemojify(String(content ?? ''));
 }
 
+const DISCORD_CHANNEL_TYPE_BY_NAME = Object.freeze({
+  GUILD_TEXT: 0,
+  DM: 1,
+  GUILD_VOICE: 2,
+  GROUP_DM: 3,
+  GUILD_CATEGORY: 4,
+  GUILD_NEWS: 5,
+  GUILD_ANNOUNCEMENT: 5,
+  GUILD_NEWS_THREAD: 10,
+  GUILD_ANNOUNCEMENT_THREAD: 10,
+  GUILD_PUBLIC_THREAD: 11,
+  GUILD_PRIVATE_THREAD: 12,
+  GUILD_STAGE_VOICE: 13,
+  GUILD_DIRECTORY: 14,
+  GUILD_FORUM: 15,
+  GUILD_MEDIA: 16,
+});
+
+function canonicalChannelType(type) {
+  if (Number.isInteger(type)) return type;
+  if (typeof type === 'string' && Number.isInteger(DISCORD_CHANNEL_TYPE_BY_NAME[type])) {
+    return DISCORD_CHANNEL_TYPE_BY_NAME[type];
+  }
+  throw new TypeError(`Unsupported Discord channel type: ${String(type)}`);
+}
+
 function channelData(channel, guildId) {
   return {
     id: channel.id,
     guildId,
     name: channel.name ?? '',
-    type: channel.type,
+    type: canonicalChannelType(channel.type),
     topic: channel.topic ?? null,
     position: channel.rawPosition ?? channel.position ?? 0,
     parentId: channel.parentId ?? null,
