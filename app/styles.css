@@ -108,6 +108,8 @@ button, input { font: inherit; }
 .form-success { background: #effaf3; color: #176c3a; }
 .moderation-grid, .detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; }
 .moderation-list, .detail-panel { display: grid; gap: 18px; min-height: 0; align-items: start; }
+.moderation-server-panel { gap: 28px; }
+.moderation-sublist + .moderation-sublist { border-top: 1px solid var(--line); padding-top: 24px; }
 .panel-title h2 { font-size: 1.45rem; margin: 7px 0; }
 .panel-title p, .detail-intro p { margin: 0; color: var(--muted); line-height: 1.5; }
 .entity-list, .message-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
