@@ -2,9 +2,11 @@ function displayName(user, fallback) {
   return user?.globalName || user?.username || fallback;
 }
 
-function accountLabel(source) {
-  const name = displayName(source.accountUser, source.discordUserId || source.botId);
-  return source.accountKind === 'bot' ? `Bot: ${name}` : `Selfbot: ${name}`;
+function sourceNames(accounts, accountKind) {
+  return accounts
+    .filter((account) => account.accountKind === accountKind)
+    .map((account) => displayName(account.accountUser, account.botId))
+    .filter(Boolean);
 }
 
 export function partitionGuildsByObservedAccounts(guilds, observations) {
@@ -19,11 +21,9 @@ export function partitionGuildsByObservedAccounts(guilds, observations) {
   const withBots = [];
   const selfbotOnly = [];
   for (const guild of guilds || []) {
-    const observedAccounts = sourcesByGuildId.get(guild.id) || [];
-    const botLabels = (guild.members || []).map(({ user }) => `Bot: ${displayName(user, 'Unbekannter Bot')}`);
-    const selfbotLabels = observedAccounts.filter(({ accountKind }) => accountKind === 'selfbot').map(accountLabel);
-    const enrichedGuild = { ...guild, botLabels, selfbotLabels };
-    if (botLabels.length) withBots.push(enrichedGuild);
+    const accounts = sourcesByGuildId.get(guild.id) || [];
+    const enrichedGuild = { ...guild, botNames: sourceNames(accounts, 'bot'), selfbotNames: sourceNames(accounts, 'selfbot') };
+    if (enrichedGuild.botNames.length) withBots.push(enrichedGuild);
     else selfbotOnly.push(enrichedGuild);
   }
   return { withBots, selfbotOnly };
