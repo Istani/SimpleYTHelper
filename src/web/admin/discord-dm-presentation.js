@@ -7,6 +7,13 @@ function userName(user) {
   return user?.globalName || user?.username || 'Unbekannter Discord-Nutzer';
 }
 
+export function sortDirectMessagesByLatestMessage(channels) {
+  return [...(channels || [])].sort((left, right) => {
+    const latest = (channel) => new Date(channel.messages?.[0]?.createdAt || 0).getTime();
+    return latest(right) - latest(left) || String(left.id).localeCompare(String(right.id));
+  });
+}
+
 export function describeDirectMessage(channel) {
   const participants = [];
   const seen = new Set();

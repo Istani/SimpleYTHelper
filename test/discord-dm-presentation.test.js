@@ -15,6 +15,12 @@ test('keeps a group name and deduplicates latest known authors', () => {
   assert.equal(result.description, 'Gruppen-DM · zuletzt geschrieben von alice, bob');
 });
 
+test('sorts direct-message channels by their latest persisted message', async () => {
+  const { sortDirectMessagesByLatestMessage } = await import('../src/web/admin/discord-dm-presentation.js');
+  const channels = [{ id: 'older', messages: [{ createdAt: '2026-08-08T10:00:00.000Z' }] }, { id: 'empty', messages: [] }, { id: 'newer', messages: [{ createdAt: '2026-08-08T11:00:00.000Z' }] }];
+  assert.deepEqual(sortDirectMessagesByLatestMessage(channels).map(({ id }) => id), ['newer', 'older', 'empty']);
+});
+
 test('lists all persisted group participants including silent people', () => {
   const result = describeDirectMessage({ type: 3, name: 'Planung', participants: [{ user: { id: '1', username: 'alice', avatar: null } }, { user: { id: '2', username: 'bob', avatar: null } }, { user: { id: '3', username: 'carol', avatar: null } }], messages: [{ author: { id: '1', username: 'alice' } }] });
   assert.deepEqual(result.participants.map(({ name }) => name), ['alice', 'bob', 'carol']);

@@ -3,7 +3,7 @@ import { DashboardShell } from '../../../../src/web/components/dashboard-shell.j
 import { requireRole } from '../../../../src/web/auth/session.js';
 import { getAdminPrisma } from '../../../../src/web/admin/prisma.js';
 import { discordModerationDestination } from '../../../../src/web/admin/discord-moderation.js';
-import { describeDirectMessage } from '../../../../src/web/admin/discord-dm-presentation.js';
+import { describeDirectMessage, sortDirectMessagesByLatestMessage } from '../../../../src/web/admin/discord-dm-presentation.js';
 
 function formatSyncTime(value) { return value ? new Date(value).toLocaleString('de-DE') : 'noch kein erfolgreicher Full Sync'; }
 function GuildSyncFact({ guild }) { return guild.lastFullSyncFailedAt && (!guild.lastFullSyncAt || new Date(guild.lastFullSyncFailedAt) > new Date(guild.lastFullSyncAt)) ? <small>Letzter Full-Sync-Versuch fehlgeschlagen: {new Date(guild.lastFullSyncFailedAt).toLocaleString('de-DE')}</small> : <small>Letzter Full Sync: {formatSyncTime(guild.lastFullSyncAt)}</small>; }
@@ -20,7 +20,7 @@ export default async function DiscordModerationPage() {
   let guilds = []; let dms = [];
   if (prisma) try { [guilds, dms] = await Promise.all([
     prisma.discordGuild.findMany({ orderBy: { name: 'asc' }, include: { _count: { select: { messages: true } } } }),
-    prisma.discordChannel.findMany({ where: { guildId: null, type: { in: [1, 3] } }, orderBy: { updatedAt: 'desc' }, include: { _count: { select: { messages: true } }, participants: { include: { user: { select: { id: true, username: true, globalName: true, avatar: true } } } } } }),
+    prisma.discordChannel.findMany({ where: { guildId: null, type: { in: [1, 3] } }, include: { _count: { select: { messages: true } }, messages: { take: 1, orderBy: { createdAt: 'desc' }, select: { createdAt: true } }, participants: { include: { user: { select: { id: true, username: true, globalName: true, avatar: true } } } } } }).then(sortDirectMessagesByLatestMessage),
   ]); } catch {}
   return <DashboardShell user={user} label="Discord · Moderation" title="Konversationen im Kontext prüfen."><div className="moderation-grid"><SourceList title="Bekannte Server" description="Server öffnen, um Mitglieder, Rollen und Channels einzusehen." records={guilds} kind="guild" /><SourceList title="Direkte Nachrichten" description="DM- und Gruppen-DM-Channels mit zuletzt bekannten Schreibenden und Profilbild." records={dms} kind="dm" /></div></DashboardShell>;
 }
