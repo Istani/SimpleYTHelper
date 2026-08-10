@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { authenticate, hashPassword, verifyPasswordHash } from "../src/web/auth/users.js";
-import { createSessionToken, verifySessionToken } from "../src/web/auth/session.js";
+import { createSessionToken, verifySessionToken, createDiscordOAuthState, verifyDiscordOAuthState } from "../src/web/auth/session.js";
 
 const users = [
   { id: "admin-1", email: "admin@example.test", name: "Ada", roles: ["admin", "creator", "viewer"], password: "admin-pass" },
@@ -45,4 +45,12 @@ test("rejects a session signed with another secret", async () => {
   const token = await createSessionToken(users[0]);
   process.env.WEB_AUTH_SECRET = "a-different-test-secret-with-32-characters";
   assert.equal(await verifySessionToken(token), null);
+});
+
+test("binds short-lived Discord OAuth state to the authenticated web user", async () => {
+  const state = await createDiscordOAuthState(users[0].id);
+  const verified = await verifyDiscordOAuthState(state);
+  assert.equal(verified.sub, users[0].id);
+  assert.equal(verified.purpose, 'discord-oauth');
+  assert.equal(await verifyDiscordOAuthState(`${state}tampered`), null);
 });

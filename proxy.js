@@ -20,4 +20,4 @@ export async function proxy(request) {
     return NextResponse.next();
   } catch { return redirectTo(request, "/login"); }
 }
-export const config = { matcher: ["/dashboard/:path*", "/admin/:path*", "/creator/:path*", "/viewer/:path*"] };
+export const config = { matcher: ["/dashboard/:path*", "/admin/:path*", "/creator/:path*", "/viewer/:path*", "/connections/:path*"] };

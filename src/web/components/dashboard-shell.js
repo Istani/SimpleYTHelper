@@ -10,6 +10,7 @@ export function DashboardShell({ user, label, title, children }) {
         {user.roles.includes("admin") && <><Link href="/admin">Verwaltung</Link><Link href="/admin/discord/moderation">Discord-Moderation</Link><Link href="/admin/discord/bots">Discord-Bots</Link></>}
         {user.roles.includes("creator") && <Link href="/creator">Creator Studio</Link>}
         {user.roles.includes("viewer") && <Link href="/viewer">Viewer Space</Link>}
+        <Link href="/connections">Verknüpfte Dienste</Link>
         <span>Einstellungen</span>
       </nav>
       <form action="/api/auth/logout" method="post"><button className="logout">Abmelden</button></form>

@@ -1,5 +1,6 @@
 import { cookies } from "next/headers.js";
 import { redirect } from "next/navigation.js";
+import { randomUUID } from "node:crypto";
 import { SignJWT } from "jose/jwt/sign";
 import { jwtVerify } from "jose/jwt/verify";
 
@@ -33,4 +34,23 @@ export async function requireRole(role) {
   if (!session) redirect("/login");
   if (!session.roles?.includes(role)) redirect("/dashboard");
   return session;
+}
+
+export const discordOAuthStateCookie = {
+  name: 'syth_discord_oauth_state',
+  options: { httpOnly: true, sameSite: 'lax', secure: sessionCookie.options.secure, path: '/api/connections/discord/callback', maxAge: 10 * 60 },
+};
+
+export async function createDiscordOAuthState(webUserId) {
+  if (!webUserId) throw new Error('Sitzungsbenutzer fehlt');
+  return new SignJWT({ purpose: 'discord-oauth', nonce: randomUUID() })
+    .setProtectedHeader({ alg: 'HS256' }).setSubject(webUserId).setIssuedAt().setExpirationTime('10m').sign(secret());
+}
+
+export async function verifyDiscordOAuthState(state) {
+  try {
+    const { payload } = await jwtVerify(state, secret());
+    if (payload.purpose !== 'discord-oauth' || !payload.sub || !payload.nonce) return null;
+    return payload;
+  } catch { return null; }
 }

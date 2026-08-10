@@ -10,6 +10,11 @@ services:
       DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL outside Git.}
       WEB_USERS_JSON: ${WEB_USERS_JSON:-[]}
       WEB_COOKIE_SECURE: ${WEB_COOKIE_SECURE:-false}
+      # Discord OAuth secrets are server-only and must never enter browser code or logs.
+      DISCORD_OAUTH_CLIENT_ID: ${DISCORD_OAUTH_CLIENT_ID:?Set DISCORD_OAUTH_CLIENT_ID outside Git.}
+      DISCORD_OAUTH_CLIENT_SECRET: ${DISCORD_OAUTH_CLIENT_SECRET:?Set DISCORD_OAUTH_CLIENT_SECRET outside Git.}
+      DISCORD_OAUTH_REDIRECT_URI: ${DISCORD_OAUTH_REDIRECT_URI:?Set DISCORD_OAUTH_REDIRECT_URI outside Git.}
+      OAUTH_TOKEN_ENCRYPTION_KEY: ${OAUTH_TOKEN_ENCRYPTION_KEY:?Set OAUTH_TOKEN_ENCRYPTION_KEY outside Git as Base64-encoded 32 bytes.}
       # Server-only credentials for the authenticated /api/admin/live-status route.
       # Values are never passed to browser code or returned by that route.
       DISCORD_ADAPTER_INTERNAL_URL: ${DISCORD_ADAPTER_INTERNAL_URL:-http://discord-adapter:3000}

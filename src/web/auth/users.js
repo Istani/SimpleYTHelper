@@ -7,7 +7,7 @@ const PASSWORD_HASH_PREFIX = 'scrypt';
 const PASSWORD_KEY_LENGTH = 64;
 
 let prismaInstance = null;
-function getPrisma() {
+export function getWebPrisma() {
   if (prismaInstance) return prismaInstance;
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) return null;
@@ -51,7 +51,7 @@ export function verifyPasswordHash(password, storedValue) {
 
 export async function authenticate(email, password) {
   const cleanEmail = String(email || "").toLowerCase();
-  const prisma = getPrisma();
+  const prisma = getWebPrisma();
 
   if (prisma) {
     try {

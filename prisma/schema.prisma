@@ -39,6 +39,14 @@ enum DiscordAccountKind {
   @@map("discord_account_kind")
 }
 
+enum ConnectedAccountProvider {
+  discord
+  twitch
+  youtube
+
+  @@map("connected_account_provider")
+}
+
 model OutboxEvent {
   id                String       @id @db.Uuid
   eventType         String       @map("event_type")
@@ -326,5 +334,28 @@ model WebUser {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
+  connectedAccounts ConnectedAccount[]
+
   @@map("web_user")
+}
+
+model ConnectedAccount {
+  id                    String                   @id @default(uuid()) @db.Uuid
+  webUserId             String                   @map("web_user_id")
+  provider              ConnectedAccountProvider
+  providerAccountId     String                   @map("provider_account_id")
+  displayName           String                   @map("display_name")
+  avatarUrl             String?                  @map("avatar_url")
+  accessTokenCiphertext String                   @map("access_token_ciphertext")
+  refreshTokenCiphertext String?                 @map("refresh_token_ciphertext")
+  tokenExpiresAt        DateTime?                @map("token_expires_at") @db.Timestamptz(6)
+  scopes                String[]                 @default([]) @map("scopes")
+  createdAt             DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt             DateTime                 @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  webUser WebUser @relation(fields: [webUserId], references: [id], onDelete: Cascade)
+
+  @@unique([webUserId, provider, providerAccountId])
+  @@index([webUserId, provider], map: "connected_account_web_user_provider_idx")
+  @@map("connected_account")
 }
