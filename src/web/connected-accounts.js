@@ -52,6 +52,22 @@ export function publicConnectedAccount(account) {
   };
 }
 
+export async function loadDiscordAccountsForBackgroundPolling({ prisma, encryptionKey: key }) {
+  const records = await prisma.connectedAccount.findMany({
+    where: { provider: 'discord' },
+    select: { id: true, webUserId: true, providerAccountId: true, accessTokenCiphertext: true, refreshTokenCiphertext: true, tokenExpiresAt: true, scopes: true },
+  });
+  return records.map((record) => ({
+    id: record.id,
+    webUserId: record.webUserId,
+    providerAccountId: record.providerAccountId,
+    accessToken: decryptToken(record.accessTokenCiphertext, key),
+    refreshToken: record.refreshTokenCiphertext ? decryptToken(record.refreshTokenCiphertext, key) : null,
+    tokenExpiresAt: record.tokenExpiresAt,
+    scopes: record.scopes,
+  }));
+}
+
 export async function persistDiscordAccount({ prisma, webUserId, profile, token, encryptionKey: key }) {
   if (!webUserId || !profile?.id || !token?.access_token) throw new Error('Discord-Kontodaten sind unvollständig');
   const expiresIn = Number(token.expires_in);

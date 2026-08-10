@@ -5,5 +5,6 @@ import { readFile } from "node:fs/promises";
 test("uses the JWT subject as server-side bot-audit actor", async () => {
   const source = await readFile(new URL("../app/admin/actions.js", import.meta.url), "utf8");
   assert.match(source, /actorId:\s*session\.sub/);
+  assert.match(source, /oauthProviderConfigurationAudit\.create/);
   assert.doesNotMatch(source, /session\.user\.id/);
 });

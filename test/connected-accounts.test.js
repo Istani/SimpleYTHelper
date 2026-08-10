@@ -5,6 +5,7 @@ import {
   encryptToken,
   decryptToken,
   persistDiscordAccount,
+  loadDiscordAccountsForBackgroundPolling,
   publicConnectedAccount,
 } from '../src/web/connected-accounts.js';
 
@@ -32,6 +33,21 @@ test('encrypts OAuth tokens at rest and rejects ciphertext authentication failur
   assert.equal(decryptToken(ciphertext, encryptionKey), 'discord-access-token');
   const tampered = `${ciphertext.slice(0, -1)}${ciphertext.endsWith('A') ? 'B' : 'A'}`;
   assert.throws(() => decryptToken(tampered, encryptionKey), /ungültig|invalid/i);
+});
+
+test('makes decrypted Discord access and refresh tokens available only to a server-side polling repository', async () => {
+  const prisma = {
+    connectedAccount: {
+      findMany: async (argument) => {
+        assert.deepEqual(argument.where, { provider: 'discord' });
+        assert.ok(argument.select.accessTokenCiphertext);
+        assert.ok(argument.select.refreshTokenCiphertext);
+        return [{ id: 'account-1', webUserId: 'web-user-1', providerAccountId: 'discord-user-1', accessTokenCiphertext: encryptToken('access-secret', encryptionKey), refreshTokenCiphertext: encryptToken('refresh-secret', encryptionKey), tokenExpiresAt: new Date('2026-08-10T12:00:00Z'), scopes: ['identify', 'guilds'] }];
+      },
+    },
+  };
+  const accounts = await loadDiscordAccountsForBackgroundPolling({ prisma, encryptionKey });
+  assert.deepEqual(accounts[0], { id: 'account-1', webUserId: 'web-user-1', providerAccountId: 'discord-user-1', accessToken: 'access-secret', refreshToken: 'refresh-secret', tokenExpiresAt: new Date('2026-08-10T12:00:00Z'), scopes: ['identify', 'guilds'] });
 });
 
 test('upserts Discord account metadata and encrypted tokens without returning either token', async () => {

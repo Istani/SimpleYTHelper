@@ -325,6 +325,34 @@ model DiscordBotAdminAudit {
   @@map("discord_bot_admin_audit")
 }
 
+model OAuthProviderConfiguration {
+  provider               ConnectedAccountProvider @id
+  clientId               String                   @map("client_id")
+  clientSecretCiphertext String                   @map("client_secret_ciphertext")
+  redirectUri            String                   @map("redirect_uri")
+  isActive               Boolean                  @default(true) @map("is_active")
+  rotatedAt              DateTime?                @map("rotated_at") @db.Timestamptz(6)
+  createdAt              DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt              DateTime                 @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  audits OAuthProviderConfigurationAudit[]
+
+  @@map("oauth_provider_configuration")
+}
+
+model OAuthProviderConfigurationAudit {
+  id        String   @id @default(uuid()) @db.Uuid
+  provider  ConnectedAccountProvider
+  actorId   String   @map("actor_id")
+  details   Json     @default("{}")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  configuration OAuthProviderConfiguration @relation(fields: [provider], references: [provider], onDelete: Cascade)
+
+  @@index([provider, createdAt], map: "oauth_provider_configuration_audit_provider_created_idx")
+  @@map("oauth_provider_configuration_audit")
+}
+
 model WebUser {
   id        String   @id @default(uuid()) @map("user_id")
   email     String   @unique @map("email")
