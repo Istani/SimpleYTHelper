@@ -12,6 +12,7 @@ var cron = require("node-cron");
 const emoji = require("node-emoji");
 const sleep = require("await-sleep");
 const moment = require("moment");
+const sanitizeLegacyMysqlText = require("./lib/legacy-mysql-text.js");
 
 var readline = require("readline");
 var { google } = require("googleapis");
@@ -58,7 +59,7 @@ async function authorize(callback) {
   var user_token = await Token.query()
     .where("service", "youtube")
     .where("is_importing", false);
-  if (user_token.length>0) {
+  if (user_token.length > 0) {
     let index = 0;
     //for (let index = 0; index < user_token.length; index++) {
     const element = user_token[index];
@@ -264,13 +265,21 @@ function ListChannels(auth, pageToken = "") {
         JSON.stringify(response.data, null, 2)
       );
       var data = response.data.items[0];
+
+      const startDate = data.snippet?.publishedAt
+        ? new Date(data.snippet.publishedAt)
+            .toISOString()
+            .slice(0, 19)
+            .replace("T", " ")
+        : null;
+
       var channel_obj = {};
       channel_obj.service = "youtube";
       channel_obj.user_id = sic.user_id;
       channel_obj.channel_id = data.id;
       channel_obj.channel_title = data.snippet.title;
       channel_obj.description = data.snippet.description;
-      channel_obj.start_date = data.snippet.publishedAt;
+      channel_obj.start_date = startDate;
       channel_obj.thumbnail = data.snippet.thumbnails.high.url;
       //channel_obj.banner = data.brandingSettings.image.bannerTvHighImageUrl;
 
@@ -279,12 +288,13 @@ function ListChannels(auth, pageToken = "") {
       channel_obj.subscriber = data.statistics.subscriberCount;
       channel_obj.videos = data.statistics.videoCount;
 
-      if (sic.service_user!=channel_obj.channel_id) {
+      if (sic.service_user != channel_obj.channel_id) {
         console.log("Change Token service_user, ", sic.id);
-        await Token.query().where({id: sic.id}).patch({ service_user: channel_obj.channel_id, is_importing: false });
+        await Token.query()
+          .where({ id: sic.id })
+          .patch({ service_user: channel_obj.channel_id, is_importing: false });
         process.exit(0);
       }
-      
 
       {
         // Add Server
@@ -499,6 +509,14 @@ function SearchBroadcasts(auth, pageToken = "") {
         for (let index = 0; index < response.data.items.length; index++) {
           const element = response.data.items[index];
 
+          const maxLength = 50;
+          const rawTitle = sanitizeLegacyMysqlText(element.snippet?.title);
+          const title =
+            rawTitle.length > maxLength
+              ? rawTitle.slice(0, maxLength - 3) + "..."
+              : rawTitle;
+          element.snippet.title = title;
+
           var obj = {};
           obj.service = "youtube";
           obj.b_id = element.id;
@@ -644,7 +662,7 @@ async function LiveChat(auth, pageToken = "") {
         .whereNull("actualEndTime");
     });
   if (
-    data.length==0 ||
+    data.length == 0 ||
     typeof data[0].Livestream == "undefined" ||
     typeof data[0].Livestream[0] == "undefined"
   ) {
@@ -668,19 +686,22 @@ async function LiveChat(auth, pageToken = "") {
     },
     async function(err, response) {
       if (err) {
-        if (err.response.status==404) {
+        if (err.response.status == 404) {
           //await ow_broadcasts.query().delete().where("b_id", data[0].Livestream[0].b_id);
           console.log("LiveChat not Found! ", data[0].Livestream[0].b_id);
-        } else if (err.response.status==403) {
-          await ow_broadcasts.query().delete().where("b_id", data[0].Livestream[0].b_id);
+        } else if (err.response.status == 403) {
+          await ow_broadcasts
+            .query()
+            .delete()
+            .where("b_id", data[0].Livestream[0].b_id);
           console.log("LiveChat Forbidden! ", data[0].Livestream[0].b_id);
         } else {
           console.error(err);
         }
-        
+
         await ow_broadcasts
           .query()
-          .patch({liveChatId: ""})
+          .patch({ liveChatId: "" })
           .where("b_id", data[0].Livestream[0].b_id);
 
         q.push("Broadcasts", () => {
@@ -691,7 +712,7 @@ async function LiveChat(auth, pageToken = "") {
           auth.credentials = sic;
           LiveChat(auth);
         });
-        
+
         return;
       }
       try {
@@ -711,6 +732,14 @@ async function LiveChat(auth, pageToken = "") {
         for (let index = 0; index < txt.length; index++) {
           const element = txt[index];
 
+          const chatDate = element.snippet?.publishedAt
+            ? new Date(element.snippet.publishedAt)
+                .toISOString()
+                .slice(0, 19)
+                .replace("T", " ")
+            : null;
+          element.snippet.publishedAt = chatDate;
+
           var tmp_message = {};
 
           // Keys
@@ -723,7 +752,9 @@ async function LiveChat(auth, pageToken = "") {
           // Additons
           tmp_message.user = element.snippet.authorChannelId;
           tmp_message.timestamp = element.snippet.publishedAt;
-          tmp_message.content = element.snippet.displayMessage;
+          tmp_message.content = sanitizeLegacyMysqlText(
+            element.snippet.displayMessage
+          );
 
           if (m.length == 0) {
             console.log("Message: ", JSON.stringify(tmp_message));
@@ -768,7 +799,9 @@ async function LiveChat(auth, pageToken = "") {
             var u = await Chat_User.query().where(tmp_user);
 
             // Additions
-            tmp_user.name = element.authorDetails.displayName;
+            tmp_user.name = sanitizeLegacyMysqlText(
+              element.authorDetails.displayName
+            );
             tmp_user.profile_picture = element.authorDetails.profileImageUrl;
 
             if (u.length == 0) {
@@ -976,7 +1009,7 @@ async function FakeMsg(server, room, content) {
   // Additons
   tmp_message.user = server;
   tmp_message.timestamp = new Date();
-  tmp_message.content = content;
+  tmp_message.content = sanitizeLegacyMysqlText(content);
 
   if (m.length == 0) {
     console.log("Fake-Message: ", JSON.stringify(tmp_message));

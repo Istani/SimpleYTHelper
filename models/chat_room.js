@@ -1,6 +1,7 @@
 const moment = require("moment");
 const { Model } = require("objection");
 const Knex = require("knex");
+const sanitizeLegacyMysqlText = require("../youtube/lib/legacy-mysql-text.js");
 
 const knex = Knex(require("../knexfile.js"));
 
@@ -20,6 +21,9 @@ class Chat_Room extends Model {
 
   $beforeUpdate() {
     this.updated_at = moment().format("YYYY-MM-DD HH:mm:ss");
+    if (this.name !== undefined) {
+      this.name = sanitizeLegacyMysqlText(this.name);
+    }
   }
 }
 

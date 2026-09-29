@@ -1,7 +1,7 @@
 const moment = require("moment");
 const { Model } = require("objection");
 const Knex = require("knex");
-const emoji = require("node-emoji");
+const sanitizeLegacyMysqlText = require("../youtube/lib/legacy-mysql-text.js");
 
 const knex = Knex(require("../knexfile.js"));
 
@@ -36,7 +36,9 @@ class Chat_Message extends Model {
 
   $beforeUpdate() {
     this.updated_at = moment().format("YYYY-MM-DD HH:mm:ss");
-    this.content = emoji.unemojify(this.content);
+    if (this.content !== undefined) {
+      this.content = sanitizeLegacyMysqlText(this.content);
+    }
   }
 }
 
