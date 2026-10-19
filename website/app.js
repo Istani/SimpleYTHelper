@@ -21,6 +21,7 @@ const RpgInventory = require("./models/rpg_inventory.js");
 const RpgLog = require("./models/rpg_log.js");
 const Playlist = require("./models/playlists.js");
 const ApiKey = require("./models/syth_api_key.js");
+const ApiUsage = require("./models/syth_api_usage.js");
 const {
   createApiRouter,
   createCsrfToken,
