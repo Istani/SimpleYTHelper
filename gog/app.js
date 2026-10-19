@@ -38,27 +38,17 @@ async function get_page(page) {
 
   console.log("Searching Page", query_string, "Max-Page: " + main_max_page);
 
-  await requestp({ url: url, qs: { data: query_string } }, function(
-    error,
-    response,
-    body
-  ) {
-    if (error) {
-      console.error(error);
-      return;
-    }
-    try {
-      var data = JSON.parse(body);
-      fs.writeFileSync(
-        "./tmp/overview-" + page + ".json",
-        JSON.stringify(data)
-      );
-    } catch (error) {
-      console.error(error);
-      return;
-    }
-  });
-  await sleep(1000 * 30); // Weil das Request irgendwie doch nicht richtig ASYNC ist...
+  try {
+    const body = await requestp({ url: url, qs: query_string });
+    const data = JSON.parse(body);
+    fs.writeFileSync("./tmp/overview-" + page + ".json", JSON.stringify(data));
+  } catch (error) {
+    console.error(
+      "GOG page " + page + " import failed:",
+      error.message || error
+    );
+    return;
+  }
   await getGameData(page);
 }
 
@@ -75,6 +65,18 @@ async function getGameData(page) {
       price: parseInt(entry.price.finalAmount * 100),
       discount: entry.price.discount
     };
+
+    var game_data = {
+      type: "game",
+      name: store_data.name,
+      display_name: entry.title,
+      banner: "",
+      description: ""
+    };
+    var check_game = await Games.query().where("name", game_data.name);
+    if (check_game.length == 0) {
+      await Games.query().insert(game_data);
+    }
 
     var check_store = await GameLinks.query()
       .where("name", store_data.name)

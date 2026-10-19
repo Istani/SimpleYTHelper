@@ -32,7 +32,7 @@ async function GetAllGames() {
   Display_Games = [];
   show_games = [];
   for (var i = 0; i < All_Games.length; i++) {
-    if (All_Games[i].links.length > 1) {
+    if (All_Games[i].links.length > 0) {
       Display_Games.push(All_Games[i]);
       show_games.push({
         name: All_Games[i].name,
