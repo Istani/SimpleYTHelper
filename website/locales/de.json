@@ -111,5 +111,14 @@
   "Invalid API key.": "Invalid API key.",
   "API administrator privileges required.": "API administrator privileges required.",
   "Invalid user ID.": "Invalid user ID.",
-  "No Data!": "Keine Daten!"
+  "No Data!": "Keine Daten!",
+  "Account API": "Account API",
+  "API-Administration": "API-Administration",
+  "SYTH Account API": "SYTH Account API",
+  "API-Keys geben ausschließlich Zugriff auf die Daten des eigenen SYTH-Accounts. Der Key wird nur beim Erstellen angezeigt.": "API-Keys geben ausschließlich Zugriff auf die Daten des eigenen SYTH-Accounts. Der Key wird nur beim Erstellen angezeigt.",
+  "Bestehende System-Admins haben automatisch API-Admin-Zugriff. API-Admins können mit ?userId= alle SYTH-Accountdaten abfragen und werden nicht limitiert oder berechnet.": "Bestehende System-Admins haben automatisch API-Admin-Zugriff. API-Admins können mit ?userId= alle SYTH-Accountdaten abfragen und werden nicht limitiert oder berechnet.",
+  "SYTH Account API – Dokumentation": "SYTH Account API – Dokumentation",
+  "Basis-URL:": "Basis-URL:",
+  "Authentifizierung:": "Authentifizierung:",
+  "Ein normaler Key kann nur Daten seines SYTH-Accounts lesen. API-Admins können optional ?userId=&lt;SYTH-User-ID&gt; an jeden Endpunkt anhängen. Alle Requests werden für spätere Quotas und Abrechnung protokolliert; derzeit wird kein Limit berechnet.": "Ein normaler Key kann nur Daten seines SYTH-Accounts lesen. API-Admins können optional ?userId=&lt;SYTH-User-ID&gt; an jeden Endpunkt anhängen. Alle Requests werden für spätere Quotas und Abrechnung protokolliert; derzeit wird kein Limit berechnet."
 }
