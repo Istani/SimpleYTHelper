@@ -6,9 +6,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@grpc/grpc-js": "1.14.4",
+    "@grpc/proto-loader": "0.8.1",
     "await-sleep": "0.0.1",
     "better-queue": "^3.8.10",
     "google-auth-library": "^5.5.1",
+    "google-proto-files": "4.2.0",
     "googleapis": "^45.0.0",
     "moment": "^2.29.4",
     "node-cron": "^2.0.3",

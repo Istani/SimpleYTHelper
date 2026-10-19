@@ -13,6 +13,7 @@ const emoji = require("node-emoji");
 const sleep = require("await-sleep");
 const moment = require("moment");
 const sanitizeLegacyMysqlText = require("./lib/legacy-mysql-text.js");
+const { YouTubeLiveChatStream } = require("./lib/youtube-livechat-stream.js");
 
 var readline = require("readline");
 var { google } = require("googleapis");
@@ -41,6 +42,9 @@ var LiveChatMsgSleep = isNaN(
 )
   ? 1000
   : parseInt(process.env.YOUTUBE_LIVECHAT_MSG_SLEEP_MS, 10);
+// "stream" is the default. Set YOUTUBE_LIVECHAT_TRANSPORT=poll for the
+// established REST polling implementation during a rollback.
+var LiveChatTransport = process.env.YOUTUBE_LIVECHAT_TRANSPORT || "stream";
 var SCOPES = [
   "https://www.googleapis.com/auth/youtube",
   "https://www.googleapis.com/auth/youtube.channel-memberships.creator"
@@ -140,7 +144,11 @@ function StartImport(auth) {
 
   q.push("LiveChat", () => {
     auth.credentials = sic;
-    LiveChat(auth);
+    if (LiveChatTransport === "poll") {
+      LiveChat(auth);
+    } else {
+      LiveChatStream(auth);
+    }
     auth.credentials = sic;
   });
 
@@ -653,6 +661,120 @@ function SearchBroadcasts(auth, pageToken = "") {
       }
     }
   );
+}
+
+async function LiveChatStream(auth) {
+  var sic = auth.credentials;
+  var data = await ow_channel
+    .query()
+    .where("channel_id", auth.credentials.service_user)
+    .where("service", "youtube")
+    .eager("Livestream")
+    .modifyEager("Livestream", builder => {
+      builder
+        .where("liveChatId", "!=", "")
+        .whereNotNull("liveChatId")
+        .where("actualStartTime", "<", moment().toISOString())
+        .whereNull("actualEndTime");
+    });
+  if (!data[0] || !data[0].Livestream || !data[0].Livestream[0]) {
+    setTimeout(() => LiveChatStream(auth), RepeatDealy);
+    return;
+  }
+
+  var broadcast = data[0].Livestream[0];
+  console.log("LiveChat stream: ", broadcast.b_id);
+  new YouTubeLiveChatStream({
+    liveChatId: broadcast.liveChatId,
+    getAccessToken: async () => {
+      auth.credentials = sic;
+      return await auth.getAccessToken();
+    },
+    onResponse: async response => {
+      fs.writeFileSync("tmp/chat.json", JSON.stringify(response, null, 2));
+      await StoreLiveChatMessages(
+        response.items || [],
+        data[0].channel_id,
+        broadcast.liveChatId
+      );
+    },
+    onReconnect: (error, delay) => {
+      if (error) console.error("LiveChat stream reconnect:", error.message);
+      console.log("LiveChat stream reconnect in " + delay + "ms");
+    },
+    onTerminalError: async error => {
+      console.error("LiveChat stream ended:", error.message);
+      await ow_broadcasts
+        .query()
+        .patch({ liveChatId: "" })
+        .where("b_id", broadcast.b_id);
+      q.push("Broadcasts", () => SearchBroadcasts(auth));
+      setTimeout(() => LiveChatStream(auth), RepeatDealy);
+    }
+  }).start();
+}
+
+async function StoreLiveChatMessages(items, channelId, liveChatId) {
+  for (let index = 0; index < items.length; index++) {
+    const element = items[index];
+    if (!element.id || !element.snippet) continue;
+    const chatDate = element.snippet.publishedAt
+      ? new Date(element.snippet.publishedAt)
+          .toISOString()
+          .slice(0, 19)
+          .replace("T", " ")
+      : null;
+    var tmp_message = {
+      service: "youtube",
+      server: channelId,
+      room: liveChatId,
+      id: element.id,
+      user: element.snippet.authorChannelId,
+      timestamp: chatDate,
+      content: sanitizeLegacyMysqlText(element.snippet.displayMessage || "")
+    };
+    var matches = await Chat_Message.query().where({
+      service: tmp_message.service,
+      server: tmp_message.server,
+      room: tmp_message.room,
+      id: tmp_message.id
+    });
+    if (matches.length === 0) {
+      console.log("Message: ", JSON.stringify(tmp_message));
+      await Chat_Message.query().insert(tmp_message);
+      if (element.snippet.type === "newSponsorEvent" && element.authorDetails) {
+        await FakeMsg(
+          channelId,
+          liveChatId,
+          "!party Willkommen @" + element.authorDetails.displayName
+        );
+      }
+    } else {
+      await Chat_Message.query()
+        .patch(tmp_message)
+        .where(matches[0]);
+    }
+    if (element.authorDetails && element.snippet.authorChannelId) {
+      var tmp_user = {
+        service: "youtube",
+        server: channelId,
+        user: element.snippet.authorChannelId,
+        name: sanitizeLegacyMysqlText(element.authorDetails.displayName || ""),
+        profile_picture: element.authorDetails.profileImageUrl || ""
+      };
+      var users = await Chat_User.query().where({
+        service: tmp_user.service,
+        server: tmp_user.server,
+        user: tmp_user.user
+      });
+      if (users.length === 0) await Chat_User.query().insert(tmp_user);
+      else
+        await Chat_User.query()
+          .patch(tmp_user)
+          .where(users[0]);
+    }
+    await sleep(LiveChatMsgSleep);
+  }
 }
 
 async function LiveChat(auth, pageToken = "") {
