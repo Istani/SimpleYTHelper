@@ -135,6 +135,10 @@ function StartImport(auth) {
     auth.credentials = sic;
     ImportChannelAnalytics(auth);
   });
+  q.push("Uploads", () => {
+    auth.credentials = sic;
+    return ListNewUploads(auth);
+  });
 
   q.push("LiveChat", () => {
     auth.credentials = sic;
@@ -889,20 +893,133 @@ function ListPlaylists(auth, pageToken = "") {
   );
 }
 async function ListNewUploads(auth) {
-  var sic = auth.credentials;
-  var data = await ow_channel
+  const channels = await ow_channel
     .query()
+    .where("service", "youtube")
     .where("user_id", auth.credentials.user_id);
-  if (data.length == 0) return;
-  if (data[0].main_playlist == "") return;
-  q.push("PlaylistsItems Upload", () => {
-    auth.credentials = sic;
-    ListPlaylistItems(auth, data[0].main_playlist, "", false);
-  });
-  q.push("Videos Upload", () => {
-    auth.credentials = sic;
-    ListVideos(auth, 0, false);
-  });
+
+  for (const channel of channels) {
+    if (!channel.main_playlist) continue;
+    try {
+      await ImportChannelUploads(auth, channel);
+    } catch (error) {
+      console.error(
+        "Upload import failed for channel " + channel.channel_id + ":",
+        error.message || error
+      );
+    }
+  }
+}
+
+async function ImportChannelUploads(auth, channel) {
+  const videoIds = new Set();
+  let pageToken = "";
+
+  // Read every page of the uploads playlist. This includes regular videos,
+  // Shorts, and finished livestream recordings.
+  do {
+    const response = await service.playlistItems.list({
+      auth: auth,
+      part: "snippet",
+      playlistId: channel.main_playlist,
+      maxResults: 50,
+      pageToken: pageToken
+    });
+    const items = response.data.items || [];
+
+    for (const element of items) {
+      const videoId = element.snippet?.resourceId?.videoId;
+      if (!videoId) continue;
+      videoIds.add(videoId);
+
+      const playlistItem = {
+        service: "youtube",
+        owner: element.snippet.channelId,
+        pl_id: channel.main_playlist,
+        position: element.snippet.position,
+        video_id: videoId
+      };
+      const existing = await ow_playlistitems.query().where({
+        service: playlistItem.service,
+        owner: playlistItem.owner,
+        pl_id: playlistItem.pl_id,
+        position: playlistItem.position
+      });
+      if (existing.length) {
+        await ow_playlistitems
+          .query()
+          .patch(playlistItem)
+          .where({
+            service: playlistItem.service,
+            owner: playlistItem.owner,
+            pl_id: playlistItem.pl_id,
+            position: playlistItem.position
+          });
+      } else {
+        await ow_playlistitems.query().insert(playlistItem);
+      }
+    }
+    pageToken = response.data.nextPageToken || "";
+  } while (pageToken);
+
+  // Fetch the canonical metadata after playlist persistence, so the video
+  // import cannot race ahead of the playlist refresh.
+  for (const ids of Array.from(videoIds).reduce((batches, id, index) => {
+    const batch = Math.floor(index / 50);
+    (batches[batch] ||= []).push(id);
+    return batches;
+  }, [])) {
+    const response = await service.videos.list({
+      auth: auth,
+      part: "id,snippet,statistics,status",
+      id: ids.join(",")
+    });
+    for (const element of response.data.items || []) {
+      const video = {
+        service: "youtube",
+        v_id: element.id,
+        owner: element.snippet.channelId,
+        thumbnail:
+          element.snippet.thumbnails?.standard?.url ||
+          element.snippet.thumbnails?.default?.url ||
+          "",
+        title: sanitizeLegacyMysqlText(element.snippet.title || ""),
+        description: sanitizeLegacyMysqlText(element.snippet.description || ""),
+        privacyStatus: element.status.privacyStatus,
+        publishedAt: moment(element.snippet.publishedAt).toISOString(),
+        viewCount: element.statistics.viewCount,
+        likeCount: element.statistics.likeCount,
+        dislikeCount: element.statistics.dislikeCount,
+        commentCount: element.statistics.commentCount
+      };
+      const existing = await ow_videos.query().where({
+        service: video.service,
+        owner: video.owner,
+        v_id: video.v_id
+      });
+      if (existing.length) {
+        await ow_videos
+          .query()
+          .patch(video)
+          .where({
+            service: video.service,
+            owner: video.owner,
+            v_id: video.v_id
+          });
+      } else {
+        console.log("video new: " + video.v_id);
+        await ow_videos.query().insert(video);
+      }
+    }
+  }
+
+  console.log(
+    "Upload import complete for " +
+      channel.channel_id +
+      ": " +
+      videoIds.size +
+      " videos"
+  );
 }
 
 function ListPlaylistItems(auth, playlist, pageToken = "", loadAll = true) {
@@ -1118,6 +1235,12 @@ function SearchBroadcasts(auth, pageToken = "") {
         }
       } catch (e) {
         console.error(e);
+      }
+      if (response.data.nextPageToken) {
+        q.push("Broadcasts", () => {
+          auth.credentials = sic;
+          SearchBroadcasts(auth, response.data.nextPageToken);
+        });
       }
     }
   );
