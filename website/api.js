@@ -194,8 +194,15 @@ function createApiRouter() {
       const ids = await channelIdsForUser(req.api.targetUserId);
       const data = ids.length
         ? await ChannelAnalyticsHistory.query()
-            .whereIn("channel_id", ids)
+            .whereIn(
+              "id",
+              ChannelAnalyticsHistory.query()
+                .max("id as id")
+                .whereIn("channel_id", ids)
+                .groupBy("channel_id")
+            )
             .orderBy("timestamp", "desc")
+            .orderBy("id", "desc")
         : [];
       res.json({ data: data, meta: { requestedUserId: req.api.targetUserId } });
     } catch (error) {
@@ -208,8 +215,15 @@ function createApiRouter() {
       const ids = await channelIdsForUser(req.api.targetUserId);
       const data = ids.length
         ? await VideoAnalyticsHistory.query()
-            .whereIn("channel_id", ids)
+            .whereIn(
+              "id",
+              VideoAnalyticsHistory.query()
+                .max("id as id")
+                .whereIn("channel_id", ids)
+                .groupBy("service", "video_id")
+            )
             .orderBy("timestamp", "desc")
+            .orderBy("id", "desc")
         : [];
       res.json({ data: data, meta: { requestedUserId: req.api.targetUserId } });
     } catch (error) {
