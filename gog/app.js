@@ -61,7 +61,8 @@ async function getGameData(page) {
     var store_data = {
       store: "GOG",
       link: "https://embed.gog.com" + entry.url,
-      name: Games.getEncodedName(entry.slug),
+      // Use the shared title-based ID so the same game matches Steam/Epic.
+      name: Games.getEncodedName(entry.title),
       price: parseInt(entry.price.finalAmount * 100),
       discount: entry.price.discount
     };
@@ -110,9 +111,9 @@ async function getGameData(page) {
       }
     }
 
-    await sleep(1000);
+    await sleep(250);
   }
   main_max_page = n_Data.totalPages;
   await fs.unlinkSync("./tmp/overview-" + page + ".json");
-  await sleep(1000);
+  await sleep(250);
 }

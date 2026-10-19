@@ -31,8 +31,11 @@ async function GetAllGames() {
   require("./img_importer.js");
   Display_Games = [];
   show_games = [];
+  // Prefer real comparisons. Keep the page useful during a store outage or
+  // while a rebuilt catalog has not produced its first overlap yet.
+  const hasComparisons = All_Games.some(game => game.links.length > 1);
   for (var i = 0; i < All_Games.length; i++) {
-    if (All_Games[i].links.length > 0) {
+    if (All_Games[i].links.length > 1 || !hasComparisons) {
       Display_Games.push(All_Games[i]);
       show_games.push({
         name: All_Games[i].name,

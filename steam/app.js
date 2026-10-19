@@ -13,8 +13,8 @@ const GameGenre = require("./models/game_genre.js");
 
 const DEAL_INTERVAL_MS = 15 * 60 * 1000;
 const DISCOVERY_INTERVAL_MS = 24 * 60 * 60 * 1000;
-const DETAIL_BATCH_SIZE = 25;
-const DETAIL_DELAY_MS = 1100;
+const DETAIL_BATCH_SIZE = 75;
+const DETAIL_DELAY_MS = 650;
 const HEALTH_APP_ID = "__steam_import_health__";
 const DISCOVERY_APP_ID = "__steam_discovery_health__";
 
@@ -40,7 +40,22 @@ async function markHealth() {
 
 async function upsertGame(game) {
   const existing = await Games.query().findById(game.name);
-  if (!existing) await Games.query().insert(game);
+  if (!existing) {
+    await Games.query().insert(game);
+    return;
+  }
+
+  // Store imports may create a placeholder first. Never replace useful details
+  // with empty fields, but allow Steam's featured data to repair banners/details.
+  const patch = {};
+  for (const field of ["display_name", "banner", "description", "type"]) {
+    if (game[field] && (!existing[field] || field === "type"))
+      patch[field] = game[field];
+  }
+  if (Object.keys(patch).length)
+    await Games.query()
+      .patch(patch)
+      .where("name", game.name);
 }
 
 async function upsertLink(link) {
@@ -217,11 +232,33 @@ async function discoverAppsIfDue() {
 }
 
 let running = false;
+async function importSaleSearch() {
+  try {
+    const html = await request({
+      url: "https://store.steampowered.com/search/",
+      qs: { specials: 1, cc: "de", l: "german" },
+      timeout: 30000
+    });
+    const ids = [
+      ...new Set(
+        [...String(html).matchAll(/data-ds-appid="(\d+)"/g)].map(
+          match => match[1]
+        )
+      )
+    ].slice(0, 25);
+    for (const appid of ids) await importAppDetails(appid);
+    console.log("Steam sale-search details imported:", ids.length);
+  } catch (error) {
+    console.error("Steam sale-search failed:", error.message || error);
+  }
+}
+
 async function run() {
   if (running) return;
   running = true;
   try {
     await importFeaturedDeals();
+    await importSaleSearch();
     await enrichDetails();
     await discoverAppsIfDue();
   } catch (error) {
