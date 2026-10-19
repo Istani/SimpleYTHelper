@@ -53,6 +53,9 @@
                     <br>
                     <a href="/RPG">{{{i18n "RPG"}}}</a>
                     <br>
+                    <a href="/Api">{{{i18n "Account API"}}}</a>
+                    <br>
+                    {{#if data.login.is_admin}}<a href="/Admin/Api">{{{i18n "API-Administration"}}}</a><br>{{/if}}
                     <hr>
                     <a href="/Logout">{{{i18n "Logout"}}}</a>
                 </div>

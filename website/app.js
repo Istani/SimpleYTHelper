@@ -20,6 +20,17 @@ const RpgChar = require("./models/rpg_char.js");
 const RpgInventory = require("./models/rpg_inventory.js");
 const RpgLog = require("./models/rpg_log.js");
 const Playlist = require("./models/playlists.js");
+const ApiKey = require("./models/syth_api_key.js");
+const {
+  createApiRouter,
+  createCsrfToken,
+  isApiAdmin,
+  keyHash,
+  requireCsrf,
+  requireSessionUser,
+  sessionUser
+} = require("./api.js");
+const crypto = require("crypto");
 const session_secret = new Buffer(package_info.name).toString("base64");
 
 /* Webserver */
@@ -72,6 +83,7 @@ io.on("connection", function(socket) {
 app.engine(".hbs", hbs.engine);
 app.set("view engine", ".hbs");
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(cookieParser());
 app.use(
@@ -288,6 +300,113 @@ app.post("/Register", async function(req, res) {
   var currentuser = await Login.query().insert(new_login);
   req.session.user = currentuser;
   res.redirect("/Dashboard");
+});
+
+app.use("/api/v1", createApiRouter());
+
+app.get("/Api", requireSessionUser, async function(req, res, next) {
+  try {
+    var user = sessionUser(req);
+    var temp_data = { login: user, csrf_token: createCsrfToken(req) };
+    temp_data.keys = await ApiKey.query()
+      .where("owner_id", user.id)
+      .orderBy("created_at", "desc");
+    temp_data.created_key = req.session.api_created_key;
+    delete req.session.api_created_key;
+    res.render("api", { data: temp_data });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post("/Api/Keys", requireSessionUser, requireCsrf, async function(
+  req,
+  res,
+  next
+) {
+  try {
+    var label = String(req.body.label || "").trim();
+    if (!label || label.length > 100)
+      return res.status(400).send("Ungültige Key-Bezeichnung.");
+    var secret =
+      "syth_" +
+      crypto
+        .randomBytes(32)
+        .toString("base64")
+        .replace(/[^a-zA-Z0-9]/g, "");
+    var user = sessionUser(req);
+    await ApiKey.query().insert({
+      owner_id: user.id,
+      label: label,
+      key_prefix: secret.slice(0, 16),
+      key_hash: keyHash(secret)
+    });
+    req.session.api_created_key = secret;
+    res.redirect("/Api");
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post(
+  "/Api/Keys/:id/Revoke",
+  requireSessionUser,
+  requireCsrf,
+  async function(req, res, next) {
+    try {
+      var user = sessionUser(req);
+      var keyId = Number(req.params.id);
+      if (!Number.isSafeInteger(keyId) || keyId < 1)
+        return res.status(400).send("Ungültiger API-Key.");
+      await ApiKey.query()
+        .where("id", keyId)
+        .where("owner_id", user.id)
+        .patch({ revoked_at: new Date() });
+      res.redirect("/Api");
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+app.get("/Api/Docs", requireSessionUser, function(req, res) {
+  res.render("api_docs", { data: { login: sessionUser(req) } });
+});
+
+app.get("/Admin/Api", requireSessionUser, async function(req, res, next) {
+  try {
+    var user = sessionUser(req);
+    if (!isApiAdmin(user))
+      return res.status(403).send("API-Adminrechte erforderlich.");
+    var temp_data = { login: user, csrf_token: createCsrfToken(req) };
+    temp_data.users = await Login.query()
+      .select("id", "user", "is_admin", "is_api_admin")
+      .orderBy("id");
+    res.render("admin_api", { data: temp_data });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post("/Admin/Api/:id", requireSessionUser, requireCsrf, async function(
+  req,
+  res,
+  next
+) {
+  try {
+    var actor = sessionUser(req);
+    if (!isApiAdmin(actor))
+      return res.status(403).send("API-Adminrechte erforderlich.");
+    var targetId = Number(req.params.id);
+    if (!Number.isSafeInteger(targetId) || targetId < 1)
+      return res.status(400).send("Ungültige Benutzer-ID.");
+    await Login.query()
+      .findById(targetId)
+      .patch({ is_api_admin: req.body.is_api_admin === "1" });
+    res.redirect("/Admin/Api");
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.get("/Dashboard", async function(req, res) {

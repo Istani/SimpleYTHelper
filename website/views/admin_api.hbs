@@ -1,0 +1,11 @@
+<h2>{{{i18n "API-Administration"}}}</h2>
+<p>{{{i18n "Bestehende System-Admins haben automatisch API-Admin-Zugriff. API-Admins können mit ?userId= alle SYTH-Accountdaten abfragen und werden nicht limitiert oder berechnet."}}}</p>
+<table>
+  <tr><th>ID</th><th>E-Mail</th><th>System-Admin</th><th>API-Admin</th><th>Aktion</th></tr>
+  {{#each data.users}}
+  <tr>
+    <td>{{id}}</td><td>{{user}}</td><td>{{#if is_admin}}ja{{else}}nein{{/if}}</td><td>{{#if is_api_admin}}ja{{else}}nein{{/if}}</td>
+    <td><form method="POST" action="/Admin/Api/{{id}}"><input type="hidden" name="csrf_token" value="{{../data.csrf_token}}"><select name="is_api_admin"><option value="0">entziehen</option><option value="1">gewähren</option></select><input type="submit" value="Speichern"></form></td>
+  </tr>
+  {{/each}}
+</table>
