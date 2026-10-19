@@ -50,7 +50,11 @@ var hbs = exphbs.create({
     i18n: function(key, options) {
       var temp_data = {};
       temp_data.data = options;
-      var translate = options.data.root && options.data.root.i18nTranslate;
+      var translate =
+        options &&
+        options.data &&
+        options.data.root &&
+        options.data.root.i18nTranslate;
       var result = (translate || i18n.__)(key, options);
       result = result.split("[[").join("{{");
       result = result.split("]]").join("}}");
