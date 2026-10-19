@@ -50,7 +50,8 @@ var hbs = exphbs.create({
     i18n: function(key, options) {
       var temp_data = {};
       temp_data.data = options;
-      var result = i18n.__(key, options);
+      var translate = options.data.root && options.data.root.i18nTranslate;
+      var result = (translate || i18n.__)(key, options);
       result = result.split("[[").join("{{");
       result = result.split("]]").join("}}");
       //result = hbs.handlebars.escapeExpression(result);
@@ -118,6 +119,10 @@ i18n.configure({
   extension: ".json"
 });
 app.use(i18n.init);
+app.use(function(req, res, next) {
+  res.locals.i18nTranslate = res.__;
+  next();
+});
 
 youtube_auth(passport);
 twitch_auth(passport);
