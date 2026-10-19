@@ -14,7 +14,10 @@ class VideoAnalyticsHistory extends Model {
   }
 
   $beforeInsert() {
-    this.timestamp = new Date().toISOString();
+    this.timestamp = new Date()
+      .toISOString()
+      .slice(0, 19)
+      .replace("T", " ");
   }
 }
 
