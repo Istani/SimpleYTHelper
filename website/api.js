@@ -9,6 +9,8 @@ const Member = require("./models/member.js");
 const Video = require("./models/videos.js");
 const Playlist = require("./models/playlists.js");
 const RpgChar = require("./models/rpg_char.js");
+const ChannelAnalyticsHistory = require("./models/channel_analytics_history.js");
+const VideoAnalyticsHistory = require("./models/video_analytics_history.js");
 
 function keyHash(value) {
   return crypto
@@ -180,6 +182,34 @@ function createApiRouter() {
       const ids = await channelIdsForUser(req.api.targetUserId);
       const data = ids.length
         ? await Playlist.query().whereIn("owner", ids)
+        : [];
+      res.json({ data: data, meta: { requestedUserId: req.api.targetUserId } });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  router.get("/analytics/channels", async function(req, res, next) {
+    try {
+      const ids = await channelIdsForUser(req.api.targetUserId);
+      const data = ids.length
+        ? await ChannelAnalyticsHistory.query()
+            .whereIn("channel_id", ids)
+            .orderBy("timestamp", "desc")
+        : [];
+      res.json({ data: data, meta: { requestedUserId: req.api.targetUserId } });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  router.get("/analytics/videos", async function(req, res, next) {
+    try {
+      const ids = await channelIdsForUser(req.api.targetUserId);
+      const data = ids.length
+        ? await VideoAnalyticsHistory.query()
+            .whereIn("channel_id", ids)
+            .orderBy("timestamp", "desc")
         : [];
       res.json({ data: data, meta: { requestedUserId: req.api.targetUserId } });
     } catch (error) {
