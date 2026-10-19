@@ -30,7 +30,7 @@
 
   $(document).ready(function () {
     console.log(location.origin.replace(':3000', '') + ":3005");
-    var socket_rpg = io(location.origin.replace(':3000', '') + ":3005");
+    var socket_rpg = io("wss://games-on-sale.de:3005");
     socket_rpg.on('connect', function () {
       $('#comming_soon').css({display: 'none'});
       socket_rpg.send("join", "{{param.channel}}");
