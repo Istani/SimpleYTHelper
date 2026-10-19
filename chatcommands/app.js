@@ -6,27 +6,93 @@ console.log("===");
 console.log();
 
 const fs = require("fs");
+const http = require("http");
+const https = require("https");
 const sleep = require("await-sleep");
 const cron = require("node-cron");
 const moment = require("moment");
 const emoji = require("node-emoji");
+require("dotenv").config({ path: "../.env" });
 
-const io = require("socket.io")(3005, {
+// Socket-Server für Overlays (games-on-sale.de) und das kw.media Stream-Toolkit.
+// Alles optional über die .env – ohne neue Einträge verhält sich der Server wie bisher.
+//   CHAT_SOCKET_PORT        Port (Standard 3005)
+//   CHAT_SOCKET_ORIGINS     erlaubte Seiten, kommagetrennt (Standard http://games-on-sale.de:3000)
+//   CHAT_SOCKET_ALLOW_FILE  1 = auch lokal geöffnete Dateien / OBS-Browserquellen (Origin "null")
+//   CHAT_SOCKET_TLS_KEY     Pfad zum Schlüssel  } beide gesetzt = wss:// statt ws://
+//   CHAT_SOCKET_TLS_CERT    Pfad zum Zertifikat }
+//   CHAT_FEED               0 = Live-Feed (Event "chat") abschalten
+//   CHAT_FEED_INTERVAL_MS   wie oft der Feed in die DB schaut (Standard 1000)
+const SOCKET_PORT = parseInt(process.env.CHAT_SOCKET_PORT, 10) || 3005;
+const SOCKET_ALLOW_FILE = process.env.CHAT_SOCKET_ALLOW_FILE == "1";
+const FEED_ENABLED = process.env.CHAT_FEED != "0";
+const FEED_INTERVAL = parseInt(process.env.CHAT_FEED_INTERVAL_MS, 10) || 1000;
+
+function normalize_origin(origin) {
+  try {
+    var u = new URL(origin);
+    var port = u.port || (u.protocol == "https:" ? "443" : "80");
+    return u.protocol + "//" + u.hostname.toLowerCase() + ":" + port;
+  } catch (e) {
+    return null;
+  }
+}
+const SOCKET_ORIGINS_RAW = (
+  process.env.CHAT_SOCKET_ORIGINS || "http://games-on-sale.de:3000"
+)
+  .split(",")
+  .map(o => o.trim())
+  .filter(o => o != "");
+const SOCKET_ORIGINS = SOCKET_ORIGINS_RAW.map(o =>
+  o == "*" ? "*" : normalize_origin(o)
+).filter(o => o != null);
+
+function origin_allowed(origin) {
+  // file:// und OBS-Browserquellen schicken "null" (socket.io 2 macht daraus "*")
+  if (!origin || origin == "null" || origin == "*") {
+    return SOCKET_ALLOW_FILE;
+  }
+  if (SOCKET_ORIGINS.indexOf("*") != -1) {
+    return true;
+  }
+  return SOCKET_ORIGINS.indexOf(normalize_origin(origin)) != -1;
+}
+
+function create_socket_server() {
+  var key = process.env.CHAT_SOCKET_TLS_KEY;
+  var cert = process.env.CHAT_SOCKET_TLS_CERT;
+  if (key && cert) {
+    console.log("Socket", "TLS aktiv (wss://)");
+    return https.createServer({
+      key: fs.readFileSync(key),
+      cert: fs.readFileSync(cert)
+    });
+  }
+  return http.createServer();
+}
+
+const socket_server = create_socket_server();
+const io = require("socket.io")(socket_server, {
+  // socket.io 2.x prüft "origins", ab 3.x gilt "cors" – beide nutzen dieselbe Liste
   cors: {
-    origin: "http://games-on-sale.de:3000",
+    origin: (origin, callback) => callback(null, origin_allowed(origin)),
     methods: ["GET", "POST"]
   },
-  origins: "http://games-on-sale.de:3000",
+  origins: (origin, callback) => callback(null, origin_allowed(origin)),
   handlePreflightRequest: (req, res) => {
+    var origin = req.headers.origin;
     const headers = {
       "Access-Control-Allow-Headers": "Content-Type, Authorization",
-      "Access-Control-Allow-Origin": "http://games-on-sale.de:3000", //req.headers.origin, //or the specific origin you want to give access to,
+      "Access-Control-Allow-Origin":
+        origin && origin_allowed(origin) ? origin : SOCKET_ORIGINS_RAW[0],
       "Access-Control-Allow-Credentials": false
     };
     res.writeHead(200, headers);
     res.end();
   }
 });
+socket_server.listen(SOCKET_PORT);
+console.log("Socket", "Port " + SOCKET_PORT, SOCKET_ORIGINS_RAW.join(", "));
 
 // DB-Models
 const Messages = require("./models/chat_message.js");
@@ -400,6 +466,87 @@ async function get_msg() {
   setTimeout(get_msg, 100);
 }
 get_msg();
+
+// Live-Feed: jede neue Chat-Nachricht (nicht nur Befehle) als Event "chat"
+// an alle, die dem Kanal per socket.send("join", <channel_id>) beigetreten sind.
+// Gleicher Aufbau wie "log", zusätzlich profile_picture.
+var feed_cursor = null;
+var feed_seen = new Set();
+var feed_hold = { key: null, since: 0 };
+
+function format_chat(element) {
+  var msg = Object.assign({}, element);
+  msg.created_at = moment(element.created_at).format("HH:mm");
+  try {
+    msg.user_name = element.User[0].name;
+    msg.profile_picture = element.User[0].profile_picture;
+  } catch (e) {}
+  msg.content = emoji.emojify(msg.content || "");
+  delete msg.User;
+  return msg;
+}
+
+function room_has_listeners(room) {
+  var rooms = io.sockets.adapter.rooms; // socket.io 2: Objekt, ab 3: Map
+  return rooms instanceof Map ? rooms.has(room) : !!rooms[room];
+}
+
+async function chat_feed() {
+  try {
+    if (feed_cursor == null) {
+      // Start beim neuesten Eintrag – alte Nachrichten werden nicht nachgeliefert
+      var last = await Messages.query().max("created_at as last");
+      feed_cursor =
+        last.length > 0 && last[0].last ? new Date(last[0].last) : new Date();
+    }
+    var list = await Messages.query()
+      .where("created_at", ">=", feed_cursor)
+      .orderBy("created_at", "ASC")
+      .limit(500)
+      .eager("User");
+    for (let i = 0; i < list.length; i++) {
+      const element = list[i];
+      var key = [
+        element.service,
+        element.server,
+        element.room,
+        element.id
+      ].join("|");
+      if (feed_seen.has(key)) {
+        continue;
+      }
+      // Der YouTube-Import legt neue Chatter erst kurz nach ihrer ersten Nachricht an –
+      // bis zu 4 s warten, damit der Name mitkommt (nur wenn jemand zuhört).
+      if (
+        element.service == "youtube" &&
+        (!element.User || element.User.length == 0) &&
+        room_has_listeners(element.server)
+      ) {
+        if (feed_hold.key != key) {
+          feed_hold = { key: key, since: Date.now() };
+        }
+        if (Date.now() - feed_hold.since < 4000) {
+          break;
+        }
+      }
+      var created = new Date(element.created_at);
+      if (created > feed_cursor) {
+        feed_cursor = created;
+        feed_seen = new Set();
+      }
+      feed_seen.add(key);
+      if (room_has_listeners(element.server)) {
+        io.to(element.server).emit("chat", format_chat(element));
+      }
+    }
+  } catch (e) {
+    console.error("Feed", e);
+  }
+  setTimeout(chat_feed, FEED_INTERVAL);
+}
+if (FEED_ENABLED) {
+  chat_feed();
+}
 
 async function send_old_chat(user, socket) {
   console.log(user);

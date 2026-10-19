@@ -31,6 +31,16 @@ const Chat_User = require("./models/chat_user.js");
 const Token = require("./models/syth_token.js");
 
 var RepeatDealy = 30 * 1000;
+// Live-Chat: Abstand zwischen zwei Abfragen und Pause pro Nachricht, optional über die .env.
+// Ohne Einträge wie bisher (30 s / 1 s). Den von YouTube vorgegebenen Mindestabstand
+// (pollingIntervalMillis) unterschreiten wir nie.
+var LiveChatDelay =
+  parseInt(process.env.YOUTUBE_LIVECHAT_DELAY_MS, 10) || RepeatDealy;
+var LiveChatMsgSleep = isNaN(
+  parseInt(process.env.YOUTUBE_LIVECHAT_MSG_SLEEP_MS, 10)
+)
+  ? 1000
+  : parseInt(process.env.YOUTUBE_LIVECHAT_MSG_SLEEP_MS, 10);
 var SCOPES = [
   "https://www.googleapis.com/auth/youtube",
   "https://www.googleapis.com/auth/youtube.channel-memberships.creator"
@@ -785,7 +795,7 @@ async function LiveChat(auth, pageToken = "") {
               console.error(e);
             }
           }
-          await sleep(1000);
+          await sleep(LiveChatMsgSleep);
 
           {
             // USER
@@ -822,12 +832,16 @@ async function LiveChat(auth, pageToken = "") {
           );
         }
         if (typeof response.data.nextPageToken != "undefined") {
+          var next_poll = Math.max(
+            LiveChatDelay,
+            response.data.pollingIntervalMillis || 0
+          );
           setTimeout(() => {
             q.push("LiveChat", () => {
               auth.credentials = sic;
               LiveChat(auth, response.data.nextPageToken);
             });
-          }, RepeatDealy);
+          }, next_poll);
         }
       } catch (e) {
         console.error(e);
