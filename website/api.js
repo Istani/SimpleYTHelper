@@ -203,6 +203,22 @@ function createApiRouter() {
             )
             .orderBy("timestamp", "desc")
             .orderBy("id", "desc")
+            .select(
+              "service",
+              "channel_id",
+              "views",
+              "comments",
+              "likes",
+              "dislikes",
+              "estimatedMinutesWatched",
+              "averageViewDuration",
+              "averageViewPercentage",
+              "subscribersGained",
+              "subscribersLost",
+              "grossRevenue",
+              "estimatedRevenue",
+              "timestamp"
+            )
         : [];
       res.json({ data: data, meta: { requestedUserId: req.api.targetUserId } });
     } catch (error) {
@@ -224,6 +240,19 @@ function createApiRouter() {
             )
             .orderBy("timestamp", "desc")
             .orderBy("id", "desc")
+            .select(
+              "service",
+              "channel_id",
+              "video_id",
+              "views",
+              "comments",
+              "likes",
+              "dislikes",
+              "estimatedMinutesWatched",
+              "averageViewDuration",
+              "averageViewPercentage",
+              "timestamp"
+            )
         : [];
       res.json({ data: data, meta: { requestedUserId: req.api.targetUserId } });
     } catch (error) {
