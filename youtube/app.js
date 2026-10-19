@@ -658,7 +658,7 @@ async function ImportChannelAnalytics(auth) {
       startDate: q_startDate,
       endDate: q_endDate,
       metrics:
-        "views,comments,likes,dislikes,estimatedMinutesWatched,averageViewDuration,averageViewPercentage,subscribersGained,subscribersLost,grossRevenue,estimatedRevenue",
+        "views,comments,likes,dislikes,estimatedMinutesWatched,averageViewDuration,averageViewPercentage,subscribersGained,subscribersLost",
       dimensions: "day",
       sort: "day"
     },
@@ -685,14 +685,9 @@ async function ImportChannelAnalytics(auth) {
 
           let totalSubGained = 0;
           let totalSubLost = 0;
-          let totalGrossRevenue = 0;
-          let totalEstimatedRevenue = 0;
-
           for (let i = 0; i < rows.length; i++) {
             totalSubGained += rows[i][8];
             totalSubLost += rows[i][9];
-            totalGrossRevenue += rows[i][10];
-            totalEstimatedRevenue += rows[i][11];
           }
 
           var channel_data = {
@@ -709,8 +704,6 @@ async function ImportChannelAnalytics(auth) {
               rows.reduce((a, b) => a + Number(b[7]), 0) / rows.length,
             subscribersGained: totalSubGained,
             subscribersLost: totalSubLost,
-            grossRevenue: totalGrossRevenue,
-            estimatedRevenue: totalEstimatedRevenue,
             timestamp: new Date().toISOString()
           };
 
