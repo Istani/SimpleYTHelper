@@ -130,18 +130,39 @@ async function get_games() {
 
   console.log("Delete all older as " + Check.DeleteDate);
 
-  await Game.query()
+  const steamHealth = await require("./models/steam.js")
+    .query()
+    .where("appid", "__steam_import_health__")
+    .first();
+  const steamFresh =
+    steamHealth &&
+    steamHealth.updated_at &&
+    Date.now() - new Date(steamHealth.updated_at).getTime() <
+      24 * 60 * 60 * 1000;
+  const staleGames = Game.query()
     .delete()
     .where("updated_at", "<", Check.DeleteDate);
+  if (!steamFresh) {
+    staleGames.whereNotExists(
+      Game.knex()("game_link")
+        .select(1)
+        .whereRaw("game_link.name = game_overview.name")
+        .where("store", "Steam")
+    );
+    console.warn("Steam health is stale; preserving stale Steam-backed games");
+  }
+  await staleGames;
   await Check.query()
     .delete()
     .where("updated_at", "<", Check.DeleteDate);
   await Merch.query()
     .delete()
     .where("updated_at", "<", Check.DeleteDate);
-  await Links.query()
+  const staleLinks = Links.query()
     .delete()
     .where("updated_at", "<", Check.DeleteDate);
+  if (!steamFresh) staleLinks.whereNot("store", "Steam");
+  await staleLinks;
   await Genre.query()
     .delete()
     .where("updated_at", "<", Check.DeleteDate);
