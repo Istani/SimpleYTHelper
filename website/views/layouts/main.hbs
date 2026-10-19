@@ -53,14 +53,21 @@
                     <br>
                     <a href="/RPG">{{{i18n "RPG"}}}</a>
                     <br>
-                    <div id="api_navigation" class="ui-state-highlight ui-corner-all" style="margin-top: 10px; padding: 8px;">
-                        <strong>{{{i18n "Account API"}}}</strong><br>
-                        <a href="/Api">{{{i18n "Manage API keys"}}}</a><br>
-                        <a href="/Api/Docs">{{{i18n "Go to API documentation"}}}</a><br>
-                        {{#if data.login.is_admin}}<a href="/Admin/Api">{{{i18n "API-Administration"}}}</a><br>{{/if}}
-                    </div>
                     <hr>
                     <a href="/Logout">{{{i18n "Logout"}}}</a>
+                </div>
+            </div>
+            <br>
+            <div id="api_navigation" class="ui-accordion ui-widget ui-helper-reset">
+                <h3
+                    class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">
+                    {{{i18n "Account API"}}}</h3>
+                <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
+                    <a href="/Api">{{{i18n "Manage API keys"}}}</a>
+                    <br>
+                    <a href="/Api/Docs">{{{i18n "Go to API documentation"}}}</a>
+                    <br>
+                    {{#if data.login.is_admin}}<a href="/Admin/Api">{{{i18n "API-Administration"}}}</a><br>{{/if}}
                 </div>
             </div>
         {{else}}
