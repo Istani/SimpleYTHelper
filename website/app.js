@@ -394,6 +394,56 @@ app.get("/Admin/Api", requireSessionUser, async function(req, res, next) {
     temp_data.users = await Login.query()
       .select("id", "user", "is_admin", "is_api_admin")
       .orderBy("id");
+    var usageBase = ApiUsage.query();
+    var usageSummary = await usageBase
+      .clone()
+      .select(
+        ApiUsage.raw("COUNT(*) AS total_requests"),
+        ApiUsage.raw(
+          "COALESCE(SUM(created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)), 0) AS requests_last_24h"
+        ),
+        ApiUsage.raw(
+          "COALESCE(SUM(created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)), 0) AS requests_last_30d"
+        ),
+        ApiUsage.raw("COALESCE(ROUND(AVG(duration_ms)), 0) AS avg_duration_ms")
+      )
+      .first();
+    temp_data.usage = {
+      total_requests: usageSummary.total_requests || 0,
+      requests_last_24h: usageSummary.requests_last_24h || 0,
+      requests_last_30d: usageSummary.requests_last_30d || 0,
+      avg_duration_ms: usageSummary.avg_duration_ms || 0,
+      by_endpoint: await usageBase
+        .clone()
+        .select(
+          "endpoint",
+          ApiUsage.raw("COUNT(*) AS requests"),
+          ApiUsage.raw(
+            "COALESCE(ROUND(AVG(duration_ms)), 0) AS avg_duration_ms"
+          ),
+          ApiUsage.raw("COALESCE(SUM(response_bytes), 0) AS response_bytes")
+        )
+        .groupBy("endpoint")
+        .orderBy("requests", "desc")
+        .limit(20),
+      by_key: await usageBase
+        .clone()
+        .join("syth_api_key", "syth_api_usage.api_key_id", "syth_api_key.id")
+        .join("syth_login", "syth_api_usage.owner_id", "syth_login.id")
+        .select(
+          "syth_login.user",
+          "syth_api_key.key_prefix",
+          ApiUsage.raw("COUNT(*) AS requests"),
+          ApiUsage.raw("MAX(syth_api_usage.created_at) AS last_request_at")
+        )
+        .groupBy(
+          "syth_api_usage.api_key_id",
+          "syth_login.user",
+          "syth_api_key.key_prefix"
+        )
+        .orderBy("requests", "desc")
+        .limit(20)
+    };
     res.render("admin_api", { data: temp_data });
   } catch (error) {
     next(error);

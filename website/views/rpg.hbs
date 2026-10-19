@@ -35,7 +35,7 @@
                                 <tr>
                                     <td>{{item_name}}</td>
                                 </tr>
-                            {{#else}}
+                            {{else}}
                                 <tr>
                                     <td align="center">{{i18n "Empty inventory"}}</td>
                                 </tr>
@@ -44,7 +44,7 @@
                     </table>
                 </div>
             </div>
-        {{#else}}
+        {{else}}
             <p>{{i18n "No RPG characters found."}}</p>
         {{/each}}
     </div>
@@ -59,7 +59,7 @@
                     <small style="color: #888;">{{created_at}}</small><br>
                     <span class="service-{{service}}"></span> {{display_text}}
                 </div>
-            {{#else}}
+            {{else}}
                 <p>{{i18n "No recent events."}}</p>
             {{/each}}
         </div>

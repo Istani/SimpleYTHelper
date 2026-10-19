@@ -9,3 +9,8 @@
   </tr>
   {{/each}}
 </table>
+
+<h3>API-Nutzung und Quotas</h3><p>Übersicht aller protokollierten API-Requests. Ein Quota-Limit ist aktuell nicht konfiguriert.</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 15px;"><div class="ui-state-highlight ui-corner-all" style="padding: 10px;"><strong>Requests gesamt</strong><br>{{data.usage.total_requests}}</div><div class="ui-state-highlight ui-corner-all" style="padding: 10px;"><strong>Letzte 24 Stunden</strong><br>{{data.usage.requests_last_24h}}</div><div class="ui-state-highlight ui-corner-all" style="padding: 10px;"><strong>Letzte 30 Tage</strong><br>{{data.usage.requests_last_30d}}</div><div class="ui-state-highlight ui-corner-all" style="padding: 10px;"><strong>Ø Antwortzeit</strong><br>{{data.usage.avg_duration_ms}} ms</div></div>
+<h4>Nutzung nach Endpunkt</h4><table><tr><th>Endpunkt</th><th>Requests</th><th>Ø Antwortzeit</th><th>Antwortdaten</th></tr>{{#each data.usage.by_endpoint}}<tr><td><code>{{endpoint}}</code></td><td>{{requests}}</td><td>{{avg_duration_ms}} ms</td><td>{{response_bytes}} Bytes</td></tr>{{else}}<tr><td colspan="4">Noch keine API-Requests protokolliert.</td></tr>{{/each}}</table>
+<h4>Nutzung nach API-Key</h4><table><tr><th>Account</th><th>Key</th><th>Requests</th><th>Letzte Nutzung</th></tr>{{#each data.usage.by_key}}<tr><td>{{user}}</td><td><code>{{key_prefix}}…</code></td><td>{{requests}}</td><td>{{last_request_at}}</td></tr>{{else}}<tr><td colspan="4">Noch keine API-Requests protokolliert.</td></tr>{{/each}}</table>
