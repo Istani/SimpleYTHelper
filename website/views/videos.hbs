@@ -12,14 +12,14 @@
             </div>
             <div style="font-size: 0.85em; background: #f0f0f0; padding: 5px; border-radius: 4px; margin-bottom: 10px;">
                 <strong>{{i18n "Views"}}:</strong> {{viewCount}} |
-                <strong>Likes:</strong> {{likeCount}} |
-                <strong>Comments:</strong> {{commentCount}}
+                <strong>{{i18n "Likes"}}:</strong> {{likeCount}} |
+                <strong>{{i18n "Comments"}}:</strong> {{commentCount}}
             </div>
             <div style="font-size: 0.8em; height: 4.5em; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; color: #444;">
                 {{description}}
             </div>
         </div>
     {{#else}}
-        <p>No videos found.</p>
+        <p>{{i18n "No videos found."}}</p>
     {{/each}}
 </div>

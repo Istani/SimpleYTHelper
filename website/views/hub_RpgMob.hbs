@@ -132,7 +132,7 @@
       });
 
       socket_rpg.on('mvps', function (mvps) {
-        var output = "<img src='/hud/crown.png' width='16' height='16'>&nbsp;Ihr habt das Monster besiegt!<br><br>";
+        var output = "<img src='/hud/crown.png' width='16' height='16'>&nbsp;{{i18n "You defeated the monster!"}}<br><br>";
         for (let m_index = 0; m_index < mvps.length; m_index++) {
           const element = mvps[m_index];
           output += "<span class='special'>" + (parseInt(m_index) + 1) + "</span>. <span class='username'>" + element.displayname + "</span><br>";

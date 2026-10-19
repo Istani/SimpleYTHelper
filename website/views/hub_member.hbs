@@ -60,7 +60,7 @@ var data = [
     var text="";
     text = "<marquee>";
     while (current_sub < data.length) {
-      text = text + "<span class='username'>" + data[current_sub].name + "</span> <span class='special'>" + data[current_sub].time + "</span> Monate <span class='trenn'> | </span>";
+      text = text + "<span class='username'>" + data[current_sub].name + "</span> <span class='special'>" + data[current_sub].time + "</span> {{i18n "Months"}} <span class='trenn'> | </span>";
       current_sub++;
     }
     div.innerHTML = text + "</marquee>";

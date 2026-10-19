@@ -56,7 +56,7 @@ var data = [
   var current_sub = 0;
   function animateSubs() {
     var div = document.getElementById("show_subs");
-    div.innerHTML = "<div class='animatedText'><img src='/hud/crown.png' width='16' height='16'>&nbsp;VIPs:<br><span class='username'>" + data[current_sub].name + "</span> <span class='special'>" + data[current_sub].time + "</span> Monate</div>";
+    div.innerHTML = "<div class='animatedText'><img src='/hud/crown.png' width='16' height='16'>&nbsp;{{i18n "VIPs:"}}<br><span class='username'>" + data[current_sub].name + "</span> <span class='special'>" + data[current_sub].time + "</span> {{i18n "Months"}}</div>";
 
     current_sub++;
     if (current_sub >= data.length) {
@@ -75,7 +75,7 @@ var data = [
     var multi = parseInt(data.length/subfaktor)+1;
 
     var div = document.getElementById("show_subs");
-    div.innerHTML = "<div class='animatedSubGoal'><img src='/hud/crown.png' width='16' height='16'>&nbsp;VIPs:<br><span class='username'>Goal:</span> <span class='special'>" + data.length + "/" + (multi*subfaktor) + "</span></div>";
+    div.innerHTML = "<div class='animatedSubGoal'><img src='/hud/crown.png' width='16' height='16'>&nbsp;{{i18n "VIPs:"}}<br><span class='username'>{{i18n "Goal:"}}</span> <span class='special'>" + data.length + "/" + (multi*subfaktor) + "</span></div>";
 
     setTimeout(animateSubs, 14000);
   }

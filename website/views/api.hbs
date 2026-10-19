@@ -2,27 +2,27 @@
 <p>{{{i18n "API-Keys geben ausschließlich Zugriff auf die Daten des eigenen SYTH-Accounts. Der Key wird nur beim Erstellen angezeigt."}}}</p>
 {{#if data.created_key}}
   <div class="ui-state-highlight ui-corner-all" style="padding: 1em; margin-bottom: 1em;">
-    <strong>Neuer API-Key — jetzt sicher speichern:</strong><br>
+    <strong>{{i18n "New API key — save it securely now:"}}</strong><br>
     <code>{{data.created_key}}</code>
   </div>
 {{/if}}
 <form method="POST" action="/Api/Keys">
   <input type="hidden" name="csrf_token" value="{{data.csrf_token}}">
-  <label for="label">Bezeichnung</label>
-  <input id="label" name="label" type="text" maxlength="100" required placeholder="z. B. Mein Dashboard">
-  <input type="submit" value="API-Key erstellen">
+  <label for="label">{{i18n "Label"}}</label>
+  <input id="label" name="label" type="text" maxlength="100" required placeholder="{{i18n "e.g. My dashboard"}}">
+  <input type="submit" value="{{i18n "Create API key"}}">
 </form>
-<h3>Aktive und widerrufene Keys</h3>
+<h3>{{i18n "Active and revoked keys"}}</h3>
 {{#if data.keys.length}}
 <table>
-  <tr><th>Bezeichnung</th><th>Prefix</th><th>Erstellt</th><th>Letzte Nutzung</th><th>Status</th><th></th></tr>
+  <tr><th>{{i18n "Label"}}</th><th>{{i18n "Prefix"}}</th><th>{{i18n "Created"}}</th><th>{{i18n "Last used"}}</th><th>{{i18n "Status"}}</th><th></th></tr>
   {{#each data.keys}}
     <tr>
       <td>{{label}}</td><td><code>{{key_prefix}}…</code></td><td>{{created_at}}</td><td>{{last_used_at}}</td>
-      <td>{{#if revoked_at}}widerrufen{{else}}aktiv{{/if}}</td>
-      <td>{{#unless revoked_at}}<form method="POST" action="/Api/Keys/{{id}}/Revoke"><input type="hidden" name="csrf_token" value="{{../data.csrf_token}}"><input type="submit" value="Widerrufen"></form>{{/unless}}</td>
+      <td>{{#if revoked_at}}{{i18n "Revoked"}}{{else}}{{i18n "Active"}}{{/if}}</td>
+      <td>{{#unless revoked_at}}<form method="POST" action="/Api/Keys/{{id}}/Revoke"><input type="hidden" name="csrf_token" value="{{../data.csrf_token}}"><input type="submit" value="{{i18n "Revoke"}}"></form>{{/unless}}</td>
     </tr>
   {{/each}}
 </table>
-{{else}}<p>Noch keine API-Keys angelegt.</p>{{/if}}
-<p><a href="/Api/Docs">Zur API-Dokumentation</a></p>
+{{else}}<p>{{i18n "No API keys created yet."}}</p>{{/if}}
+<p><a href="/Api/Docs">{{i18n "Go to API documentation"}}</a></p>

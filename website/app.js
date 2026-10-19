@@ -241,9 +241,10 @@ app.post("/Login", async function(req, res) {
 
   if (temp_data.login === undefined) {
     temp_data.error = {};
-    temp_data.error.code = "Wrong Login!";
-    temp_data.error.text =
-      "Wrong Login Information! Please Check your E-Mail and Password!";
+    temp_data.error.code = i18n.__("Wrong Login!");
+    temp_data.error.text = i18n.__(
+      "Wrong Login Information! Please Check your E-Mail and Password!"
+    );
     res.render("login", { data: temp_data });
   } else {
     req.session.user = temp_data.login;
@@ -261,28 +262,28 @@ app.post("/Register", async function(req, res) {
   var data = req.body;
   if (data.password != data.password_repeat || data.password == "") {
     var err = {};
-    err.code = "Password did not Match!";
-    err.text = "Please Check you Passwords!";
+    err.code = i18n.__("Password did not Match!");
+    err.text = i18n.__("Please Check you Passwords!");
     temp_data.error = err;
   }
   if (data.email == "") {
     var err = {};
-    err.code = "Email Empty!";
-    err.text = "Please Check you E-Mail!";
+    err.code = i18n.__("Email Empty!");
+    err.text = i18n.__("Please Check you E-Mail!");
     temp_data.error = err;
   }
   if (typeof data.AGB == "undefined") {
     var err = {};
-    err.code = "AGB!";
-    err.text = "Please Check our AGB!";
+    err.code = i18n.__("AGB!");
+    err.text = i18n.__("Please Check our AGB!");
     temp_data.error = err;
   }
 
   var login = await Login.query().where("user", data.email);
   if (typeof temp_data.error == "undefined" && login.length > 0) {
     var err = {};
-    err.code = "In Use!";
-    err.text = "Your E-Mail Adress is already used!";
+    err.code = i18n.__("In Use!");
+    err.text = i18n.__("Your E-Mail Adress is already used!");
     temp_data.error = err;
   }
   if (typeof temp_data.error != "undefined") {
@@ -327,7 +328,7 @@ app.post("/Api/Keys", requireSessionUser, requireCsrf, async function(
   try {
     var label = String(req.body.label || "").trim();
     if (!label || label.length > 100)
-      return res.status(400).send("Ungültige Key-Bezeichnung.");
+      return res.status(400).send(i18n.__("Invalid key label."));
     var secret =
       "syth_" +
       crypto
@@ -357,7 +358,7 @@ app.post(
       var user = sessionUser(req);
       var keyId = Number(req.params.id);
       if (!Number.isSafeInteger(keyId) || keyId < 1)
-        return res.status(400).send("Ungültiger API-Key.");
+        return res.status(400).send(i18n.__("Invalid API key."));
       await ApiKey.query()
         .where("id", keyId)
         .where("owner_id", user.id)
@@ -377,7 +378,9 @@ app.get("/Admin/Api", requireSessionUser, async function(req, res, next) {
   try {
     var user = sessionUser(req);
     if (!isApiAdmin(user))
-      return res.status(403).send("API-Adminrechte erforderlich.");
+      return res
+        .status(403)
+        .send(i18n.__("API administrator privileges required."));
     var temp_data = { login: user, csrf_token: createCsrfToken(req) };
     temp_data.users = await Login.query()
       .select("id", "user", "is_admin", "is_api_admin")
@@ -396,10 +399,12 @@ app.post("/Admin/Api/:id", requireSessionUser, requireCsrf, async function(
   try {
     var actor = sessionUser(req);
     if (!isApiAdmin(actor))
-      return res.status(403).send("API-Adminrechte erforderlich.");
+      return res
+        .status(403)
+        .send(i18n.__("API administrator privileges required."));
     var targetId = Number(req.params.id);
     if (!Number.isSafeInteger(targetId) || targetId < 1)
-      return res.status(400).send("Ungültige Benutzer-ID.");
+      return res.status(400).send(i18n.__("Invalid user ID."));
     await Login.query()
       .findById(targetId)
       .patch({ is_api_admin: req.body.is_api_admin === "1" });
@@ -427,7 +432,7 @@ app.get("/Dashboard", async function(req, res) {
         };
       } else {
         temp_data.current[token_index] = {
-          name: "No Data!",
+          name: i18n.__("No Data!"),
           service: element.service
         };
       }

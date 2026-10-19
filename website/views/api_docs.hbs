@@ -2,18 +2,18 @@
 <p>{{{i18n "Basis-URL:"}}} <code>/api/v1</code></p>
 <p>{{{i18n "Authentifizierung:"}}} Header <code>X-SYTH-API-Key: dein_key</code> oder <code>Authorization: Bearer dein_key</code>.</p>
 <p>{{{i18n "Ein normaler Key kann nur Daten seines SYTH-Accounts lesen. API-Admins können optional ?userId=&lt;SYTH-User-ID&gt; an jeden Endpunkt anhängen. Alle Requests werden für spätere Quotas und Abrechnung protokolliert; derzeit wird kein Limit berechnet."}}}</p>
-<h3>Read endpoints</h3>
+<h3>{{i18n "Read endpoints"}}</h3>
 <table>
-  <tr><th>Methode</th><th>Pfad</th><th>Beschreibung</th></tr>
-  <tr><td>GET</td><td><code>/me</code></td><td>SYTH-Account ohne Passwortdaten</td></tr>
-  <tr><td>GET</td><td><code>/channels</code></td><td>Verknüpfte Channels</td></tr>
-  <tr><td>GET</td><td><code>/members</code></td><td>Mitglieder der eigenen Channels</td></tr>
-  <tr><td>GET</td><td><code>/videos</code></td><td>Videos der eigenen Channels</td></tr>
-  <tr><td>GET</td><td><code>/playlists</code></td><td>Playlists der eigenen Channels</td></tr>
-  <tr><td>GET</td><td><code>/analytics/channels</code></td><td>Historische Channel-Analytics, einschließlich Umsatzfeldern</td></tr>
-  <tr><td>GET</td><td><code>/analytics/videos</code></td><td>Historische Video-Analytics</td></tr>
-  <tr><td>GET</td><td><code>/rpg/characters</code></td><td>RPG-Charaktere inklusive Inventar</td></tr>
+  <tr><th>{{i18n "Method"}}</th><th>{{i18n "Path"}}</th><th>{{i18n "Description"}}</th></tr>
+  <tr><td>GET</td><td><code>/me</code></td><td>{{i18n "SYTH account without password data"}}</td></tr>
+  <tr><td>GET</td><td><code>/channels</code></td><td>{{i18n "Connected channels"}}</td></tr>
+  <tr><td>GET</td><td><code>/members</code></td><td>{{i18n "Members of your own channels"}}</td></tr>
+  <tr><td>GET</td><td><code>/videos</code></td><td>{{i18n "Videos of your own channels"}}</td></tr>
+  <tr><td>GET</td><td><code>/playlists</code></td><td>{{i18n "Playlists of your own channels"}}</td></tr>
+  <tr><td>GET</td><td><code>/analytics/channels</code></td><td>{{i18n "Historical channel analytics, including revenue fields"}}</td></tr>
+  <tr><td>GET</td><td><code>/analytics/videos</code></td><td>{{i18n "Historical video analytics"}}</td></tr>
+  <tr><td>GET</td><td><code>/rpg/characters</code></td><td>{{i18n "RPG characters including inventory"}}</td></tr>
 </table>
-<h3>Beispiel</h3>
+<h3>{{i18n "Example"}}</h3>
 <pre>curl -H "X-SYTH-API-Key: DEIN_KEY" https://DEINE-SYTH-DOMAIN/api/v1/channels</pre>
-<p><a href="/Api">API-Keys verwalten</a></p>
+<p><a href="/Api">{{i18n "Manage API keys"}}</a></p>

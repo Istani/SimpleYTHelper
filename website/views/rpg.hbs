@@ -37,7 +37,7 @@
                                 </tr>
                             {{#else}}
                                 <tr>
-                                    <td align="center">Empty inventory</td>
+                                    <td align="center">{{i18n "Empty inventory"}}</td>
                                 </tr>
                             {{/each}}
                         </tbody>
@@ -45,13 +45,13 @@
                 </div>
             </div>
         {{#else}}
-            <p>No RPG characters found.</p>
+            <p>{{i18n "No RPG characters found."}}</p>
         {{/each}}
     </div>
 
     <div class="ui-accordion ui-widget ui-helper-reset">
         <h3 class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">
-            Recent Events
+            {{i18n "Recent Events"}}
         </h3>
         <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
             {{#each data.logs}}
@@ -60,7 +60,7 @@
                     <span class="service-{{service}}"></span> {{display_text}}
                 </div>
             {{#else}}
-                <p>No recent events.</p>
+                <p>{{i18n "No recent events."}}</p>
             {{/each}}
         </div>
     </div>
