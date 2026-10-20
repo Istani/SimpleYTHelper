@@ -817,7 +817,7 @@ app.get("/Videos", requireSessionUser, async function(req, res, next) {
     let query = Video.query()
       .whereIn("owner", ids)
       .orderBy("publishedAt", "desc");
-    if (q) query = query.where("title", "like", "%" + q + "%");
+    if (q) query = query.where("pl_title", "like", "%" + q + "%");
     const result = ids.length
       ? await query.page(page - 1, size)
       : { results: [], total: 0 };
@@ -857,7 +857,7 @@ app.get("/Playlists", requireSessionUser, async function(req, res, next) {
       .filter(Boolean);
     let query = Playlist.query()
       .whereIn("owner", ids)
-      .orderBy("title", "asc");
+      .orderBy("pl_title", "asc");
     if (q) query = query.where("title", "like", "%" + q + "%");
     const result = ids.length
       ? await query.page(page - 1, size)
