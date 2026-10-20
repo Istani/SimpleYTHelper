@@ -101,7 +101,9 @@ app.use(
     resave: true,
     saveUninitialized: false,
     cookie: {
-      expires: 600000
+      maxAge: 600000,
+      httpOnly: true,
+      sameSite: "lax"
     }
   })
 );
@@ -893,13 +895,11 @@ app.get("/Channels", async function(req, res) {
 });
 
 app.get("/health", function(req, res) {
-  res
-    .status(200)
-    .json({
-      status: "ok",
-      service: package_info.name,
-      version: package_info.version
-    });
+  res.status(200).json({
+    status: "ok",
+    service: package_info.name,
+    version: package_info.version
+  });
 });
 
 app.get("/", function(req, res) {
