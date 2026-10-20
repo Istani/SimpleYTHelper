@@ -1,28 +1,38 @@
-<h2>{{{i18n "SYTH Account API"}}}</h2>
-<p>{{{i18n "API-Keys geben ausschließlich Zugriff auf die Daten des eigenen SYTH-Accounts. Der Key wird nur beim Erstellen angezeigt."}}}</p>
-{{#if data.created_key}}
-  <div class="ui-state-highlight ui-corner-all" style="padding: 1em; margin-bottom: 1em;">
-    <strong>{{i18n "New API key — save it securely now:"}}</strong><br>
-    <code>{{data.created_key}}</code>
-  </div>
-{{/if}}
-<form method="POST" action="/Api/Keys">
-  <input type="hidden" name="csrf_token" value="{{data.csrf_token}}">
-  <label for="label">{{i18n "Label"}}</label>
-  <input id="label" name="label" type="text" maxlength="100" required placeholder="{{i18n "e.g. My dashboard"}}">
-  <input type="submit" value="{{i18n "Create API key"}}">
-</form>
-<h3>{{i18n "Active and revoked keys"}}</h3>
-{{#if data.keys.length}}
-<table>
-  <tr><th>{{i18n "Label"}}</th><th>{{i18n "Prefix"}}</th><th>{{i18n "Created"}}</th><th>{{i18n "Last used"}}</th><th>{{i18n "Status"}}</th><th></th></tr>
-  {{#each data.keys}}
-    <tr>
-      <td>{{label}}</td><td><code>{{key_prefix}}…</code></td><td>{{created_at}}</td><td>{{last_used_at}}</td>
-      <td>{{#if revoked_at}}{{i18n "Revoked"}}{{else}}{{i18n "Active"}}{{/if}}</td>
-      <td>{{#unless revoked_at}}<form method="POST" action="/Api/Keys/{{id}}/Revoke"><input type="hidden" name="csrf_token" value="{{../data.csrf_token}}"><input type="submit" value="{{i18n "Revoke"}}"></form>{{/unless}}</td>
-    </tr>
-  {{/each}}
-</table>
-{{else}}<p>{{i18n "No API keys created yet."}}</p>{{/if}}
-<p><a href="/Api/Docs">{{i18n "Go to API documentation"}}</a></p>
+<main class="api-key-page">
+  <section class="page-heading">
+    <p class="eyebrow">Developer</p>
+    <h1>API-Keys</h1>
+    <p>Verwalte den Zugriff externer Tools auf die Daten deines SimpleYTH-Accounts.</p>
+  </section>
+
+  {{#if data.created_key}}
+    <section class="api-key-created" role="alert">
+      <p class="eyebrow">Einmalig sichtbar</p>
+      <h2>Neuen API-Key jetzt sicher speichern</h2>
+      <p>Dieser Key wird nach dem Verlassen dieser Seite nicht erneut angezeigt. Teile ihn niemals in Chats, Screenshots oder öffentlichen Repositories.</p>
+      <code class="api-key-secret">{{data.created_key}}</code>
+    </section>
+  {{/if}}
+
+  <section class="card api-key-create">
+    <div><h2>Neuen Key erstellen</h2><p class="muted">Wähle eine Beschreibung, damit du später erkennst, welches Tool den Key verwendet.</p></div>
+    <form method="POST" action="/Api/Keys">
+      <input type="hidden" name="csrf_token" value="{{data.csrf_token}}">
+      <label for="label">Bezeichnung</label>
+      <div class="api-key-create__controls"><input id="label" name="label" type="text" maxlength="100" required placeholder="z. B. Mein Dashboard" autocomplete="off"><button class="button primary" type="submit">API-Key erstellen</button></div>
+    </form>
+  </section>
+
+  <section class="card api-key-list">
+    <div class="section-title"><div><h2>Deine API-Keys</h2><p class="muted">Widerrufe Keys sofort, wenn ein Tool nicht mehr verwendet wird oder ein Key offengelegt wurde.</p></div><a class="button" href="/Api/Docs">API-Dokumentation</a></div>
+    {{#if data.keys.length}}
+      <div class="table-wrap"><table><thead><tr><th>Bezeichnung</th><th>Präfix</th><th>Erstellt</th><th>Zuletzt verwendet</th><th>Status</th><th><span class="sr-only">Aktion</span></th></tr></thead><tbody>
+      {{#each data.keys}}
+        <tr><td>{{label}}</td><td><code>{{key_prefix}}…</code></td><td>{{created_at}}</td><td>{{#if last_used_at}}{{last_used_at}}{{else}}Noch nie{{/if}}</td><td>{{#if revoked_at}}<span class="key-status revoked">Widerrufen</span>{{else}}<span class="key-status active">Aktiv</span>{{/if}}</td><td>{{#unless revoked_at}}<form method="POST" action="/Api/Keys/{{id}}/Revoke"><input type="hidden" name="csrf_token" value="{{../data.csrf_token}}"><button class="button danger" type="submit">Widerrufen</button></form>{{/unless}}</td></tr>
+      {{/each}}
+      </tbody></table></div>
+    {{else}}
+      <div class="empty-state"><h2>Noch keine API-Keys</h2><p>Erstelle einen Key, um die SimpleYTH Account API in eigenen Tools zu verwenden.</p></div>
+    {{/if}}
+  </section>
+</main>

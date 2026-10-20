@@ -3,3 +3,112 @@
 
 #navigation,#page_login,#page_login .ui-accordion-content{min-width:0!important;max-width:100%!important;overflow:hidden!important}#page_login .login-form input[type=text],#page_login .login-form input[type=password]{display:block!important;width:calc(100% - 2px)!important;box-sizing:border-box!important}
 .button.primary{background:#c62828!important;border-color:#c62828!important}.button.primary:hover{background:#a61f1f!important;border-color:#a61f1f!important}
+/* Videos only: intentionally scoped so the legacy banner/navigation stay untouched. */
+.videos-page { max-width: 1120px; }
+.videos-page .page-heading { margin: 0; }
+.videos-page .search-form { display:flex; gap:10px; margin:24px 0; }
+.videos-page .search-form input { width:min(420px,100%); height:42px; padding:0 13px; border:1px solid #cbd5e1; border-radius:8px; background:#fff; }
+.videos-page .search-form .button { height:42px; padding:.55rem 1rem; }
+.videos-page .content-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
+.videos-page .content-grid .card { min-width:0; overflow:hidden; padding:0; margin:0; }
+.videos-page .content-grid .media-thumb { display:block; width:100%; aspect-ratio:16 / 9; object-fit:cover; background:#1d2939; }
+.videos-page .content-grid .card-body { padding:14px 16px 16px; }
+.videos-page .content-grid h2 { margin:0 0 8px; font-size:1rem; line-height:1.35; overflow-wrap:anywhere; }
+.videos-page .content-grid p { margin:7px 0 0; font-size:.88rem; line-height:1.45; }
+.videos-page .pagination { display:flex; justify-content:center; align-items:center; gap:12px; margin:28px 0 0; }
+@media (max-width:1050px) { .videos-page .content-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:640px) { .videos-page .search-form { flex-direction:column; } .videos-page .search-form input { width:100%; } .videos-page .content-grid { grid-template-columns:1fr; } .videos-page .pagination { flex-wrap:wrap; } }
+/* Playlists only: contained to the Content-Hub, with no legacy-layout overrides. */
+.playlists-page { max-width:1120px; }
+.playlists-page .page-heading { margin:0; }
+.playlists-page .search-form { display:flex; gap:10px; margin:24px 0; }
+.playlists-page .search-form input { width:min(420px,100%); height:42px; padding:0 13px; border:1px solid #cbd5e1; border-radius:8px; background:#fff; }
+.playlists-page .search-form .button { height:42px; padding:.55rem 1rem; }
+.playlists-page .content-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
+.playlists-page .playlist-card { display:flex; flex-direction:column; min-width:0; min-height:218px; margin:0; padding:18px; }
+.playlists-page .playlist-card__top { display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:.82rem; font-weight:700; text-transform:capitalize; }
+.playlists-page .playlist-card__type { padding:3px 8px; border:1px solid #ef9a9a; border-radius:999px; color:#a61f1f; font-size:.72rem; text-transform:uppercase; letter-spacing:.05em; }
+.playlists-page .playlist-card h2 { margin:16px 0 9px; font-size:1.08rem; line-height:1.35; overflow-wrap:anywhere; }
+.playlists-page .playlist-card__description { display:-webkit-box; margin:0; overflow:hidden; color:#475569; font-size:.9rem; line-height:1.5; -webkit-box-orient:vertical; -webkit-line-clamp:3; }
+.playlists-page .playlist-card__meta { display:flex; justify-content:space-between; gap:10px; margin-top:auto; padding-top:16px; border-top:1px solid #e2e8f0; color:#64748b; font-size:.8rem; }
+.playlists-page .pagination { display:flex; justify-content:center; align-items:center; gap:12px; margin:28px 0 0; }
+@media (max-width:1050px) { .playlists-page .content-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:640px) { .playlists-page .search-form { flex-direction:column; } .playlists-page .search-form input { width:100%; } .playlists-page .content-grid { grid-template-columns:1fr; } .playlists-page .pagination { flex-wrap:wrap; } }
+
+.videos-page .video-card__media { display:block; color:inherit; }
+.videos-page .video-card__link, .playlists-page .playlist-card__link { display:inline-block; margin-top:14px; color:#a61f1f; font-size:.88rem; font-weight:700; text-decoration:none; }
+.videos-page .video-card__link:hover, .playlists-page .playlist-card__link:hover { color:#c62828; text-decoration:underline; }
+.playlists-page .playlist-card { padding:0; overflow:hidden; }
+.playlists-page .playlist-card__media, .playlists-page .playlist-card__fallback { display:block; width:100%; aspect-ratio:16 / 9; background:#3b0d0d; }
+.playlists-page .playlist-card__media img { display:block; width:100%; height:100%; object-fit:cover; }
+.playlists-page .playlist-card__fallback { display:grid; place-items:center; color:#fff; font-size:2rem; }
+.playlists-page .playlist-card__content { display:flex; flex:1; flex-direction:column; min-height:218px; padding:18px; }
+
+/* Force one 16:9 preview box for every playlist, including missing local assets. */
+.playlists-page .playlist-card__media,.playlists-page .playlist-card__fallback{position:relative;display:block;flex:none;height:0;min-height:0;padding-top:56.25%;overflow:hidden;aspect-ratio:auto!important;}
+.playlists-page .playlist-card__media img{position:absolute;inset:0;display:block;width:100%!important;height:100%!important;max-width:none!important;object-fit:cover!important;}
+.playlists-page .playlist-card__fallback{font-size:0;}
+.playlists-page .playlist-card__fallback::after{position:absolute;inset:0;display:grid;place-items:center;content:"▶";color:#fff;font-size:2rem;}
+
+
+/* Channel library: isolated to prevent legacy-layout regressions. */
+.channels-page { max-width:1120px; }
+.channels-page .page-heading { margin:0; }
+.channels-page .search-form { display:flex; gap:10px; margin:24px 0; }
+.channels-page .search-form input { width:min(420px,100%); height:42px; padding:0 13px; border:1px solid #cbd5e1; border-radius:8px; background:#fff; }
+.channels-page .search-form .button { height:42px; padding:.55rem 1rem; }
+.channels-page .content-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
+.channels-page .channel-card { min-width:0; margin:0; padding:0; overflow:hidden; }
+.channels-page .channel-card__banner { display:block; width:100%; height:112px; object-fit:cover; background:#3b0d0d; }
+.channels-page .channel-card__content { position:relative; display:flex; flex-direction:column; min-height:260px; padding:18px; }
+.channels-page .channel-card__avatar { width:68px; height:68px; margin-top:-50px; border:3px solid #fff; border-radius:50%; background:#3b0d0d; object-fit:cover; }
+.channels-page .channel-card__heading { margin-top:12px; }
+.channels-page .channel-card__heading h2 { margin:6px 0 0; font-size:1.08rem; line-height:1.35; overflow-wrap:anywhere; }
+.channels-page .channel-card__description { display:-webkit-box; min-height:40px; margin:12px 0; overflow:hidden; color:#475569; font-size:.9rem; line-height:1.45; -webkit-box-orient:vertical; -webkit-line-clamp:2; }
+.channels-page .channel-card__stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin:0; padding-top:14px; border-top:1px solid #e2e8f0; }
+.channels-page .channel-card__stats div { min-width:0; }
+.channels-page .channel-card__stats dt { color:#64748b; font-size:.7rem; }
+.channels-page .channel-card__stats dd { margin:3px 0 0; overflow:hidden; font-size:.86rem; font-weight:700; text-overflow:ellipsis; }
+.channels-page .channel-card__link { display:inline-block; margin-top:auto; padding-top:14px; color:#a61f1f; font-size:.88rem; font-weight:700; text-decoration:none; }
+.channels-page .channel-card__link:hover { color:#c62828; text-decoration:underline; }
+.channels-page .pagination { display:flex; justify-content:center; align-items:center; gap:12px; margin:28px 0 0; }
+@media (max-width:1050px) { .channels-page .content-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:640px) { .channels-page .search-form { flex-direction:column; } .channels-page .search-form input { width:100%; } .channels-page .content-grid { grid-template-columns:1fr; } .channels-page .pagination { flex-wrap:wrap; } }
+
+/* Keep full channel avatars inside the card; the previous overlap was clipped by the card border. */
+.channels-page .channel-card__avatar { margin-top:0; }
+
+
+/* Developer API pages: keep key handling clear and scoped. */
+.sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+.api-key-page,.api-docs-page { max-width:1120px; }
+.api-key-page .page-heading,.api-docs-page .page-heading { margin:0 0 24px; }
+.api-key-created { margin:0 0 18px; padding:20px; border:1px solid #ef9a9a; border-radius:12px; background:#fff7f7; }
+.api-key-created h2 { margin:4px 0 8px; }
+.api-key-secret { display:block; margin-top:14px; padding:12px; overflow-wrap:anywhere; border:1px dashed #c62828; border-radius:8px; background:#fff; color:#7f1d1d; font-size:.95rem; }
+.api-key-create { display:grid; grid-template-columns:minmax(0,1fr) minmax(300px,1fr); gap:24px; align-items:end; }
+.api-key-create h2,.api-key-list h2,.api-docs-page h2 { margin-top:0; }
+.api-key-create label { display:block; margin-bottom:7px; font-weight:700; }
+.api-key-create__controls { display:flex; gap:10px; }
+.api-key-create input { min-width:0; flex:1; height:42px; padding:0 13px; border:1px solid #cbd5e1; border-radius:8px; }
+.api-key-create .button { white-space:nowrap; }
+.api-key-list { margin-top:18px; }
+.key-status { display:inline-block; padding:3px 8px; border-radius:999px; font-size:.78rem; font-weight:700; }
+.key-status.active { background:#dcfce7; color:#166534; }
+.key-status.revoked { background:#fee2e2; color:#991b1b; }
+.button.danger { padding:.45rem .7rem; border-color:#ef9a9a; color:#991b1b; }
+.api-docs-page .card { margin-bottom:18px; }
+.api-docs-page pre { margin:14px 0 0; padding:14px; overflow-x:auto; border-radius:8px; background:#1d2939; color:#f8fafc; }
+.api-docs-page pre code { color:inherit; }
+.api-docs-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+.http-method { color:#166534; font-weight:800; font-size:.82rem; }
+@media (max-width:720px) { .api-key-create,.api-docs-grid { grid-template-columns:1fr; } .api-key-create__controls { flex-direction:column; } .api-key-create .button { width:100%; text-align:center; } }
+
+
+/* Error states: actionable pages without exposing server internals. */
+.error-page { display:grid; min-height:340px; place-items:center; }
+.error-page__card { width:min(100%,640px); text-align:center; }
+.error-page__card h1 { margin:.25rem 0 .75rem; color:#991b1b; font-size:clamp(1.7rem,4vw,2.5rem); }
+.error-page__card p { max-width:48ch; margin:.5rem auto; }
+.error-page__card .actions { justify-content:center; }
+.error-page__request { margin-top:20px!important; font-size:.85rem; }

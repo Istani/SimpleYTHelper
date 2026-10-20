@@ -20,6 +20,7 @@ const RpgChar = require("./models/rpg_char.js");
 const RpgInventory = require("./models/rpg_inventory.js");
 const RpgLog = require("./models/rpg_log.js");
 const Playlist = require("./models/playlists.js");
+const PlaylistItem = require("./models/playlists_items.js");
 const ApiKey = require("./models/syth_api_key.js");
 const ApiUsage = require("./models/syth_api_usage.js");
 const ChannelAnalyticsHistory = require("./models/channel_analytics_history.js");
@@ -34,6 +35,7 @@ const {
   sessionUser
 } = require("./api.js");
 const crypto = require("crypto");
+const emoji = require("node-emoji");
 const session_secret = new Buffer(package_info.name).toString("base64");
 
 /* Webserver */
@@ -50,6 +52,9 @@ var discord_auth = require("./oauth/discord.js");
 
 var hbs = exphbs.create({
   helpers: {
+    emojify: function(value) {
+      return emoji.emojify(String(value == null ? "" : value));
+    },
     i18n: function(key, options) {
       var temp_data = {};
       temp_data.data = options;
@@ -111,10 +116,13 @@ app.use(express.static("public"));
 app.use(function(req, res, next) {
   req.app.locals.layout = "main";
   const startedAt = Date.now();
+  req.requestId = crypto.randomBytes(8).toString("hex");
+  res.set("X-Request-Id", req.requestId);
   res.on("finish", function() {
     console.log(
       JSON.stringify({
         event: "http_request",
+        request_id: req.requestId,
         method: req.method,
         path: req.path,
         status: res.statusCode,
@@ -800,14 +808,21 @@ app.get("/Videos", requireSessionUser, async function(req, res, next) {
     let query = Video.query()
       .whereIn("owner", ids)
       .orderBy("publishedAt", "desc");
-    if (q) query = query.where("pl_title", "like", "%" + q + "%");
+    if (q) query = query.where("title", "like", "%" + q + "%");
     const result = ids.length
       ? await query.page(page - 1, size)
       : { results: [], total: 0 };
     res.render("videos", {
       data: {
         login: user,
-        videos: result.results,
+        videos: result.results.map(video => ({
+          ...video,
+          external_url:
+            video.service === "youtube"
+              ? "https://www.youtube.com/watch?v=" +
+                encodeURIComponent(video.v_id)
+              : null
+        })),
         q,
         page,
         page_count: Math.max(1, Math.ceil(result.total / size)),
@@ -839,16 +854,66 @@ app.get("/Playlists", requireSessionUser, async function(req, res, next) {
       .map(t => t.service_user)
       .filter(Boolean);
     let query = Playlist.query()
-      .whereIn("owner", ids)
-      .orderBy("pl_title", "asc");
-    if (q) query = query.where("title", "like", "%" + q + "%");
+      .whereIn("playlists.owner", ids)
+      .leftJoin("playlists_item as first_item", function() {
+        this.on("first_item.service", "=", "playlists.service")
+          .andOn("first_item.owner", "=", "playlists.owner")
+          .andOn("first_item.pl_id", "=", "playlists.pl_id")
+          .andOn("first_item.position", "=", 0);
+      })
+      .leftJoin("videos as first_video", function() {
+        this.on("first_video.service", "=", "first_item.service")
+          .andOn("first_video.owner", "=", "first_item.owner")
+          .andOn("first_video.v_id", "=", "first_item.video_id");
+      })
+      .select(
+        "playlists.*",
+        "first_item.video_id as first_video_id",
+        "first_video.thumbnail as thumbnail"
+      )
+      .orderBy("playlists.publishedAt", "desc");
+    if (q) query = query.where("playlists.pl_title", "like", "%" + q + "%");
     const result = ids.length
       ? await query.page(page - 1, size)
       : { results: [], total: 0 };
+    const itemCounts = ids.length
+      ? await PlaylistItem.query()
+          .whereIn("owner", ids)
+          .select("service", "owner", "pl_id")
+          .count("position as video_count")
+          .groupBy("service", "owner", "pl_id")
+      : [];
+    const countByPlaylist = new Map(
+      itemCounts.map(item => [
+        [item.service, item.owner, item.pl_id].join("\u0000"),
+        Number(item.video_count)
+      ])
+    );
+    const playlists = result.results.map(playlist => {
+      const key = [playlist.service, playlist.owner, playlist.pl_id].join(
+        "\u0000"
+      );
+      const fallbackThumbnail =
+        playlist.service === "youtube" && playlist.first_video_id
+          ? "https://i.ytimg.com/vi/" +
+            encodeURIComponent(playlist.first_video_id) +
+            "/hqdefault.jpg"
+          : null;
+      return {
+        ...playlist,
+        thumbnail: playlist.thumbnail || fallbackThumbnail,
+        video_count: countByPlaylist.get(key) || 0,
+        external_url:
+          playlist.service === "youtube"
+            ? "https://www.youtube.com/playlist?list=" +
+              encodeURIComponent(playlist.pl_id)
+            : null
+      };
+    });
     res.render("playlists", {
       data: {
         login: user,
-        playlists: result.results,
+        playlists,
         q,
         page,
         page_count: Math.max(1, Math.ceil(result.total / size)),
@@ -864,16 +929,55 @@ app.get("/Playlists", requireSessionUser, async function(req, res, next) {
   }
 });
 
-app.get("/Channels", async function(req, res) {
-  var temp_data = {};
-  if (req.session.user) {
-    temp_data.login = req.session.user[0];
-    temp_data.channels = await Token.query()
-      .where("user_id", req.session.user[0].id)
-      .eager("[channel]");
-    res.render("channels", { data: temp_data });
-  } else {
-    res.redirect("/Login");
+app.get("/Channels", requireSessionUser, async function(req, res, next) {
+  try {
+    const user = sessionUser(req);
+    const q = String(req.query.q || "")
+      .trim()
+      .slice(0, 100);
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const size = 12;
+    let query = User_Channel.query()
+      .where("user_id", user.id)
+      .orderBy("channel_title", "asc");
+    if (q) query = query.where("channel_title", "like", "%" + q + "%");
+    const result = await query.page(page - 1, size);
+    res.render("channels", {
+      data: {
+        login: user,
+        channels: result.results.map(channel => {
+          const service = String(channel.service || "").toLowerCase();
+          const external_url =
+            service === "youtube"
+              ? "https://www.youtube.com/channel/" +
+                encodeURIComponent(channel.channel_id)
+              : service === "twitch"
+              ? "https://www.twitch.tv/" +
+                encodeURIComponent(channel.channel_title)
+              : null;
+          return {
+            ...channel,
+            external_url,
+            external_service:
+              service === "youtube"
+                ? "YouTube"
+                : service === "twitch"
+                ? "Twitch"
+                : null
+          };
+        }),
+        q,
+        page,
+        page_count: Math.max(1, Math.ceil(result.total / size)),
+        has_previous: page > 1,
+        has_next: page * size < result.total,
+        previous_page: page - 1,
+        next_page: page + 1,
+        total: result.total
+      }
+    });
+  } catch (error) {
+    next(error);
   }
 });
 
@@ -889,6 +993,51 @@ app.get("/", function(req, res) {
   console.log("http://" + req.headers.host + req.url);
   var temp_data = {};
   res.render("home", { data: temp_data });
+});
+
+app.use(function(req, res) {
+  if (req.path.indexOf("/api/v1/") === 0) {
+    return res.status(404).json({ error: "endpoint_not_found" });
+  }
+  res.status(404).render("error", {
+    data: {
+      login: sessionUser(req),
+      request_id: req.requestId,
+      error: {
+        code: "Seite nicht gefunden",
+        text: "Die angeforderte Seite existiert nicht oder wurde verschoben."
+      }
+    }
+  });
+});
+
+app.use(function(error, req, res, next) {
+  console.error(
+    JSON.stringify({
+      event: "http_error",
+      request_id: req.requestId,
+      method: req.method,
+      path: req.path,
+      message: error.message
+    })
+  );
+  if (res.headersSent) return next(error);
+  if (req.path.indexOf("/api/v1/") === 0) {
+    return res
+      .status(500)
+      .json({ error: "internal_server_error", requestId: req.requestId });
+  }
+  res.status(500).render("error", {
+    data: {
+      login: sessionUser(req),
+      request_id: req.requestId,
+      error: {
+        code: "Etwas ist schiefgelaufen",
+        text:
+          "Bitte versuche es erneut. Falls der Fehler bleibt, nenne dem Support die Request-ID."
+      }
+    }
+  });
 });
 
 server.listen(PORT, () => console.log("Webinterface running! Port: " + PORT));

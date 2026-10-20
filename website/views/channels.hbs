@@ -1,33 +1,32 @@
-<h2>{{i18n "Channels"}}</h2>
-
-<div class="ui-accordion ui-widget ui-helper-reset">
+<main class="content-library channels-page">
+  <section class="page-heading">
+    <p class="eyebrow">Content-Hub</p>
+    <h1>Channels</h1>
+    <p>{{data.total}} verbundene Channels.</p>
+  </section>
+  <form class="search-form" method="GET">
+    <input name="q" value="{{data.q}}" placeholder="Channels durchsuchen" aria-label="Channels durchsuchen">
+    <button class="button primary" type="submit">Suchen</button>
+  </form>
+  <div class="content-grid">
     {{#each data.channels}}
-        {{#each channel}}
-            <h3 class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">
-                <span class="service-{{../service}}">{{channel_title}}</span>
-            </h3>
-            <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
-                {{#if banner}}
-                    <img src="{{banner}}" style="width: 100%; max-height: 150px; object-fit: cover; border-radius: 4px; margin-bottom: 10px;">
-                {{/if}}
-                <div style="display: flex; align-items: start;">
-                    <img src="{{thumbnail}}" width="88" style="margin-right: 15px; border-radius: 50%;">
-                    <div>
-                        <p><strong>{{i18n "Service"}}:</strong> {{../service}}</p>
-                        <p><strong>{{i18n "Subscribers"}}:</strong> {{subscriber}}</p>
-                        <p><strong>{{i18n "Views"}}:</strong> {{views}}</p>
-                        <p><strong>{{i18n "Videos"}}:</strong> {{videos}}</p>
-                        <p><strong>{{i18n "Since"}}:</strong> {{start_date}}</p>
-                    </div>
-                </div>
-                <p><em>{{description}}</em></p>
-            </div>
-            <br>
-        {{/each}}
-        {{#unless channel}}
-            <div class="ui-state-highlight ui-corner-all" style="padding: 10px; margin-bottom: 10px;">
-                <span class="service-{{service}}">{{i18n "No Data!"}}</span>
-            </div>
-        {{/unless}}
+      <article class="card channel-card">
+        {{#if banner}}<img class="channel-card__banner" loading="lazy" src="{{banner}}" alt="">{{/if}}
+        <div class="channel-card__content">
+          <img class="channel-card__avatar" loading="lazy" src="{{thumbnail}}" alt="{{channel_title}}">
+          <div class="channel-card__heading"><span class="service-{{service}}">{{service}}</span><h2>{{emojify channel_title}}</h2></div>
+          {{#if description}}<p class="channel-card__description">{{emojify description}}</p>{{else}}<p class="channel-card__description muted">Keine Beschreibung verfügbar.</p>{{/if}}
+          <dl class="channel-card__stats"><div><dt>Abonnenten</dt><dd>{{subscriber}}</dd></div><div><dt>Aufrufe</dt><dd>{{views}}</dd></div><div><dt>Videos</dt><dd>{{videos}}</dd></div></dl>
+          {{#if external_url}}<a class="channel-card__link" href="{{external_url}}" target="_blank" rel="noopener noreferrer">Channel auf {{external_service}} öffnen <span aria-hidden="true">↗</span></a>{{/if}}
+        </div>
+      </article>
+    {{else}}
+      <div class="empty-state"><h2>Keine Channels gefunden</h2><p>Ändere den Suchbegriff oder verbinde einen weiteren Channel.</p></div>
     {{/each}}
-</div>
+  </div>
+  <nav class="pagination" aria-label="Channel-Seiten">
+    {{#if data.has_previous}}<a class="button" href="?q={{data.q}}&page={{data.previous_page}}">← Zurück</a>{{/if}}
+    <span>Seite {{data.page}} von {{data.page_count}}</span>
+    {{#if data.has_next}}<a class="button" href="?q={{data.q}}&page={{data.next_page}}">Weiter →</a>{{/if}}
+  </nav>
+</main>

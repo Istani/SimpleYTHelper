@@ -1049,7 +1049,8 @@ function ListPlaylistItems(auth, playlist, pageToken = "", loadAll = true) {
         tmp_message.owner = element.snippet.channelId;
         tmp_message.pl_id = playlist;
         tmp_message.position = element.snippet.position;
-        tmp_message.video_Id = element.snippet.resourceId.videoId;
+        // Database schema uses video_id; keeping this exact avoids a silent schema mismatch.
+        tmp_message.video_id = element.snippet.resourceId.videoId;
 
         var m = await ow_playlistitems
           .query()

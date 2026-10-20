@@ -1,1 +1,32 @@
-<section class="page-heading"><p class="eyebrow">Content-Hub</p><h1>Playlists</h1><p>{{data.total}} Playlists in deiner Bibliothek.</p></section><form class="search-form" method="GET"><input name="q" value="{{data.q}}" placeholder="Playlists durchsuchen"><button class="button primary" type="submit">Suchen</button></form><div class="content-grid">{{#each data.playlists}}<article class="card"><p class="eyebrow">{{service}}</p><h2>{{pl_title}}</h2><p>{{description}}</p><p class="muted">ID: {{pl_id}}</p></article>{{else}}<div class="empty-state"><h2>Keine Playlists gefunden</h2><p>Ändere den Suchbegriff oder verbinde einen weiteren Kanal.</p></div>{{/each}}</div><nav class="pagination">{{#if data.has_previous}}<a class="button" href="?q={{data.q}}&page={{data.previous_page}}">← Zurück</a>{{/if}}<span>Seite {{data.page}} von {{data.page_count}}</span>{{#if data.has_next}}<a class="button" href="?q={{data.q}}&page={{data.next_page}}">Weiter →</a>{{/if}}</nav>
+<main class="content-library playlists-page">
+  <section class="page-heading">
+    <p class="eyebrow">Content-Hub</p>
+    <h1>Playlists</h1>
+    <p>{{data.total}} Playlists in deiner Bibliothek.</p>
+  </section>
+  <form class="search-form" method="GET">
+    <input name="q" value="{{data.q}}" placeholder="Playlists durchsuchen" aria-label="Playlists durchsuchen">
+    <button class="button primary" type="submit">Suchen</button>
+  </form>
+  <div class="content-grid">
+    {{#each data.playlists}}
+      <article class="card playlist-card">
+        {{#if thumbnail}}<a class="playlist-card__media" href="{{external_url}}" target="_blank" rel="noopener noreferrer"><img loading="lazy" src="{{thumbnail}}" alt="Erstes Video aus {{pl_title}}"></a>{{else}}<div class="playlist-card__fallback" aria-label="Kein Vorschaubild verfügbar"></div>{{/if}}
+        <div class="playlist-card__content">
+          <div class="playlist-card__top"><span class="service-{{service}}">{{service}}</span><span class="playlist-card__type">{{video_count}} Videos</span></div>
+          <h2>{{emojify pl_title}}</h2>
+        {{#if description}}<p class="playlist-card__description">{{emojify description}}</p>{{else}}<p class="playlist-card__description muted">Keine Beschreibung verfügbar.</p>{{/if}}
+          <footer class="playlist-card__meta"><span>Veröffentlicht</span><time>{{publishedAt}}</time></footer>
+          {{#if external_url}}<a class="playlist-card__link" href="{{external_url}}" target="_blank" rel="noopener noreferrer">Playlist auf YouTube öffnen <span aria-hidden="true">↗</span></a>{{/if}}
+        </div>
+      </article>
+    {{else}}
+      <div class="empty-state"><h2>Keine Playlists gefunden</h2><p>Ändere den Suchbegriff oder verbinde einen weiteren Kanal.</p></div>
+    {{/each}}
+  </div>
+  <nav class="pagination" aria-label="Playlist-Seiten">
+    {{#if data.has_previous}}<a class="button" href="?q={{data.q}}&page={{data.previous_page}}">← Zurück</a>{{/if}}
+    <span>Seite {{data.page}} von {{data.page_count}}</span>
+    {{#if data.has_next}}<a class="button" href="?q={{data.q}}&page={{data.next_page}}">Weiter →</a>{{/if}}
+  </nav>
+</main>

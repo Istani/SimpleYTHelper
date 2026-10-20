@@ -1,9 +1,9 @@
-<h1>{{{i18n "Error"}}}!</h1>
-
-<div class="ui-widget">
-  <div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">
-    <p>
-      <span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
-      <strong>{{{i18n "Error.Code" data}}}:</strong> {{{i18n "Error.Text" data}}}</p>
-  </div>
-</div>
+<main class="error-page">
+  <section class="card error-page__card" role="alert">
+    <p class="eyebrow">SimpleYTH</p>
+    <h1>{{data.error.code}}</h1>
+    <p>{{data.error.text}}</p>
+    {{#if data.request_id}}<p class="muted error-page__request">Request-ID: <code>{{data.request_id}}</code></p>{{/if}}
+    <div class="actions"><a class="button primary" href="/">Zur Startseite</a>{{#if data.login}}<a class="button" href="/Dashboard">Zum Dashboard</a>{{/if}}</div>
+  </section>
+</main>
