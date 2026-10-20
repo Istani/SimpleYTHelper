@@ -78,21 +78,12 @@
                     {{i18n "Login"}}</h3>
                 <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
                     <form class="login-form" method="POST" action="/Login">
-                        <label>{{{i18n "E-Mail"}}}:</label>
-                        <br>
-                        <input id="login-email" type="text" name="email" autocomplete="username" required>
-                        <br>
-                        <br>
-                        <label>{{{i18n "Password"}}}:</label>
-                        <br>
-                        <input id="login-password" type="password" name="password" autocomplete="current-password" required>
-                        <br>
-                        <br>
-                        <input type="submit" name="button"
-                            value="{{{i18n "Login"}}}">&nbsp;{{{i18n "Login or Register . Or"}}}
-                        <a href="/Register">{{{i18n "Regsiter"}}}</a>
-                        <br>
-                    </form>
+  <label for="login-email">{{{i18n "E-Mail"}}}:</label>
+  <input id="login-email" type="text" name="email" autocomplete="username" required>
+  <label for="login-password">{{{i18n "Password"}}}:</label>
+  <input id="login-password" type="password" name="password" autocomplete="current-password" required>
+  <div class="login-actions"><input type="submit" name="button" value="{{{i18n "Login"}}}"><span>oder</span><a href="/Register">Konto erstellen</a></div>
+</form>
                 </div>
             </div>
         {{/if}}
