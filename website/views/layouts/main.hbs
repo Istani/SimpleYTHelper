@@ -77,15 +77,15 @@
                     class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">
                     {{i18n "Login"}}</h3>
                 <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
-                    <form method="POST" action="/Login">
+                    <form class="login-form" method="POST" action="/Login">
                         <label>{{{i18n "E-Mail"}}}:</label>
                         <br>
-                        <input type="text" name="email">
+                        <input id="login-email" type="text" name="email" autocomplete="username" required>
                         <br>
                         <br>
                         <label>{{{i18n "Password"}}}:</label>
                         <br>
-                        <input type="password" name="password">
+                        <input id="login-password" type="password" name="password" autocomplete="current-password" required>
                         <br>
                         <br>
                         <input type="submit" name="button"
