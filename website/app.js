@@ -672,23 +672,6 @@ app.get("/HUD/:channel/:category", async function(req, res, next) {
   res.render("error", { data: temp_data });
 });
 
-app.get("/RPG", async function(req, res) {
-  var temp_data = {};
-  if (req.session.user) {
-    temp_data.login = req.session.user[0];
-    temp_data.chars = await RpgChar.query()
-      .where("owner", req.session.user[0].id)
-      .eager("inventory");
-    temp_data.logs = await RpgLog.query()
-      .where("owner", req.session.user[0].id)
-      .orderBy("created_at", "desc")
-      .limit(10);
-    res.render("rpg", { data: temp_data });
-  } else {
-    res.redirect("/Login");
-  }
-});
-
 app.get("/Members", async function(req, res) {
   var temp_data = {};
   if (req.session.user) {
