@@ -1,23 +1,4 @@
-{{data.login.user}} {{i18n "Here is your dashboard!"}}
-<br>
-<div>
-  <h2>{{i18n "New.OAuth"}}</h2>
-  <center>
-    <a href="/auth/youtube" class=""><img src="/service_icons/youtube.png" alt="youtube" width="32" height="32"></a>
-    &nbsp;
-    <a href="/auth/twitch" class=""><img src="/service_icons/twitch.png" alt="twitch" width="32" height="32"></a>
-    &nbsp;
-    <a href="/auth/discord" class=""><img src="/service_icons/discord.png" alt="discord" width="32" height="32"></a>
-    &nbsp;
-  </center>
-
-  <h2>{{i18n "Current.OAuth"}}</h2>
-  <center>
-    {{#each data.current}}
-      <div>
-        <img src="/service_icons/{{service}}.png" alt="{{service}}" width="32" height="32"> &nbsp;
-        {{name}}
-      </div>
-    {{/each}}
-  </center>
-</div>
+<section class="page-heading"><p class="eyebrow">Dein Überblick</p><h1>Willkommen, {{data.login.user}}</h1><p>Hier siehst du den Zustand deiner verbundenen Dienste und findest direkte nächste Schritte.</p></section>
+<section class="metric-grid"><article class="metric"><strong>{{data.current.length}}</strong><span>verbundene Dienste</span></article><article class="metric"><strong>{{data.video_count}}</strong><span>Videos</span></article><article class="metric"><strong>{{data.playlist_count}}</strong><span>Playlists</span></article><article class="metric"><strong>{{data.member_count}}</strong><span>Community-Mitglieder</span></article></section>
+<section class="card"><div class="section-title"><h2>Verbindungen</h2><span class="muted">OAuth-Status</span></div>{{#if data.current.length}}<div class="connection-list">{{#each data.current}}<div class="connection"><span class="service-{{service}}">{{service}}</span><strong>{{name}}</strong><span class="status ok">Verbunden</span></div>{{/each}}</div>{{else}}<div class="empty-state"><h3>Noch kein Dienst verbunden</h3><p>Verbinde eine Plattform, damit SimpleYTH deine Inhalte anzeigen kann.</p></div>{{/if}}<div class="actions"><a class="button primary" href="/auth/youtube">YouTube verbinden</a><a class="button" href="/auth/twitch">Twitch verbinden</a><a class="button" href="/auth/discord">Discord verbinden</a></div></section>
+<section class="feature-grid"><a class="card link-card" href="/Videos"><h2>Content-Hub</h2><p>Videos, Playlists und Kanäle durchsuchen.</p></a><a class="card link-card" href="/Analytics"><h2>Analytics</h2><p>Aktuelle Kennzahlen und Trends ansehen.</p></a><a class="card link-card" href="/Api"><h2>Developer API</h2><p>Keys erstellen und API integrieren.</p></a></section>

@@ -22,6 +22,8 @@ const RpgLog = require("./models/rpg_log.js");
 const Playlist = require("./models/playlists.js");
 const ApiKey = require("./models/syth_api_key.js");
 const ApiUsage = require("./models/syth_api_usage.js");
+const ChannelAnalyticsHistory = require("./models/channel_analytics_history.js");
+const VideoAnalyticsHistory = require("./models/video_analytics_history.js");
 const {
   createApiRouter,
   createCsrfToken,
@@ -99,14 +101,27 @@ app.use(
     resave: true,
     saveUninitialized: false,
     cookie: {
-      expires: 600000
+      maxAge: 600000,
+      httpOnly: true,
+      sameSite: "lax"
     }
   })
 );
 app.use(express.static("public"));
 app.use(function(req, res, next) {
   req.app.locals.layout = "main";
-  console.log("REQ:", req.url);
+  const startedAt = Date.now();
+  res.on("finish", function() {
+    console.log(
+      JSON.stringify({
+        event: "http_request",
+        method: req.method,
+        path: req.path,
+        status: res.statusCode,
+        duration_ms: Date.now() - startedAt
+      })
+    );
+  });
   //console.log(req.session);
   req.custom_data = {};
   if (req.session) {
@@ -497,7 +512,39 @@ app.get("/Dashboard", async function(req, res) {
         };
       }
     }
-    //console.log(temp_data);
+    const channelIds = temp_token
+      .map(token => token.service_user)
+      .filter(Boolean);
+    temp_data.video_count = channelIds.length
+      ? Number(
+          (
+            await Video.query()
+              .whereIn("owner", channelIds)
+              .count("v_id as count")
+              .first()
+          ).count
+        )
+      : 0;
+    temp_data.playlist_count = channelIds.length
+      ? Number(
+          (
+            await Playlist.query()
+              .whereIn("owner", channelIds)
+              .count("pl_id as count")
+              .first()
+          ).count
+        )
+      : 0;
+    temp_data.member_count = channelIds.length
+      ? Number(
+          (
+            await Member.query()
+              .whereIn("owner", channelIds)
+              .count("* as count")
+              .first()
+          ).count
+        )
+      : 0;
     res.render("dashboard", { data: temp_data });
   } else {
     temp_data.error = {};
@@ -672,6 +719,54 @@ app.get("/HUD/:channel/:category", async function(req, res, next) {
   res.render("error", { data: temp_data });
 });
 
+app.get("/Analytics", requireSessionUser, async function(req, res, next) {
+  try {
+    const user = sessionUser(req);
+    const tokens = await Token.query()
+      .where("user_id", user.id)
+      .select("service_user");
+    const ids = tokens.map(token => token.service_user).filter(Boolean);
+    const channelAnalytics = ids.length
+      ? await ChannelAnalyticsHistory.query()
+          .whereIn(
+            "id",
+            ChannelAnalyticsHistory.query()
+              .max("id as id")
+              .whereIn("channel_id", ids)
+              .groupBy("channel_id")
+          )
+          .orderBy("timestamp", "desc")
+      : [];
+    const videoAnalytics = ids.length
+      ? await VideoAnalyticsHistory.query()
+          .whereIn(
+            "id",
+            VideoAnalyticsHistory.query()
+              .max("id as id")
+              .whereIn("channel_id", ids)
+              .groupBy("video_id")
+          )
+          .orderBy("views", "desc")
+          .limit(10)
+      : [];
+    const sum = (rows, field) =>
+      rows.reduce((total, row) => total + (Number(row[field]) || 0), 0);
+    res.render("analytics", {
+      data: {
+        login: user,
+        channel_analytics: channelAnalytics,
+        video_analytics: videoAnalytics,
+        channel_count: channelAnalytics.length,
+        total_views: sum(channelAnalytics, "views"),
+        total_likes: sum(channelAnalytics, "likes"),
+        total_comments: sum(channelAnalytics, "comments")
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 app.get("/Members", async function(req, res) {
   var temp_data = {};
   if (req.session.user) {
@@ -687,31 +782,85 @@ app.get("/Members", async function(req, res) {
   }
 });
 
-app.get("/Videos", async function(req, res) {
-  var temp_data = {};
-  if (req.session.user) {
-    temp_data.login = req.session.user[0];
-    var tokens = await Token.query().where("user_id", req.session.user[0].id);
-    var channel_ids = tokens.map(t => t.service_user);
-    temp_data.videos = await Video.query()
-      .whereIn("owner", channel_ids)
+app.get("/Videos", requireSessionUser, async function(req, res, next) {
+  try {
+    const user = sessionUser(req),
+      q = String(req.query.q || "")
+        .trim()
+        .slice(0, 100),
+      page = Math.max(1, parseInt(req.query.page, 10) || 1),
+      size = 24;
+    const ids = (
+      await Token.query()
+        .where("user_id", user.id)
+        .select("service_user")
+    )
+      .map(t => t.service_user)
+      .filter(Boolean);
+    let query = Video.query()
+      .whereIn("owner", ids)
       .orderBy("publishedAt", "desc");
-    res.render("videos", { data: temp_data });
-  } else {
-    res.redirect("/Login");
+    if (q) query = query.where("pl_title", "like", "%" + q + "%");
+    const result = ids.length
+      ? await query.page(page - 1, size)
+      : { results: [], total: 0 };
+    res.render("videos", {
+      data: {
+        login: user,
+        videos: result.results,
+        q,
+        page,
+        page_count: Math.max(1, Math.ceil(result.total / size)),
+        has_previous: page > 1,
+        has_next: page * size < result.total,
+        previous_page: page - 1,
+        next_page: page + 1,
+        total: result.total
+      }
+    });
+  } catch (error) {
+    next(error);
   }
 });
 
-app.get("/Playlists", async function(req, res) {
-  var temp_data = {};
-  if (req.session.user) {
-    temp_data.login = req.session.user[0];
-    var tokens = await Token.query().where("user_id", req.session.user[0].id);
-    var channel_ids = tokens.map(t => t.service_user);
-    temp_data.playlists = await Playlist.query().whereIn("owner", channel_ids);
-    res.render("playlists", { data: temp_data });
-  } else {
-    res.redirect("/Login");
+app.get("/Playlists", requireSessionUser, async function(req, res, next) {
+  try {
+    const user = sessionUser(req),
+      q = String(req.query.q || "")
+        .trim()
+        .slice(0, 100),
+      page = Math.max(1, parseInt(req.query.page, 10) || 1),
+      size = 24;
+    const ids = (
+      await Token.query()
+        .where("user_id", user.id)
+        .select("service_user")
+    )
+      .map(t => t.service_user)
+      .filter(Boolean);
+    let query = Playlist.query()
+      .whereIn("owner", ids)
+      .orderBy("pl_title", "asc");
+    if (q) query = query.where("title", "like", "%" + q + "%");
+    const result = ids.length
+      ? await query.page(page - 1, size)
+      : { results: [], total: 0 };
+    res.render("playlists", {
+      data: {
+        login: user,
+        playlists: result.results,
+        q,
+        page,
+        page_count: Math.max(1, Math.ceil(result.total / size)),
+        has_previous: page > 1,
+        has_next: page * size < result.total,
+        previous_page: page - 1,
+        next_page: page + 1,
+        total: result.total
+      }
+    });
+  } catch (error) {
+    next(error);
   }
 });
 
@@ -726,6 +875,14 @@ app.get("/Channels", async function(req, res) {
   } else {
     res.redirect("/Login");
   }
+});
+
+app.get("/health", function(req, res) {
+  res.status(200).json({
+    status: "ok",
+    service: package_info.name,
+    version: package_info.version
+  });
 });
 
 app.get("/", function(req, res) {
