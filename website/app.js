@@ -540,7 +540,7 @@ app.get("/Dashboard", async function(req, res) {
           (
             await Member.query()
               .whereIn("owner", channelIds)
-              .count("id as count")
+              .count("meber_id as count")
               .first()
           ).count
         )
