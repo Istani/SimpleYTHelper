@@ -1,18 +1,1 @@
-<h2>{{i18n "Playlists"}}</h2>
-
-<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); grid-gap: 20px;">
-    {{#each data.playlists}}
-        <div class="ui-widget-content ui-corner-all" style="padding: 10px;">
-            <h4 style="margin: 0 0 10px 0;">{{title}}</h4>
-            <div style="font-size: 0.9em; color: #666; margin-bottom: 5px;">
-                <span class="service-{{service}}">{{service}}</span>
-            </div>
-            <p style="font-size: 0.85em; color: #444;">{{description}}</p>
-            <div style="font-size: 0.8em; border-top: 1px solid #eee; padding-top: 5px; margin-top: 10px;">
-                {{i18n "ID"}}: {{pl_id}}
-            </div>
-        </div>
-    {{else}}
-        <p>{{i18n "No playlists found."}}</p>
-    {{/each}}
-</div>
+<section class="page-heading"><p class="eyebrow">Content-Hub</p><h1>Playlists</h1><p>{{data.total}} Playlists in deiner Bibliothek.</p></section><form class="search-form" method="GET"><input name="q" value="{{data.q}}" placeholder="Playlists durchsuchen"><button class="button primary" type="submit">Suchen</button></form><div class="content-grid">{{#each data.playlists}}<article class="card"><p class="eyebrow">{{service}}</p><h2>{{title}}</h2><p>{{description}}</p><p class="muted">ID: {{pl_id}}</p></article>{{else}}<div class="empty-state"><h2>Keine Playlists gefunden</h2><p>Ändere den Suchbegriff oder verbinde einen weiteren Kanal.</p></div>{{/each}}</div><nav class="pagination">{{#if data.has_previous}}<a class="button" href="?q={{data.q}}&page={{data.previous_page}}">← Zurück</a>{{/if}}<span>Seite {{data.page}} von {{data.page_count}}</span>{{#if data.has_next}}<a class="button" href="?q={{data.q}}&page={{data.next_page}}">Weiter →</a>{{/if}}</nav>
