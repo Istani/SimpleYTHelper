@@ -1442,10 +1442,14 @@ async function LiveChat(auth, pageToken = "") {
           auth.credentials = sic;
           SearchBroadcasts(auth);
         });
-        q.push("LiveChat", () => {
-          auth.credentials = sic;
-          LiveChat(auth);
-        });
+        // Quota/transport failures must not immediately requeue REST polling.
+        // Without this delay a 403 can create a tight loop of costly requests.
+        setTimeout(() => {
+          q.push("LiveChat", () => {
+            auth.credentials = sic;
+            LiveChat(auth);
+          });
+        }, RepeatDealy);
 
         return;
       }
