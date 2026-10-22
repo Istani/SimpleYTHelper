@@ -159,8 +159,8 @@ function GlobalCronSchedules() {
     RunForEveryToken("Uploads", ListNewUploads);
   });
 
-  // liveBroadcasts.list costs 50 quota units per request. With several OAuth
-  // tokens, the previous 20-minute schedule exceeded the default daily quota.
+  // liveBroadcasts.list costs 1 quota unit per request. With three OAuth
+  // tokens, the 30-minute schedule uses 144 quota units/day.
   cron.schedule("*/30 * * * *", () => {
     RunForEveryToken("Broadcasts", SearchBroadcasts);
   });
