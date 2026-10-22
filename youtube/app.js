@@ -43,6 +43,7 @@ var LiveChatMsgSleep = isNaN(
   ? 1000
   : parseInt(process.env.YOUTUBE_LIVECHAT_MSG_SLEEP_MS, 10);
 var LiveChatTransport = process.env.YOUTUBE_LIVECHAT_TRANSPORT || "stream";
+const liveChatStreams = new Map();
 var SCOPES = [
   "https://www.googleapis.com/auth/youtube",
   "https://www.googleapis.com/auth/youtube.channel-memberships.creator",
@@ -158,16 +159,19 @@ function GlobalCronSchedules() {
     RunForEveryToken("Uploads", ListNewUploads);
   });
 
-  cron.schedule("*/20 * * * *", () => {
+  // liveBroadcasts.list costs 50 quota units per request. With several OAuth
+  // tokens, the previous 20-minute schedule exceeded the default daily quota.
+  cron.schedule("0 */2 * * *", () => {
     RunForEveryToken("Broadcasts", SearchBroadcasts);
   });
 
-  cron.schedule("*/10 * * * *", () => {
-    // Schedule LiveChat check every 10 mins as well, since it's now global
-    RunForEveryToken("LiveChat", auth => {
-      LiveChat(auth);
+  // Polling is only the rollback transport. gRPC streams stay connected and
+  // reconnect themselves, so do not create REST polling traffic in stream mode.
+  if (LiveChatTransport === "poll") {
+    cron.schedule("*/10 * * * *", () => {
+      RunForEveryToken("LiveChat", LiveChat);
     });
-  });
+  }
 
   cron.schedule("50 21 * * *", () => {
     RunForEveryToken("Channels", ListChannels);
@@ -1210,6 +1214,8 @@ function SearchBroadcasts(auth, pageToken = "") {
           }
         }
 
+        if (LiveChatTransport !== "poll") LiveChatStream(auth);
+
         // Update Last Stream-Chats?
         var Stream_RPG_Chats = await Chat_Room.query()
           .where("server", sic.service_user)
@@ -1267,8 +1273,14 @@ async function LiveChatStream(auth) {
   }
 
   var broadcast = data[0].Livestream[0];
+  var streamKey = data[0].channel_id;
+  var existingStream = liveChatStreams.get(streamKey);
+  if (existingStream && existingStream.liveChatId === broadcast.liveChatId)
+    return;
+  if (existingStream) existingStream.stream.stop();
+
   console.log("LiveChat stream: ", broadcast.b_id);
-  new YouTubeLiveChatStream({
+  var stream = new YouTubeLiveChatStream({
     liveChatId: broadcast.liveChatId,
     getAccessToken: async () => {
       auth.credentials = sic;
@@ -1288,6 +1300,9 @@ async function LiveChatStream(auth) {
     },
     onTerminalError: async error => {
       console.error("LiveChat stream ended:", error.message);
+      if (liveChatStreams.get(streamKey)?.stream === stream) {
+        liveChatStreams.delete(streamKey);
+      }
       await ow_broadcasts
         .query()
         .patch({ liveChatId: "" })
@@ -1295,7 +1310,9 @@ async function LiveChatStream(auth) {
       q.push("Broadcasts", () => SearchBroadcasts(auth));
       setTimeout(() => LiveChatStream(auth), RepeatDealy);
     }
-  }).start();
+  });
+  liveChatStreams.set(streamKey, { liveChatId: broadcast.liveChatId, stream });
+  stream.start();
 }
 
 async function StoreLiveChatMessages(items, channelId, liveChatId) {
