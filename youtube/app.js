@@ -1284,7 +1284,8 @@ async function LiveChatStream(auth) {
     liveChatId: broadcast.liveChatId,
     getAccessToken: async () => {
       auth.credentials = sic;
-      return await auth.getAccessToken();
+      const accessToken = await auth.getAccessToken();
+      return accessToken && (accessToken.token || accessToken);
     },
     onResponse: async response => {
       fs.writeFileSync("tmp/chat.json", JSON.stringify(response, null, 2));
