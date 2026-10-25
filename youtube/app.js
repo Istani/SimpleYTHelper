@@ -1255,9 +1255,17 @@ function SearchBroadcasts(auth, pageToken = "") {
 
 async function LiveChatStream(auth) {
   var sic = auth.credentials;
+  // OAuth refreshes may replace auth.credentials without preserving the
+  // application-specific service_user field. Keep the channel binding from
+  // this invocation and skip unbound tokens instead of issuing an invalid DB query.
+  var serviceUser = sic && sic.service_user;
+  if (!serviceUser) {
+    console.error("LiveChat stream skipped: token has no service_user");
+    return;
+  }
   var data = await ow_channel
     .query()
-    .where("channel_id", auth.credentials.service_user)
+    .where("channel_id", serviceUser)
     .where("service", "youtube")
     .eager("Livestream")
     .modifyEager("Livestream", builder => {
