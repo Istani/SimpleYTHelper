@@ -49,15 +49,15 @@ client.on("ready", () => {
 
 function PruneAll() {
   try {
-    var allGuilds = client.guilds;
-    //console.log(allGuilds);
+    // In discord.js v14 guilds is a manager; iterate its cache collection.
+    const allGuilds = client.guilds.cache;
     allGuilds.forEach(guild => {
-      guild
-        .pruneMembers(30, true)
+      guild.members
+        .prune({ days: 30, dry: true })
         .then(pruned => {
           console.log(guild.name + " - " + pruned + " Prune!");
           if (pruned > 0) {
-            guild.pruneMembers(30, false);
+            return guild.members.prune({ days: 30 });
           }
         })
         .catch(console.error);
