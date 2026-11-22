@@ -12,14 +12,19 @@ const GameLinks = require("./models/game_link.js");
 const GameGenre = require("./models/game_genre.js");
 
 const DEAL_INTERVAL_MS = 15 * 60 * 1000;
-const DISCOVERY_INTERVAL_MS = 24 * 60 * 60 * 1000;
+const DISCOVERY_ENABLED = false; // Steam removed the unauthenticated GetAppList endpoint.
 const DETAIL_BATCH_SIZE = 75;
 const DETAIL_DELAY_MS = 650;
 const HEALTH_APP_ID = "__steam_import_health__";
 const DISCOVERY_APP_ID = "__steam_discovery_health__";
 
+function databaseText(value) {
+  // The legacy MySQL schema is utf8mb3; remove 4-byte Unicode it cannot store.
+  return String(value || "").replace(/[\u{10000}-\u{10FFFF}]/gu, "");
+}
+
 function gameName(name) {
-  return Games.getEncodedName(name);
+  return Games.getEncodedName(databaseText(name));
 }
 
 async function markHealth() {
@@ -54,7 +59,8 @@ async function upsertGame(game) {
   }
   if (Object.keys(patch).length)
     await Games.query()
-      .patch(patch)
+      // Objection runs $beforeUpdate for partial patches; retain the primary key.
+      .patch({ ...patch, name: game.name })
       .where("name", game.name);
 }
 
@@ -92,7 +98,7 @@ async function importFeaturedDeals() {
       await upsertGame({
         type: "game",
         name,
-        display_name: item.name,
+        display_name: databaseText(item.name),
         banner: item.header_image || item.large_capsule_image || "",
         description: ""
       });
@@ -127,7 +133,7 @@ async function importAppDetails(appid) {
       return;
     }
     const app = response.data;
-    if (app.type !== "game") {
+    if (app.type !== "game" || !app.name) {
       await Steam.query()
         .patch({ type: app.type || "FAILED", ignore: true })
         .where("appid", appid);
@@ -140,9 +146,9 @@ async function importAppDetails(appid) {
     const overview = {
       type: "game",
       name,
-      display_name: app.name,
+      display_name: databaseText(app.name),
       banner: app.header_image || "",
-      description: striptags(app.about_the_game || "", ["br"])
+      description: databaseText(striptags(app.about_the_game || "", ["br"]))
     };
     const existingGame = await Games.query().findById(name);
     if (existingGame)
@@ -192,6 +198,9 @@ async function enrichDetails() {
 }
 
 async function discoverAppsIfDue() {
+  // The former public ISteamApps/GetAppList endpoint is no longer available.
+  // Featured deals and sale search keep the sales catalogue current without it.
+  if (!DISCOVERY_ENABLED) return;
   const health = await Steam.query()
     .where("appid", DISCOVERY_APP_ID)
     .first();
