@@ -100,7 +100,8 @@ class Game extends Model {
 
   $beforeUpdate() {
     this.updated_at = moment().format("YYYY-MM-DD HH:mm:ss");
-    this.name = this.name.toLowerCase();
+    // Partial Objection patches do not necessarily include the primary key.
+    if (typeof this.name === "string") this.name = this.name.toLowerCase();
   }
 }
 

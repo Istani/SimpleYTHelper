@@ -12,19 +12,24 @@ const GameLinks = require("./models/game_link.js");
 const GameGenre = require("./models/game_genre.js");
 
 const DEAL_INTERVAL_MS = 15 * 60 * 1000;
-const DISCOVERY_ENABLED = false; // Steam removed the unauthenticated GetAppList endpoint.
 const DETAIL_BATCH_SIZE = 75;
 const DETAIL_DELAY_MS = 650;
 const HEALTH_APP_ID = "__steam_import_health__";
-const DISCOVERY_APP_ID = "__steam_discovery_health__";
 
 function databaseText(value) {
   // The legacy MySQL schema is utf8mb3; remove 4-byte Unicode it cannot store.
   return String(value || "").replace(/[\u{10000}-\u{10FFFF}]/gu, "");
 }
 
-function gameName(name) {
-  return Games.getEncodedName(databaseText(name));
+function gameName(value) {
+  // Keep legacy URL slugs within the VARCHAR(100) schema limit without
+  // routing long Steam titles through Game.getEncodedName's error logger.
+  let slug = databaseText(value)
+    .replace(/ /gi, "_")
+    .replace(/[\W]+/gi, "")
+    .toLowerCase();
+  while (slug.indexOf("__") > 0) slug = slug.replace("__", "_");
+  return slug.slice(0, 100);
 }
 
 async function markHealth() {
@@ -198,46 +203,9 @@ async function enrichDetails() {
 }
 
 async function discoverAppsIfDue() {
-  // The former public ISteamApps/GetAppList endpoint is no longer available.
-  // Featured deals and sale search keep the sales catalogue current without it.
-  if (!DISCOVERY_ENABLED) return;
-  const health = await Steam.query()
-    .where("appid", DISCOVERY_APP_ID)
-    .first();
-  if (
-    health &&
-    Date.now() - new Date(health.updated_at).getTime() < DISCOVERY_INTERVAL_MS
-  )
-    return;
-  try {
-    const data = await request({
-      url: Steam.URL_Overview(),
-      json: true,
-      timeout: 60000
-    });
-    const apps = (data.applist && data.applist.apps) || [];
-    const known = new Set(
-      (await Steam.query().select("appid")).map(entry => String(entry.appid))
-    );
-    const newApps = apps
-      .filter(entry => entry && entry.appid && !known.has(String(entry.appid)))
-      .map(entry => ({ appid: entry.appid, ignore: false, type: "UNKNOWN" }));
-    for (let index = 0; index < newApps.length; index += 1000)
-      await Steam.query().insert(newApps.slice(index, index + 1000));
-    if (health)
-      await Steam.query()
-        .patch({ type: "HEALTH", ignore: true })
-        .where("appid", DISCOVERY_APP_ID);
-    else
-      await Steam.query().insert({
-        appid: DISCOVERY_APP_ID,
-        type: "HEALTH",
-        ignore: true
-      });
-    console.log("Steam app discovery added:", newApps.length);
-  } catch (error) {
-    console.error("Steam discovery failed:", error.message || error);
-  }
+  // Steam retired the unauthenticated full-app-list endpoint. Sale search and
+  // featured deals are the supported, bounded sources for this importer.
+  return;
 }
 
 let running = false;
