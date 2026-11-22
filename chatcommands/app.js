@@ -407,6 +407,13 @@ commands[14] = {
   function: streamplan,
   visible: false
 };
+commands[15] = {
+  name: "discord",
+  params: "",
+  description: "",
+  function: discord_command,
+  visible: true
+};
 
 async function get_msg() {
   //return;
@@ -946,6 +953,12 @@ async function palim(msg_data) {
 async function streamplan(msg_data) {
   var output_string =
     "https://www.youtube.com/channel/UC5DOhI70dI3PnLPMkUsosgw/community?lb=Ugkx0VzbSC3tNEJNh4dttnwGSNBt2arn9b2N";
+  await outgoing(msg_data, output_string);
+  output_string = "";
+}
+
+async function discord_command(msg_data) {
+  var output_string = "https://discord.gg/ZxaYGSz";
   await outgoing(msg_data, output_string);
   output_string = "";
 }
