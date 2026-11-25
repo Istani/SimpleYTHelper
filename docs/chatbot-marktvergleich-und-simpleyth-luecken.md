@@ -242,6 +242,42 @@ Dadurch entsteht keine Ansammlung von Spezialbefehlen, sondern eine belastbare G
 
 ---
 
+## Beschlossene Leitlinien für Custom Commands (25. November 2026)
+
+Die folgenden Punkte wurden nach der ersten Vergleichs- und Architekturabstimmung festgelegt.
+
+| Thema | Beschluss |
+|---|---|
+| Command-Matching | Erster Token nach dem Prefix, case-insensitive und exakt. Kein `startsWith`-Matching. |
+| Command-Scope | Ein Command gehört zu einem **Syth-User**, nicht zu einem einzelnen Twitch-/YouTube-Channel. Der Worker ermittelt über `(service, server)` den verknüpften `channel.user_id` und lädt dessen Commands. Damit gilt ein Command auf allen mit diesem User verknüpften Plattformen. |
+| Globale Commands | Admin-definierte Commands gelten in jeder Bot-Instanz. Sie werden zusätzlich zu User-Commands geladen und sind nicht an einen Channel gebunden. |
+| Bestehende Commands | Die aktuell hardcodierten Commands werden als globale Datenbank-Commands migriert und danach aus dem Command-Array entfernt. Speziallogik, die keine reine Textantwort ist, benötigt dabei einen expliziten, sicheren Command-Typ statt frei ausführbaren Code. |
+| Vorlagen/Sicherheit | Keine Ausführung von JavaScript, Shell-Befehlen, HTTP-Requests, frei formulierbaren Datenbankabfragen oder sonstigem Code. Vorlagen dürfen nur feste, serverseitig implementierte Platzhalter verwenden; deren Daten stammen aus definierten Datenbank- bzw. Chat-Kontextfeldern. |
+| Dashboard-Verwaltung | Nur Channel-Owner bzw. Website-Admins verwalten Commands im Website-Dashboard. Keine Command-Verwaltung durch Moderatoren im Chat. |
+| Berechtigungen | MVP trennt mindestens `owner` und `everyone`. Eine generische `moderator`-Rolle wird zunächst nicht als Command-Verwaltungsrecht eingeführt, da die Rollen zwischen Twitch, YouTube und Discord nicht einheitlich abbildbar sind. |
+| Cooldowns | Das Schema und die Ausführungslogik werden von Beginn an vorbereitet. Alle anfänglichen Werte sind `0`, also ohne aktive Begrenzung. |
+
+### Konsequenz für das Datenmodell
+
+Die frühere Empfehlung `(service, server, name)` als eindeutiger Command-Scope ist durch den Beschluss ersetzt. Vorgeschlagene Trennung:
+
+- **Globaler Command:** `owner_id = NULL`, nur durch Website-Admins verwaltbar.
+- **User-Command:** `owner_id = syth_login.id`, gilt automatisch für alle aktuell und künftig diesem Syth-User zugeordneten Channels.
+- **Channel-Zuordnung zur Laufzeit:** Eingehende `chat_message.service` und `chat_message.server` werden gegen `channel.service` und `channel.channel_id` aufgelöst; darüber wird `channel.user_id` ermittelt.
+- **Eindeutigkeit:** `(owner_id, name)`. Ein global reservierter Name darf nicht zusätzlich als User-Command angelegt werden, damit globale Commands tatsächlich in jeder Instanz verfügbar bleiben.
+
+### Vorgeschlagene Command-Typen für die Migration
+
+Nicht jeder bisherige Hardcode ist eine reine Textantwort. Deshalb erhalten globale Commands einen festen, geprüften Typ statt einer im Datensatz gespeicherten Funktion:
+
+| Typ | Beispiel | Verhalten |
+|---|---|---|
+| `template` | `discord`, `gege` | Rendert ausschließlich eine sichere Textvorlage. |
+| `system_action` | `game`, `announcement`, `quest` | Ruft eine fest im Servercode registrierte und getestete Aktion per stabilem Schlüssel auf. Der Datensatz kann keinen beliebigen Funktionsnamen oder Code enthalten. |
+| `command_list` | `commands`, `help` | Ermittelt sichtbare globale und eigene Commands und erzeugt daraus eine begrenzte Antwort. |
+
+Damit können die JavaScript-Definitionen aus dem Command-Array entfernt werden, ohne die Logik in unsichere Datenbankinhalte zu verlagern.
+
 ## Quellen
 
 Die Funktionsvergleiche basieren auf den offiziellen Produkt-/Dokumentationsseiten:
