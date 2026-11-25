@@ -17,23 +17,18 @@
 </head>
 
 <body>
-    <div id="header" class="ui-accordion ui-widget ui-helper-reset" width="100%">
-        <h3
-            class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">
-            Simple YoutubeHelper</h3>
-        <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
-            <img src="/banner.png">
-        </div>
-    </div>
+    <header id="header" class="site-header">
+        <a class="site-brand" href="/Dashboard" aria-label="SimpleYTH Dashboard">
+            <span class="site-brand__mark" aria-hidden="true">SY</span>
+            <span><strong>SimpleYTH</strong><small>Creator Dashboard</small></span>
+        </a>
+    </header>
 
-    <div id="content" class="ui-accordion ui-widget ui-helper-reset">
-        <h3
-            class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">
-            {{i18n "Content"}}</h3>
-        <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
+    <main id="content" class="content-shell">
+        <div class="content-shell__body">
             {{{body}}}
         </div>
-    </div>
+    </main>
 
     <div id="navigation">
         {{#if data.login.user}}
