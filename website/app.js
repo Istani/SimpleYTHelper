@@ -13,6 +13,8 @@ const async = require("async");
 const Login = require("./models/syth_login.js");
 const Token = require("./models/syth_token.js");
 const User_Channel = require("./models/channel.js");
+const ChatCommandEndpoint = require("./models/chat_command_endpoint.js");
+const SythDiscordGuild = require("./models/syth_discord_guild.js");
 const Chat = require("./models/chat_message.js");
 const Video = require("./models/videos.js");
 const Member = require("./models/member.js");
@@ -492,6 +494,106 @@ app.post("/Admin/Api/:id", requireSessionUser, requireCsrf, async function(
       .findById(targetId)
       .patch({ is_api_admin: req.body.is_api_admin === "1" });
     res.redirect("/Admin/Api");
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get("/Commands", requireSessionUser, async function(req, res, next) {
+  try {
+    const user = sessionUser(req);
+    const endpoints = [];
+    const channels = await User_Channel.query()
+      .where("user_id", user.id)
+      .whereIn("service", ["twitch", "youtube"]);
+    for (const channel of channels)
+      endpoints.push({
+        service: channel.service,
+        endpoint_id: channel.channel_id,
+        name: channel.channel_title || channel.channel_id
+      });
+    const guilds = await SythDiscordGuild.query().where("owner_id", user.id);
+    for (const guild of guilds)
+      endpoints.push({
+        service: "discord",
+        endpoint_id: guild.guild_id,
+        name: guild.guild_name || guild.guild_id
+      });
+    const settings = await ChatCommandEndpoint.query().where(
+      "owner_id",
+      user.id
+    );
+    const byKey = new Map(
+      settings.map(row => [row.service + ":" + row.endpoint_id, row])
+    );
+    endpoints.forEach(endpoint => {
+      const setting = byKey.get(endpoint.service + ":" + endpoint.endpoint_id);
+      endpoint.prefix = setting ? setting.prefix : "!";
+      endpoint.commands_enabled = setting ? !!setting.commands_enabled : true;
+    });
+    res.render("commands", {
+      data: {
+        login: user,
+        endpoints: endpoints,
+        csrf_token: createCsrfToken(req)
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post("/Commands/Endpoints", requireSessionUser, requireCsrf, async function(
+  req,
+  res,
+  next
+) {
+  try {
+    const user = sessionUser(req);
+    const service = String(req.body.service || "");
+    const endpointId = String(req.body.endpoint_id || "");
+    const prefix = String(req.body.prefix || "").trim();
+    if (
+      !["twitch", "youtube", "discord"].includes(service) ||
+      !endpointId ||
+      !prefix ||
+      prefix.length > 10 ||
+      /[\u0000-\u001f\s]/.test(prefix)
+    )
+      return res.status(400).send("Ungültige Command-Einstellung.");
+    let allowed = false;
+    if (service === "discord")
+      allowed = !!(await SythDiscordGuild.query()
+        .where("guild_id", endpointId)
+        .where("owner_id", user.id)
+        .first());
+    else
+      allowed = !!(await User_Channel.query()
+        .where("user_id", user.id)
+        .where("service", service)
+        .where("channel_id", endpointId)
+        .first());
+    if (!allowed)
+      return res
+        .status(403)
+        .send("Dieser Zugangspunkt gehört nicht zu deinem Konto.");
+    const row = {
+      service: service,
+      endpoint_id: endpointId,
+      owner_id: user.id,
+      prefix: prefix,
+      commands_enabled: req.body.commands_enabled === "1"
+    };
+    const existing = await ChatCommandEndpoint.query().findById([
+      service,
+      endpointId
+    ]);
+    if (existing)
+      await ChatCommandEndpoint.query()
+        .findById([service, endpointId])
+        .patch(row);
+    else await ChatCommandEndpoint.query().insert(row);
+    res.redirect("/Commands");
   } catch (error) {
     next(error);
   }

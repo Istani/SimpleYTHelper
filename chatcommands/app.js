@@ -105,6 +105,11 @@ const Links = require("./models/game_link.js");
 const Videos = require("./models/videos.js");
 const Member = require("./models/member.js");
 const Chat_Message = require("./models/chat_message.js");
+const Channel = require("./models/channel.js");
+const ChatCommand = require("./models/chat_command.js");
+const SythDiscordGuild = require("./models/syth_discord_guild.js");
+const ChatCommandEndpoint = require("./models/chat_command_endpoint.js");
+const commandTools = require("./lib/custom-commands.js");
 
 var settings = {};
 function load_settings() {
@@ -415,11 +420,74 @@ commands[15] = {
   visible: true
 };
 
+function commandEndpointId(msg) {
+  return msg.service === "twitch" ? msg.room : msg.server;
+}
+
+async function endpointCommandSettings(msg) {
+  const endpoint = await ChatCommandEndpoint.query().findById([
+    msg.service,
+    commandEndpointId(msg)
+  ]);
+  return endpoint || { prefix: "!", commands_enabled: true };
+}
+
+async function commandOwnerId(msg) {
+  if (msg.service === "discord") {
+    const guild = await SythDiscordGuild.query().findById(msg.server);
+    return guild ? guild.owner_id : null;
+  }
+  const channelId = msg.service === "twitch" ? msg.room : msg.server;
+  const channel = await Channel.query()
+    .where("service", msg.service)
+    .where("channel_id", channelId)
+    .first();
+  return channel ? channel.user_id : null;
+}
+
+async function runDatabaseCommand(msg, endpointSettings) {
+  const parsed = commandTools.parseCommand(
+    msg.content,
+    endpointSettings.prefix
+  );
+  if (!parsed) return false;
+  const ownerId = await commandOwnerId(msg);
+  // Global commands intentionally apply even without a Syth owner mapping.
+  const scopes = ["global"];
+  if (ownerId != null) scopes.push(commandTools.ownerKey(ownerId));
+  const command = await ChatCommand.query()
+    .where("enabled", true)
+    .whereIn("owner_key", scopes)
+    .where("name", parsed.name)
+    .orderByRaw("owner_key = ? DESC", ["global"])
+    .first();
+  if (
+    !command ||
+    command.type !== "template" ||
+    !commandTools.isSafeTemplate(command.response_template)
+  )
+    return false;
+  const channelId = msg.service === "twitch" ? msg.room : msg.server;
+  const channel =
+    msg.service === "discord"
+      ? null
+      : await Channel.query()
+          .where("service", msg.service)
+          .where("channel_id", channelId)
+          .first();
+  await outgoing(
+    msg,
+    commandTools.renderTemplate(command.response_template, {
+      channel: channel ? channel.channel_title : ""
+    })
+  );
+  return true;
+}
+
 async function get_msg() {
   //return;
   //console.log(settings.prefix, settings.last_time);
   var msg_list = await Messages.query()
-    .where("content", "like", settings.prefix + "%")
     .where("created_at", ">", settings.last_time)
     .orderBy("created_at", "ASC")
     .eager("User");
@@ -429,18 +497,27 @@ async function get_msg() {
   for (var i = 0; i < msg_list.length; i++) {
     settings.last_time = msg_list[i].created_at;
     save_settings();
-    if (msg_list[i].content.startsWith(settings.prefix) != true) {
+    const endpointSettings = await endpointCommandSettings(msg_list[i]);
+    if (
+      !endpointSettings.commands_enabled ||
+      !msg_list[i].content.startsWith(endpointSettings.prefix)
+    ) {
       continue;
     }
 
     var temp_content = msg_list[i].content.split(" ");
     var found_index = commands.findIndex(function(element) {
-      return temp_content[0]
-        .replace(settings.prefix, "")
-        .toLowerCase()
-        .startsWith(element.name);
+      return (
+        temp_content[0].replace(endpointSettings.prefix, "").toLowerCase() ===
+        element.name
+      );
     });
     if (typeof found_index == "undefined" || found_index == -1) {
+      try {
+        if (await runDatabaseCommand(msg_list[i], endpointSettings)) continue;
+      } catch (error) {
+        console.error("Database command failed:", error.message);
+      }
       console.error("Unknown Command: ", temp_content[0]);
       continue;
     }
