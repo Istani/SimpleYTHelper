@@ -1,1 +1,46 @@
-<main class="api-key-page"><section class="page-heading"><p class="eyebrow">Chatbot</p><h1>Eigene Commands</h1><p>Eigene Commands funktionieren auf allen verknüpften Plattformen.</p></section><section class="card"><h2>Custom Command anlegen oder aktualisieren</h2><form method="POST" action="/Commands/Custom"><input type="hidden" name="csrf_token" value="{{data.csrf_token}}"><label>Name ohne Prefix <input name="name" maxlength="32" pattern="[a-z0-9_]+" required></label><label>Beschreibung <input name="description" maxlength="255"></label><label>Antwort <textarea name="response_template" maxlength="400" required></textarea></label><button class="button primary">Speichern</button></form></section><section class="card"><h2>Deine Commands</h2>{{#each data.user_commands}}<article><code>!{{name}}</code> — {{response_template}} <form method="POST" action="/Commands/Custom/{{id}}/Delete"><input type="hidden" name="csrf_token" value="{{../data.csrf_token}}"><button class="button danger">Löschen</button></form></article>{{else}}<p class="muted">Noch keine eigenen Commands.</p>{{/each}}</section><section class="card" style="opacity:.55"><h2>Globale Commands</h2><p class="muted">Diese Commands werden von der Administration verwaltet und können nicht überschrieben werden.</p>{{#each data.global_commands}}<article><code>!{{name}}</code> — {{response_template}}</article>{{else}}<p>Derzeit keine globalen Datenbank-Commands.</p>{{/each}}</section><section class="card"><h2>Zugangspunkt-Einstellungen</h2>{{#each data.endpoints}}<form method="POST" action="/Commands/Endpoints"><input type="hidden" name="csrf_token" value="{{../data.csrf_token}}"><input type="hidden" name="service" value="{{service}}"><input type="hidden" name="endpoint_id" value="{{endpoint_id}}"><strong>{{service}}: {{name}}</strong> <label>Prefix <input name="prefix" value="{{prefix}}" maxlength="10" required></label><input type="hidden" name="commands_enabled" value="0"><label><input type="checkbox" name="commands_enabled" value="1" {{#if commands_enabled}}checked{{/if}}> Aktiv</label><button class="button">Speichern</button></form>{{else}}<p class="muted">Keine Zugangspunkte.</p>{{/each}}</section></main>
+<main class="commands-page">
+  <header class="page-heading commands-page__heading">
+    <p class="eyebrow">Chatbot</p>
+    <h1>Commands</h1>
+    <p>Verwalte deine eigenen Antworten und die Command-Einstellungen deiner verknüpften Zugänge.</p>
+  </header>
+
+  <section class="command-card command-create">
+    <div class="command-card__header"><div><h2>Eigenen Command anlegen</h2><p>Eigene Commands funktionieren auf allen verknüpften Plattformen.</p></div></div>
+    <form class="command-form" method="POST" action="/Commands/Custom">
+      <input type="hidden" name="csrf_token" value="{{data.csrf_token}}">
+      <label for="command-name">Name <small>ohne Prefix, z. B. socials</small></label>
+      <input id="command-name" name="name" maxlength="32" pattern="[a-z0-9_]+" placeholder="socials" required>
+      <label for="command-description">Beschreibung <small>optional</small></label>
+      <input id="command-description" name="description" maxlength="255" placeholder="Meine Social-Links">
+      <label for="command-response">Antwort</label>
+      <textarea id="command-response" name="response_template" maxlength="400" placeholder="Folge mir auf …" required></textarea>
+      <div class="command-form__actions"><button class="button primary" type="submit">Command speichern</button><span>Maximal 400 Zeichen</span></div>
+    </form>
+  </section>
+
+  <section class="command-card">
+    <div class="command-card__header"><div><h2>Deine Commands</h2><p>Diese Antworten gehören nur dir.</p></div></div>
+    {{#if data.user_commands.length}}
+      <div class="table-wrap"><table class="command-table"><thead><tr><th>Command</th><th>Beschreibung</th><th>Antwort</th><th><span class="sr-only">Aktion</span></th></tr></thead><tbody>
+      {{#each data.user_commands}}<tr><td><code>!{{name}}</code></td><td>{{#if description}}{{description}}{{else}}<span class="muted">—</span>{{/if}}</td><td class="command-table__response">{{response_template}}</td><td class="command-table__action"><form method="POST" action="/Commands/Custom/{{id}}/Delete"><input type="hidden" name="csrf_token" value="{{../data.csrf_token}}"><button class="button danger" type="submit">Löschen</button></form></td></tr>{{/each}}
+      </tbody></table></div>
+    {{else}}<div class="empty-state">Noch keine eigenen Commands angelegt.</div>{{/if}}
+  </section>
+
+  <section class="command-card command-card--global">
+    <div class="command-card__header"><div><p class="eyebrow">Nur lesbar</p><h2>Globale Commands</h2><p>Diese Commands werden von der Administration verwaltet und haben Vorrang vor eigenen Commands.</p></div></div>
+    {{#if data.global_commands.length}}
+      <div class="table-wrap"><table class="command-table"><thead><tr><th>Command</th><th>Beschreibung</th><th>Antwort</th></tr></thead><tbody>
+      {{#each data.global_commands}}<tr><td><code>!{{name}}</code></td><td>{{#if description}}{{description}}{{else}}<span class="muted">—</span>{{/if}}</td><td class="command-table__response">{{response_template}}</td></tr>{{/each}}
+      </tbody></table></div>
+    {{else}}<div class="empty-state">Derzeit sind keine globalen Datenbank-Commands hinterlegt.</div>{{/if}}
+  </section>
+
+  <section class="command-card">
+    <div class="command-card__header"><div><h2>Zugangspunkt-Einstellungen</h2><p>Prefix und Aktivierung gelten jeweils für einen Twitch-/YouTube-Channel oder Discord-Server.</p></div></div>
+    {{#if data.endpoints.length}}
+      <div class="endpoint-list">{{#each data.endpoints}}<form class="endpoint-row" method="POST" action="/Commands/Endpoints"><input type="hidden" name="csrf_token" value="{{../data.csrf_token}}"><input type="hidden" name="service" value="{{service}}"><input type="hidden" name="endpoint_id" value="{{endpoint_id}}"><div class="endpoint-row__identity"><strong>{{name}}</strong><span>{{service}}</span></div><label class="endpoint-row__prefix" for="prefix-{{service}}-{{endpoint_id}}">Prefix<input id="prefix-{{service}}-{{endpoint_id}}" name="prefix" value="{{prefix}}" maxlength="10" required></label><input type="hidden" name="commands_enabled" value="0"><label class="endpoint-row__enabled"><input type="checkbox" name="commands_enabled" value="1" {{#if commands_enabled}}checked{{/if}}> Commands aktiv</label><button class="button" type="submit">Speichern</button></form>{{/each}}</div>
+    {{else}}<div class="empty-state">Für dein Konto sind noch keine Zugangspunkte verknüpft.</div>{{/if}}
+  </section>
+</main>
