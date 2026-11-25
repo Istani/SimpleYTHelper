@@ -44,14 +44,19 @@
                 <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
                     <a href="/Dashboard">{{{i18n "Dashboard"}}}</a>
                     <br>
-                    <a href="/Commands">Commands</a>
-                    <br>
-                    {{#if data.login.is_admin}}<a href="/Admin/Commands">Globale Commands</a><br>{{/if}}
                     <hr>
                     <a href="/Logout">{{{i18n "Logout"}}}</a>
                 </div>
             </div>
             <br>
+            <br>
+            <div id="chatbot_navigation" class="ui-accordion ui-widget ui-helper-reset">
+                <h3 class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">Chatbot</h3>
+                <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
+                    <a href="/Commands">Commands</a><br>
+                    {{#if data.login.is_admin}}<a href="/Admin/Commands">Globale Commands</a><br>{{/if}}
+                </div>
+            </div>
             <div id="content_navigation" class="ui-accordion ui-widget ui-helper-reset">
                 <h3
                     class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">
