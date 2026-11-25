@@ -50,13 +50,6 @@
             </div>
             <br>
             <br>
-            <div id="chatbot_navigation" class="ui-accordion ui-widget ui-helper-reset">
-                <h3 class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">Chatbot</h3>
-                <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
-                    <a href="/Commands">Commands</a><br>
-                    {{#if data.login.is_admin}}<a href="/Admin/Commands">Globale Commands</a><br>{{/if}}
-                </div>
-            </div>
             <div id="content_navigation" class="ui-accordion ui-widget ui-helper-reset">
                 <h3
                     class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">
@@ -71,6 +64,15 @@
                     <a href="/Analytics">Analytics</a>
                     <br>
                     <a href="/Members">{{{i18n "Members"}}}</a>
+                </div>
+            </div>
+            <br>
+            <br>
+            <div id="chatbot_navigation" class="ui-accordion ui-widget ui-helper-reset">
+                <h3 class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">Chatbot</h3>
+                <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
+                    <a href="/Commands">Commands</a><br>
+                    {{#if data.login.is_admin}}<a href="/Admin/Commands">Globale Commands</a><br>{{/if}}
                 </div>
             </div>
             <br>
