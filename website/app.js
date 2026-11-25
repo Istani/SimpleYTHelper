@@ -14,6 +14,7 @@ const Login = require("./models/syth_login.js");
 const Token = require("./models/syth_token.js");
 const User_Channel = require("./models/channel.js");
 const ChatCommandEndpoint = require("./models/chat_command_endpoint.js");
+const ChatCommand = require("./models/chat_command.js");
 const SythDiscordGuild = require("./models/syth_discord_guild.js");
 const Chat = require("./models/chat_message.js");
 const Video = require("./models/videos.js");
@@ -531,12 +532,10 @@ app.get("/Commands", requireSessionUser, async function(req, res, next) {
       endpoint.prefix = setting ? setting.prefix : "!";
       endpoint.commands_enabled = setting ? !!setting.commands_enabled : true;
     });
+    const userCommands = await ChatCommand.query().where("owner_key", "user:" + user.id).orderBy("name");
+    const globalCommands = await ChatCommand.query().where("owner_key", "global").orderBy("name");
     res.render("commands", {
-      data: {
-        login: user,
-        endpoints: endpoints,
-        csrf_token: createCsrfToken(req)
-      }
+      data: { login: user, endpoints: endpoints, user_commands: userCommands, global_commands: globalCommands, csrf_token: createCsrfToken(req) }
     });
   } catch (error) {
     next(error);
@@ -598,6 +597,31 @@ app.post("/Commands/Endpoints", requireSessionUser, requireCsrf, async function(
     next(error);
   }
 });
+
+app.post("/Commands/Custom", requireSessionUser, requireCsrf, async function(req,res,next) {
+  try {
+    const user=sessionUser(req), name=String(req.body.name||"").trim().toLowerCase(), response=String(req.body.response_template||"").trim(), description=String(req.body.description||"").trim();
+    if(!/^[a-z0-9_]{1,32}$/.test(name)||response.length>400||/[\u0000-\u001f]/.test(response)||description.length>255) return res.status(400).send("Ungültiger Custom Command.");
+    const row={owner_key:"user:"+user.id,owner_id:user.id,name:name,type:"template",response_template:response,description:description,visible:true,enabled:true,global_cooldown_seconds:0,user_cooldown_seconds:0};
+    const existing=await ChatCommand.query().where("owner_key",row.owner_key).where("name",name).first();
+    if(existing) await ChatCommand.query().findById(existing.id).patch(row); else await ChatCommand.query().insert(row);
+    res.redirect("/Commands");
+  } catch(error){next(error);}
+});
+
+app.post("/Commands/Custom/:id/Delete", requireSessionUser, requireCsrf, async function(req,res,next) {
+  try { const user=sessionUser(req), id=Number(req.params.id); if(!Number.isSafeInteger(id)||id<1)return res.status(400).send("Ungültiger Command."); await ChatCommand.query().where("id",id).where("owner_key","user:"+user.id).delete(); res.redirect("/Commands"); } catch(error){next(error);}
+});
+
+app.get("/Admin/Commands", requireSessionUser, async function(req,res,next) {
+  try { const user=sessionUser(req); if(!isApiAdmin(user)) return res.status(403).send("Administratorrechte erforderlich."); const commands=await ChatCommand.query().where("owner_key","global").orderBy("name"); res.render("admin_commands",{data:{login:user,commands:commands,csrf_token:createCsrfToken(req)}}); } catch(error){next(error);}
+});
+
+app.post("/Admin/Commands", requireSessionUser, requireCsrf, async function(req,res,next) {
+  try { const user=sessionUser(req); if(!isApiAdmin(user)) return res.status(403).send("Administratorrechte erforderlich."); const name=String(req.body.name||"").trim().toLowerCase(), response=String(req.body.response_template||"").trim(), description=String(req.body.description||"").trim(); if(!/^[a-z0-9_]{1,32}$/.test(name)||response.length>400||/[\u0000-\u001f]/.test(response)||description.length>255)return res.status(400).send("Ungültiger globaler Command."); const row={owner_key:"global",owner_id:null,name:name,type:"template",response_template:response,description:description,visible:true,enabled:true,global_cooldown_seconds:0,user_cooldown_seconds:0}; const existing=await ChatCommand.query().where("owner_key","global").where("name",name).first(); if(existing)await ChatCommand.query().findById(existing.id).patch(row);else await ChatCommand.query().insert(row);res.redirect("/Admin/Commands"); }catch(error){next(error);}
+});
+
+app.post("/Admin/Commands/:id/Delete", requireSessionUser, requireCsrf, async function(req,res,next) { try { const user=sessionUser(req),id=Number(req.params.id);if(!isApiAdmin(user))return res.status(403).send("Administratorrechte erforderlich.");if(!Number.isSafeInteger(id)||id<1)return res.status(400).send("Ungültiger Command.");await ChatCommand.query().where("id",id).where("owner_key","global").delete();res.redirect("/Admin/Commands");}catch(error){next(error);} });
 
 app.get("/Dashboard", async function(req, res) {
   var temp_data = {};
