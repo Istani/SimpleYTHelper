@@ -18,17 +18,31 @@
 
 <body>
     <header id="header" class="site-header">
-        <a class="site-brand" href="/Dashboard" aria-label="SimpleYTH Dashboard">
-            <span class="site-brand__mark" aria-hidden="true">SY</span>
-            <span><strong>SimpleYTH</strong><small>Creator Dashboard</small></span>
+        <a class="site-brand" href="/Dashboard" aria-label="SimpleYTH Community Dashboard">
+            <span class="site-brand__logo" aria-hidden="true"><img src="/banner.png" alt=""></span>
+            <span class="site-brand__copy"><small>Community Dashboard</small></span>
         </a>
     </header>
 
     <main id="content" class="content-shell">
+        <header class="content-titlebar">
+            <h1 id="content-title">SimpleYTH</h1>
+        </header>
         <div class="content-shell__body">
             {{{body}}}
         </div>
     </main>
+    <script>
+        (function () {
+            var source = document.querySelector('.content-shell__body h1, .content-shell__body > h2');
+            var title = document.getElementById('content-title');
+            if (source && title) {
+                title.textContent = source.textContent.trim();
+                source.classList.add('layout-title-source');
+                source.setAttribute('aria-hidden', 'true');
+            }
+        }());
+    </script>
 
     <div id="navigation">
         {{#if data.login.user}}
