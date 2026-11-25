@@ -15,7 +15,7 @@
                 {{#each data.members}}
                     <tr>
                         <td align="center">
-                            <span class="service-{{service}}"></span>
+                            {{> platform service=service}}
                         </td>
                         <td>{{emojify member_name}}</td>
                         <td>{{level}}</td>

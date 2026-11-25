@@ -57,7 +57,7 @@
             {{#each data.logs}}
                 <div style="margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #eee;">
                     <small style="color: #888;">{{created_at}}</small><br>
-                    <span class="service-{{service}}"></span> {{display_text}}
+                    {{> platform service=service}} {{display_text}}
                 </div>
             {{else}}
                 <p>{{i18n "No recent events."}}</p>

@@ -58,6 +58,14 @@ var hbs = exphbs.create({
     emojify: function(value) {
       return emoji.emojify(String(value == null ? "" : value));
     },
+    platformClass: function(value) {
+      var service = String(value == null ? "" : value).toLowerCase();
+      return ["youtube", "twitch", "discord"].indexOf(service) !== -1 ? service : "unknown";
+    },
+    platformLabel: function(value) {
+      var service = String(value == null ? "" : value).toLowerCase();
+      return { youtube: "YouTube", twitch: "Twitch", discord: "Discord" }[service] || String(value == null ? "Unbekannt" : value);
+    },
     i18n: function(key, options) {
       var temp_data = {};
       temp_data.data = options;
@@ -75,6 +83,7 @@ var hbs = exphbs.create({
       return result;
     }
   },
+  partialsDir: __dirname + "/views/partials",
   defaultLayout: "main",
   extname: ".hbs"
 });
