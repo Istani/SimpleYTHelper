@@ -52,6 +52,7 @@ var passport = require("passport");
 var youtube_auth = require("./oauth/youtube.js");
 var twitch_auth = require("./oauth/twitch.js");
 var discord_auth = require("./oauth/discord.js");
+const { revokeOAuthToken } = require("./oauth-revoke.js");
 
 var hbs = exphbs.create({
   helpers: {
@@ -1350,13 +1351,55 @@ app.get("/Channels", requireSessionUser, async function(req, res, next) {
         has_next: page * size < result.total,
         previous_page: page - 1,
         next_page: page + 1,
-        total: result.total
+        total: result.total,
+        csrf_token: createCsrfToken(req)
       }
     });
   } catch (error) {
     next(error);
   }
 });
+
+app.post(
+  "/Channels/:service/:channelId/Disconnect",
+  requireSessionUser,
+  requireCsrf,
+  async function(req, res, next) {
+    try {
+      const user = sessionUser(req),
+        service = String(req.params.service || "").toLowerCase(),
+        channelId = String(req.params.channelId || "");
+      const token = await Token.query().findOne({
+        user_id: user.id,
+        service: service,
+        service_user: channelId
+      });
+      if (!token)
+        return res
+          .status(404)
+          .render("error", {
+            data: {
+              login: user,
+              error: {
+                code: "Verbindung nicht gefunden",
+                text:
+                  "Diese OAuth-Verbindung gehört nicht zu deinem Konto oder existiert nicht mehr."
+              }
+            }
+          });
+      await revokeOAuthToken(token);
+      await Token.transaction(async trx => {
+        await Token.query(trx).deleteById(token.id);
+        await User_Channel.query(trx)
+          .where({ user_id: user.id, service: service, channel_id: channelId })
+          .delete();
+      });
+      res.redirect("/Channels?disconnected=1");
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 app.get("/health", function(req, res) {
   res.status(200).json({
