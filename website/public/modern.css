@@ -174,3 +174,12 @@ body{gap:14px;padding:14px}.site-header{min-height:64px!important}.site-brand__l
 .content-titlebar h1{color:#334155!important}
 .data-table th{border-top-color:#94a3b8!important;border-bottom-color:#94a3b8!important}
 .data-table th:first-child{border-left-color:#94a3b8!important}.data-table th:last-child{border-right-color:#94a3b8!important}
+
+/* Structural dashboard polish: primary panels share the same deliberate border and depth. */
+#header.site-header,.content-shell{border-color:#cbd5e1!important;box-shadow:0 1px 2px rgba(15,23,42,.08),0 0 0 1px rgba(148,163,184,.12)!important}
+.content-shell__body>.card+.card{margin-top:14px}
+.connection{grid-template-columns:130px minmax(0,1fr) auto auto}
+.connection__disconnect{margin:0}
+.connection__disconnect .button{padding:.45rem .65rem;font-size:.82rem;background:#fff;color:#991b1b;border-color:#fca5a5}
+.connection__disconnect .button:hover{background:#fef2f2;border-color:#dc2626}
+@media(max-width:800px){.connection{grid-template-columns:1fr}.connection__disconnect .button{width:100%;text-align:center}}

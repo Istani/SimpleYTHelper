@@ -52,49 +52,36 @@
                     {{{i18n "Navigation"}}}</h3>
                 <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
                     <a href="/Dashboard">{{{i18n "Dashboard"}}}</a>
-                    <br>
                     <hr>
                     <a href="/Logout">{{{i18n "Logout"}}}</a>
                 </div>
             </div>
-            <br>
-            <br>
-            <div id="content_navigation" class="ui-accordion ui-widget ui-helper-reset">
+                    <div id="content_navigation" class="ui-accordion ui-widget ui-helper-reset">
                 <h3
                     class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">
                     Content</h3>
                 <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
                     <a href="/Channels">{{{i18n "Channels"}}}</a>
-                    <br>
                     <a href="/Videos">{{{i18n "Videos"}}}</a>
-                    <br>
                     <a href="/Playlists">{{i18n "Playlists"}}</a>
-                    <br>
                     <a href="/Analytics">Analytics</a>
-                    <br>
                     <a href="/Members">{{{i18n "Members"}}}</a>
                 </div>
             </div>
-            <br>
-            <br>
-            <div id="chatbot_navigation" class="ui-accordion ui-widget ui-helper-reset">
+                    <div id="chatbot_navigation" class="ui-accordion ui-widget ui-helper-reset">
                 <h3 class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">Chatbot</h3>
                 <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
-                    <a href="/Commands">Commands</a><br>
-                    {{#if data.login.is_admin}}<a href="/Admin/Commands">Globale Commands</a><br>{{/if}}
+                    <a href="/Commands">Commands</a>{{#if data.login.is_admin}}<a href="/Admin/Commands">Globale Commands</a>{{/if}}
                 </div>
             </div>
-            <br>
-            <div id="api_navigation" class="ui-accordion ui-widget ui-helper-reset">
+                <div id="api_navigation" class="ui-accordion ui-widget ui-helper-reset">
                 <h3
                     class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">
                     {{{i18n "Account API"}}}</h3>
                 <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
                     <a href="/Api">{{{i18n "Manage API keys"}}}</a>
-                    <br>
                     <a href="/Api/Docs">{{{i18n "Go to API documentation"}}}</a>
-                    <br>
-                    {{#if data.login.is_admin}}<a href="/Admin/Api">{{{i18n "API-Administration"}}}</a><br>{{/if}}
+                    {{#if data.login.is_admin}}<a href="/Admin/Api">{{{i18n "API-Administration"}}}</a>{{/if}}
                 </div>
             </div>
         {{else}}
@@ -113,18 +100,14 @@
                 </div>
             </div>
         {{/if}}
-        <br>
-        <br>
         <div id="page_info" class="ui-accordion ui-widget ui-helper-reset">
             <h3
                 class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">
                 {{i18n "About"}}</h3>
             <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
                 <a href="/AGB">{{{i18n "ABGs"}}}</a>
-                <br>
-                <a href="/Impressum">{{{i18n "Impressum"}}}</a>
-                <br>
-            </div>
+                        <a href="/Impressum">{{{i18n "Impressum"}}}</a>
+                    </div>
         </div>
     </div>
 

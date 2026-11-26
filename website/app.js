@@ -856,12 +856,14 @@ app.get("/Dashboard", async function(req, res) {
       if (typeof element.channel[0] != "undefined") {
         temp_data.current[token_index] = {
           name: element.channel[0].channel_title,
-          service: element.service
+          service: element.service,
+          channel_id: element.service_user
         };
       } else {
         temp_data.current[token_index] = {
           name: i18n.__("No Data!"),
-          service: element.service
+          service: element.service,
+          channel_id: element.service_user
         };
       }
     }
@@ -898,6 +900,7 @@ app.get("/Dashboard", async function(req, res) {
           ).count
         )
       : 0;
+    temp_data.csrf_token = createCsrfToken(req);
     res.render("dashboard", { data: temp_data });
   } else {
     temp_data.error = {};
@@ -1408,7 +1411,7 @@ app.post(
           .where({ user_id: user.id, service: service, channel_id: channelId })
           .delete();
       });
-      res.redirect("/Channels?disconnected=1");
+      res.redirect("/Dashboard?disconnected=1");
     } catch (error) {
       next(error);
     }

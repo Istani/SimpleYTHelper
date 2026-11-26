@@ -18,7 +18,6 @@
           {{#if description}}<p class="channel-card__description">{{emojify description}}</p>{{else}}<p class="channel-card__description muted">Keine Beschreibung verfügbar.</p>{{/if}}
           <dl class="channel-card__stats"><div><dt>Abonnenten</dt><dd>{{formatNumber subscriber}}</dd></div><div><dt>Aufrufe</dt><dd>{{formatNumber views}}</dd></div><div><dt>Videos</dt><dd>{{formatNumber videos}}</dd></div></dl>
           {{#if external_url}}<a class="channel-card__link" href="{{external_url}}" target="_blank" rel="noopener noreferrer">Channel auf {{external_service}} öffnen <span aria-hidden="true">↗</span></a>{{/if}}
-          <form class="channel-card__disconnect" method="POST" action="/Channels/{{service}}/{{channel_id}}/Disconnect" onsubmit="return window.confirm('Möchtest du die OAuth-Verbindung zu „{{channel_title}}“ wirklich trennen? Der Zugriff wird beim Anbieter widerrufen und der Channel aus SimpleYTH entfernt.');"><input type="hidden" name="csrf_token" value="{{../data.csrf_token}}"><button class="button danger" type="submit">Verbindung trennen</button></form>
         </div>
       </article>
     {{else}}
