@@ -378,7 +378,7 @@ async function GetChannel(twitchClient, syth_user) {
   channel_obj.banner = User.offlinePlaceholderUrl;
 
   // Twitch has no YouTube-style uploads playlist; the legacy schema requires this field.
-  channel_obj.main_playlist = "";
+  channel_obj.main_playlist = null;
   channel_obj.views = Number.isFinite(User.view_count) ? User.view_count : 0;
   channel_obj.subscriber = 0; // Twitch does not expose this through the legacy channel import.
   channel_obj.videos = 0; // Twitch channels do not map to YouTube uploads.
