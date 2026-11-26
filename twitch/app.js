@@ -370,15 +370,18 @@ async function GetChannel(twitchClient, syth_user) {
   channel_obj.channel_title = User.displayName;
   channel_obj.description = User.description;
 
-  channel_obj.start_date = User._data.created_at;
+  channel_obj.start_date = moment(User._data.created_at).format(
+    "YYYY-MM-DD HH:mm:ss"
+  );
 
   channel_obj.thumbnail = User.profilePictureUrl;
   channel_obj.banner = User.offlinePlaceholderUrl;
 
-  //channel_obj.main_playlist = data.contentDetails.relatedPlaylists.uploads;
-  channel_obj.views = User.view_count;
-  //channel_obj.subscriber = data.statistics.subscriberCount;
-  //channel_obj.videos = data.statistics.videoCount;
+  // Twitch has no YouTube-style uploads playlist; the legacy schema requires this field.
+  channel_obj.main_playlist = "";
+  channel_obj.views = Number.isFinite(User.view_count) ? User.view_count : 0;
+  channel_obj.subscriber = 0; // Twitch does not expose this through the legacy channel import.
+  channel_obj.videos = 0; // Twitch channels do not map to YouTube uploads.
 
   var m = await ow_channel
     .query()
