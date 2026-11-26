@@ -28,7 +28,7 @@
     {{#if data.keys.length}}
       <div class="table-wrap"><table class="data-table"><thead><tr><th>Bezeichnung</th><th>Präfix</th><th>Erstellt</th><th>Zuletzt verwendet</th><th>Status</th><th><span class="sr-only">Aktion</span></th></tr></thead><tbody>
       {{#each data.keys}}
-        <tr><td>{{label}}</td><td><code>{{key_prefix}}…</code></td><td>{{created_at}}</td><td>{{#if last_used_at}}{{last_used_at}}{{else}}Noch nie{{/if}}</td><td>{{#if revoked_at}}<span class="key-status revoked">Widerrufen</span>{{else}}<span class="key-status active">Aktiv</span>{{/if}}</td><td>{{#unless revoked_at}}<form method="POST" action="/Api/Keys/{{id}}/Revoke"><input type="hidden" name="csrf_token" value="{{../data.csrf_token}}"><button class="button danger" type="submit">Widerrufen</button></form>{{/unless}}</td></tr>
+        <tr><td>{{label}}</td><td><code>{{key_prefix}}…</code></td><td>{{formatDateTime created_at}}</td><td>{{#if last_used_at}}{{formatDateTime last_used_at}}{{else}}Noch nie{{/if}}</td><td>{{#if revoked_at}}<span class="key-status revoked">Widerrufen</span>{{else}}<span class="key-status active">Aktiv</span>{{/if}}</td><td>{{#unless revoked_at}}<form method="POST" action="/Api/Keys/{{id}}/Revoke"><input type="hidden" name="csrf_token" value="{{../data.csrf_token}}"><button class="button danger" type="submit">Widerrufen</button></form>{{/unless}}</td></tr>
       {{/each}}
       </tbody></table></div>
     {{else}}

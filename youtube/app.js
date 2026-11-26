@@ -712,6 +712,8 @@ async function ImportChannelAnalytics(auth) {
               rows.reduce((a, b) => a + Number(b[7]), 0) / rows.length,
             subscribersGained: totalSubGained,
             subscribersLost: totalSubLost,
+            period_start: q_startDate,
+            period_end: q_endDate,
             timestamp: new Date().toISOString()
           };
 
@@ -1820,6 +1822,8 @@ async function ImportAnalytics(auth) {
               dislikes: dislikes,
               averageViewDuration: averageViewDuration,
               averageViewPercentage: averageViewPercentage,
+              period_start: q_startDate,
+              period_end: q_endDate,
               timestamp: new Date().toISOString()
             };
 

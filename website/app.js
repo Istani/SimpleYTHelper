@@ -86,6 +86,40 @@ var hbs = exphbs.create({
         maximumFractionDigits: 2
       }).format(numeric);
     },
+    formatDateTime: function(value) {
+      if (value === null || value === undefined || value === "") return "—";
+      var text = String(value).trim();
+      var date = /^\d{4}-\d{2}-\d{2}$/.test(text)
+        ? new Date(text + "T00:00:00")
+        : new Date(text);
+      if (Number.isNaN(date.getTime())) return text;
+      return new Intl.DateTimeFormat("de-DE", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hourCycle: "h23"
+      })
+        .format(date)
+        .replace(",", "");
+    },
+    formatDateRange: function(start, end) {
+      if (!start || !end) return "Letzte 90 Tage bis vor 14 Tagen";
+      var format = function(value) {
+        var text = String(value).slice(0, 10),
+          date = new Date(text + "T00:00:00");
+        return Number.isNaN(date.getTime())
+          ? text
+          : new Intl.DateTimeFormat("de-DE", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric"
+            }).format(date);
+      };
+      return format(start) + " – " + format(end);
+    },
     i18n: function(key, options) {
       var temp_data = {};
       temp_data.data = options;
@@ -1055,13 +1089,40 @@ app.get("/Analytics", requireSessionUser, async function(req, res, next) {
           .orderBy("views", "desc")
           .limit(10)
       : [];
+    const channels = ids.length
+      ? await User_Channel.query()
+          .where("user_id", user.id)
+          .whereIn("channel_id", ids)
+          .select("channel_id", "channel_title")
+      : [];
+    const videos = ids.length
+      ? await Video.query()
+          .whereIn("owner", ids)
+          .select("owner", "v_id", "title")
+      : [];
+    const channelNames = new Map(
+      channels.map(channel => [channel.channel_id, channel.channel_title])
+    );
+    const videoTitles = new Map(
+      videos.map(video => [video.owner + "\u0000" + video.v_id, video.title])
+    );
+    const decorateChannel = row => ({
+      ...row,
+      channel_name: channelNames.get(row.channel_id) || "Unbekannter Kanal"
+    });
+    const decorateVideo = row => ({
+      ...row,
+      video_title:
+        videoTitles.get(row.channel_id + "\u0000" + row.video_id) ||
+        "Nicht mehr verfügbares Video"
+    });
     const sum = (rows, field) =>
       rows.reduce((total, row) => total + (Number(row[field]) || 0), 0);
     res.render("analytics", {
       data: {
         login: user,
-        channel_analytics: channelAnalytics,
-        video_analytics: videoAnalytics,
+        channel_analytics: channelAnalytics.map(decorateChannel),
+        video_analytics: videoAnalytics.map(decorateVideo),
         channel_count: channelAnalytics.length,
         total_views: sum(channelAnalytics, "views"),
         total_likes: sum(channelAnalytics, "likes"),

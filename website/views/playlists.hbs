@@ -16,7 +16,7 @@
           <div class="playlist-card__top">{{> platform service=service}}<span class="playlist-card__type">{{formatNumber video_count}} Videos</span></div>
           <h2>{{emojify pl_title}}</h2>
         {{#if description}}<p class="playlist-card__description">{{emojify description}}</p>{{else}}<p class="playlist-card__description muted">Keine Beschreibung verfügbar.</p>{{/if}}
-          <footer class="playlist-card__meta"><span>Veröffentlicht</span><time>{{publishedAt}}</time></footer>
+          <footer class="playlist-card__meta"><span>Veröffentlicht</span><time>{{formatDateTime publishedAt}}</time></footer>
           {{#if external_url}}<a class="playlist-card__link" href="{{external_url}}" target="_blank" rel="noopener noreferrer">Playlist auf YouTube öffnen <span aria-hidden="true">↗</span></a>{{/if}}
         </div>
       </article>

@@ -56,7 +56,7 @@
         <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
             {{#each data.logs}}
                 <div style="margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #eee;">
-                    <small style="color: #888;">{{created_at}}</small><br>
+                    <small style="color: #888;">{{formatDateTime created_at}}</small><br>
                     {{> platform service=service}} {{display_text}}
                 </div>
             {{else}}
