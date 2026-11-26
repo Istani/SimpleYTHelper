@@ -5,6 +5,7 @@
         <table class="data-table">
             <thead>
                 <tr>
+                    <th>Kanal</th>
                     <th>{{i18n "Service"}}</th>
                     <th>{{i18n "Title"}}</th>
                     <th>{{i18n "Level"}}</th>
@@ -14,6 +15,7 @@
             <tbody>
                 {{#each data.members}}
                     <tr>
+                        <td>{{channel_name}}</td>
                         <td>
                             {{> platform service=service}}
                         </td>
@@ -23,7 +25,7 @@
                     </tr>
                 {{else}}
                     <tr>
-                        <td colspan="4">{{i18n "No members found."}}</td>
+                        <td colspan="5">{{i18n "No members found."}}</td>
                     </tr>
                 {{/each}}
             </tbody>

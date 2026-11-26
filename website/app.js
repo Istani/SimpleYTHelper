@@ -1140,9 +1140,27 @@ app.get("/Members", async function(req, res) {
     temp_data.login = req.session.user[0];
     var tokens = await Token.query().where("user_id", req.session.user[0].id);
     var channel_ids = tokens.map(t => t.service_user);
-    temp_data.members = await Member.query()
+    const channels = channel_ids.length
+      ? await User_Channel.query()
+          .whereIn("channel_id", channel_ids)
+          .select("channel_id", "channel_title")
+      : [];
+    const channelNames = new Map(
+      channels.map(channel => [channel.channel_id, channel.channel_title])
+    );
+    const members = await Member.query()
       .whereIn("owner", channel_ids)
+      .orderBy("owner", "asc")
       .orderBy("since", "desc");
+    temp_data.members = members.map(member => ({
+      channel_name: String(
+        channelNames.get(member.owner) || "Unbekannter Kanal"
+      ),
+      service: member.service,
+      member_name: member.member_name,
+      level: member.level,
+      since: member.since
+    }));
     res.render("members", { data: temp_data });
   } else {
     res.redirect("/Login");
