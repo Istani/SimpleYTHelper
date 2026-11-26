@@ -206,6 +206,8 @@ function createApiRouter() {
             .select(
               "service",
               "channel_id",
+              "period_start",
+              "period_end",
               "views",
               "comments",
               "likes",
@@ -244,6 +246,8 @@ function createApiRouter() {
               "service",
               "channel_id",
               "video_id",
+              "period_start",
+              "period_end",
               "views",
               "comments",
               "likes",
