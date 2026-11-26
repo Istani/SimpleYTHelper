@@ -120,15 +120,16 @@ var hbs = exphbs.create({
       }
       if (!start || !end) return "Zeitraum nicht verfügbar";
       var format = function(value) {
-        var text = String(value).slice(0, 10),
-          date = new Date(text + "T00:00:00");
-        return Number.isNaN(date.getTime())
-          ? text
-          : new Intl.DateTimeFormat("de-DE", {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric"
-            }).format(date);
+        var date =
+          value instanceof Date
+            ? value
+            : new Date(String(value).slice(0, 10) + "T00:00:00");
+        if (Number.isNaN(date.getTime())) return "—";
+        return new Intl.DateTimeFormat("de-DE", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric"
+        }).format(date);
       };
       return format(start) + " – " + format(end);
     },
