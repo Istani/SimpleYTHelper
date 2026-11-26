@@ -26,6 +26,7 @@ const ow_videos = require("./models/videos.js");
 const ow_channel = require("./models/channel.js");
 const Outgoing_Message = require("./models/outgoing_messages.js");
 const Chat_Message = require("./models/chat_message.js");
+const LiveChatEvent = require("./models/live_chat_event.js");
 const Chat_Room = require("./models/chat_room.js");
 const Chat_Server = require("./models/chat_server.js");
 const Chat_User = require("./models/chat_user.js");
@@ -1366,6 +1367,47 @@ async function StoreLiveChatMessages(items, channelId, liveChatId) {
         .patch(tmp_message)
         .where(matches[0]);
     }
+    const authorDetails = element.authorDetails || {};
+    const messageText =
+      (element.snippet.textMessageDetails &&
+        element.snippet.textMessageDetails.messageText) ||
+      (element.snippet.superChatDetails &&
+        element.snippet.superChatDetails.userComment) ||
+      (element.snippet.memberMilestoneChatDetails &&
+        element.snippet.memberMilestoneChatDetails.userComment) ||
+      element.snippet.displayMessage ||
+      "";
+    const sourceEvent = {
+      service: "youtube",
+      channel_id: channelId,
+      room_id: liveChatId,
+      source_event_id: element.id,
+      type: element.snippet.type || "unknown",
+      published_at: chatDate,
+      author_id: element.snippet.authorChannelId || null,
+      author_handle:
+        authorDetails.channelUrl && authorDetails.channelUrl.indexOf("/@") >= 0
+          ? authorDetails.channelUrl.slice(authorDetails.channelUrl.lastIndexOf("/@"))
+          : null,
+      author_display_name: authorDetails.displayName || null,
+      author_is_owner: authorDetails.isChatOwner,
+      author_is_moderator: authorDetails.isChatModerator,
+      author_is_member: authorDetails.isChatSponsor,
+      text: sanitizeLegacyMysqlText(messageText),
+      details: {
+        superChat: element.snippet.superChatDetails || null,
+        superSticker: element.snippet.superStickerDetails || null,
+        userBanned: element.snippet.userBannedDetails || null
+      }
+    };
+    const existingEvent = await LiveChatEvent.query().findOne({
+      service: sourceEvent.service,
+      channel_id: sourceEvent.channel_id,
+      room_id: sourceEvent.room_id,
+      source_event_id: sourceEvent.source_event_id
+    });
+    if (!existingEvent) await LiveChatEvent.query().insert(sourceEvent);
+
     if (element.authorDetails && element.snippet.authorChannelId) {
       var tmp_user = {
         service: "youtube",

@@ -27,6 +27,7 @@ const ow_broadcasts = require("./models/broadcast.js");
 const ow_channel = require("./models/channel.js");
 const Outgoing_Message = require("./models/outgoing_messages.js");
 const Chat_Message = require("./models/chat_message.js");
+const LiveChatEvent = require("./models/live_chat_event.js");
 const Chat_Room = require("./models/chat_room.js");
 const Chat_Server = require("./models/chat_server.js");
 const Chat_User = require("./models/chat_user.js");
@@ -190,6 +191,26 @@ async function AddMessage(msg, guild, channel, user) {
     await Chat_Message.query()
       .patch(tmp_message)
       .where(m[0]);
+  }
+
+  var existingEvent = await LiveChatEvent.query().findOne({
+    service: "twitch",
+    channel_id: guild.id,
+    room_id: channel.id,
+    source_event_id: msg.id
+  });
+  if (!existingEvent) {
+    await LiveChatEvent.query().insert({
+      service: "twitch",
+      channel_id: guild.id,
+      room_id: channel.id,
+      source_event_id: msg.id,
+      type: "textMessageEvent",
+      published_at: msg.createdAt,
+      author_id: user.id,
+      author_display_name: user.username || null,
+      text: msg.content
+    });
   }
 }
 
