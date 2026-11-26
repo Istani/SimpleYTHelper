@@ -2,7 +2,7 @@
   <section class="page-heading">
     <p class="eyebrow">Content-Hub</p>
     <h1>Playlists</h1>
-    <p>{{data.total}} Playlists in deiner Bibliothek.</p>
+    <p>{{formatNumber data.total}} Playlists in deiner Bibliothek.</p>
   </section>
   <form class="search-form" method="GET">
     <input name="q" value="{{data.q}}" placeholder="Playlists durchsuchen" aria-label="Playlists durchsuchen">
@@ -13,7 +13,7 @@
       <article class="card playlist-card">
         {{#if thumbnail}}<a class="playlist-card__media" href="{{external_url}}" target="_blank" rel="noopener noreferrer"><img loading="lazy" src="{{thumbnail}}" alt="Erstes Video aus {{pl_title}}"></a>{{else}}<div class="playlist-card__fallback" aria-label="Kein Vorschaubild verfügbar"></div>{{/if}}
         <div class="playlist-card__content">
-          <div class="playlist-card__top">{{> platform service=service}}<span class="playlist-card__type">{{video_count}} Videos</span></div>
+          <div class="playlist-card__top">{{> platform service=service}}<span class="playlist-card__type">{{formatNumber video_count}} Videos</span></div>
           <h2>{{emojify pl_title}}</h2>
         {{#if description}}<p class="playlist-card__description">{{emojify description}}</p>{{else}}<p class="playlist-card__description muted">Keine Beschreibung verfügbar.</p>{{/if}}
           <footer class="playlist-card__meta"><span>Veröffentlicht</span><time>{{publishedAt}}</time></footer>

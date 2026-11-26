@@ -2,7 +2,7 @@
   <section class="page-heading">
     <p class="eyebrow">Content-Hub</p>
     <h1>Channels</h1>
-    <p>{{data.total}} verbundene Channels.</p>
+    <p>{{formatNumber data.total}} verbundene Channels.</p>
   </section>
   <form class="search-form" method="GET">
     <input name="q" value="{{data.q}}" placeholder="Channels durchsuchen" aria-label="Channels durchsuchen">
@@ -16,7 +16,7 @@
           <img class="channel-card__avatar" loading="lazy" src="{{thumbnail}}" alt="{{channel_title}}">
           <div class="channel-card__heading">{{> platform service=service}}<h2>{{emojify channel_title}}</h2></div>
           {{#if description}}<p class="channel-card__description">{{emojify description}}</p>{{else}}<p class="channel-card__description muted">Keine Beschreibung verfügbar.</p>{{/if}}
-          <dl class="channel-card__stats"><div><dt>Abonnenten</dt><dd>{{subscriber}}</dd></div><div><dt>Aufrufe</dt><dd>{{views}}</dd></div><div><dt>Videos</dt><dd>{{videos}}</dd></div></dl>
+          <dl class="channel-card__stats"><div><dt>Abonnenten</dt><dd>{{formatNumber subscriber}}</dd></div><div><dt>Aufrufe</dt><dd>{{formatNumber views}}</dd></div><div><dt>Videos</dt><dd>{{formatNumber videos}}</dd></div></dl>
           {{#if external_url}}<a class="channel-card__link" href="{{external_url}}" target="_blank" rel="noopener noreferrer">Channel auf {{external_service}} öffnen <span aria-hidden="true">↗</span></a>{{/if}}
         </div>
       </article>

@@ -60,11 +60,31 @@ var hbs = exphbs.create({
     },
     platformClass: function(value) {
       var service = String(value == null ? "" : value).toLowerCase();
-      return ["youtube", "twitch", "discord"].indexOf(service) !== -1 ? service : "unknown";
+      return ["youtube", "twitch", "discord"].indexOf(service) !== -1
+        ? service
+        : "unknown";
     },
     platformLabel: function(value) {
       var service = String(value == null ? "" : value).toLowerCase();
-      return { youtube: "YouTube", twitch: "Twitch", discord: "Discord" }[service] || String(value == null ? "Unbekannt" : value);
+      return (
+        { youtube: "YouTube", twitch: "Twitch", discord: "Discord" }[service] ||
+        String(value == null ? "Unbekannt" : value)
+      );
+    },
+    formatNumber: function(value) {
+      if (value === null || value === undefined || value === "") return "—";
+      var numeric =
+        typeof value === "number"
+          ? value
+          : Number(
+              String(value)
+                .replace(/\s/g, "")
+                .replace(",", ".")
+            );
+      if (!Number.isFinite(numeric)) return String(value);
+      return new Intl.NumberFormat("de-DE", {
+        maximumFractionDigits: 2
+      }).format(numeric);
     },
     i18n: function(key, options) {
       var temp_data = {};
@@ -541,10 +561,20 @@ app.get("/Commands", requireSessionUser, async function(req, res, next) {
       endpoint.prefix = setting ? setting.prefix : "!";
       endpoint.commands_enabled = setting ? !!setting.commands_enabled : true;
     });
-    const userCommands = await ChatCommand.query().where("owner_key", "user:" + user.id).orderBy("name");
-    const globalCommands = await ChatCommand.query().where("owner_key", "global").orderBy("name");
+    const userCommands = await ChatCommand.query()
+      .where("owner_key", "user:" + user.id)
+      .orderBy("name");
+    const globalCommands = await ChatCommand.query()
+      .where("owner_key", "global")
+      .orderBy("name");
     res.render("commands", {
-      data: { login: user, endpoints: endpoints, user_commands: userCommands, global_commands: globalCommands, csrf_token: createCsrfToken(req) }
+      data: {
+        login: user,
+        endpoints: endpoints,
+        user_commands: userCommands,
+        global_commands: globalCommands,
+        csrf_token: createCsrfToken(req)
+      }
     });
   } catch (error) {
     next(error);
@@ -607,30 +637,163 @@ app.post("/Commands/Endpoints", requireSessionUser, requireCsrf, async function(
   }
 });
 
-app.post("/Commands/Custom", requireSessionUser, requireCsrf, async function(req,res,next) {
+app.post("/Commands/Custom", requireSessionUser, requireCsrf, async function(
+  req,
+  res,
+  next
+) {
   try {
-    const user=sessionUser(req), name=String(req.body.name||"").trim().toLowerCase(), response=String(req.body.response_template||"").trim(), description=String(req.body.description||"").trim();
-    if(!/^[a-z0-9_]{1,32}$/.test(name)||response.length>400||/[\u0000-\u001f]/.test(response)||description.length>255) return res.status(400).send("Ungültiger Custom Command.");
-    const row={owner_key:"user:"+user.id,owner_id:user.id,name:name,type:"template",response_template:response,description:description,visible:true,enabled:true,global_cooldown_seconds:0,user_cooldown_seconds:0};
-    const existing=await ChatCommand.query().where("owner_key",row.owner_key).where("name",name).first();
-    if(existing) await ChatCommand.query().findById(existing.id).patch(row); else await ChatCommand.query().insert(row);
+    const user = sessionUser(req),
+      name = String(req.body.name || "")
+        .trim()
+        .toLowerCase(),
+      response = String(req.body.response_template || "").trim(),
+      description = String(req.body.description || "").trim();
+    if (
+      !/^[a-z0-9_]{1,32}$/.test(name) ||
+      response.length > 400 ||
+      /[\u0000-\u001f]/.test(response) ||
+      description.length > 255
+    )
+      return res.status(400).send("Ungültiger Custom Command.");
+    const row = {
+      owner_key: "user:" + user.id,
+      owner_id: user.id,
+      name: name,
+      type: "template",
+      response_template: response,
+      description: description,
+      visible: true,
+      enabled: true,
+      global_cooldown_seconds: 0,
+      user_cooldown_seconds: 0
+    };
+    const existing = await ChatCommand.query()
+      .where("owner_key", row.owner_key)
+      .where("name", name)
+      .first();
+    if (existing)
+      await ChatCommand.query()
+        .findById(existing.id)
+        .patch(row);
+    else await ChatCommand.query().insert(row);
     res.redirect("/Commands");
-  } catch(error){next(error);}
+  } catch (error) {
+    next(error);
+  }
 });
 
-app.post("/Commands/Custom/:id/Delete", requireSessionUser, requireCsrf, async function(req,res,next) {
-  try { const user=sessionUser(req), id=Number(req.params.id); if(!Number.isSafeInteger(id)||id<1)return res.status(400).send("Ungültiger Command."); await ChatCommand.query().where("id",id).where("owner_key","user:"+user.id).delete(); res.redirect("/Commands"); } catch(error){next(error);}
+app.post(
+  "/Commands/Custom/:id/Delete",
+  requireSessionUser,
+  requireCsrf,
+  async function(req, res, next) {
+    try {
+      const user = sessionUser(req),
+        id = Number(req.params.id);
+      if (!Number.isSafeInteger(id) || id < 1)
+        return res.status(400).send("Ungültiger Command.");
+      await ChatCommand.query()
+        .where("id", id)
+        .where("owner_key", "user:" + user.id)
+        .delete();
+      res.redirect("/Commands");
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+app.get("/Admin/Commands", requireSessionUser, async function(req, res, next) {
+  try {
+    const user = sessionUser(req);
+    if (!isApiAdmin(user))
+      return res.status(403).send("Administratorrechte erforderlich.");
+    const commands = await ChatCommand.query()
+      .where("owner_key", "global")
+      .orderBy("name");
+    res.render("admin_commands", {
+      data: {
+        login: user,
+        commands: commands,
+        csrf_token: createCsrfToken(req)
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
-app.get("/Admin/Commands", requireSessionUser, async function(req,res,next) {
-  try { const user=sessionUser(req); if(!isApiAdmin(user)) return res.status(403).send("Administratorrechte erforderlich."); const commands=await ChatCommand.query().where("owner_key","global").orderBy("name"); res.render("admin_commands",{data:{login:user,commands:commands,csrf_token:createCsrfToken(req)}}); } catch(error){next(error);}
+app.post("/Admin/Commands", requireSessionUser, requireCsrf, async function(
+  req,
+  res,
+  next
+) {
+  try {
+    const user = sessionUser(req);
+    if (!isApiAdmin(user))
+      return res.status(403).send("Administratorrechte erforderlich.");
+    const name = String(req.body.name || "")
+        .trim()
+        .toLowerCase(),
+      response = String(req.body.response_template || "").trim(),
+      description = String(req.body.description || "").trim();
+    if (
+      !/^[a-z0-9_]{1,32}$/.test(name) ||
+      response.length > 400 ||
+      /[\u0000-\u001f]/.test(response) ||
+      description.length > 255
+    )
+      return res.status(400).send("Ungültiger globaler Command.");
+    const row = {
+      owner_key: "global",
+      owner_id: null,
+      name: name,
+      type: "template",
+      response_template: response,
+      description: description,
+      visible: true,
+      enabled: true,
+      global_cooldown_seconds: 0,
+      user_cooldown_seconds: 0
+    };
+    const existing = await ChatCommand.query()
+      .where("owner_key", "global")
+      .where("name", name)
+      .first();
+    if (existing)
+      await ChatCommand.query()
+        .findById(existing.id)
+        .patch(row);
+    else await ChatCommand.query().insert(row);
+    res.redirect("/Admin/Commands");
+  } catch (error) {
+    next(error);
+  }
 });
 
-app.post("/Admin/Commands", requireSessionUser, requireCsrf, async function(req,res,next) {
-  try { const user=sessionUser(req); if(!isApiAdmin(user)) return res.status(403).send("Administratorrechte erforderlich."); const name=String(req.body.name||"").trim().toLowerCase(), response=String(req.body.response_template||"").trim(), description=String(req.body.description||"").trim(); if(!/^[a-z0-9_]{1,32}$/.test(name)||response.length>400||/[\u0000-\u001f]/.test(response)||description.length>255)return res.status(400).send("Ungültiger globaler Command."); const row={owner_key:"global",owner_id:null,name:name,type:"template",response_template:response,description:description,visible:true,enabled:true,global_cooldown_seconds:0,user_cooldown_seconds:0}; const existing=await ChatCommand.query().where("owner_key","global").where("name",name).first(); if(existing)await ChatCommand.query().findById(existing.id).patch(row);else await ChatCommand.query().insert(row);res.redirect("/Admin/Commands"); }catch(error){next(error);}
-});
-
-app.post("/Admin/Commands/:id/Delete", requireSessionUser, requireCsrf, async function(req,res,next) { try { const user=sessionUser(req),id=Number(req.params.id);if(!isApiAdmin(user))return res.status(403).send("Administratorrechte erforderlich.");if(!Number.isSafeInteger(id)||id<1)return res.status(400).send("Ungültiger Command.");await ChatCommand.query().where("id",id).where("owner_key","global").delete();res.redirect("/Admin/Commands");}catch(error){next(error);} });
+app.post(
+  "/Admin/Commands/:id/Delete",
+  requireSessionUser,
+  requireCsrf,
+  async function(req, res, next) {
+    try {
+      const user = sessionUser(req),
+        id = Number(req.params.id);
+      if (!isApiAdmin(user))
+        return res.status(403).send("Administratorrechte erforderlich.");
+      if (!Number.isSafeInteger(id) || id < 1)
+        return res.status(400).send("Ungültiger Command.");
+      await ChatCommand.query()
+        .where("id", id)
+        .where("owner_key", "global")
+        .delete();
+      res.redirect("/Admin/Commands");
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 app.get("/Dashboard", async function(req, res) {
   var temp_data = {};
