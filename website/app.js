@@ -242,7 +242,7 @@ app.get(
 );
 app.get(
   "/auth/youtube/callback",
-  passport.authenticate("youtube"),
+  passport.authenticate("youtube", { session: false }),
   async function(req, res) {
     var temp_data = {};
     //console.log(req.user.profile);
@@ -275,7 +275,7 @@ app.get(
 );
 app.get(
   "/auth/twitch/callback",
-  passport.authenticate("twitch"),
+  passport.authenticate("twitch", { session: false }),
   async function(req, res) {
     var temp_data = {};
     //console.log(req.user.profile);
@@ -303,7 +303,7 @@ app.get(
 );
 app.get(
   "/auth/discord/callback",
-  passport.authenticate("discord"),
+  passport.authenticate("discord", { session: false }),
   async function(req, res) {
     var temp_data = {};
     //console.log(req.user.profile);
