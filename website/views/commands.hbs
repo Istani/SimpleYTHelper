@@ -22,7 +22,7 @@
   <section class="command-card">
     <div class="command-card__header"><div><h2>Deine Commands</h2><p>Diese Antworten gehören nur dir.</p></div></div>
     {{#if data.user_commands.length}}
-      <div class="table-wrap"><table class="command-table"><thead><tr><th>Command</th><th>Beschreibung</th><th>Antwort</th><th><span class="sr-only">Aktion</span></th></tr></thead><tbody>
+      <div class="table-wrap"><table class="data-table command-table"><thead><tr><th>Command</th><th>Beschreibung</th><th>Antwort</th><th><span class="sr-only">Aktion</span></th></tr></thead><tbody>
       {{#each data.user_commands}}<tr><td><code>!{{name}}</code></td><td>{{#if description}}{{description}}{{else}}<span class="muted">—</span>{{/if}}</td><td class="command-table__response">{{response_template}}</td><td class="command-table__action"><form method="POST" action="/Commands/Custom/{{id}}/Delete"><input type="hidden" name="csrf_token" value="{{../data.csrf_token}}"><button class="button danger" type="submit">Löschen</button></form></td></tr>{{/each}}
       </tbody></table></div>
     {{else}}<div class="empty-state">Noch keine eigenen Commands angelegt.</div>{{/if}}
@@ -31,7 +31,7 @@
   <section class="command-card command-card--global">
     <div class="command-card__header"><div><p class="eyebrow">Nur lesbar</p><h2>Globale Commands</h2><p>Diese Commands werden von der Administration verwaltet und haben Vorrang vor eigenen Commands.</p></div></div>
     {{#if data.global_commands.length}}
-      <div class="table-wrap"><table class="command-table"><thead><tr><th>Command</th><th>Beschreibung</th><th>Antwort</th></tr></thead><tbody>
+      <div class="table-wrap"><table class="data-table command-table"><thead><tr><th>Command</th><th>Beschreibung</th><th>Antwort</th></tr></thead><tbody>
       {{#each data.global_commands}}<tr><td><code>!{{name}}</code></td><td>{{#if description}}{{description}}{{else}}<span class="muted">—</span>{{/if}}</td><td class="command-table__response">{{response_template}}</td></tr>{{/each}}
       </tbody></table></div>
     {{else}}<div class="empty-state">Derzeit sind keine globalen Datenbank-Commands hinterlegt.</div>{{/if}}
@@ -40,7 +40,7 @@
   <section class="command-card command-endpoints">
     <div class="command-card__header"><div><h2>Zugangspunkt-Einstellungen</h2><p>Präfix und Aktivierung gelten jeweils für einen Twitch-/YouTube-Channel oder Discord-Server.</p></div></div>
     {{#if data.endpoints.length}}
-      <div class="table-wrap"><table class="endpoint-table"><thead><tr><th>Zugangspunkt</th><th>Plattform</th><th>Präfix</th><th>Befehle</th><th><span class="sr-only">Aktion</span></th></tr></thead><tbody>
+      <div class="table-wrap"><table class="data-table endpoint-table"><thead><tr><th>Zugangspunkt</th><th>Plattform</th><th>Präfix</th><th>Befehle</th><th><span class="sr-only">Aktion</span></th></tr></thead><tbody>
       {{#each data.endpoints}}<tr><td class="endpoint-table__name">{{name}}</td><td>{{> platform service=service}}</td><td><label class="sr-only" for="prefix-{{@index}}">Präfix</label><input class="endpoint-prefix" id="prefix-{{@index}}" type="text" name="prefix" form="endpoint-form-{{@index}}" value="{{prefix}}" maxlength="10" required></td><td><input type="hidden" name="commands_enabled" value="0" form="endpoint-form-{{@index}}"><label class="endpoint-enabled"><input type="checkbox" name="commands_enabled" value="1" form="endpoint-form-{{@index}}" {{#if commands_enabled}}checked{{/if}}> <span>Aktiv</span></label></td><td><form class="endpoint-form" id="endpoint-form-{{@index}}" method="POST" action="/Commands/Endpoints"><input type="hidden" name="csrf_token" value="{{../data.csrf_token}}"><input type="hidden" name="service" value="{{service}}"><input type="hidden" name="endpoint_id" value="{{endpoint_id}}"><button class="button" type="submit">Speichern</button></form></td></tr>{{/each}}
       </tbody></table></div>
     {{else}}<div class="empty-state">Für dein Konto sind noch keine Zugangspunkte verknüpft.</div>{{/if}}

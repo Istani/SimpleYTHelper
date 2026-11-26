@@ -24,9 +24,9 @@
                     </div>
 
                     <h4>{{i18n "Inventory"}}</h4>
-                    <table width="100%" cellpadding="5" cellspacing="0" border="1" style="border-collapse: collapse;">
+                    <div class="table-wrap"><table class="data-table">
                         <thead>
-                            <tr class="ui-state-default">
+                            <tr>
                                 <th>{{i18n "Item"}}</th>
                             </tr>
                         </thead>
@@ -37,11 +37,11 @@
                                 </tr>
                             {{else}}
                                 <tr>
-                                    <td align="center">{{i18n "Empty inventory"}}</td>
+                                    <td>{{i18n "Empty inventory"}}</td>
                                 </tr>
                             {{/each}}
                         </tbody>
-                    </table>
+                    </table></div>
                 </div>
             </div>
         {{else}}
