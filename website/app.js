@@ -246,8 +246,6 @@ app.get(
   async function(req, res) {
     var temp_data = {};
     //console.log(req.user.profile);
-    req.session = req.custom_data.session;
-
     if (req.session.user) {
       temp_data.service = "youtube";
       temp_data.user_id = req.session.user[0].id;
@@ -281,8 +279,6 @@ app.get(
   async function(req, res) {
     var temp_data = {};
     //console.log(req.user.profile);
-    req.session = req.custom_data.session;
-
     if (req.session.user) {
       temp_data.service = "twitch";
       temp_data.user_id = req.session.user[0].id;
@@ -311,8 +307,6 @@ app.get(
   async function(req, res) {
     var temp_data = {};
     //console.log(req.user.profile);
-    req.session = req.custom_data.session;
-
     if (req.session.user) {
       temp_data.service = "discord";
       temp_data.user_id = req.session.user[0].id;
