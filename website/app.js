@@ -106,8 +106,19 @@ var hbs = exphbs.create({
         .format(date)
         .replace(",", "");
     },
-    formatDateRange: function(start, end) {
-      if (!start || !end) return "Letzte 90 Tage bis vor 14 Tagen";
+    formatDateRange: function(start, end, timestamp) {
+      if ((!start || !end) && timestamp) {
+        var snapshot = new Date(timestamp);
+        if (!Number.isNaN(snapshot.getTime())) {
+          var legacyEnd = new Date(snapshot);
+          legacyEnd.setDate(legacyEnd.getDate() - 14);
+          var legacyStart = new Date(legacyEnd);
+          legacyStart.setDate(legacyStart.getDate() - 90);
+          start = legacyStart;
+          end = legacyEnd;
+        }
+      }
+      if (!start || !end) return "Zeitraum nicht verfügbar";
       var format = function(value) {
         var text = String(value).slice(0, 10),
           date = new Date(text + "T00:00:00");
@@ -1115,7 +1126,8 @@ app.get("/Analytics", requireSessionUser, async function(req, res, next) {
       ...row,
       video_title:
         videoTitles.get(row.channel_id + "\u0000" + row.video_id) ||
-        "Nicht mehr verfügbares Video"
+        "Nicht mehr verfügbares Video",
+      channel_name: channelNames.get(row.channel_id) || "Unbekannter Kanal"
     });
     const sum = (rows, field) =>
       rows.reduce((total, row) => total + (Number(row[field]) || 0), 0);
@@ -1152,7 +1164,10 @@ app.get("/Members", async function(req, res) {
     const members = await Member.query()
       .whereIn("owner", channel_ids)
       .orderBy("owner", "asc")
-      .orderBy("since", "desc");
+      .orderBy("points", "desc")
+      .orderBy("current", "desc")
+      .orderBy("level", "asc")
+      .orderBy("since", "asc");
     temp_data.members = members.map(member => ({
       channel_name: String(
         channelNames.get(member.owner) || "Unbekannter Kanal"
@@ -1375,18 +1390,16 @@ app.post(
         service_user: channelId
       });
       if (!token)
-        return res
-          .status(404)
-          .render("error", {
-            data: {
-              login: user,
-              error: {
-                code: "Verbindung nicht gefunden",
-                text:
-                  "Diese OAuth-Verbindung gehört nicht zu deinem Konto oder existiert nicht mehr."
-              }
+        return res.status(404).render("error", {
+          data: {
+            login: user,
+            error: {
+              code: "Verbindung nicht gefunden",
+              text:
+                "Diese OAuth-Verbindung gehört nicht zu deinem Konto oder existiert nicht mehr."
             }
-          });
+          }
+        });
       await revokeOAuthToken(token);
       await Token.transaction(async trx => {
         await Token.query(trx).deleteById(token.id);
