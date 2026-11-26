@@ -1,38 +1,38 @@
 <main class="api-key-page">
   <section class="page-heading">
-    <p class="eyebrow">Developer</p>
-    <h1>API-Keys</h1>
-    <p>Verwalte den Zugriff externer Tools auf die Daten deines SimpleYTH-Accounts.</p>
+    <p class="eyebrow">{{i18n "Developer"}}</p>
+    <h1>{{i18n "API-Keys"}}</h1>
+    <p>{{i18n "Verwalte den Zugriff externer Tools auf die Daten deines SimpleYTH-Accounts."}}</p>
   </section>
 
   {{#if data.created_key}}
     <section class="api-key-created" role="alert">
-      <p class="eyebrow">Einmalig sichtbar</p>
-      <h2>Neuen API-Key jetzt sicher speichern</h2>
-      <p>Dieser Key wird nach dem Verlassen dieser Seite nicht erneut angezeigt. Teile ihn niemals in Chats, Screenshots oder öffentlichen Repositories.</p>
+      <p class="eyebrow">{{i18n "Einmalig sichtbar"}}</p>
+      <h2>{{i18n "Neuen API-Key jetzt sicher speichern"}}</h2>
+      <p>{{i18n "Dieser Key wird nach dem Verlassen dieser Seite nicht erneut angezeigt. Teile ihn niemals in Chats, Screenshots oder öffentlichen Repositories."}}</p>
       <code class="api-key-secret">{{data.created_key}}</code>
     </section>
   {{/if}}
 
   <section class="card api-key-create">
-    <div><h2>Neuen Key erstellen</h2><p class="muted">Wähle eine Beschreibung, damit du später erkennst, welches Tool den Key verwendet.</p></div>
+    <div><h2>{{i18n "Neuen Key erstellen"}}</h2><p class="muted">{{i18n "Wähle eine Beschreibung, damit du später erkennst, welches Tool den Key verwendet."}}</p></div>
     <form method="POST" action="/Api/Keys">
       <input type="hidden" name="csrf_token" value="{{data.csrf_token}}">
-      <label for="label">Bezeichnung</label>
-      <div class="api-key-create__controls"><input id="label" name="label" type="text" maxlength="100" required placeholder="z. B. Mein Dashboard" autocomplete="off"><button class="button primary" type="submit">API-Key erstellen</button></div>
+      <label for="label">{{i18n "Bezeichnung"}}</label>
+      <div class="api-key-create__controls"><input id="label" name="label" type="text" maxlength="100" required placeholder="{{i18n "z. B. Mein Dashboard"}}" autocomplete="off"><button class="button primary" type="submit">{{i18n "API-Key erstellen"}}</button></div>
     </form>
   </section>
 
   <section class="card api-key-list">
-    <div class="section-title"><div><h2>Deine API-Keys</h2><p class="muted">Widerrufe Keys sofort, wenn ein Tool nicht mehr verwendet wird oder ein Key offengelegt wurde.</p></div><a class="button" href="/Api/Docs">API-Dokumentation</a></div>
+    <div class="section-title"><div><h2>{{i18n "Deine API-Keys"}}</h2><p class="muted">{{i18n "Widerrufe Keys sofort, wenn ein Tool nicht mehr verwendet wird oder ein Key offengelegt wurde."}}</p></div><a class="button" href="/Api/Docs">{{i18n "API-Dokumentation"}}</a></div>
     {{#if data.keys.length}}
-      <div class="table-wrap"><table class="data-table"><thead><tr><th>Bezeichnung</th><th>Präfix</th><th>Erstellt</th><th>Zuletzt verwendet</th><th>Status</th><th><span class="sr-only">Aktion</span></th></tr></thead><tbody>
+      <div class="table-wrap"><table class="data-table"><thead><tr><th>{{i18n "Bezeichnung"}}</th><th>{{i18n "Präfix"}}</th><th>{{i18n "Erstellt"}}</th><th>{{i18n "Zuletzt verwendet"}}</th><th>{{i18n "Status"}}</th><th><span class="sr-only">{{i18n "Aktion"}}</span></th></tr></thead><tbody>
       {{#each data.keys}}
-        <tr><td>{{label}}</td><td><code>{{key_prefix}}…</code></td><td>{{formatDateTime created_at}}</td><td>{{#if last_used_at}}{{formatDateTime last_used_at}}{{else}}Noch nie{{/if}}</td><td>{{#if revoked_at}}<span class="key-status revoked">Widerrufen</span>{{else}}<span class="key-status active">Aktiv</span>{{/if}}</td><td>{{#unless revoked_at}}<form method="POST" action="/Api/Keys/{{id}}/Revoke"><input type="hidden" name="csrf_token" value="{{../data.csrf_token}}"><button class="button danger" type="submit">Widerrufen</button></form>{{/unless}}</td></tr>
+        <tr><td>{{label}}</td><td><code>{{key_prefix}}…</code></td><td>{{formatDateTime created_at}}</td><td>{{#if last_used_at}}{{formatDateTime last_used_at}}{{else}}{{i18n "Noch nie"}}{{/if}}</td><td>{{#if revoked_at}}<span class="key-status revoked">{{i18n "Widerrufen"}}</span>{{else}}<span class="key-status active">{{i18n "Aktiv"}}</span>{{/if}}</td><td>{{#unless revoked_at}}<form method="POST" action="/Api/Keys/{{id}}/Revoke"><input type="hidden" name="csrf_token" value="{{../data.csrf_token}}"><button class="button danger" type="submit">{{i18n "Widerrufen"}}</button></form>{{/unless}}</td></tr>
       {{/each}}
       </tbody></table></div>
     {{else}}
-      <div class="empty-state"><h2>Noch keine API-Keys</h2><p>Erstelle einen Key, um die SimpleYTH Account API in eigenen Tools zu verwenden.</p></div>
+      <div class="empty-state"><h2>{{i18n "Noch keine API-Keys"}}</h2><p>{{i18n "Erstelle einen Key, um die SimpleYTH Account API in eigenen Tools zu verwenden."}}</p></div>
     {{/if}}
   </section>
 </main>

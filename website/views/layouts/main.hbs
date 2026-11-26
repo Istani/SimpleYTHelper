@@ -20,7 +20,7 @@
     <header id="header" class="site-header">
         <a class="site-brand" href="{{#if data.login.user}}/Dashboard{{else}}/{{/if}}" aria-label="SimpleYTH Community Dashboard">
             <span class="site-brand__logo" aria-hidden="true"><img src="/logo-header.png" alt=""></span>
-            <span class="site-brand__copy"><small>Community Dashboard</small></span>
+            <span class="site-brand__copy"><small>{{i18n "Community Dashboard"}}</small></span>
         </a>
     </header>
 
@@ -64,14 +64,14 @@
                     <a href="/Channels">{{{i18n "Channels"}}}</a>
                     <a href="/Videos">{{{i18n "Videos"}}}</a>
                     <a href="/Playlists">{{i18n "Playlists"}}</a>
-                    <a href="/Analytics">Analytics</a>
+                    <a href="/Analytics">{{i18n "Analytics"}}</a>
                     <a href="/Members">{{{i18n "Members"}}}</a>
                 </div>
             </div>
                     <div id="chatbot_navigation" class="ui-accordion ui-widget ui-helper-reset">
-                <h3 class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">Chatbot</h3>
+                <h3 class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">{{i18n "Chatbot"}}</h3>
                 <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
-                    <a href="/Commands">Commands</a>{{#if data.login.is_admin}}<a href="/Admin/Commands">Globale Commands</a>{{/if}}
+                    <a href="/Commands">{{i18n "Commands"}}</a>{{#if data.login.is_admin}}<a href="/Admin/Commands">{{i18n "Globale Commands"}}</a>{{/if}}
                 </div>
             </div>
                 <div id="api_navigation" class="ui-accordion ui-widget ui-helper-reset">
@@ -95,7 +95,7 @@
   <input id="login-email" type="text" name="email" autocomplete="username" required>
   <label for="login-password">{{{i18n "Password"}}}:</label>
   <input id="login-password" type="password" name="password" autocomplete="current-password" required>
-  <div class="login-actions"><input type="submit" name="button" value="{{{i18n "Login"}}}"><span>oder</span><a href="/Register">Konto erstellen</a></div>
+  <div class="login-actions"><input type="submit" name="button" value="{{{i18n "Login"}}}"><span>{{i18n "oder"}}</span><a href="/Register">{{i18n "Konto erstellen"}}</a></div>
 </form>
                 </div>
             </div>
@@ -105,7 +105,7 @@
                 class="accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all">
                 {{i18n "About"}}</h3>
             <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
-                <a href="https://github.com/Istani/SimpleYTHelper/issues/new/choose" target="_blank" rel="noopener noreferrer">Fehler melden <span aria-hidden="true">↗</span></a>
+                <a href="https://github.com/Istani/SimpleYTHelper/issues/new/choose" target="_blank" rel="noopener noreferrer">{{i18n "Fehler melden"}} <span aria-hidden="true">↗</span></a>
             </div>
         </div>
     </div>
